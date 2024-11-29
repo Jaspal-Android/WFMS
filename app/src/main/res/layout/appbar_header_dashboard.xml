@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel" />
+    </data>
+
+    <com.google.android.material.appbar.CollapsingToolbarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentScrim="@color/white"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+        <!-- Custom View -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/padding"
+            app:layout_collapseMode="parallax">
+
+            <TextView
+                android:id="@+id/userNameText"
+                style="@style/CustomLargeDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hello, Jaspal"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></TextView>
+
+            <TextView
+                android:id="@+id/circleText"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Circle: Mumbai"
+                app:layout_constraintEnd_toStartOf="@+id/dojText"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userNameText" />
+
+            <TextView
+                android:id="@+id/dojText"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="Date of joining: 02-04-2022"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/circleText"
+                app:layout_constraintTop_toTopOf="@+id/circleText" />
+
+            <TextView
+                android:id="@+id/reportingManagerText"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:text="Reporting Manager: Vikram Sachdeva"
+                app:layout_constraintEnd_toStartOf="@+id/designationText"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dojText" />
+
+            <TextView
+                android:id="@+id/designationText"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="Designation: Manager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/reportingManagerText"
+                app:layout_constraintTop_toTopOf="@+id/reportingManagerText" />
+
+            <TextView
+                android:id="@+id/announcementText"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:drawableStart="@drawable/volume_up_24"
+                android:drawablePadding="@dimen/padding_small"
+                android:text="@string/announcements"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/reportingManagerText" />
+
+            <TextView
+                android:onClick="@{()-> vm.onAnnouncementsClicks()}"
+                style="@style/CustomSmallLightTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/small_primary_bg"
+                android:elevation="@dimen/elevation"
+                android:paddingStart="@dimen/padding_medium"
+                android:paddingTop="@dimen/padding_x_small"
+                android:paddingEnd="@dimen/padding_medium"
+                android:paddingBottom="@dimen/padding_x_small"
+                android:text="@string/view_all"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/announcementText"></TextView>
+
+            <LinearLayout
+                android:id="@+id/marqueeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/announcementText">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/marqueeRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_marquee" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.CollapsingToolbarLayout>
+</layout>

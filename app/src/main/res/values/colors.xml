@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="lightGray">#D3D3D3</color>
+    <color name="mediumGray">#A9A9A9</color>
+    <color name="darkGray">#808080</color>
+    <color name="slateGray">#708090</color>
+    <color name="darker_gray">#7A7A7A</color>
+    <color name="colorPrimary">#10b6f3</color>
+    <color name="colorPrimaryDark">#053059</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="green">#4eb300</color>
+    <color name="red">#FF0000</color>
+    <color name="orange">#ffa500</color>
+    <color name="flatCalendar">#f4f4f4</color>
+</resources>

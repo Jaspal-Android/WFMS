@@ -1,0 +1,205 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.WFMS" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="fontFamily">@font/sf_pro_text_medium</item>
+        <item name="android:windowBackground">@color/white</item>
+
+    </style>
+
+    <style name="Theme.WFMS" parent="Base.Theme.WFMS" />
+
+    <style name="Theme.WFMS.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.WFMS.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.WFMS.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!--Bottom sheet/dialog style-->
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/top_corner_white_bg</item>
+    </style>
+
+
+    <!--Text View Styles-->
+    <style name="CustomRegularTextView" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/default_text</item>
+    </style>
+
+    <style name="CustomRegularDarkTextView" parent="CustomRegularTextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CustomRegularLightTextView" parent="CustomRegularTextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomRegularPrimaryTextView" parent="CustomRegularTextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomSmallTextView" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/default_small_text</item>
+    </style>
+
+    <style name="CustomSmallDarkTextView" parent="CustomSmallTextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CustomSmallLightTextView" parent="CustomSmallTextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomMediumTextView" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/slateGray</item>
+        <item name="android:textSize">@dimen/default_medium_small_text</item>
+    </style>
+
+    <style name="CustomMediumLightTextView" parent="CustomMediumTextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomMediumDarkTextView" parent="CustomMediumTextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CustomMediumPrimaryTextView" parent="CustomMediumTextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+
+
+    <style name="CustomMediumBoldTextView" parent="CustomMediumTextView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CustomLargeTextView" parent="android:Widget.TextView">
+        <item name="android:textSize">@dimen/default_large_text</item>
+    </style>
+
+    <style name="CustomLargeDarkTextView" parent="CustomLargeTextView">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="CustomLargePrimaryTextView" parent="CustomLargeTextView">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomLargeLightTextView" parent="CustomLargeTextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!--Edittext view styles-->
+
+    <style name="CustomEditRegularStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:background">@drawable/et_bg</item>
+        <item name="android:paddingStart">@dimen/padding</item>
+        <item name="android:paddingEnd">@dimen/padding</item>
+        <item name="android:paddingTop">@dimen/padding_medium</item>
+        <item name="android:paddingBottom">@dimen/padding_medium</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="CustomEditWireStyle" parent="@android:style/Widget.EditText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:background">@drawable/et_trans_bg</item>
+        <item name="android:paddingStart">@dimen/padding</item>
+        <item name="android:paddingEnd">@dimen/padding</item>
+        <item name="android:paddingTop">@dimen/padding_medium</item>
+        <item name="android:paddingBottom">@dimen/padding_medium</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+
+    <style name="EditRegularNoBgStyle" parent="@android:style/Widget.EditText">
+        <item name="android:textSize">@dimen/default_medium_small_text</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:paddingStart">@dimen/padding</item>
+        <item name="android:paddingEnd">@dimen/padding</item>
+        <item name="android:paddingTop">@dimen/padding_medium</item>
+        <item name="android:paddingBottom">@dimen/padding_medium</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <!--Button themes-->
+    <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:paddingStart">@dimen/button_padding_lr</item>
+        <item name="android:paddingEnd">@dimen/button_padding_lr</item>
+        <item name="android:paddingTop">@dimen/button_padding_tb</item>
+        <item name="android:paddingBottom">@dimen/button_padding_tb</item>
+        <item name="android:textSize">@dimen/default_text</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CustomPrimaryButton" parent="CustomButtonStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/primary_bt_bg</item>
+    </style>
+
+    <style name="CustomPrimaryWireButton" parent="CustomButtonStyle">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:background">@drawable/primary_wire_bg</item>
+    </style>
+
+    <style name="ButtonStateSelector" parent="CustomButtonStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/button_state_selector</item>
+    </style>
+
+    <style name="CustomSelectableEditStyle" parent="CustomEditRegularStyle">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:inputMethod">@null</item>
+        <item name="maxLines">1</item>
+        <item name="android:longClickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:drawableEnd">@drawable/ic_arrow_down_24</item>
+    </style>
+
+
+    <!--Dialog Animation-->
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/from_left</item>
+        <item name="android:windowExitAnimation">@anim/to_right</item>
+    </style>
+
+    <style name="AppTheme.DatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="android:colorAccent">@color/colorPrimary</item>
+        <item name="android:colorControlActivated">@color/colorPrimaryDark</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/AppTheme.Alert.Button.Positive
+        </item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/AppTheme.Alert.Button.Negative
+        </item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/AppTheme.Alert.Button.Neutral</item>
+    </style>
+
+    <style name="AppTheme.Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme.Alert.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/red</item>
+    </style>
+
+    <style name="AppTheme.Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/darkGray</item>
+    </style>
+
+</resources>

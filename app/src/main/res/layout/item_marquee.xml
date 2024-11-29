@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:scrollHorizontally="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:id="@+id/marqueText"
+            android:textStyle="italic"
+            style="@style/CustomMediumTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Texting vertical marquee....." />
+
+    </LinearLayout>
+</layout>
