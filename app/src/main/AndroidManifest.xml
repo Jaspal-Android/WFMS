@@ -2,7 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature android:name="android.hardware.camera.any" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".app.MApplication"
@@ -15,6 +25,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WFMS"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.screens.vendor.viewAllActivities.ViewAllVendorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.vendor.startActivity.VendorStartActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.reimbursement.myClaims.MyClaimsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.reimbursement.createClaim.CreateClaimActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.attendance.approvals.ApprovalsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.attendance.myProgress.MyProgressActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.attendance.addSignInActivity.AddSignInActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.attendance.signInActivity.SignInActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.screens.announcements.AnnouncementsActivity"
             android:exported="false" />
@@ -32,6 +69,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/app_id"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:ignore="ManifestResource">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/path_provider" />
+        </provider>
     </application>
 
 </manifest>

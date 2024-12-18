@@ -1,17 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.screens.feedback.FeedbackFragment">
-
-    <TextView
-        style="@style/CustomLargeDarkTextView"
-        android:gravity="center"
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Feedback Page" />
+        tools:context=".ui.screens.feedback.FeedbackFragment">
 
-</FrameLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.features.feedback.FeedbackActivity">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toTopOf="@+id/complaintBottomView"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/subjectInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin"
+                        android:layout_marginTop="@dimen/margin"
+                        android:layout_marginEnd="@dimen/margin"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/subjectEt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Subject..."
+                            android:imeOptions="actionNext"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/detailsInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginEnd="@dimen/margin"
+                        app:layout_constraintTop_toBottomOf="@+id/subjectInputLayout">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/detailsEt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:hint="Please describe the details"
+                            android:imeOptions="actionNext"
+                            android:inputType="textMultiLine"
+                            android:lines="6"
+                            android:maxLength="250"
+                            android:maxLines="12" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </ScrollView>
+
+            <LinearLayout
+                android:id="@+id/complaintBottomView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/top_corner_white_bg"
+                android:elevation="@dimen/elevation"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomRedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin"
+                    android:layout_weight="1"
+                    android:text="Submit" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomPrimaryButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_x_large"
+                    android:layout_marginTop="@dimen/margin"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:layout_marginBottom="@dimen/margin"
+                    android:layout_weight="1"
+                    android:text="@string/cancel" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </layout>

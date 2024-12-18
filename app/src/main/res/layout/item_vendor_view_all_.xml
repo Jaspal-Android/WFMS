@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            app:cardUseCompatPadding="true"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="@dimen/elevation"
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardBackgroundColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="@dimen/padding_medium"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/empPictureImg"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/user_avtar"
+                    app:layout_constraintDimensionRatio="1:1.2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent=".15" />
+
+                <TextView
+                    style="@style/CustomSmallDarkTextView"
+                    android:id="@+id/tvCircle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Circle: HR"
+                    android:layout_marginStart="@dimen/margin_small"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tvDateTime"
+                    app:layout_constraintStart_toEndOf="@+id/empPictureImg" />
+
+                <TextView
+                    android:id="@+id/tvDateTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="11/12/2024"
+                    android:gravity="end"
+                    android:layout_marginStart="@dimen/margin_small"
+                    style="@style/CustomSmallTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvCircle"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:textStyle="bold"
+                    style="@style/CustomMediumDarkTextView"
+                    android:id="@+id/tvVendorName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Vendor Name: Lakh Fibers"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:layout_marginStart="@dimen/margin_small"
+                    app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCircle" />
+
+                <TextView
+                    android:id="@+id/tvProject"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Project: NOKIA-HR-JIO-RF"
+                    style="@style/CustomSmallDarkTextView"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:layout_marginStart="@dimen/margin_small"
+                    app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                    app:layout_constraintEnd_toEndOf="@+id/tvDateTime"
+                    app:layout_constraintTop_toBottomOf="@id/tvVendorName" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/labelBarrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="bottom"
+                    app:constraint_referenced_ids="empPictureImg,tvProject" />
+
+                <TextView
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:id="@+id/tvType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Type: AGI"
+                    style="@style/CustomSmallDarkTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tvActivity"
+                    app:layout_constraintTop_toBottomOf="@id/labelBarrier" />
+
+                <TextView
+                    android:id="@+id/tvActivity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Activity: ATP"
+                    android:gravity="end"
+                    android:layout_marginStart="@dimen/margin_small"
+                    style="@style/CustomSmallDarkTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvType"
+                    app:layout_constraintTop_toTopOf="@+id/tvType" />
+
+                <TextView
+                    android:id="@+id/tvSiteId"
+                    android:text="Site ID: PB-23232_DC"
+                    style="@style/CustomSmallDarkTextView"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvActivity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:id="@+id/tvRemarks"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Remarks: Main Month"
+                    style="@style/CustomSmallTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvSiteId" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

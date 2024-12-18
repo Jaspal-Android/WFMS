@@ -9,8 +9,18 @@ import android.view.ViewGroup
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.databinding.FragmentVendorBinding
+import com.atvantiq.wfms.ui.screens.adapters.AttendanceOptionsAdapter
+import com.atvantiq.wfms.ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity
+import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivity
+import com.atvantiq.wfms.ui.screens.reimbursement.myClaims.MyClaimsActivity
+import com.atvantiq.wfms.ui.screens.vendor.startActivity.VendorStartActivity
+import com.atvantiq.wfms.ui.screens.vendor.viewAllActivities.ViewAllVendorActivity
+import com.atvantiq.wfms.utils.Utils
 
 class VendorFragment : BaseFragment<FragmentVendorBinding,VendorViewModel>() {
+
+    private lateinit var data:List<Pair<String,String>>
+    private lateinit var optionsAdapter: AttendanceOptionsAdapter
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_vendor,VendorViewModel::class.java)
@@ -21,6 +31,37 @@ class VendorFragment : BaseFragment<FragmentVendorBinding,VendorViewModel>() {
 
     override fun subscribeToEvents(vm: VendorViewModel) {
 
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        setVendorOptions()
+    }
+
+    private fun initOptionsDate(){
+        data = listOf(
+            getString(R.string.start_activity) to getString(R.string.start_record_vendor_data),
+            getString(R.string.end_activity) to getString(R.string.complete_the_activity),
+            getString(R.string.view_all_activities) to getString(R.string.vendor_completed_tasks),
+        )
+    }
+
+    private fun setVendorOptions(){
+        initOptionsDate()
+        optionsAdapter = AttendanceOptionsAdapter(data){
+            when(it){
+                0->{
+                    Utils.jumpActivity(requireContext(), VendorStartActivity::class.java)
+                }
+                1->{
+                  //  Utils.jumpActivity(requireContext(), MyClaimsActivity::class.java)
+                }
+                2->{
+                    Utils.jumpActivity(requireContext(), ViewAllVendorActivity::class.java)
+                }
+            }
+        }
+        binding.optionsList.adapter = optionsAdapter
     }
 
 }

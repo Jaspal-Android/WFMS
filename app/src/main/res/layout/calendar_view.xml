@@ -24,8 +24,8 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:paddingBottom="@dimen/padding_small"
-                android:paddingTop="@dimen/padding_small"
+                android:paddingBottom="@dimen/padding_medium"
+                android:paddingTop="@dimen/padding_medium"
                 android:src="@drawable/arrow_back_ios_24"
                 android:id="@+id/btnPreviousMonth"
                 android:layout_width="0dp"
@@ -33,6 +33,7 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:textStyle="bold"
                 android:id="@+id/tvMonthYear"
                 style="@style/CustomRegularDarkTextView"
                 android:layout_width="0dp"
@@ -134,8 +135,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:layout_marginStart="@dimen/margin_small_extra"
-            android:layout_marginEnd="@dimen/margin_small_extra"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_small"
             android:layout_weight="1"
             android:nestedScrollingEnabled="true"
             tools:listitem="@layout/item_calendar_day" />

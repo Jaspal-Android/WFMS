@@ -97,6 +97,9 @@ dependencies {
     implementation("androidx.navigation:navigation-dynamic-features-fragment:2.7.7")
     // Chart Drawings
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // Places API
+    implementation(libs.play.services.location)
+
 }
 
 kapt {

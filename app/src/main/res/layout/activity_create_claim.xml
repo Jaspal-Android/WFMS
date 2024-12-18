@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="dateString"
+            type="String" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInVM" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.reimbursement.createClaim.CreateClaimActivity">
+
+        <include
+            android:id="@+id/createClaimsToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Date*"
+                    app:endIconDrawable="@drawable/ic_calendar_today_24"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:cursorVisible="false"
+                        android:text="@{dateString}"
+                        tools:text="12/12/2024" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Circle*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/circle_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:focusable="false"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Project*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/project_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:focusable="false"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Site*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/site_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:focusable="false"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Expense Type*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/expense_type_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:cursorVisible="false"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Travelling With*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/travelling_with_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:cursorVisible="false"
+                        android:ellipsize="start"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Amount*">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Remarks (if any)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_remarks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionDone"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomPrimaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:text="@string/save" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomRedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@string/cancel" />
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="dateString"
+            type="String" />
+
+        <variable
+            name="timeString"
+            type="String" />
+
+        <variable
+            name="locationString"
+            type="String" />
+
+        <variable
+            name="hasPreviewImage"
+            type="Boolean" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInVM" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.attendance.addSignInActivity.AddSignInActivity">
+
+        <include
+            android:id="@+id/addSignInToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Date*"
+                    app:endIconDrawable="@drawable/ic_calendar_today_24"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="date"
+                        android:text="@{dateString}"
+                        tools:text="12/12/2024" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="TimeIN*"
+                    app:endIconDrawable="@drawable/ic_time_24"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="time"
+                        android:text="@{timeString}"
+                        tools:text="12:20:05 AM" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Circle*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/circle_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Project*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/project_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Type*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/type_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Site*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/site_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Activity*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/activity_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Visit No*">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_vist_no"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Remarks (if any)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_remarks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionDone"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Photo Section -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Photo with Lat. Long."
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:onClick="@{()->vm.onCameraClick()}"
+                    android:id="@+id/btn_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:background="@android:drawable/btn_default"
+                    android:contentDescription="Add photo"
+                    android:padding="@dimen/padding"
+                    android:src="@drawable/ic_menu_camera" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small">
+
+                    <RelativeLayout
+                        android:id="@+id/imagePreviewView"
+                        tools:visibility="gone"
+                        android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintDimensionRatio="1:1.1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".35">
+
+                        <ImageView
+                            android:id="@+id/capturedImagePreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                        tools:text="30.7333° N, 76.7794° E"
+                        android:text="@{locationString}"
+                        style="@style/CustomMediumDarkTextView"
+                        app:layout_constraintTop_toBottomOf="@+id/imagePreviewView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:onClick="@{()->vm.onSaveClick()}"
+                    style="@style/CustomPrimaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:text="@string/save" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:onClick="@{()->vm.onCancelClick()}"
+                    style="@style/CustomRedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@string/cancel" />
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>
