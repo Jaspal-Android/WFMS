@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#1D1C1A</color>
     <color name="white">#FFFFFFFF</color>
     <color name="lightGray">#D3D3D3</color>
     <color name="mediumGray">#A9A9A9</color>
@@ -11,6 +11,9 @@
     <color name="colorPrimaryDark">#053059</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="green">#4eb300</color>
+    <color name="green_pastel">#D0E9C0</color>
+    <color name="red_pastel">#FFA4A9</color>
+    <color name="orange_pastal">#FFB347</color>
     <color name="red">#FF0000</color>
     <color name="orange">#ffa500</color>
     <color name="flatCalendar">#f4f4f4</color>

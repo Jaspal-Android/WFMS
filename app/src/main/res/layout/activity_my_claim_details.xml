@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.reimbursement.myClaims.MyClaimDetailsActivity">
+
+        <include
+            android:id="@+id/myClaimsDetailsToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_medium">
+
+            <TextView
+                android:id="@+id/tvEmpName"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Amount: 25 ₹"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDateTime"
+                style="@style/CustomSmallTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="11/12/2024 | 09:07:10 AM"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmpName" />
+
+            <View
+                android:id="@+id/v1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/tvDateTime" />
+
+            <LinearLayout
+                android:id="@+id/expenseTypeView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:orientation="vertical"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/v1">
+
+                <TextView
+                    android:id="@+id/tvExpenseType"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expense Type: Public Transport" />
+
+                <TextView
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:id="@+id/tvTravellingWith"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Travelling with: AKHIL-68025" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/v2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/expenseTypeView" />
+
+            <TextView
+                android:id="@+id/tvProject"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Project: NOKIA-HR-JIO-RF"
+                app:layout_constraintEnd_toStartOf="@+id/tvCircle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/v2" />
+
+
+            <TextView
+                android:id="@+id/tvCircle"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Circle: HR"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvProject"
+                app:layout_constraintTop_toTopOf="@+id/tvProject" />
+
+            <TextView
+                android:id="@+id/tvSiteId"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Site ID: 12CK01"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvProject"></TextView>
+
+            <TextView
+                android:id="@+id/tvRemarks"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:text="Remarks: Travelling expense for EV fix."
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvSiteId" />
+
+            <View
+                android:id="@+id/v3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/tvRemarks" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

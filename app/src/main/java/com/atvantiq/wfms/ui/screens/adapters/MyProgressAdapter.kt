@@ -8,8 +8,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.ItemMyProgressBinding
 import com.atvantiq.wfms.databinding.ItemSignInBinding
 
-class MyProgressAdapter() :
-    RecyclerView.Adapter<MyProgressAdapter.MyProgressViewHolder>() {
+class MyProgressAdapter(var onItemClick:()->Unit) : RecyclerView.Adapter<MyProgressAdapter.MyProgressViewHolder>() {
 
     inner class MyProgressViewHolder(var binding:ItemMyProgressBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -20,6 +19,9 @@ class MyProgressAdapter() :
     }
 
     override fun onBindViewHolder(holder: MyProgressViewHolder, position: Int) {
+        holder.binding.root.setOnClickListener {
+            onItemClick.invoke()
+        }
         holder.binding.executePendingBindings()
     }
 

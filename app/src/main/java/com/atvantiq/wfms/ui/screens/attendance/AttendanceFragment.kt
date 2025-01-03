@@ -1,22 +1,29 @@
 package com.atvantiq.wfms.ui.screens.attendance
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.databinding.FragmentAttendanceBinding
-import com.atvantiq.wfms.ui.screens.adapters.AttendanceOptionsAdapter
+import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
 import com.atvantiq.wfms.ui.screens.attendance.approvals.ApprovalsActivity
 import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
-import com.atvantiq.wfms.ui.screens.attendance.signInActivity.SignInActivity
+import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
 import com.atvantiq.wfms.utils.Utils
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdate
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 
-class AttendanceFragment : BaseFragment<FragmentAttendanceBinding,AttendanceViewModel>() {
+class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceViewModel>(){
 
-    private lateinit var data:List<Pair<String,String>>
-    private lateinit var optionsAdapter:AttendanceOptionsAdapter
+    private lateinit var googleMap: GoogleMap
 
     override val fragmentBinding: FragmentBinding
-        get() = FragmentBinding(R.layout.fragment_attendance,AttendanceViewModel::class.java)
+        get() = FragmentBinding(R.layout.fragment_attendance, AttendanceViewModel::class.java)
 
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
 
@@ -28,40 +35,39 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding,AttendanceView
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        setAttendanceOptions()
+        setListeners()
+        initGoogleMaps()
     }
 
-    private fun initOptionsDate(){
-        data = listOf(
-            getString(R.string.sign_in) to getString(R.string.mark_your_daily_attendance),
-            getString(R.string.sign_out) to getString(R.string.update_status_of_your_work),
-            getString(R.string.my_progress) to getString(R.string.monthly_progress),
-            getString(R.string.approvals) to getString(R.string.pending_approvals)
-        )
-    }
-
-    private fun setAttendanceOptions(){
-        initOptionsDate()
-        optionsAdapter = AttendanceOptionsAdapter(data){
-            when(it){
-                0->{
-                    // SignIn Activity
-                    Utils.jumpActivity(requireContext(),SignInActivity::class.java)
-                }
-                1->{
-                    // SignOut Activity
-                }
-                2->{
-                    // My Progress Activity
-                    Utils.jumpActivity(requireContext(),MyProgressActivity::class.java)
-                }
-                3->{
-                    // Approvals Activity
-                    Utils.jumpActivity(requireContext(),ApprovalsActivity::class.java)
-                }
-            }
+    private fun setListeners() {
+        binding.signInText.setOnClickListener {
+            Utils.jumpActivity(requireContext(), AddSignInActivity::class.java)
         }
-        binding.optionsList.adapter = optionsAdapter
+        binding.myProgressText.setOnClickListener {
+            Utils.jumpActivity(requireContext(), MyProgressActivity::class.java)
+        }
+        binding.btLogedProfile.setOnClickListener {
+            Utils.jumpActivity(requireContext(), SignInDetailActivity::class.java)
+        }
+    }
+
+    private fun initGoogleMaps() {
+        var mapFragment: SupportMapFragment = childFragmentManager.findFragmentById(R.id.trackingMap) as SupportMapFragment
+        mapFragment.getMapAsync {
+            googleMap = it
+            mapSettings()
+            moveCameraToLocation()
+        }
+    }
+
+    private fun moveCameraToLocation(){
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(30.741482,76.768066),16f))
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun mapSettings(){
+        googleMap.uiSettings.isZoomControlsEnabled = true
+        googleMap.uiSettings.isRotateGesturesEnabled = true
     }
 
 }

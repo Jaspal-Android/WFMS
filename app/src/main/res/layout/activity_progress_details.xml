@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.attendance.myProgress.progressDetails.ProgressDetailsActivity">
+
+
+        <include
+            android:id="@+id/progressDetailsToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_medium">
+
+            <TextView
+                android:id="@+id/tvEmpName"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Vishal Kumar-ATQ/PB/651"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/tvDateTime"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDateTime"
+                style="@style/CustomSmallTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="11/12/2024 | 09:07:10 AM"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/v1"
+                android:background="@drawable/custom_divider"
+                android:layout_marginTop="@dimen/margin"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <TextView
+                android:id="@+id/tvCircle"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Circle: HR"
+                android:layout_marginTop="@dimen/margin"
+                app:layout_constraintTop_toBottomOf="@+id/v1"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/tvProject"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="NOKIA-HR-JIO-RF"
+                android:gravity="end"
+                android:layout_marginStart="@dimen/margin_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvCircle"
+                app:layout_constraintTop_toTopOf="@+id/tvCircle" />
+
+
+            <TextView
+                android:id="@+id/tvSiteId"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Site ID: 12CK01"
+                app:layout_constraintEnd_toStartOf="@+id/tvVisitNo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvProject"></TextView>
+
+            <TextView
+                android:id="@+id/tvVisitNo"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="Visit NO: 25"
+                android:layout_marginStart="@dimen/margin_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvSiteId"
+                app:layout_constraintTop_toTopOf="@+id/tvSiteId"></TextView>
+
+            <TextView
+                android:id="@+id/tvActivity"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Activity: ATP"
+                app:layout_constraintEnd_toStartOf="@+id/tvStatus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvVisitNo"></TextView>
+
+            <TextView
+                android:id="@+id/tvStatus"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="Status: Pending"
+                android:layout_marginStart="@dimen/margin_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvActivity"
+                app:layout_constraintTop_toTopOf="@+id/tvActivity"></TextView>
+
+            <View
+                android:id="@+id/v2"
+                android:background="@drawable/custom_divider"
+
+                android:layout_marginTop="@dimen/margin"
+                app:layout_constraintTop_toBottomOf="@+id/tvActivity"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <TextView
+                android:id="@+id/labelPmApproval"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:gravity="start"
+                android:text="PM Approval"
+                app:layout_constraintEnd_toStartOf="@+id/labelOpsApproval"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/v2" />
+
+            <TextView
+                android:id="@+id/tvPMApproval"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Initiated"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:textAllCaps="true"
+                app:layout_constraintEnd_toEndOf="@+id/labelPmApproval"
+                app:layout_constraintStart_toStartOf="@+id/labelPmApproval"
+                app:layout_constraintTop_toBottomOf="@+id/labelPmApproval" />
+
+            <TextView
+                android:id="@+id/labelOpsApproval"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:gravity="center"
+                android:text="Ops Approval"
+                app:layout_constraintEnd_toStartOf="@+id/labelHrApproval"
+                app:layout_constraintStart_toEndOf="@+id/labelPmApproval"
+                app:layout_constraintTop_toTopOf="@+id/labelPmApproval" />
+
+            <TextView
+                android:id="@+id/tvOpsApproval"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Completed"
+                android:textAllCaps="true"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                app:layout_constraintEnd_toEndOf="@+id/labelOpsApproval"
+                app:layout_constraintStart_toStartOf="@+id/labelOpsApproval"
+                app:layout_constraintTop_toBottomOf="@+id/labelOpsApproval" />
+
+            <TextView
+                android:id="@+id/labelHrApproval"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:gravity="end"
+                android:text="HR Approval"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/labelOpsApproval"
+                app:layout_constraintTop_toTopOf="@+id/labelPmApproval" />
+
+            <TextView
+                android:id="@+id/tvHrApproval"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="Pending"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:textAllCaps="true"
+                app:layout_constraintEnd_toEndOf="@+id/labelHrApproval"
+                app:layout_constraintStart_toStartOf="@+id/labelHrApproval"
+                app:layout_constraintTop_toBottomOf="@+id/labelHrApproval" />
+
+            <View
+                android:id="@+id/v3"
+                android:background="@drawable/custom_divider"
+                android:layout_marginTop="@dimen/margin"
+                app:layout_constraintTop_toBottomOf="@+id/tvPMApproval"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.ItemVendorViewAllBinding
 
-class VendorViewAllListAdapter() :
+class VendorViewAllListAdapter(var onItemClick:()->Unit) :
     RecyclerView.Adapter<VendorViewAllListAdapter.ApprovalsViewHolder>() {
 
     inner class ApprovalsViewHolder(var binding:ItemVendorViewAllBinding) : RecyclerView.ViewHolder(binding.root)
@@ -19,6 +19,9 @@ class VendorViewAllListAdapter() :
     }
 
     override fun onBindViewHolder(holder: ApprovalsViewHolder, position: Int) {
+        holder.binding.root.setOnClickListener {
+            onItemClick.invoke()
+        }
         holder.binding.executePendingBindings()
     }
 

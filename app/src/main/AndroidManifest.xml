@@ -26,6 +26,21 @@
         android:theme="@style/Theme.WFMS"
         tools:targetApi="31">
         <activity
+            android:name=".ui.screens.vendor.viewAllActivities.VendorDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.reimbursement.myClaims.MyClaimDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.attendance.myProgress.progressDetails.ProgressDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.attendance.signInDetails.SignInDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.screens.vendor.viewAllActivities.ViewAllVendorActivity"
             android:exported="false" />
         <activity
@@ -50,9 +65,6 @@
             android:name=".ui.screens.attendance.addSignInActivity.AddSignInActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.screens.attendance.signInActivity.SignInActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.screens.announcements.AnnouncementsActivity"
             android:exported="false" />
         <activity
@@ -69,6 +81,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${googleMapsApiKey}" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

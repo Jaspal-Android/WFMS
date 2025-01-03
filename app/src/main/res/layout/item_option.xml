@@ -1,0 +1,26 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titleText"
+            style="@style/CustomRegularDarkTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@drawable/forward_arrow_right_24"
+            android:paddingHorizontal="@dimen/padding"
+            android:paddingVertical="@dimen/padding_large"
+            android:text="Title"
+            android:textAllCaps="true" />
+
+        <View
+            android:background="@drawable/custom_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+
+    </LinearLayout>
+
+</layout>

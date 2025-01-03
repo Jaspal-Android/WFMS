@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsDetailsActivity">
+
+        <include
+            android:id="@+id/claimApprovalDetailToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_medium">
+
+            <TextView
+                android:id="@+id/tvClaimAmount"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amount: 25₹"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvPMApprovals"
+                style="@style/CustomSmallDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PM Approval: Completed"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/margin_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvClaimAmount" />
+
+            <TextView
+                android:id="@+id/tvDateTime"
+                style="@style/CustomSmallDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="11/12/2024 | 09:07:10 AM"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPMApprovals" />
+
+            <View
+                android:id="@+id/v1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/tvDateTime" />
+
+            <TextView
+                android:id="@+id/tvEmpName"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Name: Ramesh Sharma - ATQ-20255"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/v1" />
+
+            <TextView
+                android:id="@+id/tvProject"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="Project: NOKIA-HR-JIO-RF"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmpName" />
+
+            <TextView
+                android:id="@+id/tvCircle"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Site ID: I-MU-MUMB-ENB-2938"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvProject" />
+
+            <View
+                android:id="@+id/v2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/tvCircle" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

@@ -9,7 +9,7 @@ import com.atvantiq.wfms.databinding.ItemApprovalsBinding
 import com.atvantiq.wfms.databinding.ItemClaimsApprovalsBinding
 import com.atvantiq.wfms.databinding.ItemMyClaimsBinding
 
-class ClaimApprovalsListAdapter() : RecyclerView.Adapter<ClaimApprovalsListAdapter.ApprovalsViewHolder>() {
+class ClaimApprovalsListAdapter(var onItemClick:()->Unit) : RecyclerView.Adapter<ClaimApprovalsListAdapter.ApprovalsViewHolder>() {
 
     inner class ApprovalsViewHolder(var binding:ItemClaimsApprovalsBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -20,6 +20,9 @@ class ClaimApprovalsListAdapter() : RecyclerView.Adapter<ClaimApprovalsListAdapt
     }
 
     override fun onBindViewHolder(holder: ApprovalsViewHolder, position: Int) {
+       holder.binding.root.setOnClickListener {
+           onItemClick.invoke()
+       }
         holder.binding.executePendingBindings()
     }
 

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.attendance.signInDetails.SignInDetailActivity">
+
+        <include
+            android:id="@+id/singInDetailsToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/userImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="@dimen/margin"
+                    android:src="@drawable/user_avtar"
+                    android:layout_marginTop="@dimen/margin"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvEmpName"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:text="Jaspal ATQ/001/ER"
+                    android:layout_marginTop="@dimen/margin"
+                    app:layout_constraintBottom_toTopOf="@+id/tvProjectName"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus"
+                    app:layout_constraintStart_toEndOf="@+id/userImage"
+                   app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/tvProjectName"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:text="Project Name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvEmpName"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEmpName" />
+
+                <TextView
+                    android:id="@+id/tvSignInStatus"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:text="COMPLETED"
+                    android:textColor="@color/green"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvEmpName" />
+
+                <View
+                    android:id="@+id/v1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin"
+                    android:background="@drawable/custom_divider"
+                    app:layout_constraintTop_toBottomOf="@+id/tvProjectName" />
+
+                <TextView
+                    android:id="@+id/tvCircle"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin"
+                    android:text="Circle: HR"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/v1" />
+
+                <TextView
+                    android:id="@+id/tvDateTime"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:text="11/12/2024 | 09:07:10 AM"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvCircle" />
+
+                <TextView
+                    android:id="@+id/tvProject"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="Project: NOKIA-HR-JIO-RF"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCircle" />
+
+                <TextView
+                    android:id="@+id/tvVisitNo"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:text="Visit No: 1"
+                    app:layout_constraintEnd_toStartOf="@+id/tvActivity"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvProject" />
+
+                <TextView
+                    android:id="@+id/tvActivity"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:gravity="end"
+                    android:text="Activity: Audit"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvVisitNo"
+                    app:layout_constraintTop_toTopOf="@+id/tvVisitNo" />
+
+                <View
+                    android:id="@+id/v2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin"
+                    android:background="@drawable/custom_divider"
+                    app:layout_constraintTop_toBottomOf="@+id/tvActivity" />
+
+                <TextView
+                    android:id="@+id/tvRemarks"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin"
+                    android:text="Remarks: Main Month"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/v2" />
+
+                <View
+                    android:id="@+id/v3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin"
+                    android:background="@drawable/custom_divider"
+                    app:layout_constraintTop_toBottomOf="@+id/tvRemarks" />
+
+                <Button
+                    android:text="@string/sign_out"
+                    style="@style/CustomPrimaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:layout_marginEnd="@dimen/margin"
+                    app:layout_constraintTop_toBottomOf="@+id/v3"></Button>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

@@ -78,6 +78,9 @@
     <string name="complete_the_activity">Complete The Activity</string>
     <string name="view_all_activities">View All Activities</string>
     <string name="vendor_completed_tasks">Vendor Completed Tasks</string>
+    <string name="details">Details</string>
+    <string name="tracking_details">Tracking Details</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

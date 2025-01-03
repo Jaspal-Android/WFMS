@@ -12,6 +12,8 @@ import com.atvantiq.wfms.databinding.ActivityViewAllVendorBinding
 import com.atvantiq.wfms.ui.screens.adapters.ApprovalsListAdapter
 import com.atvantiq.wfms.ui.screens.adapters.VendorViewAllListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.approvals.ApprovalsVM
+import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.widgets.DividerItemDecoration
 
 class ViewAllVendorActivity : BaseActivity<ActivityViewAllVendorBinding,ViewAllVendorVM>() {
 
@@ -25,7 +27,7 @@ class ViewAllVendorActivity : BaseActivity<ActivityViewAllVendorBinding,ViewAllV
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+             insets
         }
         setToolbar()
         setVendorViewAllList()
@@ -43,7 +45,10 @@ class ViewAllVendorActivity : BaseActivity<ActivityViewAllVendorBinding,ViewAllV
     }
 
     private fun setVendorViewAllList(){
-        vendorViewAllListAdapter  = VendorViewAllListAdapter()
+        vendorViewAllListAdapter  = VendorViewAllListAdapter{
+            Utils.jumpActivity(this,VendorDetailsActivity::class.java)
+        }
+        binding.viewAllActivitiesList.addItemDecoration(DividerItemDecoration(this,R.drawable.custom_divider))
         binding.viewAllActivitiesList.layoutManager = LinearLayoutManager(this)
         binding.viewAllActivitiesList.adapter = vendorViewAllListAdapter
     }

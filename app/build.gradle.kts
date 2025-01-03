@@ -26,6 +26,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
+        buildConfigField("String","GOOGLE_MAPS_API_KEY","\"" + secrets.getProperty("GOOGLE_MAPS_API_KEY") + "\"")
         buildConfigField("String","PAYMENT_KEY","\"" + secrets.getProperty("PAYMENT_KEY") + "\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -99,6 +101,10 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     // Places API
     implementation(libs.play.services.location)
+    //Circular Image View
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    //Google Maps
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
 
 }
 

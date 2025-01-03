@@ -10,7 +10,9 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityMyProgressBinding
 import com.atvantiq.wfms.ui.screens.adapters.MyProgressAdapter
-import com.atvantiq.wfms.ui.screens.adapters.SignInListAdapter
+import com.atvantiq.wfms.ui.screens.attendance.myProgress.progressDetails.ProgressDetailsActivity
+import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.widgets.DividerItemDecoration
 
 class MyProgressActivity : BaseActivity<ActivityMyProgressBinding,MyProgressVM>() {
 
@@ -41,8 +43,11 @@ class MyProgressActivity : BaseActivity<ActivityMyProgressBinding,MyProgressVM>(
     }
 
     private fun setMyProgressList(){
-        myProgressAdapter  = MyProgressAdapter()
+        myProgressAdapter  = MyProgressAdapter(){
+            Utils.jumpActivity(this,ProgressDetailsActivity::class.java)
+        }
         binding.myProgressList.layoutManager = LinearLayoutManager(this)
+        binding.myProgressList.addItemDecoration(DividerItemDecoration(this,R.drawable.custom_divider))
         binding.myProgressList.adapter = myProgressAdapter
     }
 }

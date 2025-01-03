@@ -8,7 +8,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.ItemApprovalsBinding
 import com.atvantiq.wfms.databinding.ItemMyClaimsBinding
 
-class MyClaimsListAdapter() : RecyclerView.Adapter<MyClaimsListAdapter.ApprovalsViewHolder>() {
+class MyClaimsListAdapter(var onItemClick:()->Unit) : RecyclerView.Adapter<MyClaimsListAdapter.ApprovalsViewHolder>() {
 
     inner class ApprovalsViewHolder(var binding:ItemMyClaimsBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -19,6 +19,9 @@ class MyClaimsListAdapter() : RecyclerView.Adapter<MyClaimsListAdapter.Approvals
     }
 
     override fun onBindViewHolder(holder: ApprovalsViewHolder, position: Int) {
+        holder.binding.root.setOnClickListener {
+            onItemClick.invoke()
+        }
         holder.binding.executePendingBindings()
     }
 

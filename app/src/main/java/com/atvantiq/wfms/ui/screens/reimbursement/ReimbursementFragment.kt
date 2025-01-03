@@ -13,7 +13,7 @@ import com.atvantiq.wfms.utils.Utils
 class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding,ReimbursementViewModel>() {
 
     private lateinit var data:List<Pair<String,String>>
-    private lateinit var optionsAdapter:AttendanceOptionsAdapter
+    private lateinit var optionsAdapter: AttendanceOptionsAdapter
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_reimbursement,ReimbursementViewModel::class.java)

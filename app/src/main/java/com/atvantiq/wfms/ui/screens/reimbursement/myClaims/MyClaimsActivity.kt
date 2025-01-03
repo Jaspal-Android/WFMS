@@ -12,6 +12,8 @@ import com.atvantiq.wfms.databinding.ActivityMyClaimsBinding
 import com.atvantiq.wfms.databinding.ItemMyClaimsBinding
 import com.atvantiq.wfms.ui.screens.adapters.ApprovalsListAdapter
 import com.atvantiq.wfms.ui.screens.adapters.MyClaimsListAdapter
+import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.widgets.DividerItemDecoration
 
 class MyClaimsActivity : BaseActivity<ActivityMyClaimsBinding,MyClaimsVM>() {
 
@@ -43,7 +45,10 @@ class MyClaimsActivity : BaseActivity<ActivityMyClaimsBinding,MyClaimsVM>() {
     }
 
     private fun setMyClaimsList(){
-        myClaimsListAdapter  = MyClaimsListAdapter()
+        myClaimsListAdapter  = MyClaimsListAdapter{
+            Utils.jumpActivity(this,MyClaimDetailsActivity::class.java)
+        }
+        binding.myClaimsList.addItemDecoration(DividerItemDecoration(this,R.drawable.custom_divider))
         binding.myClaimsList.layoutManager = LinearLayoutManager(this)
         binding.myClaimsList.adapter = myClaimsListAdapter
     }
