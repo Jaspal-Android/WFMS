@@ -13,6 +13,7 @@ import com.atvantiq.wfms.ui.screens.adapters.AttendanceOptionsAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.myClaims.MyClaimsActivity
+import com.atvantiq.wfms.ui.screens.vendor.loginDetails.VendorLoginDetailsActivity
 import com.atvantiq.wfms.ui.screens.vendor.startActivity.VendorStartActivity
 import com.atvantiq.wfms.ui.screens.vendor.viewAllActivities.ViewAllVendorActivity
 import com.atvantiq.wfms.utils.Utils
@@ -35,13 +36,19 @@ class VendorFragment : BaseFragment<FragmentVendorBinding,VendorViewModel>() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        initListeners()
         setVendorOptions()
+    }
+
+    private fun initListeners(){
+        binding.loginDetailsBt.setOnClickListener {
+            Utils.jumpActivity(requireContext(),VendorLoginDetailsActivity::class.java)
+        }
     }
 
     private fun initOptionsDate(){
         data = listOf(
             getString(R.string.start_activity) to getString(R.string.start_record_vendor_data),
-            getString(R.string.end_activity) to getString(R.string.complete_the_activity),
             getString(R.string.view_all_activities) to getString(R.string.vendor_completed_tasks),
         )
     }
@@ -54,9 +61,6 @@ class VendorFragment : BaseFragment<FragmentVendorBinding,VendorViewModel>() {
                     Utils.jumpActivity(requireContext(), VendorStartActivity::class.java)
                 }
                 1->{
-                  //  Utils.jumpActivity(requireContext(), MyClaimsActivity::class.java)
-                }
-                2->{
                     Utils.jumpActivity(requireContext(), ViewAllVendorActivity::class.java)
                 }
             }

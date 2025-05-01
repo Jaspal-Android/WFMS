@@ -213,4 +213,15 @@
         <item name="android:textColorPrimary">@color/primary_text_default_material_light</item>
     </style>
 
+    <!--OTP screen theme-->
+    <style name="EditOTPStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:padding">@dimen/padding</item>
+        <item name="android:layout_width">@dimen/otp_et_width</item>
+        <item name="android:layout_height">@dimen/otp_et_height</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/default_extra_big_text</item>
+        <item name="android:background">@drawable/otp_box_background</item>
+    </style>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.atvantiq.wfms.data.remote
+package com.atvantiq.wfms.network
 
 enum class Status {
 	SUCCESS,

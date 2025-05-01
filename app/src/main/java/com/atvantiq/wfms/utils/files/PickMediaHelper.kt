@@ -52,6 +52,10 @@ class PickMediaHelper(
             }.show()
     }
 
+    fun onlyCameraMedia(){
+      requestCameraPermission()
+    }
+
     private fun requestCameraPermission() {
         permissionLauncher.launch(arrayOf(android.Manifest.permission.CAMERA))
     }

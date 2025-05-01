@@ -299,5 +299,17 @@ object Utils {
 		view.draw(canvas)
 		return bitmap
 	}
+
+	fun getGreeting(context: Context): String {
+		val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+		val resources = context.resources
+
+		return when (hour) {
+			in 5..11 -> resources.getString(R.string.greeting_morning)
+			in 12..16 -> resources.getString(R.string.greeting_afternoon)
+			in 17..20 -> resources.getString(R.string.greeting_evening)
+			else -> resources.getString(R.string.greeting_night)
+		}
+	}
 }
 

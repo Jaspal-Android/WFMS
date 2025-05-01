@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:gravity="center"
+    android:layout_height="match_parent"
     android:background="@android:color/transparent"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <ProgressBar
-        android:indeterminateTint="@color/slateGray"
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/colorPrimaryDark" />
+
+    <TextView
+        style="@style/CustomMediumDarkTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small"
+        android:text="@string/please_wait" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

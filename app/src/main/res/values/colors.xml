@@ -7,14 +7,15 @@
     <color name="darkGray">#808080</color>
     <color name="slateGray">#708090</color>
     <color name="darker_gray">#7A7A7A</color>
-    <color name="colorPrimary">#10b6f3</color>
-    <color name="colorPrimaryDark">#053059</color>
+    <color name="colorPrimary">#0AC3F2</color>
+    <color name="colorPrimaryDark">#2B5DE6</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="green">#4eb300</color>
-    <color name="green_pastel">#D0E9C0</color>
-    <color name="red_pastel">#FFA4A9</color>
+    <color name="green_pastel">#C5E7B0</color>
+    <color name="red_pastel">#FAC0C3</color>
     <color name="orange_pastal">#FFB347</color>
+    <color name="blue_pastal">#AEC6CF</color>
     <color name="red">#FF0000</color>
     <color name="orange">#ffa500</color>
-    <color name="flatCalendar">#f4f4f4</color>
+    <color name="flatCalendar">#7AF4F4F4</color>
 </resources>

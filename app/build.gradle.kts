@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.security.crypto.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -105,6 +106,14 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:3.1.0")
     //Google Maps
     implementation("com.google.android.gms:play-services-maps:19.0.0")
+    //Services Location
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    //Maps Utils
+    implementation("com.google.maps.android:android-maps-utils:2.4.0")
+    //Secure Pref
+    implementation(libs.androidx.security.crypto.ktx)
+    //Lottie Files
+    implementation("com.airbnb.android:lottie:6.6.6")
 
 }
 

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.atvantiq.wfms.models.cab.CabRide" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/card_radius_small"
+            app:cardElevation="@dimen/elevation_small"
+            app:cardUseCompatPadding="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding">
+
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintDimensionRatio="1:0.4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                     />
+
+                <TextView
+                    style="@style/CustomMediumBoldTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_small"
+                    android:text="@{item.date}"
+                    tools:text="20/03/2025"
+                    app:layout_constraintStart_toStartOf="@+id/mapView"
+                    app:layout_constraintTop_toTopOf="@+id/mapView" />
+
+                <TextView
+                    android:id="@+id/startReadingText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="Start Reading: 1000 KM"
+                    app:layout_constraintStart_toStartOf="@+id/mapView"
+                    app:layout_constraintTop_toBottomOf="@+id/mapView" />
+
+                <TextView
+                    android:id="@+id/endReadingText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="End Reading: 1200 KM"
+                    app:layout_constraintEnd_toEndOf="@+id/mapView"
+                    app:layout_constraintTop_toTopOf="@+id/startReadingText" />
+
+                <TextView
+                    android:id="@+id/startTimeText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    tools:text="4:30 PM"
+                    android:text="@{`Start Time:` + ` ` + item.startTime}"
+                    app:layout_constraintStart_toStartOf="@+id/mapView"
+                    app:layout_constraintTop_toBottomOf="@+id/startReadingText" />
+
+                <TextView
+                    android:id="@+id/endTimeText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="8:00 PM"
+                    android:text="@{`Start Time:` + ` ` + item.endTime}"
+                    app:layout_constraintEnd_toEndOf="@+id/mapView"
+                    app:layout_constraintTop_toTopOf="@+id/startTimeText" />
+
+                <TextView
+                    android:id="@+id/circleText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    tools:text="Circle: PB"
+                    android:text="@{`Circle:` + ` ` + item.circle}"
+                    app:layout_constraintStart_toStartOf="@+id/mapView"
+                    app:layout_constraintTop_toBottomOf="@+id/startTimeText" />
+
+                <TextView
+                    android:id="@+id/siteText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Site: SF3232"
+                    android:text="@{`Site:` + ` ` + item.site}"
+                    app:layout_constraintEnd_toEndOf="@+id/mapView"
+                    app:layout_constraintTop_toTopOf="@+id/circleText" />
+
+                <TextView
+                    android:id="@+id/empText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    tools:text="Employee: Rajesh-ATQ-PB-44"
+                    android:text="@{`Employee:` + ` ` + item.empName}"
+                    app:layout_constraintStart_toStartOf="@+id/mapView"
+                    app:layout_constraintTop_toBottomOf="@+id/circleText" />
+
+                <TextView
+                    android:id="@+id/cabTypeText"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Cab Type: On-Call "
+                    android:text="@{`Cab Type:` + ` ` + item.cabType}"
+                    app:layout_constraintEnd_toEndOf="@+id/mapView"
+                    app:layout_constraintTop_toTopOf="@+id/empText" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </FrameLayout>
+
+</layout>

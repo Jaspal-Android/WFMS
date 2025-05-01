@@ -1,4 +1,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
+    <stroke
+        android:width="2dp"
+        android:color="@color/lightGray"></stroke>
+
     <solid android:color="@color/flatCalendar" /> <!-- Green -->
 </shape>

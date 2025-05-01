@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.databinding.FragmentDashboardBinding
+import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
 import com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter
 import com.atvantiq.wfms.ui.screens.announcements.AnnouncementsActivity
@@ -14,8 +16,15 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets.MyTargetsFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashboardFragment
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.tabs.TabLayoutMediator
+import com.ssas.jibli.data.prefs.PrefMethods
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding,DashboardViewModel>() {
+
+    @Inject
+    lateinit var prefMain: SecurePrefMain
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_dashboard,DashboardViewModel::class.java)
@@ -26,7 +35,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding,DashboardViewMod
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
-
+        setupUserData()
         vm.clickEvents.observe(viewLifecycleOwner) {
             when (it) {
                 DashboardClickEvents.onAnnouncementsClicks -> {
@@ -40,6 +49,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding,DashboardViewMod
         super.onViewStateRestored(savedInstanceState)
         setupTabBar()
         horizontalScrollTextView()
+    }
+    private fun setupUserData() {
+        var userData: User? = PrefMethods.getUserData(prefMain) ?: return
+        binding.appDashHeader.userData = userData
     }
 
     private fun setupTabBar(){

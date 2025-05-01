@@ -15,12 +15,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
+import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.google.android.material.snackbar.Snackbar
 
 
 abstract class BaseActivitySimple : AppCompatActivity() {
 	
-	private lateinit var progressCircularDialog: ProgressCircularDialog
+	private  var progressCircularDialog: ProgressCircularDialog ? = null
+	private var progressDialog: ProgressDialog? = null
 
 	override fun onCreate(@Nullable savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -77,6 +79,20 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
+
+	fun alertDialogShow(
+		context: Context,
+		title: String,
+		message: String,
+		okLister: DialogInterface.OnClickListener,
+	) {
+		val builder = AlertDialog.Builder(context)
+		builder.setMessage(message)
+		builder.setTitle(title)
+		builder.setPositiveButton(getString(R.string.ok), okLister)
+		val alertDialog = builder.create()
+		alertDialog.show()
+	}
 	
 	fun alertDialogShow(
 		context: Context,
@@ -97,11 +113,13 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 	
 	fun alertDialogShow(
 		context: Context,
+		title: String,
 		message: String,
 		okButtonTitle: String,
 		okLister: DialogInterface.OnClickListener
 	) {
 		val builder = AlertDialog.Builder(context)
+		builder.setTitle(title)
 		builder.setMessage(message)
 		builder.setPositiveButton(okButtonTitle, okLister)
 		builder.setNegativeButton(getString(R.string.cancel), DialogInterface.OnClickListener { dialogInterface, i ->
@@ -110,6 +128,8 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
+
+
 	
 	fun showToast(context: Context, message: String) {
 		Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -117,13 +137,32 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 	
 	fun showCircularProgress() {
 		progressCircularDialog = ProgressCircularDialog()
-		progressCircularDialog.show(supportFragmentManager, progressCircularDialog.tag)
+		progressCircularDialog?.show(supportFragmentManager, progressCircularDialog?.tag)
 	}
 	
 	fun dismissCircularProgress() {
-		progressCircularDialog.dismiss()
+		if (progressCircularDialog != null) {
+			progressCircularDialog?.dismiss()
+			progressCircularDialog = null
+		}
+	}
+
+	fun showProgress() {
+		progressDialog = ProgressDialog()
+		progressDialog?.show(supportFragmentManager, "")
+	}
+
+	fun dismissProgress() {
+		if (progressDialog != null) {
+			progressDialog?.dismiss()
+			progressDialog=null
+		}
 	}
 	
 	fun isLifeCycleResumed(): Boolean = lifecycle.currentState == Lifecycle.State.RESUMED
 
+	fun shakeEditText(context: Context,view: View){
+		var animation: Animation = AnimationUtils.loadAnimation(context,R.anim.shake)
+		view.startAnimation(animation)
+	}
 }

@@ -35,7 +35,6 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding,Reimburs
         data = listOf(
             getString(R.string.create_claim) to getString(R.string.add_new),
             getString(R.string.my_claims) to getString(R.string.sumitted_approved_claims),
-            getString(R.string.my_approvals) to getString(R.string.pending_approvals_pm),
         )
     }
 

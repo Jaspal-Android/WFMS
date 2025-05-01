@@ -31,7 +31,7 @@ object DateUtils {
 				callBack.onDateSelected(strDate, formatDate)
 			}, mYear, mMonth, mDay
 		)
-		datePickerDialog.datePicker.maxDate = Date().time
+		//datePickerDialog.datePicker.maxDate = Date().time
 		datePickerDialog.show()
 	}
 	

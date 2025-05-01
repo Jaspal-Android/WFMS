@@ -10,6 +10,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.databinding.FragmentMyTargetsBinding
 import com.atvantiq.wfms.ui.screens.adapters.MyTargetAdapter
+import com.atvantiq.wfms.widgets.DividerItemDecoration
 
 
 /**
@@ -40,6 +41,7 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding,MyTargetsVM>() {
 
     private fun initMyTargetList(){
         targetAdapter  = MyTargetAdapter()
+        binding.myTargetList.addItemDecoration(DividerItemDecoration(requireContext(),R.drawable.custom_divider))
         binding.myTargetList.layoutManager = LinearLayoutManager(requireContext())
         binding.myTargetList.adapter = targetAdapter
     }

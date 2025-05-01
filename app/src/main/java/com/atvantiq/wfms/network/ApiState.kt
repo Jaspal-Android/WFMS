@@ -1,4 +1,4 @@
-import com.atvantiq.wfms.data.remote.Status
+package com.atvantiq.wfms.network
 
 data class ApiState<out T>(val status: Status, val response: T?, val throwable:Throwable?) {
     companion object {

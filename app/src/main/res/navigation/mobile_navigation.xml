@@ -35,5 +35,17 @@
         android:name="com.atvantiq.wfms.ui.screens.feedback.FeedbackFragment"
         android:label="@string/menu_feedback"
         tools:layout="@layout/fragment_feedback" />
+    <fragment
+        android:id="@+id/nav_cab"
+        android:name="com.atvantiq.wfms.ui.screens.cab.CabFragment"
+        android:label="@string/menu_cab"
+        tools:layout="@layout/fragment_cab"
+        />
+    <fragment
+        android:id="@+id/nav_material_reco"
+        android:name="com.atvantiq.wfms.ui.screens.materialReco.PurchaseFragment"
+        android:label="@string/material_reco"
+        tools:layout="@layout/fragment_purchase" />
+
 
 </navigation>

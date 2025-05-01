@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -14,10 +15,95 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/optionsList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/margin_small"
+                android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_attendance_option" />
+                tools:itemCount="3"
+                tools:listitem="@layout/item_option" />
+
+            <LinearLayout
+                android:id="@+id/loginDetailsBt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/padding_medium">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/empPictureImg"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:src="@drawable/user_avtar"
+                        app:layout_constraintDimensionRatio="1:1.2"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".13" />
+
+                    <TextView
+                        android:id="@+id/tvCircle"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:text="Circle: HR"
+                        app:layout_constraintEnd_toStartOf="@+id/tvDateTime"
+                        app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvDateTime"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:gravity="end"
+                        android:text="11/12/2024"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/tvCircle"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvVendorName"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_marginTop="@dimen/margin_small_extra"
+                        android:text="Vendor Name: Lakh Fibers"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                        app:layout_constraintTop_toBottomOf="@+id/tvCircle" />
+
+                    <TextView
+                        android:id="@+id/tvProject"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_marginTop="@dimen/margin_small_extra"
+                        android:text="Project: NOKIA-HR-JIO-RF"
+                        app:layout_constraintEnd_toEndOf="@+id/tvDateTime"
+                        app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                        app:layout_constraintTop_toBottomOf="@id/tvVendorName" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:src="@drawable/forward_arrow_right_24" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/custom_divider" />
 
         </LinearLayout>
     </FrameLayout>

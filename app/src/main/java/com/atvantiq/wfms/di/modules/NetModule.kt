@@ -1,7 +1,7 @@
 package com.atvantiq.wfms.di.modules
 
-import com.atvantiq.wfms.data.remote.ApiService
-import com.atvantiq.wfms.data.remote.NetworkEndPoints
+import com.atvantiq.wfms.network.ApiService
+import com.atvantiq.wfms.network.NetworkEndPoints
 import com.facebook.stetho.BuildConfig
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.FieldNamingPolicy

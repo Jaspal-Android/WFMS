@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.vendor.loginDetails.VendorLoginDetailsActivity">
+
+        <include
+            android:id="@+id/vendorLoginDetailToolbar"
+            layout="@layout/custom_toolbar"></include>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_medium">
+
+            <ImageView
+                android:id="@+id/empPictureImg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/user_avtar"
+                app:layout_constraintDimensionRatio="1:1.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent=".15" />
+
+            <TextView
+                android:id="@+id/tvCircle"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="Circle: HR"
+                app:layout_constraintEnd_toStartOf="@+id/tvDateTime"
+                app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDateTime"
+                style="@style/CustomSmallTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:gravity="end"
+                android:text="11/12/2024"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvCircle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvVendorName"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:text="Vendor Name: Lakh Fibers"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                app:layout_constraintTop_toBottomOf="@+id/tvCircle" />
+
+            <TextView
+                android:id="@+id/tvProject"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:text="Project: NOKIA-HR-JIO-RF"
+                app:layout_constraintEnd_toEndOf="@+id/tvDateTime"
+                app:layout_constraintStart_toEndOf="@+id/empPictureImg"
+                app:layout_constraintTop_toBottomOf="@id/tvVendorName" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/labelBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="empPictureImg,tvProject" />
+
+            <View
+                android:id="@+id/v1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/labelBarrier" />
+
+            <TextView
+                android:id="@+id/tvType"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:text="Type: AGI"
+                app:layout_constraintEnd_toStartOf="@+id/tvActivity"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/v1" />
+
+            <TextView
+                android:id="@+id/tvActivity"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:gravity="end"
+                android:text="Activity: ATP"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvType"
+                app:layout_constraintTop_toTopOf="@+id/tvType" />
+
+            <TextView
+                android:id="@+id/tvSiteId"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Site ID: PB-23232_DC"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvActivity" />
+
+            <TextView
+                android:id="@+id/tvRemarks"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Remarks: Main Month"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSiteId" />
+
+            <View
+                android:id="@+id/v2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/custom_divider"
+                app:layout_constraintTop_toBottomOf="@+id/tvRemarks" />
+
+            <Button
+                style="@style/CustomPrimaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:text="@string/sign_out"
+                app:layout_constraintTop_toBottomOf="@+id/v2"></Button>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</layout>

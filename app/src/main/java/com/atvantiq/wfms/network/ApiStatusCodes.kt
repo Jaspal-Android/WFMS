@@ -1,4 +1,4 @@
-package com.atvantiq.wfms.data.remote
+package com.atvantiq.wfms.network
 
 object ApiStatusCodes {
 	const val SUCCESS = "Success"

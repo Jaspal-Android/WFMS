@@ -43,7 +43,7 @@ class CalendarAdapter(
             val background = when (day.status) {
                 AttendanceStatus.PRESENT -> R.drawable.calendar_present_bg
                 AttendanceStatus.ABSENT -> R.drawable.calendar_absent_bg
-                AttendanceStatus.IDLE -> R.drawable.calendar_idle_bg
+                //AttendanceStatus.IDLE -> R.drawable.calendar_idle_bg
                 else -> R.drawable.calendar_default_bg
             }
             holder.binding.tvDay.setBackgroundResource(background)

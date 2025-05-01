@@ -5,6 +5,10 @@
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel" />
+
+        <variable
+            name="userData"
+            type="com.atvantiq.wfms.models.loginResponse.User" />
     </data>
 
     <com.google.android.material.appbar.CollapsingToolbarLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -28,7 +32,8 @@
                 style="@style/CustomLargeDarkTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello, Jaspal"
+                tools:text="Hello, Jaspal"
+                wishText="@{userData.userName}"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"></TextView>
