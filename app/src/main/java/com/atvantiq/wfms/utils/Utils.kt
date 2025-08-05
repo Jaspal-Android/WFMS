@@ -3,6 +3,8 @@ package com.atvantiq.wfms.utils
 import android.app.Activity
 import android.content.*
 import android.graphics.*
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -311,5 +313,62 @@ object Utils {
 			else -> resources.getString(R.string.greeting_night)
 		}
 	}
+
+	/*
+	* Write function with code and logic to convert lat and long to address
+	* */
+	@Suppress("DEPRECATION")
+	fun getAddressFromLatLong(
+		context: Context,
+		latitude: Double,
+		longitude: Double,
+		onResult: (String) -> Unit
+	) {
+		val geocoder = Geocoder(context, Locale.getDefault())
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			geocoder.getFromLocation(latitude, longitude, 1, object : Geocoder.GeocodeListener {
+				override fun onGeocode(addresses: MutableList<Address>) {
+					if (addresses.isNotEmpty()) {
+						onResult(formatAddress(addresses[0]))
+					} else {
+						onResult(context.getString(R.string.address_not_found))
+					}
+				}
+
+				override fun onError(errorMessage: String?) {
+					onResult(context.getString(R.string.address_not_found))
+				}
+			})
+		} else {
+			try {
+				val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+				if (!addresses.isNullOrEmpty()) {
+					onResult(formatAddress(addresses[0]))
+				} else {
+					onResult(context.getString(R.string.address_not_found))
+				}
+			} catch (e: Exception) {
+				onResult(context.getString(R.string.address_not_found))
+			}
+		}
+	}
+
+
+	private fun formatAddress(address: Address?): String {
+		return buildString {
+			address?.let {
+				if (!it.featureName.isNullOrEmpty()) append(it.featureName + ", ")
+				if (!it.thoroughfare.isNullOrEmpty()) append(it.thoroughfare + ", ")
+				if (!it.subLocality.isNullOrEmpty()) append(it.subLocality + ", ")
+				if (!it.locality.isNullOrEmpty()) append(it.locality + ", ")
+				if (!it.adminArea.isNullOrEmpty()) append(it.adminArea + ", ")
+				if (!it.postalCode.isNullOrEmpty()) append(it.postalCode + ", ")
+				if (!it.countryName.isNullOrEmpty()) append(it.countryName)
+			}
+		}.trim().trimEnd(',')
+	}
+
+
 }
 

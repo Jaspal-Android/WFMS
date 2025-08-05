@@ -13,18 +13,29 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
+import com.atvantiq.wfms.ui.dialogs.ProgressDialog
+import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 
 
 open class BaseFragmentSimple : Fragment() {
 
+	@Inject
+	lateinit var prefMain: SecurePrefMain
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 	}
+
+
 
 	fun showSnackbar(view: View, messsage: Int) {
 		Snackbar.make(view, getString(messsage), Snackbar.LENGTH_SHORT).show()
@@ -92,6 +103,23 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
+
+	fun alertDialogShow(
+		context: Context,
+		title: String,
+		message: String,
+		okButtonTitle: String,
+		okLister: DialogInterface.OnClickListener,
+		isCancelable:Boolean
+	) {
+		val builder = AlertDialog.Builder(context)
+		builder.setMessage(message)
+		builder.setTitle(title)
+		builder.setCancelable(isCancelable)
+		builder.setPositiveButton(okButtonTitle, okLister)
+		val alertDialog = builder.create()
+		alertDialog.show()
+	}
 	
 	
 	fun alertDialogShow(
@@ -139,11 +167,12 @@ open class BaseFragmentSimple : Fragment() {
 	}
 	
 	lateinit var progressCirluarDialog: ProgressCircularDialog
+	private var progressDialog: ProgressDialog? = null
 
 	
 	fun showCircularProgress() {
 		progressCirluarDialog = ProgressCircularDialog()
-		progressCirluarDialog.show(requireFragmentManager(), progressCirluarDialog.tag)
+		progressCirluarDialog.show(parentFragmentManager, progressCirluarDialog.tag)
 		
 	}
 	
@@ -152,7 +181,36 @@ open class BaseFragmentSimple : Fragment() {
 			progressCirluarDialog.dismiss()
 		}
 	}
+
+	fun showProgress() {
+		progressDialog = ProgressDialog()
+		progressDialog?.show(parentFragmentManager, "")
+	}
+
+	fun dismissProgress() {
+		if (progressDialog != null) {
+			progressDialog?.dismiss()
+			progressDialog=null
+		}
+	}
 	
 	fun isLifeCycleResumed() =
 		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
+
+	fun performLogout(){
+		prefMain.deleteAll()
+		Utils.jumpActivity(requireContext(), LoginActivity::class.java)
+		requireActivity().finish()
+	}
+
+	fun tokenExpiresAlert() {
+		alertDialogShow(
+			requireContext(),
+			getString(R.string.alert),
+			getString(R.string.unauthorized_access),
+			getString(R.string.login),
+			DialogInterface.OnClickListener() { dialog, which ->
+				performLogout()
+			})
+	}
 }

@@ -14,13 +14,22 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.atvantiq.wfms.ui.dialogs.ProgressDialog
+import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 abstract class BaseActivitySimple : AppCompatActivity() {
-	
+
+	@Inject
+	lateinit var prefMain: SecurePrefMain
+
 	private  var progressCircularDialog: ProgressCircularDialog ? = null
 	private var progressDialog: ProgressDialog? = null
 
@@ -165,4 +174,21 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 		var animation: Animation = AnimationUtils.loadAnimation(context,R.anim.shake)
 		view.startAnimation(animation)
 	}
+	private fun performGlobalLogout(){
+		prefMain.deleteAll()
+		Utils.jumpActivity(this, LoginActivity::class.java)
+		finish()
+	}
+
+	fun tokenExpiresAlert() {
+		alertDialogShow(
+			this,
+			getString(R.string.alert),
+			getString(R.string.unauthorized_access),
+			getString(R.string.login),
+			DialogInterface.OnClickListener() { dialog, which ->
+				performGlobalLogout()
+			})
+	}
+
 }

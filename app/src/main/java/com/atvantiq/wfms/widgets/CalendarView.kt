@@ -27,6 +27,8 @@ class CalendarView : LinearLayoutCompat {
     private val calendar: Calendar = Calendar.getInstance()
     private val calendarToday = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+    var apiAttendanceData = ArrayList<AttendanceDay>()
+
 
     constructor(context: Context) : super(context)
 
@@ -167,6 +169,20 @@ class CalendarView : LinearLayoutCompat {
     }
 */
 
+    /*
+    * write function to clear the attendance data
+    * */
+
+    fun clearAttendanceData() {
+        apiAttendanceData.clear()
+        updateCalendar(context)
+    }
+
+    fun setAttendanceData(data: List<AttendanceDay>) {
+        apiAttendanceData = data as ArrayList<AttendanceDay>
+        updateCalendar(context)
+    }
+
     private fun getMonthDays(calendar: Calendar): List<AttendanceDay> {
         val attendanceData = mutableListOf<AttendanceDay>()
 
@@ -205,17 +221,22 @@ class CalendarView : LinearLayoutCompat {
             val dayCalendar = tempCalendar.clone() as Calendar
             dayCalendar.set(Calendar.DAY_OF_MONTH, i)
 
-            val status = when {
-                i % 2 == 0 -> AttendanceStatus.PRESENT
-                i % 3 == 0 ->  AttendanceStatus.ABSENT
-                else -> AttendanceStatus.IDLE
-            }
-
-            // Format date as "YYYY-MM-DD"
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val dateString = dateFormat.format(dayCalendar.time)
 
-            attendanceData.add(AttendanceDay(dateString, status))
+            val status = if (apiAttendanceData.isNotEmpty()) {
+                // Check if the date exists in the API data
+                apiAttendanceData.find { it.date == dateString }?.status ?: AttendanceStatus.NONE
+            } else {
+                // Default status if no API data is available
+                AttendanceStatus.NONE
+            }
+
+            var record =  apiAttendanceData.find { it.date == dateString }
+
+            // Format date as "YYYY-MM-DD"
+            Log.e("jaspal", "Date: $dateString, Status: $status, Record: ${record?.record}")
+            attendanceData.add(AttendanceDay(dateString, status,record = record?.record))
         }
 
         // Add next month's dates to fill the calendar grid

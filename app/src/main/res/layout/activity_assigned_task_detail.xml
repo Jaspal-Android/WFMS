@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="status"
+            type="String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/assignedTaskDetailToolbar"
+                layout="@layout/custom_toolbar"></include>
+
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:id="@+id/tvProjectName"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/margin"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Project Name" />
+
+                    <TextView
+                        android:id="@+id/tvSignInStatus"
+                        style="@style/CustomSmallTextView"
+                        assignedTaskStatus="@{status}"
+                        android:text="@{status}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin"
+                        android:background="@drawable/status_green_bg"
+                        android:paddingHorizontal="@dimen/padding_small"
+                        android:paddingVertical="@dimen/padding_x_small"
+                        android:textColor="@color/green"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvProjectName"
+                        tools:text="COMPLETED" />
+
+                    <View
+                        android:id="@+id/v1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin"
+                        android:background="@drawable/custom_divider"
+                        app:layout_constraintTop_toBottomOf="@+id/tvProjectName" />
+
+                    <TextView
+                        android:id="@+id/tvCircle"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin"
+                        android:layout_marginTop="@dimen/margin"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/v1"
+                        tools:text="Circle: HR" />
+
+                    <TextView
+                        android:id="@+id/tvDateTime"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin"
+                        tools:text="11/12/2024 | 09:07:10 AM"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvCircle" />
+
+                    <TextView
+                        android:id="@+id/tvType"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:text="Type: Survey"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/tvSite"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvCircle" />
+
+                    <TextView
+                        android:id="@+id/tvSite"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:text="Visit No: 1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/tvType" />
+
+
+                    <View
+                        android:id="@+id/v2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin"
+                        android:background="@drawable/custom_divider"
+                        app:layout_constraintTop_toBottomOf="@+id/tvType" />
+
+                    <TextView
+                        android:id="@+id/tvActivities"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/margin"
+                        android:text="Activities"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/v2" />
+
+                    <TextView
+                        android:id="@+id/tvActivity"
+                        style="@style/CustomMediumDarkTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:layout_marginEnd="@dimen/margin"
+                        android:background="@drawable/status_primary_bg"
+                        android:paddingHorizontal="@dimen/padding_small"
+                        android:paddingVertical="@dimen/padding_x_small"
+                        android:text="Install 20kW solar panels and configure inverter"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvActivities" />
+
+
+                    <View
+                        android:id="@+id/v3"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/margin"
+                        android:background="@drawable/custom_divider"
+                        app:layout_constraintTop_toBottomOf="@+id/tvActivity" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </ScrollView>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

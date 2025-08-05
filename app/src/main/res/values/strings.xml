@@ -101,7 +101,42 @@
     <string name="greeting_night">Good Night</string>
     <string name="login_success">Login successful</string>
 
+    <!-- Permission Dialog Titles -->
+    <string name="permission_required">Permission Required</string>
+    <string name="permission_denied">Permission Denied</string>
+
+    <!-- Permission Messages -->
+    <string name="location_permission_rationale">Location permission is required to track your attendance. Please grant the permission to continue.</string>
+    <string name="permission_denied_permanently">Location permission is permanently denied. Please enable it from Settings to use attendance tracking.</string>
+    <string name="retry">Retry</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="start_day">Slide to Start Day</string>
+    <string name="end_day">Slide to End Day</string>
+    <string name="tab_layout_desc">Dashboard tabs</string>
+    <string name="unauthorized_access">Unauthorized access</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="self_assigned_work">Self Assigned Work</string>
+    <string name="assign_work">Assign Work</string>
+    <string name="no_attendance_data">No Attendance Data</string>
+    <string name="date_not_found">Date not found</string>
+    <string name="address_not_found">Address not found</string>
+    <string name="work_accepted">Work Accepted</string>
+    <string name="work_started">Work Started</string>
+    <string name="location_not_found">Location not found</string>
+    <string name="done">Done</string>
+    <string name="no_image_selected">No image selected</string>
+    <string name="work_ended">Work Ended</string>
+    <string name="work_location">Work Location</string>
+    <string name="enter_remarks">Enter Remarks</string>
+    <string name="select_status">Select Status</string>
+    <string name="not_available">Not Available</string>
+    <string name="work_assigned_successfully">Work assigned successfully</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="location_error">Location not found.</string>
+    <string name="type">Type</string>
+    <string name="activity">Activity</string>
+    <string name="circle">Circle</string>
 
 </resources>

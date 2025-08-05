@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="hasPreviewImage"
+            type="boolean" />
+
+        <variable
+            name="locationString"
+            type="String" />
+
+        <variable
+            name="showImageError"
+            type="Boolean" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Photo with Lat. Long."
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btn_photo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:background="@android:drawable/btn_default"
+            android:contentDescription="Add photo"
+            android:padding="@dimen/padding"
+            android:src="@drawable/ic_menu_camera" />
+
+        <TextView
+            android:visibility="@{showImageError?View.VISIBLE:View.GONE}"
+            style="@style/CustomMediumTextView"
+            android:text="@string/no_image_selected"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:textColor="@color/red"
+            android:textStyle="bold" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small">
+
+            <RelativeLayout
+                android:id="@+id/imagePreviewView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                app:layout_constraintDimensionRatio="1:1.1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent=".35"
+                tools:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/capturedImagePreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+            <TextView
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{locationString}"
+                android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imagePreviewView"
+                tools:text="30.7333° N, 76.7794° E" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_done"
+            style="@style/CustomPrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="@string/done" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_cancel"
+            style="@style/CustomRedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/cancel" />
+
+    </LinearLayout>
+</layout>

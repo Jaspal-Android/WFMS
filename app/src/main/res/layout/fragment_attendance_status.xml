@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="showCalendarProgressBar"
+            type="Boolean" />
+    </data>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -19,24 +28,41 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_marginEnd="@dimen/margin_small"
-                    android:layout_marginStart="@dimen/margin_small"
-                    app:cardCornerRadius="@dimen/card_radius"
                     app:cardBackgroundColor="@color/white"
-                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="@dimen/card_radius"
                     app:cardElevation="@dimen/elevation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    app:cardUseCompatPadding="true">
 
-                    <com.atvantiq.wfms.widgets.CalendarView
-                        android:id="@+id/customCalender"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white" />
+                        android:layout_height="wrap_content">
+
+                        <com.atvantiq.wfms.widgets.CalendarView
+                            android:id="@+id/customCalender"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white" />
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:visibility="@{showCalendarProgressBar ? View.VISIBLE : View.GONE}"
+                            android:layout_centerInParent="true"
+                            android:id="@+id/animationView"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:layout_gravity="center"
+                            android:backgroundTint="@android:color/transparent"
+                            app:lottie_rawRes="@raw/loading"
+                            app:lottie_loop="true"
+                            app:lottie_autoPlay="true" />
+
+                    </RelativeLayout>
 
                 </com.google.android.material.card.MaterialCardView>
-
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
@@ -44,9 +70,9 @@
                     android:layout_marginStart="@dimen/margin_small_extra"
                     android:layout_marginEnd="@dimen/margin_small_extra"
                     android:layout_marginBottom="@dimen/margin_small"
-                    app:cardElevation="@dimen/elevation"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation"
                     app:cardUseCompatPadding="true">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,7 +89,6 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
-
 
 
                         <TextView
@@ -94,21 +119,21 @@
                             app:layout_constraintTop_toTopOf="@+id/totalDaysLabel" />
 
                         <View
-                            app:layout_constraintTop_toTopOf="@+id/presentLabel"
-                            app:layout_constraintBottom_toBottomOf="@+id/presentLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/presentLabel"
-                            app:layout_constraintStart_toStartOf="parent"
                             android:id="@+id/present_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@color/green_pastel" />
+                            android:background="@color/green_pastel"
+                            app:layout_constraintBottom_toBottomOf="@+id/presentLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/presentLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/presentLabel" />
 
                         <TextView
-                            android:layout_marginStart="@dimen/margin_small"
                             android:id="@+id/presentLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin"
                             android:gravity="start"
                             android:text="@string/present"
@@ -132,24 +157,24 @@
                             app:layout_constraintTop_toTopOf="@+id/presentLabel" />
 
                         <View
-                            app:layout_constraintTop_toTopOf="@+id/idleLabel"
-                            app:layout_constraintBottom_toBottomOf="@+id/idleLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/idleLabel"
-                            app:layout_constraintStart_toStartOf="parent"
                             android:id="@+id/idle_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@color/orange_pastal" />
+                            android:background="@color/orange_pastal"
+                            app:layout_constraintBottom_toBottomOf="@+id/idleLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/idleLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/idleLabel" />
 
                         <TextView
                             android:id="@+id/idleLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/idle"
-                            android:layout_marginStart="@dimen/margin_small"
                             app:layout_constraintEnd_toStartOf="@+id/idleText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/idle_box"
@@ -170,24 +195,24 @@
                             app:layout_constraintTop_toTopOf="@+id/idleLabel" />
 
                         <View
-                            app:layout_constraintTop_toTopOf="@+id/AbsentLabel"
-                            app:layout_constraintBottom_toBottomOf="@+id/AbsentLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/AbsentLabel"
-                            app:layout_constraintStart_toStartOf="parent"
                             android:id="@+id/absent_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@color/red_pastel" />
+                            android:background="@color/red_pastel"
+                            app:layout_constraintBottom_toBottomOf="@+id/AbsentLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/AbsentLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/AbsentLabel" />
 
                         <TextView
                             android:id="@+id/AbsentLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/absent"
-                            android:layout_marginStart="@dimen/margin_small"
                             app:layout_constraintEnd_toStartOf="@+id/AbsentText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/absent_box"
@@ -208,27 +233,27 @@
                             app:layout_constraintTop_toTopOf="@+id/AbsentLabel" />
 
                         <View
-                            app:layout_constraintTop_toTopOf="@+id/workFromHomeLabel"
-                            app:layout_constraintBottom_toBottomOf="@+id/workFromHomeLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/workFromHomeLabel"
-                            app:layout_constraintStart_toStartOf="parent"
                             android:id="@+id/wfh_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@color/lightGray" />
+                            android:background="@color/lightGray"
+                            app:layout_constraintBottom_toBottomOf="@+id/workFromHomeLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/workFromHomeLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/workFromHomeLabel" />
 
                         <TextView
                             android:id="@+id/workFromHomeLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/work_from_home"
                             app:layout_constraintEnd_toStartOf="@+id/workFromHomeText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/wfh_box"
-                            android:layout_marginStart="@dimen/margin_small"
                             app:layout_constraintTop_toBottomOf="@+id/AbsentText" />
 
                         <TextView
@@ -246,27 +271,27 @@
                             app:layout_constraintTop_toTopOf="@+id/workFromHomeLabel" />
 
                         <View
-                            app:layout_constraintTop_toTopOf="@+id/leaveLabel"
-                            app:layout_constraintBottom_toBottomOf="@+id/leaveLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/leaveLabel"
-                            app:layout_constraintStart_toStartOf="parent"
                             android:id="@+id/leave_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@color/blue_pastal" />
+                            android:background="@color/blue_pastal"
+                            app:layout_constraintBottom_toBottomOf="@+id/leaveLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/leaveLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/leaveLabel" />
 
                         <TextView
                             android:id="@+id/leaveLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/leave"
                             app:layout_constraintEnd_toStartOf="@+id/leaveText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/leave_box"
-                            android:layout_marginStart="@dimen/margin_small"
                             app:layout_constraintTop_toBottomOf="@+id/workFromHomeText" />
 
                         <TextView

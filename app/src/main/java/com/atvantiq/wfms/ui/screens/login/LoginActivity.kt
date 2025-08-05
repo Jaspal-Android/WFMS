@@ -23,9 +23,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
 
-    @Inject
-    lateinit var prefMain: SecurePrefMain
-
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_login, LoginVM::class.java)
 
@@ -62,9 +59,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
                     binding?.phoneEmailInput?.error = getString(R.string.enter_username)
                     binding.phoneEmailInput?.requestFocus()
                     shakeEditText(this,binding.phoneEmailInput)
-
-
                 }
+
                 LoginErrorHandler.EMPTY_PASSWORD -> {
                     binding?.passwordEt?.error = getString(R.string.enter_password)
                     binding?.passwordEt?.requestFocus()

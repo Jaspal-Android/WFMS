@@ -24,9 +24,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
-    @Inject
-    lateinit var prefMain: SecurePrefMain
-
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override val bindingActivity: ActivityBinding

@@ -1,4 +1,5 @@
 package com.atvantiq.wfms.data.repository.auth
+import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.network.ApiService
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.google.gson.JsonObject
@@ -11,3 +12,4 @@ class AuthRepo @Inject constructor(private val apiService: ApiService) : IAuthRe
 
     override suspend fun loginRequest(params: JsonObject): LoginResponse = apiService.loginRequest(params)
 }
+

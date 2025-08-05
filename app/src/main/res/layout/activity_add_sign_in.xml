@@ -50,48 +50,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Date*"
-                    app:endIconDrawable="@drawable/ic_calendar_today_24"
-                    app:endIconMode="custom">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:inputType="date"
-                        android:text="@{dateString}"
-                        tools:text="12/12/2024" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="TimeIN*"
-                    app:endIconDrawable="@drawable/ic_time_24"
-                    app:endIconMode="custom">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_time"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:inputType="time"
-                        android:text="@{timeString}"
-                        tools:text="12:20:05 AM" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Circle*"
+                    android:hint="Client*"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
                     <AutoCompleteTextView
-                        android:id="@+id/circle_et"
+                        android:id="@+id/client_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
@@ -126,12 +91,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Type*"
+                    android:hint="PO Number*"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
                     <AutoCompleteTextView
-                        android:id="@+id/type_et"
+                        android:id="@+id/po_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="Circle*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/circle_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
@@ -162,16 +147,17 @@
                         android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Activity*"
+                    android:hint="Type*"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
                     <AutoCompleteTextView
-                        android:id="@+id/activity_et"
+                        android:id="@+id/type_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
@@ -186,33 +172,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Visit No*">
+                    android:hint="Activities*"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_vist_no"
+                    <MultiAutoCompleteTextView
+                        android:id="@+id/activities_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Remarks (if any)">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_remarks"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:inputType="text"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Photo Section -->
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -221,6 +199,7 @@
                     android:textStyle="bold" />
 
                 <ImageButton
+                    android:visibility="gone"
                     android:onClick="@{()->vm.onCameraClick()}"
                     android:id="@+id/btn_photo"
                     android:layout_width="match_parent"
@@ -232,6 +211,7 @@
                     android:src="@drawable/ic_menu_camera" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small">
@@ -274,7 +254,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_large"
-                    android:text="@string/save" />
+                    android:text="@string/assign_work" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:onClick="@{()->vm.onCancelClick()}"

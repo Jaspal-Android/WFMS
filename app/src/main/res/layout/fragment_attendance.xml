@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel" />
+
+        <variable
+            name="isEmptyAssignedTasks"
+            type="Boolean" />
+
+    </data>
+
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.screens.attendance.AttendanceFragment">
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
@@ -19,14 +33,16 @@
 
                 <TextView
                     android:id="@+id/signInText"
-                    style="@style/CustomRegularDarkTextView"
+                    style="@style/CustomRegularPrimaryTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/forward_arrow_right_24"
+                    android:onClick="@{()->vm.onSignInClick()}"
                     android:paddingHorizontal="@dimen/padding"
                     android:paddingVertical="@dimen/padding_large"
-                    android:text="Start Work"
-                    android:textAllCaps="true" />
+                    android:text="Self Work Assign"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="match_parent"
@@ -34,349 +50,47 @@
                     android:background="@drawable/custom_divider" />
 
                 <TextView
-                    android:id="@+id/myProgressText"
+                    android:id="@+id/tvSignInDetails"
                     style="@style/CustomRegularDarkTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/forward_arrow_right_24"
-                    android:paddingHorizontal="@dimen/padding"
-                    android:paddingVertical="@dimen/padding_large"
-                    android:text="@string/my_targets"
-                    android:textAllCaps="true" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@drawable/custom_divider" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/btLogedProfile"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/padding">
-
-
-                    <TextView
-                        android:id="@+id/tvProjectCircle"
-                        style="@style/CustomMediumBoldTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Site: PB254787"
-                        app:layout_constraintBottom_toTopOf="@+id/tvProjectName"
-                        app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="packed" />
-
-                    <TextView
-                        android:id="@+id/tvProjectName"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Project: ERISSION"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier"
-                        app:layout_constraintStart_toStartOf="@+id/tvProjectCircle"
-                        app:layout_constraintTop_toBottomOf="@+id/tvProjectCircle" />
-
-                    <TextView
-                        android:id="@+id/tvSignInStatus"
-                        style="@style/CustomMediumTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="COMPLETED"
-                        android:textColor="@color/green"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectCircle" />
-
-                    <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/barrier"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="start"
-                        app:constraint_referenced_ids="imgForwardArrow" />
-
-                    <ImageView
-                        android:id="@+id/imgForwardArrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/forward_arrow_right_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:background="@drawable/custom_divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/btLogedProfile2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/padding">
-
-                    <TextView
-                        android:id="@+id/tvProjectCircle2"
-                        style="@style/CustomMediumBoldTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Site: 000235HR"
-                        app:layout_constraintBottom_toTopOf="@+id/tvProjectName2"
-                        app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus2"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="packed" />
-
-                    <TextView
-                        android:id="@+id/tvProjectName2"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Project: NOKIA-4G"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/endWorkText"
-                        app:layout_constraintStart_toStartOf="@+id/tvProjectCircle2"
-                        app:layout_constraintTop_toBottomOf="@+id/tvProjectCircle2" />
-
-                    <TextView
-                        android:id="@+id/endWorkText"
-                        style="@style/CustomSmallLightTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/cancel_bt_bg"
-                        android:elevation="@dimen/elevation_small"
-                        android:paddingStart="@dimen/padding_small"
-                        android:paddingTop="@dimen/padding_x_small"
-                        android:paddingEnd="@dimen/padding_small"
-                        android:paddingBottom="@dimen/padding_x_small"
-                        android:text="End Work"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier2"
-                        app:layout_constraintStart_toEndOf="@+id/tvProjectName2"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectName2" />
-
-                    <TextView
-                        android:id="@+id/tvSignInStatus2"
-                        style="@style/CustomMediumTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="IN PROGRESS"
-                        android:textColor="@color/colorPrimary"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier2"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectCircle2" />
-
-                    <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/barrier2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="start"
-                        app:constraint_referenced_ids="imgForwardArrow2" />
-
-                    <ImageView
-                        android:id="@+id/imgForwardArrow2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/forward_arrow_right_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:background="@drawable/custom_divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/btLogedProfile3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/padding">
-
-                    <TextView
-                        android:id="@+id/tvProjectCircle3"
-                        style="@style/CustomMediumBoldTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Circle: MH"
-                        app:layout_constraintBottom_toTopOf="@+id/tvProjectName3"
-                        app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus3"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="packed" />
-
-                    <TextView
-                        android:id="@+id/tvProjectName3"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Project: JIO-Fiber-5G"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier3"
-                        app:layout_constraintStart_toStartOf="@+id/tvProjectCircle3"
-                        app:layout_constraintTop_toBottomOf="@+id/tvProjectCircle3" />
-
-                    <TextView
-                        android:id="@+id/tvSignInStatus3"
-                        style="@style/CustomMediumTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="ASSIGNED"
-                        android:textColor="@color/orange"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier3"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectCircle3" />
-
-                    <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/barrier3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="start"
-                        app:constraint_referenced_ids="imgForwardArrow3" />
-
-                    <ImageView
-                        android:id="@+id/imgForwardArrow3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/forward_arrow_right_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:background="@drawable/custom_divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"/>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/btLogedProfile4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/padding">
-
-                    <TextView
-                        android:id="@+id/tvProjectCircle4"
-                        style="@style/CustomMediumBoldTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Circle: UPE"
-                        app:layout_constraintBottom_toTopOf="@+id/tvProjectName4"
-                        app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus4"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="packed" />
-
-                    <TextView
-                        android:id="@+id/tvProjectName4"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Project: CISCO-ATP"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/endWorkText4"
-                        app:layout_constraintStart_toStartOf="@+id/tvProjectCircle4"
-                        app:layout_constraintTop_toBottomOf="@+id/tvProjectCircle4" />
-
-                    <TextView
-                        android:id="@+id/endWorkText4"
-                        style="@style/CustomSmallLightTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/cancel_bt_bg"
-                        android:elevation="@dimen/elevation_small"
-                        android:paddingStart="@dimen/padding_small"
-                        android:paddingTop="@dimen/padding_x_small"
-                        android:paddingEnd="@dimen/padding_small"
-                        android:paddingBottom="@dimen/padding_x_small"
-                        android:text="End Work"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier4"
-                        app:layout_constraintStart_toEndOf="@+id/tvProjectName4"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectName4" />
-
-
-                    <TextView
-                        android:id="@+id/tvSignInStatus4"
-                        style="@style/CustomMediumTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        android:text="IN PROGRESS"
-                        android:textColor="@color/colorPrimary"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/barrier4"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectCircle4" />
-
-                    <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/barrier4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:barrierDirection="start"
-                        app:constraint_referenced_ids="imgForwardArrow4" />
-
-                    <ImageView
-                        android:id="@+id/imgForwardArrow4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/forward_arrow_right_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@drawable/custom_divider" />
-
-                <TextView
-                    style="@style/CustomRegularDarkTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin"
                     android:layout_marginTop="@dimen/margin"
-                    android:text="@string/tracking_details" />
+                    android:paddingHorizontal="@dimen/padding"
+                    android:text="Assigned Work"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
 
-                <fragment
-                    android:id="@+id/trackingMap"
-                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefreshLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="230dp"
-                    android:layout_margin="@dimen/margin" />
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvAssignedTasks"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clipToPadding="false"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="No Data Available"
+                            android:visibility="@{isEmptyAssignedTasks ? View.VISIBLE : View.GONE}"
+                            tools:visibility="gone" />
+
+                    </RelativeLayout>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
     </FrameLayout>
 </layout>

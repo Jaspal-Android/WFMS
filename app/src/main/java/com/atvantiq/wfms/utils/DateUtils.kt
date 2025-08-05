@@ -140,6 +140,15 @@ object DateUtils {
 			return ""
 		}
 	}
+
+	fun getCurrentMonthAndYear(): Pair<Int, Int> {
+		val currentDate = Date()
+		val calendar = Calendar.getInstance()
+		calendar.time = currentDate
+		val month = calendar.get(Calendar.MONTH) + 1 // Months are indexed from 0
+		val year = calendar.get(Calendar.YEAR)
+		return Pair(month, year)
+	}
 	
 
 	fun convertFrom24(inTime:String):String{
@@ -160,6 +169,47 @@ object DateUtils {
 
 	interface TimeCallBack {
 		fun onTimeSelected(time: String, formatTime: String)
+	}
+
+	fun formatApiDateToYMD(apiDate: String?): String? {
+		return try {
+			// Step 1: Trim microseconds and append Z for UTC timezone
+			val trimmed = apiDate?.substringBefore(".") + "Z"
+
+			// Step 2: Parse using ISO format
+			val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+			isoFormat.timeZone = TimeZone.getTimeZone("UTC")
+			val parsedDate = isoFormat.parse(trimmed)
+
+			// Step 3: Format to "yyyy-MM-dd"
+			val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+			outputFormat.format(parsedDate)
+		} catch (e: Exception) {
+			e.printStackTrace()
+			null
+		}
+	}
+
+	/*
+	* Create function to convert date from "yyyy-MM-dd'T'HH:mm:ss'Z'" to "08:00 AM 12/12/2023"
+	* */
+	fun formatApiDateToTimeAndDate(apiDate: String?): String? {
+		return try {
+			// Step 1: Trim microseconds and append Z for UTC timezone
+			val trimmed = apiDate?.substringBefore(".") + "Z"
+
+			// Step 2: Parse using ISO format
+			val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+			isoFormat.timeZone = TimeZone.getTimeZone("UTC")
+			val parsedDate = isoFormat.parse(trimmed)
+
+			// Step 3: Format to "yyyy-MM-dd"
+			val outputFormat = SimpleDateFormat("hh:mm a  dd-MM-yyyy", Locale.getDefault())
+			outputFormat.format(parsedDate)
+		} catch (e: Exception) {
+			e.printStackTrace()
+			null
+		}
 	}
 	
 }

@@ -14,6 +14,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import com.atvantiq.wfms.app.MApplication
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.google.android.material.snackbar.Snackbar
@@ -38,7 +39,7 @@ abstract class BaseDialogFragment<T : ViewDataBinding, V : AndroidViewModel> : D
 	): View? {
 		val dialogBinding = dialogBinding
 		binding = DataBindingUtil.inflate(inflater, dialogBinding.layoutResId, container, false)
-		viewModel = MApplication.provider.create(dialogBinding.clazz)
+		viewModel = ViewModelProvider(this)[dialogBinding.clazz]
 		subscribeToEvents(viewModel)
 		onCreateDialogFragment(savedInstanceState)
 		return binding.root

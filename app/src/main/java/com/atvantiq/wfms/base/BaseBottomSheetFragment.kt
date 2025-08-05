@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.app.MApplication
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
@@ -46,7 +47,7 @@ abstract class BaseBottomSheetFragment<T : ViewDataBinding, V : AndroidViewModel
 	): View? {
 		val fragmentBinding = fragmentBinding
 		binding = DataBindingUtil.inflate(inflater, fragmentBinding.layoutResId, container, false)
-		viewModel = MApplication.provider.create(fragmentBinding.clazz)
+		viewModel = ViewModelProvider(this)[fragmentBinding.clazz]
 		onCreateViewFragment(savedInstanceState)
 		subscribeToEvents(viewModel)
 		return binding.root

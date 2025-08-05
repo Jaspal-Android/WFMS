@@ -6,5 +6,4 @@ import kotlinx.coroutines.flow.Flow
 
 interface IAuthRepo {
     suspend fun loginRequest(params: JsonObject): LoginResponse
-
 }

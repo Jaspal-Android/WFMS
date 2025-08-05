@@ -30,6 +30,7 @@ class LoginVM @Inject constructor(
     var userName = ObservableField<String>().apply {
         set("")
     }
+
     var password = ObservableField<String>().apply {
         set("")
     }
@@ -84,8 +85,8 @@ class LoginVM @Inject constructor(
 
 
     /*
-  * Login API
-  * */
+     * Login API
+     * */
     var loginResponse = MutableLiveData<ApiState<LoginResponse>>()
 
     private fun loginRequest() {
@@ -97,6 +98,7 @@ class LoginVM @Inject constructor(
             var params = JsonObject()
             params.addProperty("email", userName.get().toString().trim())
             params.addProperty("password", password.get().toString().trim())
+
             viewModelScope.launch {
                 loginResponse.postValue(ApiState.loading())
                 try {

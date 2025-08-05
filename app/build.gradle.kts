@@ -114,7 +114,8 @@ dependencies {
     implementation(libs.androidx.security.crypto.ktx)
     //Lottie Files
     implementation("com.airbnb.android:lottie:6.6.6")
-
+    //Slider
+    implementation("com.ncorti:slidetoact:0.11.0")
 }
 
 kapt {

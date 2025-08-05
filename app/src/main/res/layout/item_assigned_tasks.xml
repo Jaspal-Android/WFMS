@@ -1,0 +1,145 @@
+<layout xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="itemWorkRecord"
+            type="com.atvantiq.wfms.models.work.assignedAll.WorkRecord" />
+
+        <variable
+            name="isOpenAssignment"
+            type="Boolean" />
+
+        <variable
+            name="isAcceptedAssignment"
+            type="Boolean" />
+
+        <variable
+            name="isWorkEnded"
+            type="Boolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/btLogedProfile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:padding="@dimen/padding">
+
+        <TextView
+            android:id="@+id/tvProject"
+            style="@style/CustomRegularDarkTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:text='@{"Project: " + itemWorkRecord.project.name}'
+            app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Project: JIO Fiber" />
+
+        <TextView
+            android:id="@+id/tvSignInStatus"
+            style="@style/CustomSmallTextView"
+            assignedTaskStatus="@{itemWorkRecord.status}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:paddingHorizontal="@dimen/padding_small"
+            android:paddingVertical="@dimen/padding_x_small"
+            android:text="@{itemWorkRecord.status}"
+            android:textColor="@color/green"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/barrier"
+            app:layout_constraintTop_toTopOf="@+id/tvProject"
+            tools:text="Status: Signed In" />
+
+        <TextView
+            android:id="@+id/tvSite"
+            style="@style/CustomMediumDarkTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small_extra"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:text='@{"Site: " + itemWorkRecord.site.name}'
+            app:layout_constraintEnd_toStartOf="@+id/barrier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvProject"
+            tools:text="Site: Sector 62, Noida" />
+
+        <TextView
+            android:id="@+id/tvTasks"
+            style="@style/CustomMediumDarkTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_small"
+            app:layout_constraintEnd_toStartOf="@+id/barrier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSite"
+            tools:text="Task: ATP with Survey, Installation, and Commissioning" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="imgForwardArrow" />
+
+        <ImageView
+            android:id="@+id/imgForwardArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/forward_arrow_right_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@+id/barrier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTasks">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAccept"
+                style="@style/CustomSmallGreenButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/small_button_height"
+                android:layout_weight="1"
+                android:text="Accept"
+                android:visibility="@{isOpenAssignment ? View.VISIBLE : View.GONE}" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnStartWork"
+                style="@style/CustomSmallPrimaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/small_button_height"
+                android:layout_weight="1"
+                android:text="Start Work"
+                android:visibility="@{isAcceptedAssignment ? View.VISIBLE : View.GONE}" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnEndWork"
+                style="@style/CustomSmallRedButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/small_button_height"
+                android:layout_weight="1"
+                android:text="End Work"
+                android:visibility="@{isWorkEnded ? View.VISIBLE :View.GONE}" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

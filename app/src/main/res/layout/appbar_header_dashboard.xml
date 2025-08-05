@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -9,10 +11,10 @@
         <variable
             name="userData"
             type="com.atvantiq.wfms.models.loginResponse.User" />
+
     </data>
 
-    <com.google.android.material.appbar.CollapsingToolbarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.google.android.material.appbar.CollapsingToolbarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:contentScrim="@color/white"
@@ -38,17 +40,38 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"></TextView>
 
+
+            <com.ncorti.slidetoact.SlideToActView
+                android:id="@+id/slideStartDay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                app:animation_duration="250"
+                app:area_margin="5dp"
+                app:bounce_on_start="true"
+                app:inner_color="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
+                app:outer_color="@color/colorPrimaryDark"
+                app:slider_height="52dp"
+                app:border_radius="@dimen/card_radius"
+                app:text="Start Day"
+                app:text_color="@color/white"
+                app:text_size="@dimen/default_large_text" />
+
             <TextView
                 android:id="@+id/tvCircle"
                 style="@style/CustomMediumDarkTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_large"
                 android:text="Circle: Mumbai"
                 app:layout_constraintEnd_toStartOf="@+id/dojText"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvEmpName" />
+                app:layout_constraintTop_toBottomOf="@+id/slideStartDay" />
 
             <TextView
                 android:id="@+id/dojText"
@@ -85,6 +108,7 @@
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@+id/reportingManagerText"
                 app:layout_constraintTop_toTopOf="@+id/reportingManagerText" />
+
 
             <TextView
                 android:id="@+id/announcementText"
