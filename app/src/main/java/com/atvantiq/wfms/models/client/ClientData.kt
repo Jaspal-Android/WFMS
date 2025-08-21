@@ -3,7 +3,7 @@ package com.atvantiq.wfms.models.client
 
 import com.google.gson.annotations.SerializedName
 
-data class DataClientData(
+data class ClientData(
     @SerializedName("clients")
     val clients: List<Client>,
     @SerializedName("page")

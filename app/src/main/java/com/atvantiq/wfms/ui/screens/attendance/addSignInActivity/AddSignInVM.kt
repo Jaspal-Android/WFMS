@@ -1,17 +1,24 @@
 package com.atvantiq.wfms.ui.screens.attendance.addSignInActivity
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
+import com.atvantiq.wfms.models.activity.ActivityData
+import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.client.ClientListResponse
+import com.atvantiq.wfms.models.po.PoData
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
+import com.atvantiq.wfms.models.project.ProjectData
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
+import com.atvantiq.wfms.models.site.SiteData
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
+import com.atvantiq.wfms.models.type.TypeData
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.NoInternetException
@@ -27,19 +34,28 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
 
     /*Variables Init*/
     var clickEvents  = MutableLiveData<AddSignInClickEvents>()
+    var errorHandler = MutableLiveData<AssignTaskError>()
 
     /*Variables declaration*/
-    var selectedClient:Client? = null
-    var selectedProjectId:Int? = null
-    var selectedPoNumberId:Int? = null
-    var selectedCircleId:Int? = null
-    var selectedSiteId:Int? = null
+    var selectedClient: Client? = null
+    var selectedProjectId:Long? = null
+    var selectedPoNumberId:Long? = null
+    var selectedCircleId:Long? = null
+    var selectedSiteId:Long? = null
+
+    var clients: List<Client> = ArrayList()
+    var projects:List<ProjectData> = ArrayList()
+    var poNumbers: List<PoData> = ArrayList()
+    var circles: List<CircleData> = ArrayList()
+    var sites: List<SiteData> = ArrayList()
+    var types: List<TypeData> = ArrayList()
+    var activities: List<ActivityData> = ArrayList()
 
     /*
     * Select Type and Activity list will go in array
     * */
-    var selectedTypeIdList:ArrayList<Int>? = ArrayList()
-    var selectedActivityIdList:ArrayList<Int>? = ArrayList()
+    var selectedTypeIdList:ArrayList<Long>? = ArrayList()
+    var selectedActivityIdList:ArrayList<Long>? = ArrayList()
 
 
     /*Methods declaration*/
@@ -80,7 +96,7 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     * Get as project list by client id API
     * */
     var projectListByClientResponse = MutableLiveData<ApiState<ProjectListByClientResponse>>()
-    fun getProjectListByClientId(clientId: Int) {
+    fun getProjectListByClientId(clientId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 projectListByClientResponse.postValue(ApiState.loading())
@@ -100,7 +116,7 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     * Get PO number list by project id API
     * */
     var poNumberListByProjectResponse = MutableLiveData<ApiState<PoListByProjectResponse>>()
-    fun getPoNumberListByProject(projectId: Int) {
+    fun getPoNumberListByProject(projectId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 poNumberListByProjectResponse.postValue(ApiState.loading())
@@ -120,7 +136,7 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     * Get Circle list by project id API
     * */
     var circleListByProjectResponse = MutableLiveData<ApiState<CircleListByProjectResponse>>()
-    fun getCircleListByProject(projectId: Int) {
+    fun getCircleListByProject(projectId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 circleListByProjectResponse.postValue(ApiState.loading())
@@ -140,7 +156,7 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     * Get site list by circle id API
     * */
     var siteListByProjectResponse = MutableLiveData<ApiState<SiteListByProjectResponse>>()
-    fun getSiteListByProject(projectId: Int) {
+    fun getSiteListByProject(projectId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 siteListByProjectResponse.postValue(ApiState.loading())
@@ -160,7 +176,7 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     * Get Type list by project id API
     * */
     var typeListByProjectResponse = MutableLiveData<ApiState<com.atvantiq.wfms.models.type.TypeListByProjectResponse>>()
-    fun getTypeListByProject(projectId: Int) {
+    fun getTypeListByProject(projectId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 typeListByProjectResponse.postValue(ApiState.loading())
@@ -180,7 +196,7 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     * Get activity list by project id and type id API
     * */
     var activityListByProjectTypeResponse = MutableLiveData<ApiState<com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse>>()
-    fun getActivityListByProjectType(projectId: Int, typeId: Int) {
+    fun getActivityListByProjectType(projectId: Long, typeId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 activityListByProjectTypeResponse.postValue(ApiState.loading())
@@ -196,52 +212,97 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
         }
     }
 
+    /*
+    * Validation for selected client, project, po number, circle, site, type and activity
+    * if any of these is null or empty, return false
+    * return error for each field
+    * */
+    fun validateAssignTaskFields(): Boolean {
+        return when {
+            selectedClient == null -> {
+                errorHandler.value = AssignTaskError.ON_CLIENT_ERROR
+                false
+            }
+            selectedProjectId == null -> {
+                errorHandler.value = AssignTaskError.ON_PROJECT_ERROR
+                false
+            }
+            selectedPoNumberId == null -> {
+                errorHandler.value = AssignTaskError.ON_PO_NUMBER_ERROR
+                false
+            }
+            selectedCircleId == null -> {
+                errorHandler.value = AssignTaskError.ON_CIRCLE_ERROR
+                false
+            }
+            selectedSiteId == null -> {
+                errorHandler.value = AssignTaskError.ON_SITE_ERROR
+                false
+            }
+            selectedTypeIdList.isNullOrEmpty() -> {
+                errorHandler.value = AssignTaskError.ON_TYPE_ERROR
+                false
+            }
+            selectedActivityIdList.isNullOrEmpty() -> {
+                errorHandler.value = AssignTaskError.ON_ACTIVITY_ERROR
+                false
+            }
+            else -> true
+        }
+    }
+
+
+
 
     /*
     * Work assigned API
     * */
     var workAssignedResponse = MutableLiveData<ApiState<SelfAssignResponse>>()
-    fun getWorkAssigned() {
+    private fun getWorkAssigned() {
         if (Utils.isInternet(getApplication())) {
-            val params = JsonObject().apply {
-                addProperty("circle_id", selectedClient?.id)
-                addProperty("project_id", selectedProjectId)
-                addProperty("po_id", selectedPoNumberId)
-                addProperty("client_id", selectedCircleId)
-                // Site array
-                val siteArray = com.google.gson.JsonArray()
-                val siteObj = JsonObject()
-                siteObj.addProperty("id", selectedSiteId)
-                siteArray.add(siteObj)
-                add("site", siteArray)
+            if(validateAssignTaskFields()){
+                val params = JsonObject().apply {
+                    addProperty("po_id", selectedPoNumberId)
+                    addProperty("client_id", selectedClient?.id)
+                    addProperty("project_id", selectedProjectId)
+                    addProperty("circle_id", selectedCircleId)
+                    // Site array
+                    val siteArray = com.google.gson.JsonArray()
+                    val siteObj = JsonObject()
+                    siteObj.addProperty("id", selectedSiteId)
+                    siteArray.add(siteObj)
+                    add("site", siteArray)
 
-                // Type array
-                val typeArray = com.google.gson.JsonArray()
-                for (type in selectedTypeIdList ?: emptyList()) {
-                    val typeObj = JsonObject()
-                    typeObj.addProperty("id", type)
+                    // Type array
+                    val typeArray = com.google.gson.JsonArray()
+                    for (type in selectedTypeIdList ?: emptyList()) {
+                        val typeObj = JsonObject()
+                        typeObj.addProperty("id", type)
 
-                    // Dynamic activity array inside type
-                    val activityArray = com.google.gson.JsonArray()
-                    for (activity in selectedActivityIdList ?: emptyList()) {
-                        val activityObj = JsonObject()
-                        activityObj.addProperty("id",activity)
-                        activityArray.add(activityObj)
+                        // Dynamic activity array inside type
+                        val activityArray = com.google.gson.JsonArray()
+                        for (activity in selectedActivityIdList ?: emptyList()) {
+                            val activityObj = JsonObject()
+                            activityObj.addProperty("id",activity)
+                            activityArray.add(activityObj)
+                        }
+                        typeObj.add("activity", activityArray)
+                        typeArray.add(typeObj)
                     }
-                    typeObj.add("activity", activityArray)
-                    typeArray.add(typeObj)
+                    add("type", typeArray)
                 }
-                add("type", typeArray)
-            }
 
-            viewModelScope.launch {
-                workAssignedResponse.postValue(ApiState.loading())
-                try {
+                Log.e("WorkAssignedParams", params.toString())
 
-                    var response = workRepo.workSelfAssign(params)
-                    workAssignedResponse.postValue(ApiState.success(response))
-                } catch (e: Exception) {
-                    workAssignedResponse.postValue(ApiState.error(e))
+                viewModelScope.launch {
+                    workAssignedResponse.postValue(ApiState.loading())
+                    try {
+
+                        var response = workRepo.workSelfAssign(params)
+                        workAssignedResponse.postValue(ApiState.success(response))
+                    } catch (e: Exception) {
+                        workAssignedResponse.postValue(ApiState.error(e))
+                    }
                 }
             }
         } else {

@@ -41,10 +41,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private var isDayStarted = false
 
     //private val GEOFENCE_LAT = 30.7046486
-    private val GEOFENCE_LAT = 37.4220936
+    private val GEOFENCE_LAT = 30.7149242
 
     //37.4220936
-    private val GEOFENCE_LON = -122.083922
+    private val GEOFENCE_LON = 76.7033762
 
     //private val GEOFENCE_LON = 76.7178726
     //-122.083922
@@ -67,12 +67,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         binding.vm = vm
         setupUserData()
         checkInAttendanceStatus()
+
         vm.clickEvents.observe(viewLifecycleOwner) {
+            if (!isLifeCycleResumed()) return@observe
             when (it) {
                 DashboardClickEvents.onAnnouncementsClicks -> {
                     Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
                 }
             }
+
         }
 
         vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
@@ -311,11 +314,18 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             object : SlideToActView.OnSlideCompleteListener {
                 override fun onSlideComplete(view: SlideToActView) {
                     val permissions = getRequiredPermissions()
-                    if (hasAllPermissions(permissions)) {
-                        manageDayStartEnd()
-                    } else {
-                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                        permissionLauncher.launch(permissions)
+                    when {
+                        hasAllPermissions(permissions) -> {
+                            manageDayStartEnd()
+                        }
+                        permissions.any { shouldShowRequestPermissionRationale(it) } -> {
+                            binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                            showPermissionDeniedPermanently()
+                        }
+                        else -> {
+                            binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                            permissionLauncher.launch(permissions)
+                        }
                     }
                 }
             }
@@ -463,16 +473,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun getRequiredPermissions(): Array<String> {
-        return buildList {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.ACCESS_COARSE_LOCATION)
-             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                 add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-             }
-             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                 add(Manifest.permission.POST_NOTIFICATIONS)
-             }
-        }.toTypedArray()
+        val list = mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            list.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            list.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        return list.toTypedArray()
     }
 
     private fun hasAllPermissions(permissions: Array<String>): Boolean =
@@ -516,13 +529,13 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     ) { permissions ->
         when {
             permissions.all { it.value } -> {
-
+                manageDayStartEnd()
             }
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
+            permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
                 showPermissionDeniedPermanently()
             }
             else -> {
-                showPermissionRationale()
+                showPermissionDeniedPermanently()
             }
         }
     }

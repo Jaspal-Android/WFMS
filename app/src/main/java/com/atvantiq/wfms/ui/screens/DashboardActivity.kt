@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens
 
+import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -25,6 +26,8 @@ import javax.inject.Inject
 class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    val navController: androidx.navigation.NavController
+        get() = findNavController(R.id.nav_host_fragment_content_dashboard)
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_dashboard)
@@ -33,26 +36,33 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
         setSupportActionBar(binding.appBarDashboard.toolbar)
         setupNavigationDrawer()
 
-        var userData  = PrefMethods.getUserData(prefMain)
+        var userData = PrefMethods.getUserData(prefMain)
         setupDataDrawerHeader(userData)
     }
 
     private fun setupDataDrawerHeader(userData: User?) {
-        if(userData == null)
+        if (userData == null)
             return
         val headerView = binding.navView.getHeaderView(0)
         val navHeaderBinding = NavHeaderDashboardBinding.bind(headerView)
         navHeaderBinding.textView.text = userData?.email
     }
 
-    private fun setupNavigationDrawer(){
+    private fun setupNavigationDrawer() {
         val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_dashboard)
+        //val navController = findNavController(R.id.nav_host_fragment_content_dashboard)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_dashboard, R.id.nav_attendance, R.id.nav_reimbursement, R.id.nav_vendor,R.id.nav_cab,R.id.nav_material_reco,R.id.nav_about, R.id.nav_feedback
+                R.id.nav_dashboard,
+                R.id.nav_attendance,
+                R.id.nav_reimbursement,
+                R.id.nav_vendor,
+                R.id.nav_cab,
+                R.id.nav_material_reco,
+                R.id.nav_about,
+                R.id.nav_feedback
             ), binding.drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -62,9 +72,21 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
             when (menuItem.itemId) {
                 R.id.logout -> {
                     // Implement your logout logic here
-                    performLogout()
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,
+                        getString(R.string.logout),
+                        getString(R.string.logout_confirmation),
+                        getString(R.string.yes),
+                        DialogInterface.OnClickListener { dialog, which ->
+                            dialog.dismiss()
+                            performLogout()
+                        },
+                        DialogInterface.OnClickListener { dialog, which ->
+                           dialog.dismiss()
+                        })
                     true
                 }
+
                 else -> {
                     // Handle other menu items with the navController
                     val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
@@ -77,11 +99,10 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
         }
     }
 
-    private fun performLogout(){
+    private fun performLogout() {
         prefMain.deleteAll()
-        Utils.jumpActivity(this,LoginActivity::class.java)
+        Utils.jumpActivity(this, LoginActivity::class.java)
         finish()
-        binding.drawerLayout.closeDrawer(GravityCompat.START)
     }
 
     override fun onSupportNavigateUp(): Boolean {

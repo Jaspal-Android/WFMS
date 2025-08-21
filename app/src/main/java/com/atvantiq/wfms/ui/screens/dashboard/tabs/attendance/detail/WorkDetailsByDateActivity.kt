@@ -1,8 +1,6 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,26 +8,24 @@ import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
-import com.atvantiq.wfms.databinding.ActivityAttendanceDetailBinding
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Record
+import com.atvantiq.wfms.databinding.ActivityWorkDetailsByDateBinding
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
-import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceStatusVM
-import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.Utils
-import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 
-
-@AndroidEntryPoint
-class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,AttendanceViewModel>() {
+class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
 
+
     override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(R.layout.activity_attendance_detail, AttendanceViewModel::class.java)
+        get() = ActivityBinding(
+            R.layout.activity_work_details_by_date,
+            AttendanceViewModel::class.java
+        )
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -40,60 +36,19 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,At
         }
         setToolbar()
         setWorkList()
-        fetchAttendanceDetailFromBundle()
-    }
-
-    private fun fetchAttendanceDetailFromBundle() {
-        val record: Record? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(SharingKeys.attendanceRecord, Record::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(SharingKeys.attendanceRecord) as? Record
-        }
-        setupUI(record)
-    }
-
-    private fun setupUI(record: Record?) {
-       binding.item = record
-
-       if(record?.checkin?.latitude!= null && record?.checkin?.logitude != null) {
-           Utils.getAddressFromLatLong(this,record?.checkin?.latitude, record.checkin.logitude) { it ->
-               binding.checkInAddressString = it
-           }
-       } else {
-           binding.checkInAddressString  = getString(R.string.address_not_found)
-       }
-
-        if(record?.checkout?.latitude!= null && record?.checkout?.logitude != null) {
-            Utils.getAddressFromLatLong(this,record?.checkout?.latitude, record.checkout.logitude) { it ->
-                binding.checkOutAddressString = it
-            }
-        } else {
-            binding.checkOutAddressString = getString(R.string.address_not_found)
-        }
-
-        viewModel.workDetailsByDate(DateUtils.formatApiDateToYMD(record?.checkin?.time ?: "").toString())
-
-       /* binding.viewWorkDetailsButton.setOnClickListener {
-            if (record != null) {
-                Utils.jumpActivityWithData(
-                    this,
-                    WorkDetailsByDateActivity::class.java,
-                    Bundle().apply {
-                        putString(SharingKeys.workDate, DateUtils.formatApiDateToYMD(record.checkin?.time ?: ""))
-                    }
-                )
-            } else {
-                Log.e("AttendanceDetailActivity", "Record is null, cannot view work details.")
-            }
-        }*/
+        fetchWorkDetailsByDate()
     }
 
     private fun setToolbar() {
-        binding.attendanceDetailToolbar.toolbarTitle.text = getString(R.string.details)
-        binding.attendanceDetailToolbar.toolbarBackButton.setOnClickListener {
+        binding.workDetailsByDateToolbar.toolbarTitle.text = getString(R.string.details)
+        binding.workDetailsByDateToolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    private fun fetchWorkDetailsByDate() {
+        val date = intent.getStringExtra(SharingKeys.workDate) ?: return
+        viewModel.workDetailsByDate(date)
     }
 
     private fun setWorkList(){
@@ -120,7 +75,6 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,At
         )
         binding.workList.adapter = adapter
     }
-
 
     override fun subscribeToEvents(vm: AttendanceViewModel) {
         vm.workDetailsByDateResponse.observe(this) { response ->
@@ -175,4 +129,5 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,At
             }
         }
     }
+
 }

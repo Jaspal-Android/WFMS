@@ -21,16 +21,16 @@
         tools:context=".ui.features.login.LoginActivity">
 
         <androidx.core.widget.NestedScrollView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:fillViewport="true"
-            android:padding="@dimen/padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="@dimen/padding"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

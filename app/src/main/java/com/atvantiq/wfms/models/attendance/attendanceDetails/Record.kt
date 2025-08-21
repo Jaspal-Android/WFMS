@@ -16,7 +16,7 @@ data class Record(
     @SerializedName("employee_id")
     val employeeId: Int,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("work_hours")
     val workHours: String
 ):Parcelable

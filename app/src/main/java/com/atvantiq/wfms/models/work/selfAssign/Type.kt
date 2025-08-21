@@ -7,7 +7,7 @@ data class Type(
     @SerializedName("activity")
     val activity: List<Activity>,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("name")
     val name: String
 )

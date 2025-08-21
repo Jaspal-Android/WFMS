@@ -138,6 +138,14 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <style name="CustomSelectableTextInputEditStyle" parent="ThemeOverlay.Material3.TextInputEditText">
+        <item name="android:cursorVisible">false</item>
+        <item name="android:inputMethod">@null</item>
+        <item name="maxLines">1</item>
+        <item name="android:longClickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
+
     <!--Button themes-->
     <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:paddingStart">@dimen/button_padding_lr</item>

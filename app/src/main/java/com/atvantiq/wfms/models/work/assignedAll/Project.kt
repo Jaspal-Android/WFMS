@@ -7,7 +7,7 @@ data class Project(
     @SerializedName("client")
     val client: Int,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("name")
     val name: String
 )

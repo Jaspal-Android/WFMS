@@ -5,7 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 data class ProjectData(
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("name")
     val name: String
-)
+){
+    override fun toString(): String {
+        return name // or companyName, etc.
+    }
+}

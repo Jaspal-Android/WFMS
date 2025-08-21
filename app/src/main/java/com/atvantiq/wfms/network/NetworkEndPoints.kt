@@ -21,6 +21,7 @@ object NetworkEndPoints {
 	const val workEnd = "work/end"
 	const val workSelfAssign = "work/self-assign"
 	const val workById = "work/{work_id}"
+	const val workDetailByDate = "work/details"
 
 	/*Client*/
 	const val clientList = "client/all"

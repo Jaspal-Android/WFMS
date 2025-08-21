@@ -7,12 +7,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
+import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
 import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
 import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
+import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
 import com.atvantiq.wfms.utils.NoInternetException
@@ -31,11 +34,13 @@ import java.io.File
 @HiltViewModel
 class AttendanceViewModel @Inject constructor(
     application: Application,
-    private val workRepo:IWorkRepo
+    private val workRepo:IWorkRepo,
+    private val attendanceRepo: IAttendanceRepo
 ) : AndroidViewModel(application) {
 
     var clickEvents = MutableLiveData<AttendanceClickEvents>()
     var itemPosition = MutableLiveData<Int>().apply { value = -1 }
+    var currentWorkId: Long? = null
 
     private val _isTracking = MutableLiveData<Boolean>(false)
     val isTracking: LiveData<Boolean> get() = _isTracking
@@ -95,7 +100,7 @@ class AttendanceViewModel @Inject constructor(
    * Work by ID API
    * */
     var workByIdResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
-    fun workById(workId: Int) {
+    fun workById(workId: Long) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 workByIdResponse.postValue(ApiState.loading())
@@ -112,10 +117,30 @@ class AttendanceViewModel @Inject constructor(
     }
 
     /*
+    * Work details by date API
+    * */
+    var workDetailsByDateResponse = MutableLiveData<ApiState<WorkDetailsByDateResponse>>()
+    fun workDetailsByDate(date: String) {
+        if (Utils.isInternet(getApplication())) {
+            viewModelScope.launch {
+                workDetailsByDateResponse.postValue(ApiState.loading())
+                try {
+                    var response = workRepo.workDetailByDate(date)
+                    workDetailsByDateResponse.postValue(ApiState.success(response))
+                } catch (e: Exception) {
+                    workDetailsByDateResponse.postValue(ApiState.error(e))
+                }
+            }
+        } else {
+            workDetailsByDateResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
+        }
+    }
+
+    /*
     * Accept work API
     * */
     var workAcceptResponse = MutableLiveData<ApiState<AcceptWorkResponse>>()
-    fun workAccept(workId: Int, position: Int) {
+    fun workAccept(workId: Long, position: Int) {
         if (Utils.isInternet(getApplication())) {
             viewModelScope.launch {
                 workAcceptResponse.postValue(ApiState.loading())
@@ -179,7 +204,7 @@ class AttendanceViewModel @Inject constructor(
     * End work API
     * */
     var workEndResponse = MutableLiveData<ApiState<EndWorkResponse>>()
-    fun workEnd(workId: Int,latitude:Double,longitude:Double,status:Int,remarks:String, position: Int) {
+    fun workEnd(workId: Long,latitude:Double,longitude:Double,status:Int,remarks:String, position: Int) {
         if (Utils.isInternet(getApplication())) {
             var params = JsonObject()
             params.addProperty("work_id",workId )
@@ -210,4 +235,24 @@ class AttendanceViewModel @Inject constructor(
         }
     }
 
+
+    /*
+    * Attendance Check In Status API
+    */
+    var attendanceCheckInStatusResponse = MutableLiveData<ApiState<CheckInStatusResponse>>()
+    fun checkInStatusAttendance() {
+        if (Utils.isInternet(getApplication())) {
+            viewModelScope.launch {
+                attendanceCheckInStatusResponse.value = ApiState.loading()
+                try {
+                    var response = attendanceRepo.attendanceCheckInStatus()
+                    attendanceCheckInStatusResponse.value = (ApiState.success(response))
+                } catch (e: Exception) {
+                    attendanceCheckInStatusResponse.value = (ApiState.error(e))
+                }
+            }
+        } else {
+            attendanceCheckInStatusResponse.value = (ApiState.error(NoInternetException("No Internet Connection")))
+        }
+    }
 }

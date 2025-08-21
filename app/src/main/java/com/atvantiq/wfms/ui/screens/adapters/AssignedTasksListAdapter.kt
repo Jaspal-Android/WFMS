@@ -12,6 +12,7 @@ import com.atvantiq.wfms.models.work.assignedAll.WorkRecord
 import com.atvantiq.wfms.widgets.FooterRecyclerView
 
 class AssignedTasksListAdapter(
+    var hideButtons:Boolean,
     var onViewAssignedTask: (assignedTask: WorkRecord, position: Int) -> Unit,
     var onAcceptTask: (assignedTask: WorkRecord, position: Int) -> Unit,
     var onStartWork: (assignedTask: WorkRecord, position: Int) -> Unit,
@@ -41,6 +42,7 @@ class AssignedTasksListAdapter(
 
     override fun onBindViewHolderMethod(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AssignedTasksViewHolder) {
+            holder.binding.hideButtons = hideButtons
             val assignedTask = assignedTasks?.get(position)
             holder.binding.itemWorkRecord = assignedTask
 

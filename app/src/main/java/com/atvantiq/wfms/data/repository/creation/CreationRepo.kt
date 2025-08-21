@@ -15,36 +15,36 @@ import javax.inject.Singleton
 @Singleton
 class CreationRepo @Inject constructor(private val apiService: ApiService, private val prefMain: SecurePrefMain) : ICreationRepo {
 
-    override suspend fun clientList(): ClientListResponse  = apiService.clientList(
+    override suspend fun clientList(): ClientListResponse = apiService.clientList(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
     )
 
-    override suspend fun projectListByClientId(clientId: Int): ProjectListByClientResponse  = apiService.projectListByClientId(
+    override suspend fun projectListByClientId(clientId: Long): ProjectListByClientResponse  = apiService.projectListByClientId(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         clientId = clientId
     )
 
-    override suspend fun poNumberListByProject(projectId: Int): PoListByProjectResponse = apiService.poNumberListByProject(
+    override suspend fun poNumberListByProject(projectId: Long): PoListByProjectResponse = apiService.poNumberListByProject(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
-    override suspend fun circleByProject(projectId: Int): CircleListByProjectResponse  = apiService.circleByProject(
+    override suspend fun circleByProject(projectId: Long): CircleListByProjectResponse  = apiService.circleByProject(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
-    override suspend fun siteListByProject(projectId: Int): SiteListByProjectResponse = apiService.siteListByProject(
+    override suspend fun siteListByProject(projectId: Long): SiteListByProjectResponse = apiService.siteListByProject(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
-    override suspend fun typeListByProject(projectId: Int): TypeListByProjectResponse = apiService.typeListByProject(
+    override suspend fun typeListByProject(projectId: Long): TypeListByProjectResponse = apiService.typeListByProject(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
-    override suspend fun activityListByProjectType(projectId: Int, typeId: Int)  = apiService.activityListByProjectType(
+    override suspend fun activityListByProjectType(projectId: Long, typeId: Long)  = apiService.activityListByProjectType(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId,
         typeId = typeId

@@ -100,7 +100,7 @@
                         android:layout_marginStart="@dimen/margin"
                         android:layout_marginTop="@dimen/margin_small"
                         android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Type: Survey"
+                        tools:text="Type: Survey"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@+id/tvSite"
                         app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +113,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin"
                         android:layout_marginEnd="@dimen/margin_small"
-                        android:text="Visit No: 1"
+                        tools:text="Visit No: 1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvType" />
 
@@ -148,10 +148,9 @@
                         android:background="@drawable/status_primary_bg"
                         android:paddingHorizontal="@dimen/padding_small"
                         android:paddingVertical="@dimen/padding_x_small"
-                        android:text="Install 20kW solar panels and configure inverter"
+                        tools:text="Install 20kW solar panels and configure inverter"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvActivities" />
-
 
                     <View
                         android:id="@+id/v3"

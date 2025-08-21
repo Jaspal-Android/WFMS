@@ -7,5 +7,5 @@ data class Details(
     @SerializedName("employee")
     val employee: Employee,
     @SerializedName("id")
-    val id: Int
+    val id: Long
 )

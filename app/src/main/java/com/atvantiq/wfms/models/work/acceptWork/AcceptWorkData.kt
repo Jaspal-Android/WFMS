@@ -7,5 +7,5 @@ data class AcceptWorkData(
     @SerializedName("status")
     val status: String,
     @SerializedName("work_id")
-    val workId: Int
+    val workId: Long
 )

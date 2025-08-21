@@ -7,6 +7,7 @@ import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
+import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefKeys
@@ -24,7 +25,7 @@ class WorkRepo @Inject constructor(private val apiService: ApiService, private v
         page_size = pageSize
     )
 
-    override suspend fun workAccept(workId:Int): AcceptWorkResponse = apiService.workAccept(
+    override suspend fun workAccept(workId:Long): AcceptWorkResponse = apiService.workAccept(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),workId)
 
     override suspend fun workStart(workId: RequestBody,latitude: RequestBody,longitude: RequestBody,photo: MultipartBody.Part): StartWorkResponse = apiService.workStart(
@@ -45,8 +46,13 @@ class WorkRepo @Inject constructor(private val apiService: ApiService, private v
         params = params
     )
 
-    override suspend fun workById(workId: Int): WorkDetailResponse  = apiService.workById(
+    override suspend fun workById(workId: Long): WorkDetailResponse  = apiService.workById(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         workId = workId
+    )
+
+    override suspend fun workDetailByDate(date: String): WorkDetailsByDateResponse  = apiService.workDetailByDate(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+        date = date
     )
 }

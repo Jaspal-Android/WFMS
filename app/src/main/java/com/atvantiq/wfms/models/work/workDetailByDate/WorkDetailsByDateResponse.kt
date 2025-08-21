@@ -1,13 +1,14 @@
-package com.atvantiq.wfms.models.client
+package com.atvantiq.wfms.models.work.workDetailByDate
 
 
+import com.atvantiq.wfms.models.work.assignedAll.WorkRecord
 import com.google.gson.annotations.SerializedName
 
-data class ClientListResponse(
+data class WorkDetailsByDateResponse(
     @SerializedName("code")
     val code: Int,
     @SerializedName("data")
-    val `data`: ClientData,
+    val data: List<WorkRecord>,
     @SerializedName("message")
     val message: String,
     @SerializedName("success")

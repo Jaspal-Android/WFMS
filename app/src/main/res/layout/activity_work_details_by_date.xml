@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="isNoDataAvailable"
+            type="Boolean" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.dashboard.tabs.attendance.detail.WorkDetailsByDateActivity">
+
+        <include
+            android:id="@+id/workDetailsByDateToolbar"
+            layout="@layout/custom_toolbar" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/workList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:padding="@dimen/margin_small"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_assigned_tasks" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/no_data_available"
+                android:visibility="@{isNoDataAvailable ? View.VISIBLE : View.GONE}"
+                tools:visibility="gone" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</layout>

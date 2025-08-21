@@ -1,6 +1,5 @@
 package com.atvantiq.wfms.models.client
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Client(
@@ -19,13 +18,13 @@ data class Client(
     @SerializedName("gst_number")
     val gstNumber: String,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("is_active")
     val isActive: Int,
     @SerializedName("state")
     val state: String
 ){
     override fun toString(): String {
-        return displayName // or companyName, etc.
+        return companyName // or companyName, etc.
     }
 }

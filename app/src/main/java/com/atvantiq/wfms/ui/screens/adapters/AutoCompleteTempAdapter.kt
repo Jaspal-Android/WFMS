@@ -6,7 +6,7 @@ import android.widget.Filterable
 class AutoCompleteTempAdapter<T>(
     context: Context,
     private val resource: Int,
-    private val items: List<T>
+    val items: List<T>
 ) : ArrayAdapter<T>(context, resource, items), Filterable {
 
     private var filteredItems: List<T> = items

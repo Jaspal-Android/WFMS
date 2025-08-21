@@ -11,7 +11,7 @@ data class Progres(
     @SerializedName("ended_longitude")
     val endedLongitude: Double,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("photo_path")
     val photoPath: String,
     @SerializedName("remarks")

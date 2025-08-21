@@ -30,20 +30,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:fitsSystemWindows="true"
         tools:context=".ui.screens.attendance.addSignInActivity.AddSignInActivity">
 
         <include
             android:id="@+id/addSignInToolbar"
             layout="@layout/custom_toolbar"></include>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:focusableInTouchMode="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="@dimen/padding">
 
@@ -51,17 +54,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Client*"
+                    android:hint="@string/select_client"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/client_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
@@ -71,17 +74,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Project*"
+                    android:hint="@string/select_project"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/project_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
@@ -91,17 +94,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="PO Number*"
+                    android:hint="@string/select_po_number"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/po_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
@@ -111,17 +114,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Circle*"
+                    android:hint="@string/select_circle"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/circle_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
@@ -131,17 +134,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Site*"
+                    android:hint="@string/select_site"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/site_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
@@ -152,17 +155,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Type*"
+                    android:hint="@string/select_type"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/type_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
@@ -172,81 +175,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Activities*"
+                    android:hint="@string/select_activity"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
 
-                    <MultiAutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/activities_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
-                        android:inputType="text"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="false" />
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Photo Section -->
-                <TextView
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Photo with Lat. Long."
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:visibility="gone"
-                    android:onClick="@{()->vm.onCameraClick()}"
-                    android:id="@+id/btn_photo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:background="@android:drawable/btn_default"
-                    android:contentDescription="Add photo"
-                    android:padding="@dimen/padding"
-                    android:src="@drawable/ic_menu_camera" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small">
-
-                    <RelativeLayout
-                        android:id="@+id/imagePreviewView"
-                        tools:visibility="gone"
-                        android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1:1.1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent=".35">
-
-                        <ImageView
-                            android:id="@+id/capturedImagePreview"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-
-                    </RelativeLayout>
-
-                    <TextView
-                        android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
-                        tools:text="30.7333° N, 76.7794° E"
-                        android:text="@{locationString}"
-                        style="@style/CustomMediumDarkTextView"
-                        app:layout_constraintTop_toBottomOf="@+id/imagePreviewView"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:onClick="@{()->vm.onSaveClick()}"
@@ -263,8 +206,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:text="@string/cancel" />
-
             </LinearLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 </layout>

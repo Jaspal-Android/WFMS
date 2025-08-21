@@ -9,7 +9,7 @@ data class Employee(
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("name")
     val name: String,
     @SerializedName("site")

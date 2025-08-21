@@ -22,7 +22,7 @@ class AssignedTaskDetailActivity :
     BaseActivity<ActivityAssignedTaskDetailBinding, AttendanceViewModel>() {
 
     private var itemPosition: Int = -1
-    private var workId: Int? = null
+    private var workId: Long? = null
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(
@@ -49,8 +49,8 @@ class AssignedTaskDetailActivity :
     }
 
     private fun fetchIntentData() {
-        workId = intent.getIntExtra(SharingKeys.WORK_ID, -1)
-        if(workId != -1 && workId != null) {
+        workId = intent.getLongExtra(SharingKeys.WORK_ID, -1)
+        if(workId != null) {
             itemPosition = intent.getIntExtra(SharingKeys.WORK_POSITION, -1)
             viewModel.itemPosition.value = itemPosition
             viewModel.workById(workId!!)

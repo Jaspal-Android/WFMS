@@ -7,7 +7,11 @@ data class CircleData(
     @SerializedName("code")
     val code: String,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("name")
     val name: String
-)
+){
+    override fun toString(): String {
+        return name // or companyName, etc.
+    }
+}

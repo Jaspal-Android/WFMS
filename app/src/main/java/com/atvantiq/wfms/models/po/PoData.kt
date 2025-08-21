@@ -9,7 +9,7 @@ data class PoData(
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("location")
     val location: String,
     @SerializedName("po_date")
@@ -26,4 +26,8 @@ data class PoData(
     val validFrom: String,
     @SerializedName("valid_to")
     val validTo: String
-)
+){
+    override fun toString(): String {
+        return poNumber // or companyName, etc.
+    }
+}

@@ -11,10 +11,10 @@ import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 interface ICreationRepo {
 
     suspend fun clientList(): ClientListResponse
-    suspend fun projectListByClientId(clientId: Int, ): ProjectListByClientResponse
-    suspend fun poNumberListByProject(projectId: Int): PoListByProjectResponse
-    suspend fun circleByProject(projectId: Int): CircleListByProjectResponse
-    suspend fun siteListByProject(projectId: Int): SiteListByProjectResponse
-    suspend fun typeListByProject(projectId: Int): TypeListByProjectResponse
-    suspend fun activityListByProjectType(projectId: Int, typeId: Int): ActivityListByProjectTypeResponse
+    suspend fun projectListByClientId(clientId: Long, ): ProjectListByClientResponse
+    suspend fun poNumberListByProject(projectId: Long): PoListByProjectResponse
+    suspend fun circleByProject(projectId: Long): CircleListByProjectResponse
+    suspend fun siteListByProject(projectId: Long): SiteListByProjectResponse
+    suspend fun typeListByProject(projectId: Long): TypeListByProjectResponse
+    suspend fun activityListByProjectType(projectId: Long, typeId: Long): ActivityListByProjectTypeResponse
 }

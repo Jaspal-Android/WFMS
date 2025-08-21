@@ -2,12 +2,15 @@ package com.atvantiq.wfms.ui.screens.attendance
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
@@ -15,6 +18,13 @@ import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentAttendanceBinding
+import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
+import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
+import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
+import com.atvantiq.wfms.models.work.assignedAll.WorkRecord
+import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
+import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
@@ -34,7 +44,6 @@ import retrofit2.HttpException
 @AndroidEntryPoint
 class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceViewModel>() {
 
-    private val TAG = "AttendanceFragment"
     private var adapter: AssignedTasksListAdapter? = null
     private var page: Int = 1
     private var pageSize: Int = 10
@@ -42,232 +51,217 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     private var isLastPage = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance, AttendanceViewModel::class.java)
 
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpWorkAssignmentList()
-        //getWorkAssignedAll() // Ensure this is called here
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        swipeRefresh()
+        if (savedInstanceState == null) {
+            //getWorkAssignedAll() // Fetch data only on first creation
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.rvAssignedTasks.adapter = null // Avoid memory leaks
+        viewModel.stopTracking() // Stop tracking when the fragment is destroyed
     }
 
     override fun subscribeToEvents(vm: AttendanceViewModel) {
         binding.vm = vm
-        binding.lifecycleOwner = this
 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                AttendanceClickEvents.ON_SIGN_IN_CLICK -> {
-                    Utils.jumpActivity(requireContext(), AddSignInActivity::class.java)
-                    //checkPermissionsAndStart()
-                }
-
-                AttendanceClickEvents.ON_MY_PROGRESS_CLICK -> {
-                    Utils.jumpActivity(requireContext(), MyProgressActivity::class.java)
-                    //viewModel.stopTracking()
-                }
-
-                AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK -> {
-                    Utils.jumpActivity(requireContext(), SignInDetailActivity::class.java)
-                }
-            }
+            handleClickEvents(event)
         }
 
         vm.workAssignedAllResponse.observe(viewLifecycleOwner) { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
-                    dismissProgress()
-                    stopRefreshingData()
-                    if (response.response?.code == 200) {
-                        if (response.response.data.records.isEmpty()) {
-                            isLastPage = true
-                            if (page == 1) {
-                                emptyDataLayout()
-                            } else {
-                                adapter?.removeLoadingFooter() // Hide loading footer
-                                isLoading = false
-                            }
-                        } else {
-                            mainLayout()
-                            if (page == 1) {
-                                adapter?.submitList(response.response.data.records)
-                                page = 2
-                            } else {
-                                adapter?.addData(response.response.data.records)
-                                page += 1
-                            }
-                        }
-                    } else if (response.response?.code == 401) {
-                        tokenExpiresAlert()
-                    } else {
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.alert),
-                            response.response?.message
-                                ?: getString(R.string.something_went_wrong)
-                        )
-                    }
-                }
-
-                Status.ERROR -> {
-                    dismissProgress()
-                    stopRefreshingData()
-                    adapter?.removeLoadingFooter() // Hide loading footer
-                    isLoading = false
-                    if (page == 1) {
-                        emptyDataLayout()
-                    }
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            requireContext(),
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
-                }
-
-                Status.LOADING -> {
-                    if (page == 1) {
-                        showProgress()
-                    } else {
-                        adapter?.removeLoadingFooter() // Show loading footer
-                    }
-                }
-            }
-
-
+            handleWorkAssignedResponse(response)
         }
 
         vm.workAcceptResponse.observe(viewLifecycleOwner) { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
-                    dismissProgress()
-                    if (response.response?.code == 200) {
-                        showToast(
-                            requireContext(),
-                            response.response.message ?: getString(R.string.work_accepted)
-                        )
-                        // Optionally refresh the list or update UI
-                        adapter?.setUpdateStatus(vm.itemPosition.value ?: -1, ValConstants.ACCEPTED)
-                        viewModel.itemPosition.value = -1 // Reset item position after handling
-                    } else if (response.response?.code == 401) {
-                        tokenExpiresAlert()
-                    } else {
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.alert),
-                            response.response?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
-                }
-
-                Status.ERROR -> {
-                    dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            requireContext(),
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
-                }
-
-                Status.LOADING -> {
-                    showProgress()
-                }
-            }
+            handleAcceptWorkResponse(response, R.string.work_accepted, ValConstants.ACCEPTED)
         }
 
-         vm.workStartResponse.observe(viewLifecycleOwner) { response ->
-             when (response.status) {
-                 Status.SUCCESS -> {
-                     dismissProgress()
-                     if (response.response?.code == 200) {
-                         showToast(requireContext(), response.response.message ?: getString(R.string.work_started))
-                         // Optionally refresh the list or update UI
-                         adapter?.setUpdateStatus(vm.itemPosition.value ?: -1, ValConstants.WIP)
-                         viewModel.itemPosition.value = -1 // Reset item position after handling
-                     } else if (response.response?.code == 401) {
-                         tokenExpiresAlert()
-                     } else {
-                         alertDialogShow(
-                             requireContext(),
-                             getString(R.string.alert),
-                             response.response?.message ?: getString(R.string.something_went_wrong)
-                         )
-                     }
-                 }
+        vm.workStartResponse.observe(viewLifecycleOwner) { response ->
+            handleStartWorkResponse(response, R.string.work_started, ValConstants.WIP)
+        }
 
-                 Status.ERROR -> {
-                     dismissProgress()
-                     if ((response.throwable as HttpException).code() == 401) {
-                         tokenExpiresAlert()
-                     } else {
-                         showToast(
-                             requireContext(),
-                             response.throwable.message ?: getString(R.string.something_went_wrong)
-                         )
-                     }
-                 }
+        vm.workEndResponse.observe(viewLifecycleOwner) { response ->
+            handleWorkEndResponse(response)
+        }
 
-                 Status.LOADING -> {
-                     showProgress()
-                 }
-             }
-         }
+        vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
+            handleAttendanceCheckInResponse(response)
+        }
+    }
+
+    private fun handleClickEvents(event: AttendanceClickEvents) {
+        when (event) {
+            AttendanceClickEvents.ON_SIGN_IN_CLICK -> {
+                val intent = Intent(requireContext(), AddSignInActivity::class.java)
+                assignTaskLauncher.launch(intent)
+            }
+            AttendanceClickEvents.ON_MY_PROGRESS_CLICK -> {
+                Utils.jumpActivity(requireContext(), MyProgressActivity::class.java)
+            }
+            AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK -> {
+                Utils.jumpActivity(requireContext(), SignInDetailActivity::class.java)
+            }
+        }
+    }
+
+    private fun handleWorkAssignedResponse(response: ApiState<WorkAssignedAllResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                stopRefreshingData()
+                response.response?.let {
+                    if (it.code == 200) {
+                        handleWorkAssignedSuccess(it.data.records)
+                    } else {
+                        handleErrorResponse(it.code, it.message)
+                    }
+                }
+            }
+            Status.ERROR -> handleError(response.throwable)
+            Status.LOADING -> showLoadingIndicator()
+        }
+    }
+
+    private fun handleWorkAssignedSuccess(records: List<WorkRecord>) {
+        if (records.isEmpty()) {
+            isLastPage = true
+            if (page == 1) emptyDataLayout() else adapter?.removeLoadingFooter()
+        } else {
+            mainLayout()
+            if (page == 1) adapter?.submitList(records) else adapter?.addData(records)
+            page++
+        }
+    }
+
+    private fun handleAcceptWorkResponse(
+        response: ApiState<AcceptWorkResponse>,
+        successMessage: Int,
+        status: String
+    ) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                response.response?.let {
+                    if (it.code == 200) {
+                        showToast(requireContext(), it.message ?: getString(successMessage))
+                        adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
+                        viewModel.itemPosition.value = -1
+                    } else {
+                        handleErrorResponse(it.code, it.message)
+                    }
+                }
+            }
+            Status.ERROR -> handleError(response.throwable)
+            Status.LOADING -> showProgress()
+        }
+    }
+
+    private fun handleStartWorkResponse(
+        response: ApiState<StartWorkResponse>,
+        successMessage: Int,
+        status: String
+    ) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                response.response?.let {
+                    if (it.code == 200) {
+                        showToast(requireContext(), it.message ?: getString(successMessage))
+                        adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
+                        viewModel.itemPosition.value = -1
+                    } else {
+                        handleErrorResponse(it.code, it.message)
+                    }
+                }
+            }
+            Status.ERROR -> handleError(response.throwable)
+            Status.LOADING -> showProgress()
+        }
+    }
+
+    private fun handleWorkEndResponse(response: ApiState<EndWorkResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                response.response?.let {
+                    if (it.code == 200) {
+                        showToast(requireContext(), it.message ?: getString(R.string.work_ended))
+                        adapter?.setUpdateStatus(
+                            viewModel.itemPosition.value ?: -1,
+                            it.data?.status ?: ValConstants.COMPLETED
+                        )
+                        viewModel.itemPosition.value = -1
+                    } else {
+                        handleErrorResponse(it.code, it.message)
+                    }
+                }
+            }
+            Status.ERROR -> handleError(response.throwable)
+            Status.LOADING -> showProgress()
+        }
+    }
+
+    private fun handleAttendanceCheckInResponse(response: ApiState<CheckInStatusResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                response.response?.let {
+                    if (it.code == 200 && it.data?.checkedIn == true) {
+                        startWorkWithLocationPermissions(viewModel.currentWorkId ?: -1, viewModel.itemPosition.value ?: -1)
+                    } else {
+                        alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.please_check_in_first), okLister = DialogInterface.OnClickListener { dialog, _ ->
+                            dialog.dismiss()
+                            navigateToDashboard()
+                        })
+                    }
+                }
+            }
+            Status.ERROR -> handleError(response.throwable)
+            Status.LOADING -> showProgress()
+        }
+    }
+    private fun navigateToDashboard() {
+        val navController = requireActivity().findNavController(R.id.nav_host_fragment_content_dashboard)
+        navController.navigate(R.id.nav_dashboard)
+    }
 
 
-         vm.workEndResponse.observe(viewLifecycleOwner) { response ->
-             when (response.status) {
-                 Status.SUCCESS -> {
-                     dismissProgress()
-                     if (response.response?.code == 200) {
-                         showToast(requireContext(), response.response.message ?: getString(R.string.work_ended))
-                         adapter?.setUpdateStatus(vm.itemPosition.value ?: -1, response.response?.data?.status ?: ValConstants.COMPLETED)
-                         viewModel.itemPosition.value = -1 // Reset item position after handling
-                     } else if (response.response?.code == 401) {
-                         tokenExpiresAlert()
-                     } else {
-                         alertDialogShow(
-                             requireContext(),
-                             getString(R.string.alert),
-                             response.response?.message ?: getString(R.string.something_went_wrong)
-                         )
-                     }
-                 }
+    private fun handleErrorResponse(code: Int, message: String?) {
+        if (code == 401) tokenExpiresAlert() else alertDialogShow(requireContext(), getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+    }
 
-                 Status.ERROR -> {
-                     dismissProgress()
-                     if ((response.throwable as HttpException).code() == 401) {
-                         tokenExpiresAlert()
-                     } else {
-                         showToast(
-                             requireContext(),
-                             response.throwable.message ?: getString(R.string.something_went_wrong)
-                         )
-                     }
-                 }
+    private fun handleError(throwable: Throwable?) {
+        dismissProgress()
+        stopRefreshingData()
+        adapter?.removeLoadingFooter()
+        isLoading = false
+        if (throwable is HttpException && throwable.code() == 401) {
+            tokenExpiresAlert()
+        } else {
+            showToast(requireContext(), throwable?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
 
-                 Status.LOADING -> {
-                     showProgress()
-                 }
-             }
-         }
+    private fun showLoadingIndicator() {
+        if (page == 1) showProgress() else adapter?.addLoadingFooter()
+    }
 
+    private fun checkAttendanceStatus(id: Long, position: Int) {
+        viewModel.currentWorkId = id
+        viewModel.itemPosition.value = position // Set the current item position
+        viewModel.checkInStatusAttendance()
     }
 
     private fun getWorkAssignedAll() {
@@ -300,14 +294,14 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             }
         })
 
-        adapter = AssignedTasksListAdapter(
+        adapter = AssignedTasksListAdapter(false,
             onViewAssignedTask = { assignedTask, position ->
                 Utils.jumpActivityWithData(
                     requireContext(),
                     AssignedTaskDetailActivity::class.java,
                     Bundle().apply {
                         putInt(SharingKeys.WORK_POSITION, position)
-                        putInt(SharingKeys.WORK_ID, assignedTask.id)
+                        putLong(SharingKeys.WORK_ID, assignedTask.id)
                     }
                 )
             },
@@ -315,7 +309,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 viewModel.workAccept(assignedTask.id, position)
             },
             onStartWork = { assignedTask, position ->
-                startWorkWithLocationPermissions(assignedTask.id, position)
+                checkAttendanceStatus(assignedTask.id, position)
             },
             onEndWork = { assignedTask, position ->
                 endWorkWithLocationPermissions(assignedTask.id, position)
@@ -328,9 +322,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             )
         )
         binding.rvAssignedTasks.adapter = adapter
-        swipeRefresh()
     }
-
 
     private fun mainLayout() {
         isLoading = false
@@ -389,19 +381,29 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     @SuppressLint("MissingPermission")
-    private fun startWorkWithLocationPermissions(workId: Int, position: Int) {
+    private fun startWorkWithLocationPermissions(workId: Long, position: Int) {
         val permissions = getRequiredPermissions()
         when {
             hasAllPermissions(permissions) -> {
                 //find the location and start work
                 fusedLocationClient.lastLocation.addOnSuccessListener {
-                    if(it != null) {
+                    if (it != null) {
                         val latitude = it.latitude.toString()
                         val longitude = it.longitude.toString()
-                        var startWorkBottomSheet = StartWorkBottomSheet(latitude, longitude) { imagePath ->
-                            viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
-                        }
-                        startWorkBottomSheet.show(requireActivity().supportFragmentManager, "StartWorkBottomSheet")
+                        var startWorkBottomSheet =
+                            StartWorkBottomSheet(latitude, longitude) { imagePath ->
+                                viewModel.workStart(
+                                    workId.toString(),
+                                    latitude,
+                                    longitude,
+                                    imagePath,
+                                    position
+                                )
+                            }
+                        startWorkBottomSheet.show(
+                            requireActivity().supportFragmentManager,
+                            "StartWorkBottomSheet"
+                        )
                     } else {
                         showToast(requireContext(), getString(R.string.location_not_found))
                     }
@@ -421,19 +423,32 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     @SuppressLint("MissingPermission")
-    private fun endWorkWithLocationPermissions(workId: Int, position: Int) {
+    private fun endWorkWithLocationPermissions(workId: Long, position: Int) {
         val permissions = getRequiredPermissions()
         when {
             hasAllPermissions(permissions) -> {
                 //find the location and start work
                 fusedLocationClient.lastLocation.addOnSuccessListener {
-                    if(it != null) {
+                    if (it != null) {
                         val latitude = it.latitude
                         val longitude = it.longitude
-                        var endWorkBottomSheet = EndWorkBottomSheet(latitude.toString(), longitude.toString()) { statusId, remarks ->
-                            viewModel.workEnd(workId, latitude, longitude, statusId, remarks, position)
+                        var endWorkBottomSheet = EndWorkBottomSheet(
+                            latitude.toString(),
+                            longitude.toString()
+                        ) { statusId, remarks ->
+                            viewModel.workEnd(
+                                workId,
+                                latitude,
+                                longitude,
+                                statusId,
+                                remarks,
+                                position
+                            )
                         }
-                        endWorkBottomSheet.show(requireActivity().supportFragmentManager, "EndWorkBottomSheet")
+                        endWorkBottomSheet.show(
+                            requireActivity().supportFragmentManager,
+                            "EndWorkBottomSheet"
+                        )
                     } else {
                         showToast(requireContext(), getString(R.string.location_not_found))
                     }
@@ -456,12 +471,6 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         return buildList {
             add(Manifest.permission.ACCESS_FINE_LOCATION)
             add(Manifest.permission.ACCESS_COARSE_LOCATION)
-            /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                 add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-             }
-             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                 add(Manifest.permission.POST_NOTIFICATIONS)
-             }*/
         }.toTypedArray()
     }
 
@@ -496,10 +505,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             .show()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Stop tracking when the fragment is destroyed
-        viewModel.stopTracking()
-    }
-
+    private val assignTaskLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                startRefreshingData()
+            }
+        }
 }

@@ -16,6 +16,7 @@ import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
+import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -52,10 +53,13 @@ interface ApiService {
 	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedAllResponse
 
 	@GET(NetworkEndPoints.workById)
-	suspend fun workById(@Header("Authorization") token: String, @Path("work_id") workId:Int): WorkDetailResponse
+	suspend fun workById(@Header("Authorization") token: String, @Path("work_id") workId:Long): WorkDetailResponse
+
+	@GET(NetworkEndPoints.workDetailByDate)
+	suspend fun workDetailByDate(@Header("Authorization") token: String, @Query("date") date: String): WorkDetailsByDateResponse
 
 	@PUT(NetworkEndPoints.workAccept)
-	suspend fun workAccept(@Header("Authorization") token: String,@Path("work_id") workId:Int): AcceptWorkResponse
+	suspend fun workAccept(@Header("Authorization") token: String,@Path("work_id") workId:Long): AcceptWorkResponse
 
 	@Multipart
 	@POST(NetworkEndPoints.workStart)
@@ -77,24 +81,24 @@ interface ApiService {
 	suspend fun clientList(@Header("Authorization") token: String): ClientListResponse
 
 	@GET(NetworkEndPoints.projectListByClientId)
-	suspend fun projectListByClientId(@Header("Authorization") token: String, @Path("client_id") clientId: Int, ): ProjectListByClientResponse
+	suspend fun projectListByClientId(@Header("Authorization") token: String, @Path("client_id") clientId: Long, ): ProjectListByClientResponse
 
 	@GET(NetworkEndPoints.poNumberListByProject)
-	suspend fun poNumberListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Int): PoListByProjectResponse
+	suspend fun poNumberListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): PoListByProjectResponse
 
 	@GET(NetworkEndPoints.circleByProject)
-	suspend fun circleByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Int): CircleListByProjectResponse
+	suspend fun circleByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): CircleListByProjectResponse
 
 	@GET(NetworkEndPoints.siteListByProject)
-	suspend fun siteListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Int): SiteListByProjectResponse
+	suspend fun siteListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): SiteListByProjectResponse
 
 	@GET(NetworkEndPoints.typeListByPorject)
-	suspend fun typeListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Int): TypeListByProjectResponse
+	suspend fun typeListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): TypeListByProjectResponse
 
 	@GET(NetworkEndPoints.activityListByPorjectType)
 	suspend fun activityListByProjectType(
 		@Header("Authorization") token: String,
-		@Query("project_id") projectId: Int,
-		@Query("type_id") typeId: Int
+		@Query("project_id") projectId: Long,
+		@Query("type_id") typeId: Long
 	): ActivityListByProjectTypeResponse
 }

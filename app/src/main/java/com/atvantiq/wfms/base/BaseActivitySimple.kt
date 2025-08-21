@@ -187,6 +187,7 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 			getString(R.string.unauthorized_access),
 			getString(R.string.login),
 			DialogInterface.OnClickListener() { dialog, which ->
+				dialog.dismiss()
 				performGlobalLogout()
 			})
 	}

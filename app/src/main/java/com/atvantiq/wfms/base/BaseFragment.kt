@@ -32,10 +32,14 @@ abstract class BaseFragment<T : ViewDataBinding, V : AndroidViewModel> : BaseFra
 	): View? {
 		val fragmentBinding = fragmentBinding
 		binding = DataBindingUtil.inflate<T>(inflater, fragmentBinding.layoutResId, container, false)
-		viewModel = ViewModelProvider(this)[fragmentBinding.clazz]
 		onCreateViewFragment(savedInstanceState)
-		subscribeToEvents(viewModel)
 		return binding.root
+	}
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
+		viewModel = ViewModelProvider(this)[fragmentBinding.clazz]
+		subscribeToEvents(viewModel)
 	}
 	
 	inner class FragmentBinding(

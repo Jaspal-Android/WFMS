@@ -50,7 +50,9 @@
             android:exported="false" />
         <activity
             android:name=".ui.screens.login.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+            />
         <activity
             android:name=".ui.screens.vendor.loginDetails.VendorLoginDetailsActivity"
             android:exported="false" />
@@ -92,7 +94,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.screens.attendance.addSignInActivity.AddSignInActivity"
-            android:exported="false" />
+            android:exported="false"
+            />
         <activity
             android:name=".ui.screens.announcements.AnnouncementsActivity"
             android:exported="false" />

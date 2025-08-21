@@ -13,7 +13,7 @@ data class WorkRecord(
     @SerializedName("employee")
     val employee: Any?,
     @SerializedName("id")
-    val id: Int,
+    val id: Long,
     @SerializedName("progress")
     val progress: List<Progres>?,
     @SerializedName("project")

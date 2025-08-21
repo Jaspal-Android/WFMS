@@ -77,13 +77,32 @@
                             android:clipToPadding="false"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+
+                        <LinearLayout
                             android:layout_centerInParent="true"
-                            android:text="No Data Available"
                             android:visibility="@{isEmptyAssignedTasks ? View.VISIBLE : View.GONE}"
-                            tools:visibility="gone" />
+                            tools:visibility="visible"
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:id="@+id/animationView"
+                                android:layout_width="150dp"
+                                android:layout_height="150dp"
+                                android:layout_gravity="center"
+                                android:backgroundTint="@android:color/transparent"
+                                app:lottie_rawRes="@raw/no_data"
+                                app:lottie_loop="true"
+                                app:lottie_autoPlay="true" />
+
+                            <TextView
+                                android:layout_gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/no_work_details_found"
+                                />
+                        </LinearLayout>
 
                     </RelativeLayout>
                 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

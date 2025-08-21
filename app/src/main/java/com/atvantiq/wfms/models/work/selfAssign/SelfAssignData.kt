@@ -1,6 +1,8 @@
 package com.atvantiq.wfms.models.work.selfAssign
 
 
+import com.atvantiq.wfms.models.work.assignedAll.Circle
+import com.atvantiq.wfms.models.work.assignedAll.Project
 import com.google.gson.annotations.SerializedName
 
 data class SelfAssignData(
