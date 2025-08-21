@@ -11,11 +11,18 @@
     <color name="colorPrimaryDark">#2B5DE6</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="green">#4eb300</color>
+
     <color name="green_pastel">#C5E7B0</color>
     <color name="red_pastel">#FAC0C3</color>
     <color name="orange_pastal">#FFB347</color>
     <color name="blue_pastal">#AEC6CF</color>
+    <color name="yellow_pastal">#E7DA8B</color>
+    <color name="purple_pastal">#EBB3EB</color>
+    <color name="primary_pastal">#A3DAF0</color>
+
     <color name="red">#FF0000</color>
     <color name="orange">#ffa500</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="purple">#9C27B0</color>
     <color name="flatCalendar">#7AF4F4F4</color>
 </resources>

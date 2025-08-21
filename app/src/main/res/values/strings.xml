@@ -155,6 +155,10 @@
     <string name="no_types_available">No types available</string>
     <string name="no_activities_available">No activities available</string>
     <string name="select_activities">Select Activities</string>
+    <string name="under_development">Under Development</string>
+    <string name="holidays">Holidays</string>
+    <string name="work_off">Work Off</string>
+    <string name="n_a">N/A</string>
 
     
     <!-- TODO: Remove or change this placeholder text -->

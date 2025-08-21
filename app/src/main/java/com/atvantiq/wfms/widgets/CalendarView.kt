@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.CalendarViewBinding
 import com.atvantiq.wfms.models.calendar.AttendanceDay
-import com.atvantiq.wfms.models.calendar.AttendanceStatus
 import com.atvantiq.wfms.ui.screens.adapters.CalendarAdapter
 import com.atvantiq.wfms.utils.Utils
 import java.text.SimpleDateFormat
@@ -28,7 +27,6 @@ class CalendarView : LinearLayoutCompat {
     private val calendarToday = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
     var apiAttendanceData = ArrayList<AttendanceDay>()
-
 
     constructor(context: Context) : super(context)
 
@@ -64,8 +62,6 @@ class CalendarView : LinearLayoutCompat {
     private fun handleUI(context: Context) {
         calendarAdapter = CalendarAdapter(context){
             position, day ->
-            Log.e("jaspal", "Selected Position:$position")
-            Log.e("jaspal", "Selected Position:${day.date}")
             if(eventHandler!=null){
                 eventHandler?.onDayClickListener(position,day)
             }
@@ -129,45 +125,6 @@ class CalendarView : LinearLayoutCompat {
         binding.tvMonthYear.text = dateFormat.format(calendar.time) // Set the month and year title
     }
 
-/*
-    private fun getMonthDays(calendar: Calendar): List<AttendanceDay> {
-        val attendanceData = mutableListOf<AttendanceDay>()
-
-        val tempCalendar = calendar.clone() as Calendar
-        tempCalendar.set(Calendar.DAY_OF_MONTH, 1) // Set to the first day of the month
-
-        // Get the day of the week for the first day of the month
-        val firstDayOfWeek = tempCalendar.get(Calendar.DAY_OF_WEEK)
-
-        // Calculate padding days before the first day of the month
-        val paddingDays = if (firstDayOfWeek == Calendar.SUNDAY) 0 else firstDayOfWeek - 1
-
-        // Add empty placeholders for padding
-        for (i in 1..paddingDays) {
-            attendanceData.add(AttendanceDay("", AttendanceStatus.NONE)) // Empty days
-        }
-
-        // Get the total number of days in the current month
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-        // Populate the actual days with attendance data
-        for (i in 1..daysInMonth) {
-            val dayCalendar = tempCalendar.clone() as Calendar
-            dayCalendar.set(Calendar.DAY_OF_MONTH, i)
-
-            // Example: Alternate between PRESENT and ABSENT for demo
-            val status = if (i % 2 == 0) AttendanceStatus.PRESENT else AttendanceStatus.ABSENT
-
-            // Format date as "YYYY-MM-DD"
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val dateString = dateFormat.format(dayCalendar.time)
-
-            attendanceData.add(AttendanceDay(dateString, status))
-        }
-
-        return attendanceData
-    }
-*/
 
     /*
     * write function to clear the attendance data
@@ -182,6 +139,7 @@ class CalendarView : LinearLayoutCompat {
         apiAttendanceData = data as ArrayList<AttendanceDay>
         updateCalendar(context)
     }
+
 
     private fun getMonthDays(calendar: Calendar): List<AttendanceDay> {
         val attendanceData = mutableListOf<AttendanceDay>()
@@ -207,7 +165,7 @@ class CalendarView : LinearLayoutCompat {
                 attendanceData.add(
                     AttendanceDay(
                         date = "",
-                        status = AttendanceStatus.NONE // Gray color for these dates
+                        status = "NO_ACTION" // Default status for padding days
                     )
                 )
             }
@@ -224,19 +182,17 @@ class CalendarView : LinearLayoutCompat {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val dateString = dateFormat.format(dayCalendar.time)
 
-            val status = if (apiAttendanceData.isNotEmpty()) {
-                // Check if the date exists in the API data
-                apiAttendanceData.find { it.date == dateString }?.status ?: AttendanceStatus.NONE
-            } else {
-                // Default status if no API data is available
-                AttendanceStatus.NONE
-            }
+            // Check if the date exists in the API data
+            val matchingRecord = apiAttendanceData.find { it.date == dateString }
+            val status = matchingRecord?.status ?: "NO_ACTION" // Default to "NO_ACTION" if no match
 
-            var record =  apiAttendanceData.find { it.date == dateString }
-
-            // Format date as "YYYY-MM-DD"
-            Log.e("jaspal", "Date: $dateString, Status: $status, Record: ${record?.record}")
-            attendanceData.add(AttendanceDay(dateString, status,record = record?.record))
+            attendanceData.add(
+                AttendanceDay(
+                    date = dateString,
+                    status = status,
+                    record = matchingRecord?.record
+                )
+            )
         }
 
         // Add next month's dates to fill the calendar grid
@@ -247,7 +203,7 @@ class CalendarView : LinearLayoutCompat {
                 attendanceData.add(
                     AttendanceDay(
                         date = "",
-                        status = AttendanceStatus.NONE // Gray color for these dates
+                        status = "NO_ACTION" // Default status for padding days
                     )
                 )
             }

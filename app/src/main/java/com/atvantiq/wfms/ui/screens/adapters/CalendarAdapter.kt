@@ -9,9 +9,9 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.databinding.ItemCalendarDayBinding
 import com.atvantiq.wfms.models.calendar.AttendanceDay
-import com.atvantiq.wfms.models.calendar.AttendanceStatus
 
 class CalendarAdapter(
     private var context: Context,
@@ -40,13 +40,18 @@ class CalendarAdapter(
         } else {
             holder.binding.tvDay.text = day.date.split("-").last() // Show only day part
 
-            val background = when (day.status) {
-                AttendanceStatus.PRESENT -> R.drawable.calendar_present_bg
-                AttendanceStatus.ABSENT -> R.drawable.calendar_absent_bg
-                //AttendanceStatus.IDLE -> R.drawable.calendar_idle_bg
-                else -> R.drawable.calendar_default_bg
+            // Set background color based on status
+            val backgroundColor = when (day.status) {
+                AttendanceStatus.NO_ACTION -> context.getColor(R.color.lightGray)
+                AttendanceStatus.PRESENT -> context.getColor(R.color.green_pastel)
+                AttendanceStatus.ABSENT -> context.getColor(R.color.red_pastel)
+                AttendanceStatus.LEAVE -> context.getColor(R.color.primary_pastal)
+                AttendanceStatus.IDLE -> context.getColor(R.color.orange_pastal)
+                AttendanceStatus.HOLIDAY -> context.getColor(R.color.yellow_pastal)
+                AttendanceStatus.WORK_OFF -> context.getColor(R.color.purple_pastal)
+                else -> context.getColor(R.color.lightGray)
             }
-            holder.binding.tvDay.setBackgroundResource(background)
+            holder.binding.tvDay.setBackgroundColor(backgroundColor)
 
             holder.binding.root.setOnClickListener {
                 onDateSelected.invoke(position, day)

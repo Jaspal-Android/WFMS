@@ -55,11 +55,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
                 app:outer_color="@color/colorPrimaryDark"
-                app:slider_height="52dp"
+                app:slider_height="50dp"
                 app:border_radius="@dimen/card_radius"
-                app:text="Start Day"
+                app:text="@string/start_day"
                 app:text_color="@color/white"
-                app:text_size="@dimen/default_large_text" />
+                app:text_size="@dimen/default_text" />
 
             <TextView
                 android:id="@+id/tvCircle"
@@ -111,6 +111,7 @@
 
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/announcementText"
                 style="@style/CustomRegularDarkTextView"
                 android:layout_width="wrap_content"
@@ -124,6 +125,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/reportingManagerText" />
 
             <TextView
+                android:visibility="gone"
                 android:onClick="@{()-> vm.onAnnouncementsClicks()}"
                 style="@style/CustomSmallLightTextView"
                 android:layout_width="wrap_content"
@@ -139,6 +141,7 @@
                 app:layout_constraintTop_toTopOf="@+id/announcementText"></TextView>
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/marqueeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

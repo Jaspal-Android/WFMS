@@ -86,6 +86,47 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
                         })
                     true
                 }
+                R.id.nav_feedback -> {
+                    // Implement your logout logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,getString(R.string.under_development))
+                    true
+                }
+
+                R.id.nav_about -> {
+                    // Implement your logout logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,getString(R.string.under_development))
+                    true
+                }
+
+                R.id.nav_material_reco -> {
+                    // Implement your logout logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,getString(R.string.under_development))
+                    true
+                }
+
+                R.id.nav_cab -> {
+                    // Implement your logout logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,getString(R.string.under_development))
+                    true
+                }
+
+                R.id.nav_vendor -> {
+                    // Implement your logout logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,getString(R.string.under_development))
+                    true
+                }
+
+                R.id.nav_reimbursement -> {
+                    // Implement your logout logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    alertDialogShow(this,getString(R.string.under_development))
+                    true
+                }
 
                 else -> {
                     // Handle other menu items with the navController

@@ -63,7 +63,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         setUpWorkAssignmentList()
         swipeRefresh()
         if (savedInstanceState == null) {
-            //getWorkAssignedAll() // Fetch data only on first creation
+            getWorkAssignedAll() // Fetch data only on first creation
         }
     }
 

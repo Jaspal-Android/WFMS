@@ -7,6 +7,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Record(
+    @SerializedName("can_hr_mark_attendance")
+    val canHrMarkAttendance: Boolean,
     @SerializedName("checkin")
     val checkin: Checkin,
     @SerializedName("checkout")
@@ -17,6 +19,8 @@ data class Record(
     val employeeId: Int,
     @SerializedName("id")
     val id: Long,
+    @SerializedName("status")
+    val status: Int,
     @SerializedName("work_hours")
     val workHours: String
 ):Parcelable

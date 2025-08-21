@@ -80,8 +80,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
                         Utils.jumpActivity(this,DashboardActivity::class.java)
                         finish()
                     }else{
-                        alertDialogShow(this,getString(R.string.alert),it?.response?.message.toString()
-                        ) { dialog, which ->
+                        alertDialogShow(this,getString(R.string.alert),it?.response?.message.toString()) { dialog, which ->
                             dialog.dismiss()
                         }
                     }
