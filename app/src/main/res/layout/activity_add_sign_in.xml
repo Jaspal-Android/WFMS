@@ -87,7 +87,16 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:enabled="@{!vm.isProjectLoading}"
+                        />
+                    <ProgressBar
+                        android:id="@+id/project_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -107,7 +116,16 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:enabled="@{!vm.isPoLoading}" />
+
+                    <ProgressBar
+                        android:id="@+id/po_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isPoLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -127,7 +145,16 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:enabled="@{!vm.isCircleLoading}" />
+
+                    <ProgressBar
+                        android:id="@+id/circle_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -147,7 +174,16 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:enabled="@{!vm.isSiteLoading}" />
+
+                    <ProgressBar
+                        android:id="@+id/site_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isSiteLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -157,7 +193,8 @@
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_type"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         style="@style/CustomSelectableTextInputEditStyle"
@@ -168,7 +205,16 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:enabled="@{!vm.isTypeLoading}" />
+
+                    <ProgressBar
+                        android:id="@+id/type_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isTypeLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -188,7 +234,16 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="false" />
+                        android:singleLine="false"
+                        android:enabled="@{!vm.isActivityLoading}" />
+
+                    <ProgressBar
+                        android:id="@+id/activities_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isActivityLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <androidx.appcompat.widget.AppCompatButton

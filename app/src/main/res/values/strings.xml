@@ -147,6 +147,14 @@
     <string name="yes">Yes</string>
     <string name="search">Search</string>
     <string name="submit">Submit</string>
+    <string name="no_clients_available">No clients available</string>
+    <string name="no_projects_available">No projects available</string>
+    <string name="no_po_numbers_available">No PO numbers available</string>
+    <string name="no_circles_available">No circles available</string>
+    <string name="no_sites_available">No sites available</string>
+    <string name="no_types_available">No types available</string>
+    <string name="no_activities_available">No activities available</string>
+    <string name="select_activities">Select Activities</string>
 
     
     <!-- TODO: Remove or change this placeholder text -->

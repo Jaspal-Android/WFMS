@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.attendance.addSignInActivity
 
 import android.app.Application
 import android.util.Log
+import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -57,6 +58,41 @@ class AddSignInVM @Inject constructor(application: Application,private val creat
     var selectedTypeIdList:ArrayList<Long>? = ArrayList()
     var selectedActivityIdList:ArrayList<Long>? = ArrayList()
 
+    val isClientLoading = ObservableField<Boolean>().apply { set(false) }
+    val isProjectLoading = ObservableField<Boolean>().apply { set(false) }
+    val isPoLoading = ObservableField<Boolean>().apply { set(false) }
+    val isCircleLoading = ObservableField<Boolean>().apply { set(false) }
+    val isSiteLoading = ObservableField<Boolean>().apply { set(false) }
+    val isTypeLoading = ObservableField<Boolean>().apply { set(false) }
+    val isActivityLoading = ObservableField<Boolean>().apply { set(false) }
+
+    fun setClientLoading(isLoading: Boolean) {
+        isClientLoading.set(isLoading)
+    }
+
+    fun setProjectLoading(isLoading: Boolean) {
+        isProjectLoading.set(isLoading)
+    }
+
+    fun setPoLoading(isLoading: Boolean) {
+        isPoLoading.set(isLoading)
+    }
+
+    fun setCircleLoading(isLoading: Boolean) {
+        isCircleLoading.set(isLoading)
+    }
+
+    fun setSiteLoading(isLoading: Boolean) {
+        isSiteLoading.set(isLoading)
+    }
+
+    fun setTypeLoading(isLoading: Boolean) {
+        isTypeLoading.set(isLoading)
+    }
+
+    fun setActivityLoading(isLoading: Boolean) {
+        isActivityLoading.set(isLoading)
+    }
 
     /*Methods declaration*/
     fun onCameraClick(){

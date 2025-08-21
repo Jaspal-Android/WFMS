@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class PoData(
     @SerializedName("client_id")
-    val clientId: Int,
+    val clientId: Long,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("id")
@@ -17,7 +17,7 @@ data class PoData(
     @SerializedName("po_number")
     val poNumber: String,
     @SerializedName("project_id")
-    val projectId: Int,
+    val projectId: Long,
     @SerializedName("quantity")
     val quantity: Int,
     @SerializedName("updated_at")

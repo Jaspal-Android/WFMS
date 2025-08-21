@@ -42,16 +42,6 @@ import java.util.Locale
 
 class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() {
 
-    private lateinit var clientAdapter: AutoCompleteTempAdapter<Client>
-    private lateinit var projectAdapter: AutoCompleteTempAdapter<ProjectData>
-    private lateinit var poAdapter: AutoCompleteTempAdapter<PoData>
-    private lateinit var circleAdapter: AutoCompleteTempAdapter<CircleData>
-    private lateinit var siteAdapter: AutoCompleteTempAdapter<SiteData>
-    private lateinit var typeAdapter: AutoCompleteTempAdapter<TypeData>
-    private lateinit var activityAdapter: AutoCompleteTempAdapter<ActivityData>
-
-    //---------------------------------------------------//
-
     /*Location API Variables*/
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -137,175 +127,71 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
     private fun initListeners() {
         binding.clientEt.setOnClickListener {
-            //binding.clientEt.showDropDown()
             showClientSelectionDialog(viewModel.clients)
         }
-
-       /* binding.clientEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.clientEt.showDropDown()
-            }
-        }*/
-
-       /* binding.clientEt.setOnItemClickListener { parent, view, position, id ->
-            binding.clientEt.error = null
-            val selectedClient = parent.getItemAtPosition(position) as Client
-            onClientSelected(selectedClient)
-        }*/
-
 
         binding.projectEt.setOnClickListener {
             showProjectSelectionDialog(viewModel.projects)
         }
-        /*binding.projectEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.projectEt.showDropDown()
-            }
-        }
-
-        binding.projectEt.setOnItemClickListener { parent, view, position, id ->
-            binding.projectEt.error = null
-            val selectedProject = parent.getItemAtPosition(position) as ProjectData
-            onProjectSelected(selectedProject)
-        }*/
 
         binding.poEt.setOnClickListener {
-           // binding.poEt.showDropDown()
             showPOSelectionDialog(viewModel.poNumbers)
         }
 
-       /* binding.poEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.poEt.showDropDown()
-            }
-        }
-
-        binding.poEt.setOnItemClickListener { parent, view, position, id ->
-            binding.poEt.error = null
-            val selectedPo = parent.getItemAtPosition(position) as PoData
-            viewModel.selectedPoNumberId = selectedPo.id
-        }*/
-
         binding.circleEt.setOnClickListener {
-           // binding.circleEt.showDropDown()
             showCircleSelectionDialog(viewModel.circles)
         }
 
-       /* binding.circleEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.circleEt.showDropDown()
-            }
-        }
-
-        binding.circleEt.setOnItemClickListener { parent, view, position, id ->
-            val selectedCircle = parent.getItemAtPosition(position) as CircleData
-            viewModel.selectedCircleId = selectedCircle.id
-        }*/
-
         binding.siteEt.setOnClickListener {
-            //binding.siteEt.showDropDown()
             showSiteSelectionDialog(viewModel.sites)
         }
-       /* binding.siteEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.siteEt.showDropDown()
-            }
-        }
-        binding.siteEt.setOnItemClickListener { parent, view, position, id ->
-            binding.siteEt.error = null
-            val selectedSite = parent.getItemAtPosition(position) as SiteData
-            viewModel.selectedSiteId = selectedSite.id
-        }*/
 
         binding.typeEt.setOnClickListener {
-            //binding.typeEt.showDropDown()
             showTypeSelectionDialog(viewModel.types)
         }
 
-      /*  binding.typeEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.typeEt.showDropDown()
-            }
-        }
-
-        binding.typeEt.setOnItemClickListener { parent, view, position, id ->
-            binding.typeEt.error = null
-            val selectedType = parent.getItemAtPosition(position) as TypeData
-            onTypeSelected(selectedType)
-        }*/
-
         binding.activitiesEt.setOnClickListener {
-            //binding.activitiesEt.showDropDown()
             if (viewModel.selectedTypeIdList.isNullOrEmpty()) {
                 binding.activitiesEt.error = getString(R.string.select_type)
-                showToast(this, getString(R.string.select_site))
+                showToast(this, getString(R.string.select_type))
             } else {
                 showActivitySelectionDialog(viewModel.activities)
             }
         }
-       /* binding.activitiesEt.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                binding.activitiesEt.showDropDown()
-            }
-        }
-        binding.activitiesEt.setOnItemClickListener { parent, view, position, id ->
-            binding.activitiesEt.error = null
-            val selectedActivity = parent.getItemAtPosition(position) as ActivityData
-            viewModel.selectedActivityIdList?.add(selectedActivity.id)
-        }*/
 
     }
 
     private fun onClientSelected(selectedClient: Client) {
         viewModel.selectedClient = selectedClient
         binding.clientEt.setText(selectedClient.companyName)
-        // Clear dependent fields and adapters
         binding.projectEt.setText("")
         binding.poEt.setText("")
         binding.circleEt.setText("")
         binding.siteEt.setText("")
         binding.typeEt.setText("")
         binding.activitiesEt.setText("")
-       // binding.projectEt.setAdapter(null)
-        //binding.poEt.setAdapter(null)
-       // binding.circleEt.setAdapter(null)
-       // binding.siteEt.setAdapter(null)
-       // binding.typeEt.setAdapter(null)
-       // binding.activitiesEt.setAdapter(null)
-
         viewModel.selectedProjectId = null
         viewModel.selectedPoNumberId = null
         viewModel.selectedCircleId = null
         viewModel.selectedSiteId = null
         viewModel.selectedTypeIdList?.clear()
         viewModel.selectedActivityIdList?.clear()
-
-        // Load new options for the selected client
         getProjectListByClientId(selectedClient.id)
     }
 
     private fun onProjectSelected(selectedProject: ProjectData) {
         viewModel.selectedProjectId = selectedProject.id
         binding.projectEt.setText(selectedProject.name)
-        // Clear dependent fields and adapters
         binding.poEt.setText("")
         binding.circleEt.setText("")
         binding.siteEt.setText("")
         binding.typeEt.setText("")
         binding.activitiesEt.setText("")
-        //binding.poEt.setAdapter(null)
-       // binding.circleEt.setAdapter(null)
-       // binding.siteEt.setAdapter(null)
-        //binding.typeEt.setAdapter(null)
-       // binding.activitiesEt.setAdapter(null)
-
         viewModel.selectedPoNumberId = null
         viewModel.selectedCircleId = null
         viewModel.selectedSiteId = null
         viewModel.selectedTypeIdList?.clear()
         viewModel.selectedActivityIdList?.clear()
-
-        // Load new options for the selected project
         getPoNumberListByProject(selectedProject.id)
         getCircleListByProject(selectedProject.id)
         getSiteListByProject(selectedProject.id)
@@ -316,7 +202,6 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         viewModel.selectedTypeIdList?.clear()
         viewModel.selectedActivityIdList?.clear()
         binding.activitiesEt.setText("")
-       // binding.activitiesEt.setAdapter(null)
         viewModel.selectedTypeIdList?.add(selectedType.id)
         binding.typeEt.setText(selectedType.name)
         viewModel.selectedProjectId?.let { getActivityListByProjectType(it, selectedType.id) }
@@ -324,6 +209,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
     override fun subscribeToEvents(vm: AddSignInVM) {
         binding.vm = vm
+
         vm.clickEvents.observe(this) {
             when (it) {
                 AddSignInClickEvents.ON_CAMERA_CLICK -> {
@@ -387,14 +273,6 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                         200 -> {
                             val clients = response.response?.data?.clients ?: emptyList()
                             viewModel.clients = clients
-                           /* clientAdapter = AutoCompleteTempAdapter(
-                                this,
-                                android.R.layout.simple_dropdown_item_1line,
-                                clients
-                            )
-                            binding.clientEt.setAdapter(clientAdapter)*/
-                            //showClientSelectionDialog(clients)
-
                         }
 
                         401 -> {
@@ -436,23 +314,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.projectListByClientResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    dismissProgress()
+                    vm.setProjectLoading(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
                             val projects = response.response?.data ?: emptyList()
                             viewModel.projects = projects
-
-                            /*if (projects.isEmpty()) {
-                                showToast(this, getString(R.string.no_projects_found))
-                            } else {
-                                projectAdapter = AutoCompleteTempAdapter(
-                                    this,
-                                    android.R.layout.simple_dropdown_item_1line,
-                                    projects
-                                )
-                                binding.projectEt.setAdapter(projectAdapter)
-                            }*/
                         }
 
                         401 -> {
@@ -471,7 +338,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    dismissProgress()
+                    vm.setProjectLoading(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -486,7 +353,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    showProgress()
+                    vm.setProjectLoading(true)
                 }
             }
         }
@@ -494,18 +361,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.poNumberListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    // dismissProgress()
+                    vm.setPoLoading(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
                             val poNumbers = response.response?.data ?: emptyList()
                             viewModel.poNumbers = poNumbers
-                           /* poAdapter = AutoCompleteTempAdapter(
-                                this,
-                                android.R.layout.simple_dropdown_item_1line,
-                                poNumbers
-                            )
-                            binding.poEt.setAdapter(poAdapter)*/
                         }
 
                         401 -> {
@@ -524,7 +385,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    //dismissProgress()
+                    vm.setPoLoading(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -539,7 +400,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    // showProgress()
+                    vm.setPoLoading(true)
                 }
             }
         }
@@ -547,18 +408,11 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.circleListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    // dismissProgress()
+                    vm.setCircleLoading(false)
                     when (response.response?.code) {
                         200 -> {
                             val circles = response.response?.data ?: emptyList()
                             viewModel.circles = circles
-
-                            /* circleAdapter = AutoCompleteTempAdapter(
-                                this,
-                                android.R.layout.simple_dropdown_item_1line,
-                                circles
-                            )
-                            binding.circleEt.setAdapter(circleAdapter)*/
                         }
 
                         401 -> {
@@ -577,7 +431,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    // dismissProgress()
+                    vm.setCircleLoading(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -592,7 +446,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    // showProgress()
+                    vm.setCircleLoading(true)
                 }
             }
         }
@@ -600,18 +454,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.siteListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    //dismissProgress()
+                    vm.setSiteLoading(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
                             val sites = response.response?.data ?: emptyList()
                             viewModel.sites = sites
-                            /*siteAdapter = AutoCompleteTempAdapter(
-                                this,
-                                android.R.layout.simple_dropdown_item_1line,
-                                sites
-                            )
-                            binding.siteEt.setAdapter(siteAdapter)*/
                         }
 
                         401 -> {
@@ -630,7 +478,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    //dismissProgress()
+                    vm.setSiteLoading(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -645,7 +493,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    //showProgress()
+                    vm.setSiteLoading(true)
                 }
             }
         }
@@ -653,18 +501,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.typeListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    //dismissProgress()
+                    vm.setTypeLoading(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
                             val types = response.response?.data ?: emptyList()
                             viewModel.types = types
-                            /*typeAdapter = AutoCompleteTempAdapter(
-                                this,
-                                android.R.layout.simple_dropdown_item_1line,
-                                types
-                            )
-                            binding.typeEt.setAdapter(typeAdapter)*/
                         }
 
                         401 -> {
@@ -683,7 +525,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    //dismissProgress()
+                    vm.setTypeLoading(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -698,7 +540,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    //showProgress()
+                    vm.setTypeLoading(true)
                 }
             }
         }
@@ -706,19 +548,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.activityListByProjectTypeResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    //dismissProgress()
+                    vm.setActivityLoading(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
                             val activities = response.response?.data ?: emptyList()
                             viewModel.activities = activities
-                            /*activityAdapter = AutoCompleteTempAdapter(
-                                this,
-                                android.R.layout.simple_dropdown_item_1line,
-                                activities
-                            )
-                            binding.activitiesEt.setAdapter(activityAdapter)
-                            binding.activitiesEt.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())*/
                         }
 
                         401 -> {
@@ -737,7 +572,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    //dismissProgress()
+                    vm.setActivityLoading(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -752,7 +587,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    //showProgress()
+                    vm.setActivityLoading(true)
                 }
             }
         }
@@ -827,11 +662,23 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 filterCondition = { client, query ->
                     client.companyName.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_client)
             )
             dialog.show(supportFragmentManager, "ClientSelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_clients_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getClientList()
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
@@ -851,11 +698,23 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 filterCondition = { project, query ->
                     project.name.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_project)
             )
             dialog.show(supportFragmentManager, "ClientSelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.no_projects_found), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_projects_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getProjectListByClientId(viewModel.selectedClient?.id ?: 0L)
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
@@ -869,17 +728,30 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     view.findViewById<TextView>(R.id.text1).text = poNumber.poNumber
                 },
                 onItemSelected = { selectedPoNumber ->
+                    binding.poEt.error = null
                     viewModel.selectedPoNumberId = selectedPoNumber.id
                     binding.poEt.setText(selectedPoNumber.poNumber)
                 },
                 filterCondition = { poNumber, query ->
                     poNumber.poNumber.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_po_number)
             )
             dialog.show(supportFragmentManager, "ClientSelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_po_numbers_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getPoNumberListByProject(viewModel.selectedProjectId ?: 0L)
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
@@ -893,17 +765,30 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     view.findViewById<TextView>(R.id.text1).text = circle.name
                 },
                 onItemSelected = { selectedCircle ->
+                    binding.circleEt.error = null
                     viewModel.selectedCircleId = selectedCircle.id
                     binding.circleEt.setText(selectedCircle.name)
                 },
                 filterCondition = { circle, query ->
                     circle.name.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_circle)
             )
             dialog.show(supportFragmentManager, "CircleSelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_circles_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getCircleListByProject(viewModel.selectedProjectId ?: 0L)
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
@@ -917,17 +802,30 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     view.findViewById<TextView>(R.id.text1).text = site.name
                 },
                 onItemSelected = { selectedSite ->
+                    binding.siteEt.error = null
                     viewModel.selectedSiteId = selectedSite.id
                     binding.siteEt.setText(selectedSite.name)
                 },
                 filterCondition = { site, query ->
                     site.name.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_site)
             )
             dialog.show(supportFragmentManager, "SiteSelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_sites_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getSiteListByProject(viewModel.selectedProjectId ?: 0L)
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
@@ -947,11 +845,23 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 filterCondition = { type, query ->
                     type.name.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_type)
             )
             dialog.show(supportFragmentManager, "TypeSelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_types_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getTypeListByProject(viewModel.selectedProjectId ?: 0L)
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
@@ -972,19 +882,36 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     checkBox.isChecked = isSelected
                 },
                 onSelectionChanged = { selectedActivities ->
+                    binding.activitiesEt.error = null
                     updateSelectedActivities(selectedActivities)
                 },
                 onSubmit = { selectedActivities ->
+                    binding.activitiesEt.error = null
                     updateSelectedActivities(selectedActivities)
                 },
                 filterCondition = { activity, query ->
                     activity.name.lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
-                }
+                },
+                title = getString(R.string.select_activities)
             )
             dialog.show(supportFragmentManager, "ActivitySelectionDialog")
         } else {
-            Toast.makeText(this, getString(R.string.not_available), Toast.LENGTH_SHORT).show()
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_activities_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getActivityListByProjectType(
+                        viewModel.selectedProjectId ?: 0L,
+                        viewModel.selectedTypeIdList?.firstOrNull() ?: 0L
+                    )
+                },
+                canelLister = DialogInterface.OnClickListener { _, _ ->
+
+                }
+            )
         }
     }
 
