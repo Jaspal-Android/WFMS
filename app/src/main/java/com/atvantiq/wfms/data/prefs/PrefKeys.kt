@@ -5,4 +5,5 @@ object PrefKeys {
 	const val WFMS_PREF= "wfms_prefs"
 	const val LOGIN_TOKEN ="LOGIN_TOKEN"
 	const val USER_DATA = "USER_DATA"
+	const val EMP_DATA = "EMP_DATA"
 }

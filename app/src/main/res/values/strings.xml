@@ -160,7 +160,6 @@
     <string name="work_off">Work Off</string>
     <string name="n_a">N/A</string>
 
-    
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="location_error">Location not found.</string>
@@ -176,4 +175,10 @@
     <string name="select_activity">Select Activity</string>
     <string name="select_valid_option">Select valid option.</string>
 
+    <string name="default_name">N/A</string>
+    <string name="default_value">N/A</string>
+    <string name="circle_label">Circle</string>
+    <string name="date_of_joining_label">Date of joining</string>
+    <string name="reporting_manager_label">Reporting Manager</string>
+    <string name="designation_label">Designation</string>
 </resources>

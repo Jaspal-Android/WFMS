@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
@@ -117,6 +118,12 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,At
             onEndWork = { assignedTask, position ->
                 // Handle end work click
             }
+        )
+        binding.workList.addItemDecoration(
+            androidx.recyclerview.widget.DividerItemDecoration(
+                this,
+                LinearLayoutManager.VERTICAL
+            )
         )
         binding.workList.adapter = adapter
     }

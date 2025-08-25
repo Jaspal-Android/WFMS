@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -117,6 +116,8 @@ class CalendarView : LinearLayoutCompat {
         fun onPrevMonthClickListener(calendar: Calendar?)
 
         fun onNextMonthClickListener(calendar: Calendar?)
+
+        fun attendanceSummaryResult(statusCounts: Map<String, Int>, noApiDays: Int)
     }
 
     private fun updateCalendar(context: Context) {
@@ -143,6 +144,7 @@ class CalendarView : LinearLayoutCompat {
 
     private fun getMonthDays(calendar: Calendar): List<AttendanceDay> {
         val attendanceData = mutableListOf<AttendanceDay>()
+        val noApiDataDays = mutableListOf<String>() // To store dates without API data
 
         // Clone calendar to manipulate dates without affecting the original instance
         val tempCalendar = calendar.clone() as Calendar
@@ -186,6 +188,10 @@ class CalendarView : LinearLayoutCompat {
             val matchingRecord = apiAttendanceData.find { it.date == dateString }
             val status = matchingRecord?.status ?: "NO_ACTION" // Default to "NO_ACTION" if no match
 
+            if (matchingRecord == null) {
+                noApiDataDays.add(dateString) // Add to no API data list
+            }
+
             attendanceData.add(
                 AttendanceDay(
                     date = dateString,
@@ -209,6 +215,12 @@ class CalendarView : LinearLayoutCompat {
             }
         }
 
+        // Calculate status counts
+        val statusCounts = attendanceData.groupingBy { it.status }.eachCount()
+
+        if(eventHandler!=null){
+            eventHandler?.attendanceSummaryResult(statusCounts,noApiDataDays.size)
+        }
         return attendanceData
     }
 

@@ -39,7 +39,6 @@
             style="@style/CustomRegularDarkTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_small"
             android:text='@{"Project: " + itemWorkRecord.project.name}'
             app:layout_constraintEnd_toStartOf="@+id/tvSignInStatus"
@@ -69,7 +68,6 @@
             style="@style/CustomMediumDarkTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_small_extra"
             android:layout_marginEnd="@dimen/margin_small"
             android:text='@{"Site: " + itemWorkRecord.site.name}'
@@ -83,7 +81,6 @@
             style="@style/CustomMediumDarkTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_small"
             app:layout_constraintEnd_toStartOf="@+id/barrier"
@@ -112,7 +109,7 @@
             android:visibility="@{hideButtons ? View.GONE : View.VISIBLE}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/margin_small"
+            android:layout_marginEnd="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin"
             android:orientation="vertical"
             app:layout_constraintEnd_toStartOf="@+id/barrier"

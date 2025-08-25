@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -62,15 +63,15 @@ class AttendanceStatusFragment :
         binding.customCalender.setCustomCalendarEventHandler(object :
             CalendarView.CustomCalendarEventHandler {
             override fun onDayClickListener(position: Int, day: AttendanceDay) {
-                if (day.date.isNotEmpty() ) {
-                    if(day.record != null){
+                if (day.date.isNotEmpty()) {
+                    if (day.record != null) {
                         Utils.jumpActivityWithData(requireContext(),
                             AttendanceDetailActivity::class.java,
                             Bundle().apply {
                                 putParcelable(SharingKeys.attendanceRecord, day.record)
                             }
                         )
-                    }else {
+                    } else {
                         showToast(requireContext(), getString(R.string.no_attendance_data))
                     }
                 }
@@ -80,11 +81,11 @@ class AttendanceStatusFragment :
                 calendar?.let {
                     binding.customCalender.clearAttendanceData()
                     val month = it.get(Calendar.MONTH) + 1 // Months are indexed from 0
-                    val year =  it.get(Calendar.YEAR)
+                    val year = it.get(Calendar.YEAR)
                     val totalDays = getTotalDaysInMonth(month, year)
                     binding.totalDaysText.text = totalDays.toString()
                     resetAttendanceSummary()
-                    viewModel.getAttendanceDetails(month,year)
+                    viewModel.getAttendanceDetails(month, year)
                 }
             }
 
@@ -92,12 +93,19 @@ class AttendanceStatusFragment :
                 calendar?.let {
                     binding.customCalender.clearAttendanceData()
                     val month = it.get(Calendar.MONTH) + 1 // Months are indexed from 0
-                    val year =  it.get(Calendar.YEAR)
+                    val year = it.get(Calendar.YEAR)
                     val totalDays = getTotalDaysInMonth(month, year) // Get total days in the month
                     binding.totalDaysText.text = totalDays.toString()
                     resetAttendanceSummary()
-                    viewModel.getAttendanceDetails(month,year)
+                    viewModel.getAttendanceDetails(month, year)
                 }
+            }
+
+            override fun attendanceSummaryResult(statusCounts: Map<String, Int>, noApiDays: Int) {
+                // Log or handle the results
+                Log.d("CalendarView", "Status Counts: $statusCounts")
+                Log.d("CalendarView", "Days without API data: ${noApiDays}")
+                showAttendanceSummary(statusCounts, noApiDays)
             }
         })
 
@@ -111,10 +119,10 @@ class AttendanceStatusFragment :
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
     }
 
-    private fun getAttendanceDetails(){
+    private fun getAttendanceDetails() {
         var time = DateUtils.getCurrentMonthAndYear()
         binding.totalDaysText.text = getTotalDaysInMonth(time.first, time.second).toString()
-        viewModel.getAttendanceDetails(time.first,time.second)
+        viewModel.getAttendanceDetails(time.first, time.second)
     }
 
     override fun subscribeToEvents(vm: AttendanceStatusVM) {
@@ -127,14 +135,17 @@ class AttendanceStatusFragment :
                         200 -> {
                             handleAttendanceDetailsResponse(response.response)
                         }
+
                         401 -> {
                             tokenExpiresAlert()
                         }
+
                         else -> {
                             alertDialogShow(
                                 requireContext(),
                                 getString(R.string.alert),
-                                response.response?.message ?: getString(R.string.something_went_wrong)
+                                response.response?.message
+                                    ?: getString(R.string.something_went_wrong)
                             )
                         }
                     }
@@ -182,8 +193,8 @@ class AttendanceStatusFragment :
                     )
                 }
                 // Calculate the count of each status
-                val statusCounts = attendanceDays.groupingBy { it.status }.eachCount()
-                showAttendanceSummary(statusCounts)
+                //val statusCounts = attendanceDays.groupingBy { it.status }.eachCount()
+                // showAttendanceSummary(statusCounts)
                 binding.customCalender.setAttendanceData(attendanceDays)
             } else {
                 resetAttendanceSummary() // Reset counts when no attendance data is found
@@ -206,14 +217,13 @@ class AttendanceStatusFragment :
         binding.naText.text = "0"
     }
 
-    private fun showAttendanceSummary(statusCounts: Map<String, Int>) {
+    private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) {
         binding.presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
         binding.absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
         binding.leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
         binding.idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
         binding.holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"
         binding.workOffText.text = statusCounts[AttendanceStatus.WORK_OFF]?.toString() ?: "0"
-        binding.naText.text = statusCounts[AttendanceStatus.UNKNOWN]?.toString() ?: "0"
+        binding.naText.text = noApiDays.toString()
     }
-
 }

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -16,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.databinding.FragmentDashboardBinding
-import com.atvantiq.wfms.models.loginResponse.User
+import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
 import com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter
@@ -63,9 +64,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val cachedEmpDetail = PrefMethods.getEmpDetailResponse(prefMain)
+        if (cachedEmpDetail != null) {
+            setupUserData(cachedEmpDetail)
+        } else {
+            viewModel.getEmpDetails()
+        }
+    }
+
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
-        setupUserData()
+        //setupUserData()
         checkInAttendanceStatus()
 
         vm.clickEvents.observe(viewLifecycleOwner) {
@@ -76,6 +87,54 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 }
             }
 
+        }
+
+        vm.empDetailsResponse.observe(viewLifecycleOwner) { response ->
+            if (isLifeCycleResumed()) {
+                when (response.status) {
+                    Status.SUCCESS -> {
+    //                    dismissProgress()
+                        when (response.response?.code) {
+                            200 -> {
+                                val empDetailResponse = response.response
+                                PrefMethods.saveEmpDetailResponse(prefMain, empDetailResponse.data)
+                                setupUserData(empDetailResponse?.data)
+                            }
+                            401 -> {
+                                tokenExpiresAlert()
+                            }
+                            else -> {
+                                alertDialogShow(
+                                    requireContext(),
+                                    getString(R.string.alert),
+                                    response.response?.message
+                                        ?: getString(R.string.something_went_wrong)
+                                )
+                            }
+                        }
+                    }
+
+                    Status.ERROR -> {
+//                        dismissProgress()
+                        val throwable = response.throwable
+                        if (throwable is HttpException) {
+                            if (throwable.code() == 401) {
+                                tokenExpiresAlert()
+                            }
+                        }  else {
+                            alertDialogShow(
+                                requireContext(),
+                                getString(R.string.alert),
+                                response?.throwable?.message.toString()
+                            )
+                        }
+                    }
+
+                    Status.LOADING -> {
+//                        showProgress()
+                    }
+                }
+            }
         }
 
         vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
@@ -300,8 +359,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    private fun setupUserData() {
-        var userData: User? = PrefMethods.getUserData(prefMain) ?: return
+    private fun setupUserData(userData: EmpData?) {
+        //var userData: User? = PrefMethods.getUserData(prefMain) ?: return
         binding.appDashHeader.userData = userData
     }
 

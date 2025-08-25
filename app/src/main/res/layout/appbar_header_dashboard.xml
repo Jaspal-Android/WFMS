@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel" />
 
         <variable
             name="userData"
-            type="com.atvantiq.wfms.models.loginResponse.User" />
+            type="com.atvantiq.wfms.models.empDetail.EmpData" />
 
     </data>
 
@@ -32,13 +33,14 @@
             <TextView
                 android:id="@+id/tvEmpName"
                 style="@style/CustomLargeDarkTextView"
+                wishText="@{userData.name}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Hello, Jaspal"
-                wishText="@{userData.userName}"
+                android:text="@{userData.name != null ? userData.name : @string/default_name}"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"></TextView>
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Hello, Jaspal"></TextView>
 
 
             <com.ncorti.slidetoact.SlideToActView
@@ -48,6 +50,7 @@
                 android:layout_marginTop="@dimen/margin_large"
                 app:animation_duration="250"
                 app:area_margin="5dp"
+                app:border_radius="@dimen/card_radius"
                 app:bounce_on_start="true"
                 app:inner_color="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,7 +59,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
                 app:outer_color="@color/colorPrimaryDark"
                 app:slider_height="50dp"
-                app:border_radius="@dimen/card_radius"
                 app:text="@string/start_day"
                 app:text_color="@color/white"
                 app:text_size="@dimen/default_text" />
@@ -67,11 +69,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_large"
-                android:text="Circle: Mumbai"
+                android:text='@{@string/circle_label +": "+ (userData.circle != null ? userData.circle : @string/default_value)}'
                 app:layout_constraintEnd_toStartOf="@+id/dojText"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/slideStartDay" />
+                app:layout_constraintTop_toBottomOf="@+id/slideStartDay"
+                tools:text="Circle: Mumbai" />
 
             <TextView
                 android:id="@+id/dojText"
@@ -79,11 +82,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
-                android:text="Date of joining: 02-04-2022"
+                android:text='@{@string/date_of_joining_label + ": " +(userData.dateOfJoining != null ? userData.dateOfJoining : @string/default_value)}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@+id/tvCircle"
-                app:layout_constraintTop_toTopOf="@+id/tvCircle" />
+                app:layout_constraintTop_toTopOf="@+id/tvCircle"
+                tools:text="Date of joining: 02-04-2022" />
 
             <TextView
                 android:id="@+id/reportingManagerText"
@@ -91,11 +95,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small_extra"
-                android:text="Reporting Manager: Vikram Sachdeva"
+                android:text='@{@string/reporting_manager_label + ": "+(userData.reportingManager != null ? (userData.reportingManager.name != null ? userData.reportingManager.name : @string/default_value) : @string/default_value)}'
                 app:layout_constraintEnd_toStartOf="@+id/designationText"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dojText" />
+                app:layout_constraintTop_toBottomOf="@+id/dojText"
+                tools:text="Reporting Manager: John Doe" />
 
             <TextView
                 android:id="@+id/designationText"
@@ -103,15 +108,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
-                android:text="Designation: Manager"
+                android:text='@{@string/designation_label +": "+(userData.designation != null ? userData.designation : @string/default_value)}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toEndOf="@+id/reportingManagerText"
-                app:layout_constraintTop_toTopOf="@+id/reportingManagerText" />
+                app:layout_constraintTop_toTopOf="@+id/reportingManagerText"
+                tools:text="Designation: Manager" />
 
 
             <TextView
-                android:visibility="gone"
                 android:id="@+id/announcementText"
                 style="@style/CustomRegularDarkTextView"
                 android:layout_width="wrap_content"
@@ -121,31 +126,32 @@
                 android:drawablePadding="@dimen/padding_small"
                 android:text="@string/announcements"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/reportingManagerText" />
 
             <TextView
-                android:visibility="gone"
-                android:onClick="@{()-> vm.onAnnouncementsClicks()}"
                 style="@style/CustomSmallLightTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/small_primary_bg"
                 android:elevation="@dimen/elevation"
+                android:onClick="@{()-> vm.onAnnouncementsClicks()}"
                 android:paddingStart="@dimen/padding_medium"
                 android:paddingTop="@dimen/padding_x_small"
                 android:paddingEnd="@dimen/padding_medium"
                 android:paddingBottom="@dimen/padding_x_small"
                 android:text="@string/view_all"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/announcementText"></TextView>
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/marqueeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/announcementText">
 
                 <androidx.recyclerview.widget.RecyclerView

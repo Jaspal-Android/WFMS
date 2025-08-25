@@ -8,8 +8,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
+import com.atvantiq.wfms.data.repository.auth.AuthRepo
+import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
+import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
 import com.atvantiq.wfms.utils.NoInternetException
@@ -22,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     application: Application,
-    private val attendanceRepo: IAttendanceRepo
+    private val attendanceRepo: IAttendanceRepo,
+    private val authRepo: IAuthRepo
 ) : AndroidViewModel(application) {
 
     // variables initializations
@@ -122,6 +126,26 @@ class DashboardViewModel @Inject constructor(
             }
         } else {
             attendanceCheckInStatusResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
+        }
+    }
+
+    /*
+    * get Emp details API
+    * */
+    var empDetailsResponse = MutableLiveData<ApiState<EmpDetailResponse>>()
+    fun getEmpDetails() {
+        if (Utils.isInternet(getApplication())) {
+            viewModelScope.launch {
+                empDetailsResponse.postValue(ApiState.loading())
+                try {
+                    var response = authRepo.empDetails()
+                    empDetailsResponse.postValue(ApiState.success(response))
+                } catch (e: Exception) {
+                    empDetailsResponse.postValue(ApiState.error(e))
+                }
+            }
+        } else {
+            empDetailsResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
         }
     }
 

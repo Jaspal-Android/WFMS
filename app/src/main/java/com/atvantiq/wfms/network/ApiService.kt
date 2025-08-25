@@ -5,6 +5,7 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailLis
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
+import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
@@ -36,6 +37,9 @@ interface ApiService {
 	 */
 	@POST(NetworkEndPoints.loginRequest)
 	suspend fun loginRequest(@Body params: JsonObject): LoginResponse
+
+	@GET(NetworkEndPoints.empDetails)
+	suspend fun empDetails(@Header("Authorization") token: String): EmpDetailResponse
 
 	@POST(NetworkEndPoints.attendanceCheckIn)
 	suspend fun attendanceCheckIn(@Header("Authorization") token: String, @Body params: JsonObject): CheckInOutResponse
