@@ -67,7 +67,7 @@ jobs:
         run: echo -e "\norg.gradle.warning.mode=all" >> gradle.properties
 
       - name: Run Lint
-        run: ./gradlew lintDevDebug
+        run: ./gradlew lintAnalyzeDevDebug
 
       - name: Upload Lint Report
         if: always()
@@ -207,3 +207,4 @@ jobs:
           path: app/build/outputs/apk/release/*.apk
           retention-days: 30
           if-no-files-found: error
+
