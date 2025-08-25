@@ -63,8 +63,11 @@ jobs:
       - name: Create local.properties
         run: echo "sdk.dir=/home/runner/Library/Android/sdk" > local.properties
 
+      - name: Enable detailed deprecation warnings
+        run: echo "org.gradle.warning.mode=all" >> gradle.properties
+
       - name: Run Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintDevDebug
 
       - name: Upload Lint Report
         if: always()
@@ -103,6 +106,9 @@ jobs:
 
       - name: Create local.properties
         run: echo "sdk.dir=/home/runner/Library/Android/sdk" > local.properties
+
+      - name: Enable detailed deprecation warnings
+        run: echo "org.gradle.warning.mode=all" >> gradle.properties
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
@@ -163,6 +169,9 @@ jobs:
       - name: Create local.properties
         run: echo "sdk.dir=/home/runner/Library/Android/sdk" > local.properties
 
+      - name: Enable detailed deprecation warnings
+        run: echo "org.gradle.warning.mode=all" >> gradle.properties
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
@@ -198,3 +207,4 @@ jobs:
           path: app/build/outputs/apk/release/*.apk
           retention-days: 30
           if-no-files-found: error
+
