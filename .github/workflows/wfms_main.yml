@@ -60,6 +60,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Create local.properties
+        run: echo "sdk.dir=/home/runner/Library/Android/sdk" > local.properties
+
       - name: Run Lint
         run: ./gradlew lintDebug
 
@@ -97,6 +100,9 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+
+      - name: Create local.properties
+        run: echo "sdk.dir=/home/runner/Library/Android/sdk" > local.properties
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
@@ -154,6 +160,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Create local.properties
+        run: echo "sdk.dir=/home/runner/Library/Android/sdk" > local.properties
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
@@ -189,4 +198,3 @@ jobs:
           path: app/build/outputs/apk/release/*.apk
           retention-days: 30
           if-no-files-found: error
-
