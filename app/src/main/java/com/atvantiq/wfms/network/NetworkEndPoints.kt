@@ -4,6 +4,8 @@ object NetworkEndPoints {
 	
 	/* Login Page */
 	//const val  BASE_URL = "http://69.62.85.16:8000/"
+	//const val  BASE_URL = "http://69.62.85.16:8000/"
+	const val  BASE_URL = "http://69.62.85.16:8000/"
 
 	/*Login*/
 	const val loginRequest = "login"
