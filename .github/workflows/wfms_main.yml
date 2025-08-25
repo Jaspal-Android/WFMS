@@ -190,27 +190,3 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
-  # Job for deploying to Play Store
-  deploy:
-    name: Deploy to Play Store
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download Release APK
-        uses: actions/download-artifact@v4
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/
-
-      - name: Deploy to Play Store
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_CREDENTIALS }}
-          packageName: com.example.app
-          releaseFiles: app/build/outputs/apk/release/*.apk
-          track: production
-          status: completed
