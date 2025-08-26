@@ -6,11 +6,13 @@ on:
   push:
     branches:
       - master
-      - dev
+      - develop
+      - beta
   pull_request:
     branches:
       - master
-      - dev
+      - develop
+      - beta
   workflow_dispatch:
 
 # Environment variables
@@ -177,19 +179,45 @@ jobs:
       - name: Enable detailed deprecation warnings
         run: echo -e "\norg.gradle.warning.mode=all" >> gradle.properties
 
-      - name: Build Debug APKs
-        run: |
-          ./gradlew assembleDevDebug
-          ./gradlew assembleBetaDebug
-          ./gradlew assembleProdDebug
+      # Build Debug APK for dev branch
+      - name: Build Debug APK (dev flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: ./gradlew assembleDevDebug
 
-      - name: Upload Debug APKs
+      - name: Upload Debug APK (dev flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apks
-          path: app/build/outputs/apk/*/debug/*.apk
+          name: dev-debug-apk
+          path: app/build/outputs/apk/dev/debug/*.apk
           retention-days: 7
 
+      # Build Release APK for beta branch
+      - name: Decode Keystore
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: |
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
+        env:
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Build Release APK (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: ./gradlew assembleBetaRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Upload Release APK (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        uses: actions/upload-artifact@v4
+        with:
+          name: beta-release-apk
+          path: app/build/outputs/apk/beta/release/*.apk
+          retention-days: 30
+
+      # Build Release APK for main branch
       - name: Decode Keystore
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -197,23 +225,20 @@ jobs:
         env:
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
 
-      - name: Build Release APKs
+      - name: Build Release APK (prod flavor)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          ./gradlew assembleDevRelease
-          ./gradlew assembleBetaRelease
-          ./gradlew assembleProdRelease
+        run: ./gradlew assembleProdRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
 
-      - name: Upload Release APKs
+      - name: Upload Release APK (prod flavor)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: release-apks
-          path: app/build/outputs/apk/*/release/*.apk
+          name: prod-release-apk
+          path: app/build/outputs/apk/prod/release/*.apk
           retention-days: 30
-          if-no-files-found: error
+
