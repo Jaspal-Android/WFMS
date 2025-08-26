@@ -217,16 +217,16 @@ jobs:
           path: app/build/outputs/apk/beta/release/*.apk
           retention-days: 30
 
-      # Build Release APK for main branch
+      # Build Release APK for master branch
       - name: Decode Keystore
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
         env:
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
 
       - name: Build Release APK (prod flavor)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ./gradlew assembleProdRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
@@ -235,7 +235,7 @@ jobs:
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
 
       - name: Upload Release APK (prod flavor)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v4
         with:
           name: prod-release-apk
