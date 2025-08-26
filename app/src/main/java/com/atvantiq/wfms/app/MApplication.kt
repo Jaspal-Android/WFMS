@@ -27,5 +27,6 @@ class MApplication : Application() {
 	companion object {
 		lateinit var instance: MApplication
 		lateinit var provider: ViewModelProvider.NewInstanceFactory
+		var a = 10
 	}
 }
