@@ -314,7 +314,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.projectListByClientResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    vm.setProjectLoading(false)
+                    vm.isProjectLoading.set(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
@@ -338,7 +338,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    vm.setProjectLoading(false)
+                    vm.isProjectLoading.set(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -353,7 +353,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    vm.setProjectLoading(true)
+                    vm.isProjectLoading.set(true)
                 }
             }
         }
@@ -361,7 +361,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.poNumberListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    vm.setPoLoading(false)
+                    vm.isPoLoading.set(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
@@ -385,7 +385,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    vm.setPoLoading(false)
+                    vm.isPoLoading.set(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -400,7 +400,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    vm.setPoLoading(true)
+                    vm.isPoLoading.set(true)
                 }
             }
         }
@@ -408,7 +408,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.circleListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    vm.setCircleLoading(false)
+                    vm.isCircleLoading.set(false)
                     when (response.response?.code) {
                         200 -> {
                             val circles = response.response?.data ?: emptyList()
@@ -431,7 +431,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    vm.setCircleLoading(false)
+                    vm.isCircleLoading.set(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -446,7 +446,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    vm.setCircleLoading(true)
+                    vm.isCircleLoading.set(true)
                 }
             }
         }
@@ -454,7 +454,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.siteListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    vm.setSiteLoading(false)
+                    vm.isSiteLoading.set(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
@@ -478,7 +478,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    vm.setSiteLoading(false)
+                    vm.isSiteLoading.set(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -493,7 +493,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    vm.setSiteLoading(true)
+                    vm.isSiteLoading.set(true)
                 }
             }
         }
@@ -501,7 +501,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.typeListByProjectResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    vm.setTypeLoading(false)
+                    vm.isTypeLoading.set(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
@@ -525,7 +525,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    vm.setTypeLoading(false)
+                    vm.isTypeLoading.set(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -540,7 +540,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    vm.setTypeLoading(true)
+                    vm.isTypeLoading.set(true)
                 }
             }
         }
@@ -548,7 +548,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.activityListByProjectTypeResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
-                    vm.setActivityLoading(false)
+                    vm.isActivityLoading.set(false)
                     when (response.response?.code) {
                         200 -> {
                             // Handle success
@@ -572,7 +572,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
-                    vm.setActivityLoading(false)
+                    vm.isActivityLoading.set(false)
                     val throwable = response.throwable
                     if (throwable is HttpException) {
                         if (throwable.code() == 401) {
@@ -587,7 +587,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.LOADING -> {
-                    vm.setActivityLoading(true)
+                    vm.isActivityLoading.set(true)
                 }
             }
         }
@@ -645,224 +645,169 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         }
     }
 
-
-    private fun showClientSelectionDialog(clients: List<Client>) {
-        if (clients.isNotEmpty()) {
+    // Generic dialog creator for single selection
+    private fun <T> showSelectionDialog(
+        items: List<T>,
+        title: String,
+        layoutResId: Int,
+        bind: (view: android.view.View, item: T) -> Unit,
+        onItemSelected: (T) -> Unit,
+        filterCondition: (T, String) -> Boolean,
+        emptyMessage: String,
+        retryAction: () -> Unit,
+        tag: String
+    ) {
+        if (items.isNotEmpty()) {
             val dialog = GenericBottomSheetDialog(
                 context = this,
-                items = clients,
-                layoutResId = R.layout.item_generic_adapter,
-                bind = { view, client ->
-                    view.findViewById<TextView>(R.id.text1).text = client.companyName
+                items = items,
+                layoutResId = layoutResId,
+                bind = bind,
+                onItemSelected = {
+                    onItemSelected(it)
                 },
-                onItemSelected = { selectedClient ->
-                    binding.clientEt.error = null
-                    onClientSelected(selectedClient)
-                },
-                filterCondition = { client, query ->
-                    client.companyName.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
-                },
-                title = getString(R.string.select_client)
+                filterCondition = filterCondition,
+                title = title
             )
-            dialog.show(supportFragmentManager, "ClientSelectionDialog")
+            dialog.show(supportFragmentManager, tag)
         } else {
             alertDialogShow(
                 this,
                 getString(R.string.alert),
-                getString(R.string.no_clients_available),
+                emptyMessage,
                 getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ ->
-                    getClientList()
-                },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
+                okLister = DialogInterface.OnClickListener { _, _ -> retryAction() },
             )
         }
+    }
+
+    private fun showClientSelectionDialog(clients: List<Client>) {
+        showSelectionDialog(
+            items = clients,
+            title = getString(R.string.select_client),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, client ->
+                view.findViewById<TextView>(R.id.text1).text = client.companyName
+            },
+            onItemSelected = {
+                binding.clientEt.error = null
+                onClientSelected(it)
+            },
+            filterCondition = { client, query ->
+                client.companyName.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_clients_available),
+            retryAction = { getClientList() },
+            tag = "ClientSelectionDialog"
+        )
     }
 
     private fun showProjectSelectionDialog(projects: List<ProjectData>) {
-        if (projects.isNotEmpty()) {
-            val dialog = GenericBottomSheetDialog(
-                context = this,
-                items = projects,
-                layoutResId = R.layout.item_generic_adapter,
-                bind = { view, project ->
-                    view.findViewById<TextView>(R.id.text1).text = project.name
-                },
-                onItemSelected = { selectedProject ->
-                    binding.projectEt.error = null
-                    onProjectSelected(selectedProject)
-                },
-                filterCondition = { project, query ->
-                    project.name.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
-                },
-                title = getString(R.string.select_project)
-            )
-            dialog.show(supportFragmentManager, "ClientSelectionDialog")
-        } else {
-            alertDialogShow(
-                this,
-                getString(R.string.alert),
-                getString(R.string.no_projects_available),
-                getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ ->
-                    getProjectListByClientId(viewModel.selectedClient?.id ?: 0L)
-                },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
-            )
-        }
+        showSelectionDialog(
+            items = projects,
+            title = getString(R.string.select_project),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, project ->
+                view.findViewById<TextView>(R.id.text1).text = project.name
+            },
+            onItemSelected = {
+                binding.projectEt.error = null
+                onProjectSelected(it)
+            },
+            filterCondition = { project, query ->
+                project.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_projects_available),
+            retryAction = { getProjectListByClientId(viewModel.selectedClient?.id ?: 0L) },
+            tag = "ProjectSelectionDialog"
+        )
     }
 
     private fun showPOSelectionDialog(poNumbers: List<PoData>) {
-        if (poNumbers.isNotEmpty()) {
-            val dialog = GenericBottomSheetDialog(
-                context = this,
-                items = poNumbers,
-                layoutResId = R.layout.item_generic_adapter,
-                bind = { view, poNumber ->
-                    view.findViewById<TextView>(R.id.text1).text = poNumber.poNumber
-                },
-                onItemSelected = { selectedPoNumber ->
-                    binding.poEt.error = null
-                    viewModel.selectedPoNumberId = selectedPoNumber.id
-                    binding.poEt.setText(selectedPoNumber.poNumber)
-                },
-                filterCondition = { poNumber, query ->
-                    poNumber.poNumber.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
-                },
-                title = getString(R.string.select_po_number)
-            )
-            dialog.show(supportFragmentManager, "ClientSelectionDialog")
-        } else {
-            alertDialogShow(
-                this,
-                getString(R.string.alert),
-                getString(R.string.no_po_numbers_available),
-                getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ ->
-                    getPoNumberListByProject(viewModel.selectedProjectId ?: 0L)
-                },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
-            )
-        }
+        showSelectionDialog(
+            items = poNumbers,
+            title = getString(R.string.select_po_number),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, poNumber ->
+                view.findViewById<TextView>(R.id.text1).text = poNumber.poNumber
+            },
+            onItemSelected = {
+                binding.poEt.error = null
+                viewModel.selectedPoNumberId = it.id
+                binding.poEt.setText(it.poNumber)
+            },
+            filterCondition = { poNumber, query ->
+                poNumber.poNumber.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_po_numbers_available),
+            retryAction = { getPoNumberListByProject(viewModel.selectedProjectId ?: 0L) },
+            tag = "POSelectionDialog"
+        )
     }
 
     private fun showCircleSelectionDialog(circles: List<CircleData>) {
-        if (circles.isNotEmpty()) {
-            val dialog = GenericBottomSheetDialog(
-                context = this,
-                items = circles,
-                layoutResId = R.layout.item_generic_adapter,
-                bind = { view, circle ->
-                    view.findViewById<TextView>(R.id.text1).text = circle.name
-                },
-                onItemSelected = { selectedCircle ->
-                    binding.circleEt.error = null
-                    viewModel.selectedCircleId = selectedCircle.id
-                    binding.circleEt.setText(selectedCircle.name)
-                },
-                filterCondition = { circle, query ->
-                    circle.name.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
-                },
-                title = getString(R.string.select_circle)
-            )
-            dialog.show(supportFragmentManager, "CircleSelectionDialog")
-        } else {
-            alertDialogShow(
-                this,
-                getString(R.string.alert),
-                getString(R.string.no_circles_available),
-                getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ ->
-                    getCircleListByProject(viewModel.selectedProjectId ?: 0L)
-                },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
-            )
-        }
+        showSelectionDialog(
+            items = circles,
+            title = getString(R.string.select_circle),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, circle ->
+                view.findViewById<TextView>(R.id.text1).text = circle.name
+            },
+            onItemSelected = {
+                binding.circleEt.error = null
+                viewModel.selectedCircleId = it.id
+                binding.circleEt.setText(it.name)
+            },
+            filterCondition = { circle, query ->
+                circle.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_circles_available),
+            retryAction = { getCircleListByProject(viewModel.selectedProjectId ?: 0L) },
+            tag = "CircleSelectionDialog"
+        )
     }
 
     private fun showSiteSelectionDialog(sites: List<SiteData>) {
-        if (sites.isNotEmpty()) {
-            val dialog = GenericBottomSheetDialog(
-                context = this,
-                items = sites,
-                layoutResId = R.layout.item_generic_adapter,
-                bind = { view, site ->
-                    view.findViewById<TextView>(R.id.text1).text = site.name
-                },
-                onItemSelected = { selectedSite ->
-                    binding.siteEt.error = null
-                    viewModel.selectedSiteId = selectedSite.id
-                    binding.siteEt.setText(selectedSite.name)
-                },
-                filterCondition = { site, query ->
-                    site.name.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
-                },
-                title = getString(R.string.select_site)
-            )
-            dialog.show(supportFragmentManager, "SiteSelectionDialog")
-        } else {
-            alertDialogShow(
-                this,
-                getString(R.string.alert),
-                getString(R.string.no_sites_available),
-                getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ ->
-                    getSiteListByProject(viewModel.selectedProjectId ?: 0L)
-                },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
-            )
-        }
+        showSelectionDialog(
+            items = sites,
+            title = getString(R.string.select_site),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, site ->
+                view.findViewById<TextView>(R.id.text1).text = site.name
+            },
+            onItemSelected = {
+                binding.siteEt.error = null
+                viewModel.selectedSiteId = it.id
+                binding.siteEt.setText(it.name)
+            },
+            filterCondition = { site, query ->
+                site.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_sites_available),
+            retryAction = { getSiteListByProject(viewModel.selectedProjectId ?: 0L) },
+            tag = "SiteSelectionDialog"
+        )
     }
 
     private fun showTypeSelectionDialog(types: List<TypeData>) {
-        if (types.isNotEmpty()) {
-            val dialog = GenericBottomSheetDialog(
-                context = this,
-                items = types,
-                layoutResId = R.layout.item_generic_adapter,
-                bind = { view, type ->
-                    view.findViewById<TextView>(R.id.text1).text = type.name
-                },
-                onItemSelected = { selectedType ->
-                    binding.typeEt.error = null
-                    onTypeSelected(selectedType)
-                },
-                filterCondition = { type, query ->
-                    type.name.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
-                },
-                title = getString(R.string.select_type)
-            )
-            dialog.show(supportFragmentManager, "TypeSelectionDialog")
-        } else {
-            alertDialogShow(
-                this,
-                getString(R.string.alert),
-                getString(R.string.no_types_available),
-                getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ ->
-                    getTypeListByProject(viewModel.selectedProjectId ?: 0L)
-                },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
-            )
-        }
+        showSelectionDialog(
+            items = types,
+            title = getString(R.string.select_type),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, type ->
+                view.findViewById<TextView>(R.id.text1).text = type.name
+            },
+            onItemSelected = {
+                binding.typeEt.error = null
+                onTypeSelected(it)
+            },
+            filterCondition = { type, query ->
+                type.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_types_available),
+            retryAction = { getTypeListByProject(viewModel.selectedProjectId ?: 0L) },
+            tag = "TypeSelectionDialog"
+        )
     }
 
     private fun showActivitySelectionDialog(activities: List<ActivityData>) {
@@ -876,10 +821,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 items = activities,
                 preSelectedItems = preSelectedActivities,
                 bind = { view, activity, isSelected ->
-                    val textView = view.findViewById<TextView>(R.id.textView)
-                    textView.text = activity.name
-                    val checkBox = view.findViewById<CheckBox>(R.id.checkBox)
-                    checkBox.isChecked = isSelected
+                    view.findViewById<TextView>(R.id.textView).text = activity.name
+                    view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
                 onSelectionChanged = { selectedActivities ->
                     binding.activitiesEt.error = null
@@ -890,8 +833,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     updateSelectedActivities(selectedActivities)
                 },
                 filterCondition = { activity, query ->
-                    activity.name.lowercase(Locale.getDefault())
-                        .contains(query.lowercase(Locale.getDefault()))
+                    activity.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
                 },
                 title = getString(R.string.select_activities)
             )
@@ -908,9 +850,6 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                         viewModel.selectedTypeIdList?.firstOrNull() ?: 0L
                     )
                 },
-                canelLister = DialogInterface.OnClickListener { _, _ ->
-
-                }
             )
         }
     }
@@ -1025,3 +964,4 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         )
     }
 }
+

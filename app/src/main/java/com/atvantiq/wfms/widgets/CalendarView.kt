@@ -17,6 +17,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+
 class CalendarView : LinearLayoutCompat {
 
     private lateinit var binding: CalendarViewBinding
@@ -60,7 +61,7 @@ class CalendarView : LinearLayoutCompat {
 
     private fun handleUI(context: Context) {
         calendarAdapter = CalendarAdapter(context){
-            position, day ->
+                position, day ->
             if(eventHandler!=null){
                 eventHandler?.onDayClickListener(position,day)
             }

@@ -36,194 +36,168 @@ class AttendanceStatusFragment :
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
 
+    companion object {
+        private const val SUCCESS_CODE = 200
+        private const val UNAUTHORIZED_CODE = 401
+    }
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance_status, AttendanceStatusVM::class.java)
 
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
-
+        // No-op
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         communicationViewModel.refreshCalendar.observe(viewLifecycleOwner) {
-            refreshCalendar() // Your function to update calendar
+            refreshCalendar()
         }
     }
 
     private fun refreshCalendar() {
-        // Reload your calendar UI
         getAttendanceDetails()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-
-        binding.customCalender.setCustomCalendarEventHandler(object :
-            CalendarView.CustomCalendarEventHandler {
-            override fun onDayClickListener(position: Int, day: AttendanceDay) {
-                if (day.date.isNotEmpty()) {
-                    if (day.record != null) {
-                        Utils.jumpActivityWithData(requireContext(),
-                            AttendanceDetailActivity::class.java,
-                            Bundle().apply {
-                                putParcelable(SharingKeys.attendanceRecord, day.record)
-                            }
-                        )
-                    } else {
-                        showToast(requireContext(), getString(R.string.no_attendance_data))
-                    }
-                }
-            }
-
-            override fun onPrevMonthClickListener(calendar: Calendar?) {
-                calendar?.let {
-                    binding.customCalender.clearAttendanceData()
-                    val month = it.get(Calendar.MONTH) + 1 // Months are indexed from 0
-                    val year = it.get(Calendar.YEAR)
-                    val totalDays = getTotalDaysInMonth(month, year)
-                    binding.totalDaysText.text = totalDays.toString()
-                    resetAttendanceSummary()
-                    viewModel.getAttendanceDetails(month, year)
-                }
-            }
-
-            override fun onNextMonthClickListener(calendar: Calendar?) {
-                calendar?.let {
-                    binding.customCalender.clearAttendanceData()
-                    val month = it.get(Calendar.MONTH) + 1 // Months are indexed from 0
-                    val year = it.get(Calendar.YEAR)
-                    val totalDays = getTotalDaysInMonth(month, year) // Get total days in the month
-                    binding.totalDaysText.text = totalDays.toString()
-                    resetAttendanceSummary()
-                    viewModel.getAttendanceDetails(month, year)
-                }
-            }
-
-            override fun attendanceSummaryResult(statusCounts: Map<String, Int>, noApiDays: Int) {
-                // Log or handle the results
-                Log.d("CalendarView", "Status Counts: $statusCounts")
-                Log.d("CalendarView", "Days without API data: ${noApiDays}")
-                showAttendanceSummary(statusCounts, noApiDays)
-            }
-        })
-
+        binding.customCalender.setCustomCalendarEventHandler(calendarEventHandler)
         getAttendanceDetails()
     }
 
-    private fun getTotalDaysInMonth(month: Int, year: Int): Int {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, year)
-        calendar.set(Calendar.MONTH, month - 1) // Months are indexed from 0
-        return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    private val calendarEventHandler = object : CalendarView.CustomCalendarEventHandler {
+        override fun onDayClickListener(position: Int, day: AttendanceDay) {
+            if (day.date.isNotEmpty()) {
+                day.record?.let {
+                    Utils.jumpActivityWithData(requireContext(),
+                        AttendanceDetailActivity::class.java,
+                        Bundle().apply { putParcelable(SharingKeys.attendanceRecord, it) }
+                    )
+                } ?: showToast(requireContext(), getString(R.string.no_attendance_data))
+            }
+        }
+
+        override fun onPrevMonthClickListener(calendar: Calendar?) {
+            calendar?.let {
+                updateCalendarForMonth(it)
+            }
+        }
+
+        override fun onNextMonthClickListener(calendar: Calendar?) {
+            calendar?.let {
+                updateCalendarForMonth(it)
+            }
+        }
+
+        override fun attendanceSummaryResult(statusCounts: Map<String, Int>, noApiDays: Int) {
+            Log.d("CalendarView", "Status Counts: $statusCounts")
+            Log.d("CalendarView", "Days without API data: $noApiDays")
+            showAttendanceSummary(statusCounts, noApiDays)
+        }
     }
 
+    private fun updateCalendarForMonth(calendar: Calendar) = with(binding) {
+        customCalender.clearAttendanceData()
+        val month = calendar.get(Calendar.MONTH) + 1
+        val year = calendar.get(Calendar.YEAR)
+        totalDaysText.text = getTotalDaysInMonth(month, year).toString()
+        resetAttendanceSummary()
+        viewModel.getAttendanceDetails(month, year)
+    }
+
+    private fun getTotalDaysInMonth(month: Int, year: Int): Int =
+        Calendar.getInstance().apply {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month - 1)
+        }.getActualMaximum(Calendar.DAY_OF_MONTH)
+
     private fun getAttendanceDetails() {
-        var time = DateUtils.getCurrentMonthAndYear()
-        binding.totalDaysText.text = getTotalDaysInMonth(time.first, time.second).toString()
-        viewModel.getAttendanceDetails(time.first, time.second)
+        val (month, year) = DateUtils.getCurrentMonthAndYear()
+        binding.totalDaysText.text = getTotalDaysInMonth(month, year).toString()
+        viewModel.getAttendanceDetails(month, year)
     }
 
     override fun subscribeToEvents(vm: AttendanceStatusVM) {
-
         vm.attendanceDetailsResponse.observe(viewLifecycleOwner) { response ->
+            binding.showCalendarProgressBar = response.status == Status.LOADING
             when (response.status) {
-                Status.SUCCESS -> {
-                    binding.showCalendarProgressBar = false
-                    when (response.response?.code) {
-                        200 -> {
-                            handleAttendanceDetailsResponse(response.response)
-                        }
-
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
-                    }
-                }
-
-                Status.ERROR -> {
-                    binding.showCalendarProgressBar = false
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            requireContext(),
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
-                }
-
-                Status.LOADING -> {
-                    binding.showCalendarProgressBar = true
-                }
+                Status.SUCCESS -> handleSuccessResponse(response.response)
+                Status.ERROR -> handleErrorResponse(response.throwable)
+                Status.LOADING -> Unit
             }
+        }
+    }
+
+    private fun handleSuccessResponse(response: AttendanceDetailListResponse?) {
+        when (response?.code) {
+            SUCCESS_CODE -> handleAttendanceDetailsResponse(response)
+            UNAUTHORIZED_CODE -> tokenExpiresAlert()
+            else -> alertDialogShow(
+                requireContext(),
+                getString(R.string.alert),
+                response?.message ?: getString(R.string.something_went_wrong)
+            )
+        }
+    }
+
+    private fun handleErrorResponse(throwable: Throwable?) {
+        if (throwable is HttpException && throwable.code() == UNAUTHORIZED_CODE) {
+            tokenExpiresAlert()
+        } else {
+            showToast(
+                requireContext(),
+                throwable?.message ?: getString(R.string.something_went_wrong)
+            )
         }
     }
 
     private fun handleAttendanceDetailsResponse(response: AttendanceDetailListResponse) {
-        if (response.data != null) {
-            if (!response.data.records.isNullOrEmpty()) {
-                val attendanceDays = response.data.records.map { detail ->
-                    AttendanceDay(
-                        date = DateUtils.formatApiDateToYMD(detail.checkin.time).toString(),
-                        status = when (detail.status) {
-                            0 -> AttendanceStatus.NO_ACTION
-                            1 -> AttendanceStatus.PRESENT
-                            2 -> AttendanceStatus.ABSENT
-                            3 -> AttendanceStatus.LEAVE
-                            4 -> AttendanceStatus.IDLE
-                            5 -> AttendanceStatus.HOLIDAY
-                            6 -> AttendanceStatus.WORK_OFF
-                            else -> AttendanceStatus.NO_ACTION
-                        },
-                        record = detail
-                    )
-                }
-                // Calculate the count of each status
-                //val statusCounts = attendanceDays.groupingBy { it.status }.eachCount()
-                // showAttendanceSummary(statusCounts)
-                binding.customCalender.setAttendanceData(attendanceDays)
-            } else {
-                resetAttendanceSummary() // Reset counts when no attendance data is found
-                showToast(requireContext(), getString(R.string.no_attendance_data))
+        val records = response.data?.records
+        if (!records.isNullOrEmpty()) {
+            val attendanceDays = records.map { detail ->
+                AttendanceDay(
+                    date = DateUtils.formatApiDateToYMD(detail.checkin.time).toString(),
+                    status = mapStatus(detail.status),
+                    record = detail
+                )
             }
+            binding.customCalender.setAttendanceData(attendanceDays)
         } else {
-            resetAttendanceSummary() // Reset counts when no attendance data is found
+            resetAttendanceSummary()
             showToast(requireContext(), getString(R.string.no_attendance_data))
         }
     }
 
-    // Method to reset attendance summary counts to 0
-    private fun resetAttendanceSummary() {
-        binding.presentText.text = "0"
-        binding.absentText.text = "0"
-        binding.leaveText.text = "0"
-        binding.idleText.text = "0"
-        binding.holidayText.text = "0"
-        binding.workOffText.text = "0"
-        binding.naText.text = "0"
+    private fun mapStatus(status: Int): String = when (status) {
+        0 -> AttendanceStatus.NO_ACTION
+        1 -> AttendanceStatus.PRESENT
+        2 -> AttendanceStatus.ABSENT
+        3 -> AttendanceStatus.LEAVE
+        4 -> AttendanceStatus.IDLE
+        5 -> AttendanceStatus.HOLIDAY
+        6 -> AttendanceStatus.WORK_OFF
+        else -> AttendanceStatus.NO_ACTION
     }
 
-    private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) {
-        binding.presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
-        binding.absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
-        binding.leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
-        binding.idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
-        binding.holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"
-        binding.workOffText.text = statusCounts[AttendanceStatus.WORK_OFF]?.toString() ?: "0"
-        binding.naText.text = noApiDays.toString()
+    private fun resetAttendanceSummary() = with(binding) {
+        presentText.text = "0"
+        absentText.text = "0"
+        leaveText.text = "0"
+        idleText.text = "0"
+        holidayText.text = "0"
+        workOffText.text = "0"
+        naText.text = "0"
+    }
+
+    private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) = with(binding) {
+        presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
+        absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
+        leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
+        idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
+        holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"
+        workOffText.text = statusCounts[AttendanceStatus.WORK_OFF]?.toString() ?: "0"
+        naText.text = noApiDays.toString()
     }
 }
+

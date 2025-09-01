@@ -4,11 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="isToggle"
             type="Boolean" />
-
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.login.LoginVM" />
@@ -122,15 +120,14 @@
                     <EditText
                         android:id="@+id/passwordEt"
                         style="@style/EditRegularNoBgStyle"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="@string/enter_password"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:maxLines="1"
-                        android:text="@={vm.password}"
-                        android:textAlignment="viewStart" />
+                        android:text="@={vm.password}" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
@@ -138,8 +135,7 @@
                         android:layout_marginStart="@dimen/margin"
                         android:layout_marginEnd="@dimen/margin"
                         android:onClick="@{()->vm.onPasswordToggleClick()}"
-                        android:src="@{isToggle?@drawable/baseline_visibility_off_24:@drawable/baseline_visibility_24}"
-                        tools:src="@drawable/baseline_visibility_24" />
+                        android:src="@{isToggle ? @drawable/baseline_visibility_off_24 : @drawable/baseline_visibility_24}" />
 
                 </LinearLayout>
 

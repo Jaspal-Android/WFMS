@@ -197,6 +197,10 @@ open class BaseFragmentSimple : Fragment() {
 	fun isLifeCycleResumed() =
 		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 
+	fun isLifeCycleStarted() =
+		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.CREATED||viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.STARTED||
+				viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
+
 	fun performLogout(){
 		prefMain.deleteAll()
 		Utils.jumpActivity(requireContext(), LoginActivity::class.java)
