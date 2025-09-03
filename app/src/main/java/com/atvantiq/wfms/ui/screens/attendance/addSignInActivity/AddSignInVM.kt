@@ -225,9 +225,6 @@ class AddSignInVM @Inject constructor(
             }
             add("type", typeArray)
         }
-
-        Log.e("WorkAssignedParams", params.toString())
-
         executeApiCall(
             apiCall = { workRepo.workSelfAssign(params) },
             liveData = workAssignedResponse

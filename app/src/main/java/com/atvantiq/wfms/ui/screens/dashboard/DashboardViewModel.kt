@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
@@ -17,6 +18,7 @@ import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,10 +59,12 @@ class DashboardViewModel @Inject constructor(
             addProperty("latitude", latitude)
             addProperty("longitude", longitude)
         }
-        executeApiCall(
-            apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
-            liveData = attendanceCheckInResponse
-        )
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
+                liveData = attendanceCheckInResponse
+            )
+        }
     }
 
     var attendanceCheckOutResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
@@ -69,25 +73,31 @@ class DashboardViewModel @Inject constructor(
             addProperty("latitude", lat)
             addProperty("longitude", long)
         }
-        executeApiCall(
-            apiCall = { attendanceRepo.attendanceCheckOutRequest(params) },
-            liveData = attendanceCheckOutResponse
-        )
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceCheckOutRequest(params) },
+                liveData = attendanceCheckOutResponse
+            )
+        }
     }
 
     var attendanceCheckInStatusResponse = MutableLiveData<ApiState<CheckInStatusResponse>>()
     fun checkInStatusAttendance() {
-        executeApiCall(
-            apiCall = { attendanceRepo.attendanceCheckInStatus() },
-            liveData = attendanceCheckInStatusResponse
-        )
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceCheckInStatus() },
+                liveData = attendanceCheckInStatusResponse
+            )
+        }
     }
 
     var empDetailsResponse = MutableLiveData<ApiState<EmpDetailResponse>>()
     fun getEmpDetails() {
-        executeApiCall(
-            apiCall = { authRepo.empDetails() },
-            liveData = empDetailsResponse
-        )
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { authRepo.empDetails() },
+                liveData = empDetailsResponse
+            )
+        }
     }
 }

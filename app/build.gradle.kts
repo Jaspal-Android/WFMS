@@ -102,6 +102,20 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    //Mockito
+    //testImplementation("org.mockito:mockito-core:5.5.0")
+    //testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
+   // androidTestImplementation("org.mockito:mockito-android:5.5.0")
+    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // Coroutines Testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // Hilt Testing
+    testImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kaptTest("com.google.dagger:hilt-android-compiler:2.48")
+
     // Hilt
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation("com.google.dagger:hilt-android:2.51.1")
