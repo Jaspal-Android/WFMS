@@ -181,4 +181,7 @@
     <string name="date_of_joining_label">Date of joining</string>
     <string name="reporting_manager_label">Reporting Manager</string>
     <string name="designation_label">Designation</string>
+    <string name="attendance_already_marked">Attendance is already marked for today. You don’t need to mark it again.</string>
+    <string name="home_location_check">Attendance can only be marked when you are within 500 meters of your registered location (office/home). Please move closer to the location to proceed.</string>
+
 </resources>

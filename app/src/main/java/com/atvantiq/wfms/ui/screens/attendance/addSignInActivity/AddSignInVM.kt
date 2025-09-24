@@ -136,9 +136,9 @@ class AddSignInVM @Inject constructor(
         isSiteLoading.set(true)
     }
 
-    fun getTypeListByProject(projectId: Long) {
+    fun getTypeListByPo(poId: Long) {
         executeApiCall(
-            apiCall = { creationRepo.typeListByProject(projectId) },
+            apiCall = { creationRepo.typeListByPo(poId) },
             liveData = typeListByProjectResponse,
             onSuccess = { isTypeLoading.set(false) },
             onError = { isTypeLoading.set(false) }
@@ -146,9 +146,9 @@ class AddSignInVM @Inject constructor(
         isTypeLoading.set(true)
     }
 
-    fun getActivityListByProjectType(projectId: Long, typeId: Long) {
+    fun getActivityListByPoType(poId: Long, typeId: Long) {
         executeApiCall(
-            apiCall = { creationRepo.activityListByProjectType(projectId, typeId) },
+            apiCall = { creationRepo.activityListByPoType(poId, typeId) },
             liveData = activityListByProjectTypeResponse,
             onSuccess = { isActivityLoading.set(false) },
             onError = { isActivityLoading.set(false) }

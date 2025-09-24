@@ -42,8 +42,9 @@ object NetworkEndPoints {
 	const val siteListByProject = "site/project/{project_id}"
 
 	/*Type*/
-	const val typeListByPorject = "type/project/{project_id}"
-
+	//const val typeListByPorject = "type/project/{project_id}"
+	const val typeListByPo = "type/po/{po_id}"
 	/*Activity*/
-	const val activityListByPorjectType = "activity/project-type"
+	//const val activityListByPorjectType = "activity/project-type"
+	const val activityListByPoType = "activity/po-type"
 }

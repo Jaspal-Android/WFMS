@@ -51,8 +51,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
 
     companion object {
-        private const val GEOFENCE_LAT = 30.7149242
-        private const val GEOFENCE_LON = 76.7033762
         private const val GEOFENCE_RADIUS_METERS = 500
     }
 
@@ -229,11 +227,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             lat = location?.latitude ?: 0.0
             long = location?.longitude ?: 0.0
             val distance = FloatArray(1)
-            Location.distanceBetween(
-                lat, long,
-                GEOFENCE_LAT, GEOFENCE_LON,
-                distance
-            )
+            viewModel.GEOFENCE_LAT.get()?.let {
+                viewModel.GEOFENCE_LON.get()?.let { it1 ->
+                    Location.distanceBetween(
+                        lat, long,
+                        it, it1,
+                        distance
+                    )
+                }
+            }
             onResult(distance[0] <= GEOFENCE_RADIUS_METERS)
         }.addOnFailureListener {
             lat = 0.0
@@ -243,7 +245,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun setupUserData(userData: EmpData?) {
+        if (userData == null) return
+        setGeofenceLocation(userData?.officialLocation?.latitude ?: 0.0, userData?.officialLocation?.longitude ?: 0.0)
         binding.appDashHeader.userData = userData
+    }
+
+    private fun setGeofenceLocation(lat: Double, lon: Double) {
+        viewModel.GEOFENCE_LAT.set(lat)
+        viewModel.GEOFENCE_LON.set(lon)
     }
 
     private fun setupSwipeButton() {
@@ -283,7 +292,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     checkPermissionsAndUpdateGeofence()
                 } else {
                     binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                    alertDialogShow(requireContext(), "Start day only from the home location")
+                    alertDialogShow(requireContext(), getString(R.string.home_location_check))
                 }
             }
         }

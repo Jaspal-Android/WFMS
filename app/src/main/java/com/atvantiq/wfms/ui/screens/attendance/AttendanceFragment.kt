@@ -83,7 +83,6 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             handleClickEvents(event)
 
         }
-
         vm.workAssignedAllResponse.observe(viewLifecycleOwner) { response ->
             if (!isLifeCycleStarted()) return@observe
             handleWorkAssignedResponse(response)

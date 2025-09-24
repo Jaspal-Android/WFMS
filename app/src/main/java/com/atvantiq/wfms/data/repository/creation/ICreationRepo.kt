@@ -15,6 +15,6 @@ interface ICreationRepo {
     suspend fun poNumberListByProject(projectId: Long): PoListByProjectResponse
     suspend fun circleByProject(projectId: Long): CircleListByProjectResponse
     suspend fun siteListByProject(projectId: Long): SiteListByProjectResponse
-    suspend fun typeListByProject(projectId: Long): TypeListByProjectResponse
-    suspend fun activityListByProjectType(projectId: Long, typeId: Long): ActivityListByProjectTypeResponse
+    suspend fun typeListByPo(poId: Long): TypeListByProjectResponse
+    suspend fun activityListByPoType(poId: Long, typeId: Long): ActivityListByProjectTypeResponse
 }

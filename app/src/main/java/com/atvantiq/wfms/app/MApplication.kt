@@ -16,7 +16,6 @@ class MApplication : Application() {
 		if (BuildConfig.DEBUG) {
 			Stetho.initializeWithDefaults(this)
 		}
-
 		instance = this
 
 		provider = ViewModelProvider.AndroidViewModelFactory(this)

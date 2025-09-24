@@ -13,10 +13,12 @@ data class User(
     val firstName: String,
     @SerializedName("last_name")
     val lastName: String,
+    @SerializedName("official_location")
+    val officialLocation: OfficialLocation,
     @SerializedName("role")
     val role: String,
     @SerializedName("short_name")
     val shortName: String,
     @SerializedName("user_id")
-    val userId: Int
+    val userId: Long
 ):Parcelable

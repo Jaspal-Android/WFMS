@@ -3,6 +3,7 @@ package com.atvantiq.wfms.ui.screens.dashboard
 import android.app.Application
 import android.content.Intent
 import android.os.Build
+import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -32,6 +33,13 @@ class DashboardViewModel @Inject constructor(
 
     private val _isTracking = MutableLiveData<Boolean>(false)
     val isTracking: LiveData<Boolean> get() = _isTracking
+
+    var GEOFENCE_LAT = ObservableField<Double>().apply {
+        set(0.0)
+    }
+    var GEOFENCE_LON = ObservableField<Double>().apply {
+        set(0.0)
+    }
 
     fun onAnnouncementsClicks() {
         clickEvents.value = DashboardClickEvents.onAnnouncementsClicks

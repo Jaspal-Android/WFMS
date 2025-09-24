@@ -195,7 +195,16 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         getPoNumberListByProject(selectedProject.id)
         getCircleListByProject(selectedProject.id)
         getSiteListByProject(selectedProject.id)
-        getTypeListByProject(selectedProject.id)
+    }
+
+    private fun onPoSelected(selectedPo: PoData) {
+        viewModel.selectedPoNumberId = selectedPo.id
+        binding.poEt.setText(selectedPo.poNumber)
+        binding.typeEt.setText("")
+        binding.activitiesEt.setText("")
+        viewModel.selectedTypeIdList?.clear()
+        viewModel.selectedActivityIdList?.clear()
+        getTypeListByPo(selectedPo.id)
     }
 
     private fun onTypeSelected(selectedType: TypeData) {
@@ -204,7 +213,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         binding.activitiesEt.setText("")
         viewModel.selectedTypeIdList?.add(selectedType.id)
         binding.typeEt.setText(selectedType.name)
-        viewModel.selectedProjectId?.let { getActivityListByProjectType(it, selectedType.id) }
+        getActivityListByPoType(viewModel.selectedPoNumberId ?: 0L, selectedType.id)
     }
 
     override fun subscribeToEvents(vm: AddSignInVM) {
@@ -733,8 +742,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             },
             onItemSelected = {
                 binding.poEt.error = null
-                viewModel.selectedPoNumberId = it.id
-                binding.poEt.setText(it.poNumber)
+                onPoSelected(it)
             },
             filterCondition = { poNumber, query ->
                 poNumber.poNumber.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
@@ -805,7 +813,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 type.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
             },
             emptyMessage = getString(R.string.no_types_available),
-            retryAction = { getTypeListByProject(viewModel.selectedProjectId ?: 0L) },
+            retryAction = { getTypeListByPo(viewModel.selectedPoNumberId ?: 0L) },
             tag = "TypeSelectionDialog"
         )
     }
@@ -845,8 +853,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 getString(R.string.no_activities_available),
                 getString(R.string.retry),
                 okLister = DialogInterface.OnClickListener { _, _ ->
-                    getActivityListByProjectType(
-                        viewModel.selectedProjectId ?: 0L,
+                    getActivityListByPoType(
+                        viewModel.selectedPoNumberId ?: 0L,
                         viewModel.selectedTypeIdList?.firstOrNull() ?: 0L
                     )
                 },
@@ -896,15 +904,15 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     /*
     * Get Type list by project id
     * */
-    private fun getTypeListByProject(projectId: Long) {
-        viewModel.getTypeListByProject(projectId)
+    private fun getTypeListByPo(poId: Long) {
+        viewModel.getTypeListByPo(poId)
     }
 
     /*
     * Get Activity list by project id and type id
     * */
-    private fun getActivityListByProjectType(projectId: Long, typeId: Long) {
-        viewModel.getActivityListByProjectType(projectId, typeId)
+    private fun getActivityListByPoType(poId: Long, typeId: Long) {
+        viewModel.getActivityListByPoType(poId, typeId)
     }
 
     @SuppressLint("MissingPermission")

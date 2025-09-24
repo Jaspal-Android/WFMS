@@ -2,6 +2,11 @@ package com.atvantiq.wfms.ui.screens
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -29,6 +34,12 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
     val navController: androidx.navigation.NavController
         get() = findNavController(R.id.nav_host_fragment_content_dashboard)
 
+    // Register the permission launcher
+    private val requestNotificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+    }
+
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_dashboard)
 
@@ -38,6 +49,20 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
         var userData = PrefMethods.getUserData(prefMain)
         setupDataDrawerHeader(userData)
+
+        requestPostNotificationsPermissionIfNeeded()
+    }
+
+    private fun requestPostNotificationsPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     private fun setupDataDrawerHeader(userData: User?) {

@@ -1,6 +1,5 @@
 package com.atvantiq.wfms.models.loginResponse
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Data(

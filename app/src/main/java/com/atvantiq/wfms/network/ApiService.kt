@@ -96,13 +96,13 @@ interface ApiService {
 	@GET(NetworkEndPoints.siteListByProject)
 	suspend fun siteListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): SiteListByProjectResponse
 
-	@GET(NetworkEndPoints.typeListByPorject)
-	suspend fun typeListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): TypeListByProjectResponse
+	@GET(NetworkEndPoints.typeListByPo)
+	suspend fun typeListByPo(@Header("Authorization") token: String, @Path("po_id") poId: Long): TypeListByProjectResponse
 
-	@GET(NetworkEndPoints.activityListByPorjectType)
-	suspend fun activityListByProjectType(
+	@GET(NetworkEndPoints.activityListByPoType)
+	suspend fun activityListByPoType(
 		@Header("Authorization") token: String,
-		@Query("project_id") projectId: Long,
+		@Query("po_id") poId: Long,
 		@Query("type_id") typeId: Long
 	): ActivityListByProjectTypeResponse
 }

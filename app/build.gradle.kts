@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
@@ -36,7 +37,7 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
-            applicationIdSuffix = ".debug"
+            /*applicationIdSuffix = ".debug"*/
             versionNameSuffix = "-debug"
         }
         release {
@@ -52,13 +53,13 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".dev"
+            /*applicationIdSuffix = ".dev"*/
             versionNameSuffix = "-dev"
             buildConfigField("String", "BASE_URL", "\"http://69.62.85.16:8000/\"")
         }
         create("beta") {
             dimension = "environment"
-            applicationIdSuffix = ".beta"
+            /*applicationIdSuffix = ".beta"*/
             versionNameSuffix = "-beta"
             buildConfigField("String", "BASE_URL", "\"http://69.62.85.16:8000/\"")
         }
@@ -101,11 +102,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.fragment:fragment-testing:1.7.0")
 
     //Mockito
-    //testImplementation("org.mockito:mockito-core:5.5.0")
-    //testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
-   // androidTestImplementation("org.mockito:mockito-android:5.5.0")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
 
@@ -156,6 +155,9 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.6.6")
     //Slider
     implementation("com.ncorti:slidetoact:0.11.0")
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
 }
 
 kapt {

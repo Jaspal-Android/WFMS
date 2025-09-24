@@ -1,11 +1,12 @@
 package com.atvantiq.wfms.models.empDetail
 
 
+import com.atvantiq.wfms.models.loginResponse.OfficialLocation
 import com.google.gson.annotations.SerializedName
 
 data class EmpData(
     @SerializedName("circle")
-    val circle: String?,
+    val circle: String,
     @SerializedName("date_of_joining")
     val dateOfJoining: String,
     @SerializedName("designation")
@@ -17,15 +18,17 @@ data class EmpData(
     @SerializedName("employee_code")
     val employeeCode: String,
     @SerializedName("employee_id")
-    val employeeId: Int,
+    val employeeId: Long,
     @SerializedName("gender")
-    val gender: Any?,
+    val gender: String,
     @SerializedName("name")
     val name: String,
+    @SerializedName("official_location")
+    val officialLocation: OfficialLocation,
     @SerializedName("permissions")
     val permissions: List<Permission>,
     @SerializedName("reporting_manager")
-    val reportingManager: ReportingManager,
+    val reportingManager: ReportingManager?,
     @SerializedName("role")
     val role: String,
     @SerializedName("short_name")
