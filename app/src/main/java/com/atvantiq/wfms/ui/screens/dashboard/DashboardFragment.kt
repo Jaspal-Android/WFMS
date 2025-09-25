@@ -162,6 +162,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             ValConstants.SUCCESS_CODE -> {
                 isDayStarted = response.data?.checkedIn == true
                 updateSlideButton(isDayStarted)
+                if(isDayStarted) checkPermissionForLiveLocation()
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             ValConstants.BAD_REQUEST_CODE -> alertDialogShow(requireContext(), getString(R.string.alert), response.message ?: getString(R.string.something_went_wrong))

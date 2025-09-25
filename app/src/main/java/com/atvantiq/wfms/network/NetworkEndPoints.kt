@@ -47,4 +47,7 @@ object NetworkEndPoints {
 	/*Activity*/
 	//const val activityListByPorjectType = "activity/project-type"
 	const val activityListByPoType = "activity/po-type"
+
+	/*Send Geo Location*/
+	const val geoTrackingLocation="geo-tracking/location"
 }

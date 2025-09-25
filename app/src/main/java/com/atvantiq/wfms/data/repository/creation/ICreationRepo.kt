@@ -9,7 +9,6 @@ import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 
 interface ICreationRepo {
-
     suspend fun clientList(): ClientListResponse
     suspend fun projectListByClientId(clientId: Long, ): ProjectListByClientResponse
     suspend fun poNumberListByProject(projectId: Long): PoListByProjectResponse

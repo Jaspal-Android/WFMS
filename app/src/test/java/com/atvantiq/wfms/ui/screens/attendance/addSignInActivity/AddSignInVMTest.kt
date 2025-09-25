@@ -301,7 +301,7 @@ class AddSignInVMTest {
     }
 
     @Test
-    fun `getTypeListByProject calls creationRepo and updates LiveData`() = runTest {
+    fun `getTypeListByPo calls creationRepo and updates LiveData`() = runTest {
         val response = TypeListByProjectResponse(
             code = 200,
             message = "Types fetched successfully.",
@@ -313,19 +313,19 @@ class AddSignInVMTest {
                 )
             )
         )
-        coEvery { creationRepo.typeListByProject(any()) } returns response
+        coEvery { creationRepo.typeListByPo(any()) } returns response
 
-        viewModel.getTypeListByProject(1L)
+        viewModel.getTypeListByPo(1L)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify(exactly = 1) { creationRepo.typeListByProject(1L) }
+        coVerify(exactly = 1) { creationRepo.typeListByPo(1L) }
         assertNotNull(viewModel.typeListByProjectResponse.value)
         assertEquals(Status.SUCCESS, viewModel.typeListByProjectResponse.value?.status)
         assertEquals(response, viewModel.typeListByProjectResponse.value?.response)
     }
 
     @Test
-    fun `getActivityListByProjectType calls creationRepo and updates LiveData`() = runTest {
+    fun `getActivityListByPoType calls creationRepo and updates LiveData`() = runTest {
         val response = ActivityListByProjectTypeResponse(
             code = 200,
             message = "Activities fetched successfully.",
@@ -337,12 +337,12 @@ class AddSignInVMTest {
                 )
             )
         )
-        coEvery { creationRepo.activityListByProjectType(any(), any()) } returns response
+        coEvery { creationRepo.activityListByPoType(any(), any()) } returns response
 
-        viewModel.getActivityListByProjectType(1L, 2L)
+        viewModel.getActivityListByPoType(1L, 2L)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify(exactly = 1) { creationRepo.activityListByProjectType(1L, 2L) }
+        coVerify(exactly = 1) { creationRepo.activityListByPoType(1L, 2L) }
         assertNotNull(viewModel.activityListByProjectTypeResponse.value)
         assertEquals(Status.SUCCESS, viewModel.activityListByProjectTypeResponse.value?.status)
         assertEquals(response, viewModel.activityListByProjectTypeResponse.value?.response)

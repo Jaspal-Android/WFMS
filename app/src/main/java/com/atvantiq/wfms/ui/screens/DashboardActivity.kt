@@ -3,8 +3,13 @@ package com.atvantiq.wfms.ui.screens
 import android.content.DialogInterface
 import android.os.Bundle
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.google.android.material.navigation.NavigationView
@@ -31,7 +36,7 @@ import javax.inject.Inject
 class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    val navController: androidx.navigation.NavController
+    private val navController: androidx.navigation.NavController
         get() = findNavController(R.id.nav_host_fragment_content_dashboard)
 
     // Register the permission launcher
@@ -49,8 +54,21 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
         var userData = PrefMethods.getUserData(prefMain)
         setupDataDrawerHeader(userData)
-
         requestPostNotificationsPermissionIfNeeded()
+        batterOptimizationCheck()
+    }
+
+    private fun batterOptimizationCheck() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent()
+            val packageName = packageName
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(intent)
+            }
+        }
     }
 
     private fun requestPostNotificationsPermissionIfNeeded() {
