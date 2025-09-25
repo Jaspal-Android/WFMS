@@ -16,7 +16,7 @@ data class Record(
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("employee_id")
-    val employeeId: Int,
+    val employeeId: Long,
     @SerializedName("id")
     val id: Long,
     @SerializedName("status")

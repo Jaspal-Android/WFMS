@@ -16,8 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentDashboardBinding
+import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpData
+import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
 import com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter
@@ -40,279 +44,175 @@ import retrofit2.HttpException
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
 
     private var isDayStarted = false
-
-    //private val GEOFENCE_LAT = 30.7046486
-    private val GEOFENCE_LAT = 30.7149242
-
-    //37.4220936
-    private val GEOFENCE_LON = 76.7033762
-
-    //private val GEOFENCE_LON = 76.7178726
-    //-122.083922
-    private val GEOFENCE_RADIUS_METERS = 500
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     var lat: Double = 0.0
     var long: Double = 0.0
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
 
+    companion object {
+        private const val GEOFENCE_RADIUS_METERS = 500
+    }
+
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_dashboard, DashboardViewModel::class.java)
 
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
-
+        // No-op
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val cachedEmpDetail = PrefMethods.getEmpDetailResponse(prefMain)
-        if (cachedEmpDetail != null) {
-            setupUserData(cachedEmpDetail)
-        } else {
-            viewModel.getEmpDetails()
-        }
+        PrefMethods.getEmpDetailResponse(prefMain)?.let {
+            setupUserData(it)
+        } ?: viewModel.getEmpDetails()
     }
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
-        //setupUserData()
         checkInAttendanceStatus()
 
         vm.clickEvents.observe(viewLifecycleOwner) {
             if (!isLifeCycleResumed()) return@observe
             when (it) {
-                DashboardClickEvents.onAnnouncementsClicks -> {
-                    Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
-                }
+                DashboardClickEvents.onAnnouncementsClicks -> Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
             }
-
         }
 
         vm.empDetailsResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> {
-    //                    dismissProgress()
-                        when (response.response?.code) {
-                            200 -> {
-                                val empDetailResponse = response.response
-                                PrefMethods.saveEmpDetailResponse(prefMain, empDetailResponse.data)
-                                setupUserData(empDetailResponse?.data)
-                            }
-                            401 -> {
-                                tokenExpiresAlert()
-                            }
-                            else -> {
-                                alertDialogShow(
-                                    requireContext(),
-                                    getString(R.string.alert),
-                                    response.response?.message
-                                        ?: getString(R.string.something_went_wrong)
-                                )
-                            }
-                        }
-                    }
-
-                    Status.ERROR -> {
-//                        dismissProgress()
-                        val throwable = response.throwable
-                        if (throwable is HttpException) {
-                            if (throwable.code() == 401) {
-                                tokenExpiresAlert()
-                            }
-                        }  else {
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response?.throwable?.message.toString()
-                            )
-                        }
-                    }
-
-                    Status.LOADING -> {
-//                        showProgress()
-                    }
-                }
+            if (!isLifeCycleResumed()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleEmpDetailsResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> { /* showProgress() if needed */ }
             }
         }
 
         vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> {
-                        dismissProgress()
-                        if (response.response?.code == 200) {
-                            isDayStarted = true
-                            binding.appDashHeader.slideStartDay.text = getString(R.string.end_day)
-                            binding.appDashHeader.slideStartDay.outerColor =
-                                (ContextCompat.getColor(requireContext(), R.color.red))
-                            binding.appDashHeader.slideStartDay.isReversed = true
-                            communicationViewModel.triggerCalendarRefresh()
-                            checkPermissionForLiveLocation()
-                        } else if(response.response?.code == 401){
-                            tokenExpiresAlert()
-                        }else {
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
-                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                    }
-
-                    Status.ERROR -> {
-                        dismissProgress()
-                        isDayStarted = false
-                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
-
-                        val throwable = response.throwable
-                        if (throwable is HttpException) {
-                            if (throwable.code() == 401) {
-                                tokenExpiresAlert()
-                            }
-                        } else {
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response?.throwable?.message.toString()
-                            )
-                        }
-                    }
-
-                    Status.LOADING -> {
-                        showProgress()
-                    }
-                }
+            if (!isLifeCycleResumed()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckInResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
-
+            binding.appDashHeader.slideStartDay.setCompleted(false, true)
         }
 
         vm.attendanceCheckOutResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> {
-                        dismissProgress()
-                        if (response.response?.code == 200) {
-                            isDayStarted = false
-                            binding.appDashHeader.slideStartDay.text = getString(R.string.start_day)
-                            binding.appDashHeader.slideStartDay.outerColor =
-                                (ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
-                            binding.appDashHeader.slideStartDay.isReversed = false
-                            viewModel.stopTracking()
-                        }else if(response.response?.code == 401){
-                            tokenExpiresAlert()
-                        } else {
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
-                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                    }
-
-                    Status.ERROR -> {
-                        dismissProgress()
-                        isDayStarted = true
-                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
-
-                        val throwable = response.throwable
-                        if (throwable is HttpException) {
-                            if (throwable.code() == 401) {
-                                tokenExpiresAlert()
-                            }
-                        } else {
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response?.throwable?.message.toString()
-                            )
-                        }
-                    }
-
-                    Status.LOADING -> {
-                        showProgress()
-                    }
-                }
+            if (!isLifeCycleResumed()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckOutResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
+            binding.appDashHeader.slideStartDay.setCompleted(false, true)
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
-            if(isLifeCycleResumed()){
-                when (response.status) {
-                    Status.SUCCESS -> {
-                        dismissProgress()
-                        if (response.response?.code == 200) {
-                            if (response.response?.data?.checkedIn == true) {
-                                isDayStarted = true
-                                binding.appDashHeader.slideStartDay.text = getString(R.string.end_day)
-                                binding.appDashHeader.slideStartDay.outerColor =
-                                    (ContextCompat.getColor(requireContext(), R.color.red))
-                                binding.appDashHeader.slideStartDay.isReversed = true
-                            } else {
-                                isDayStarted = false
-                                binding.appDashHeader.slideStartDay.text = getString(R.string.start_day)
-                                binding.appDashHeader.slideStartDay.outerColor =
-                                    (ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
-                                binding.appDashHeader.slideStartDay.isReversed = false
-                            }
-                        }else if(response.response?.code == 401){
-                            tokenExpiresAlert()
-                        } else if(response.response?.code == 400){
-                            alertDialogShow(
-                                requireContext(),
-                                getString(R.string.alert),
-                                response.response?.message ?: getString(R.string.something_went_wrong)
-                            )
-                        } else {
-                            handleCheckInStatusError(response.response?.message)
-                        }
-                    }
-
-                    Status.ERROR -> {
-                        dismissProgress()
-                        val throwable = response.throwable
-                        if (throwable is HttpException) {
-                            if (throwable.code() == 401) {
-                                tokenExpiresAlert()
-                            }
-                        } else {
-                            handleCheckInStatusError(response.response?.message)
-                        }
-                    }
-
-                    Status.LOADING -> {
-                        showProgress()
-                    }
-                }
+            if (!isLifeCycleResumed()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckInStatusResponse(response.response)
+                Status.ERROR -> handleCheckInStatusError(response.response?.message)
+                Status.LOADING -> showProgress()
             }
         }
+    }
 
+    private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
+        when (empDetailResponse?.code) {
+            ValConstants.SUCCESS_CODE -> {
+                PrefMethods.saveEmpDetailResponse(prefMain, empDetailResponse.data)
+                setupUserData(empDetailResponse.data)
+            }
+            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
+            else -> alertDialogShow(requireContext(), getString(R.string.alert), empDetailResponse?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
 
+    private fun handleCheckInResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
+        dismissProgress()
+        when (response?.code) {
+            ValConstants.SUCCESS_CODE -> {
+                isDayStarted = true
+                updateSlideButton(true)
+                communicationViewModel.triggerCalendarRefresh()
+                checkPermissionForLiveLocation()
+            }
+            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
+            else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    private fun handleCheckOutResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
+        dismissProgress()
+        when (response?.code) {
+            ValConstants.SUCCESS_CODE -> {
+                isDayStarted = false
+                updateSlideButton(false)
+                viewModel.stopTracking()
+            }
+            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
+            else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    private fun handleCheckInStatusResponse(response: CheckInStatusResponse?) = with(binding.appDashHeader) {
+        dismissProgress()
+        when (response?.code) {
+            ValConstants.SUCCESS_CODE -> {
+                isDayStarted = response.data?.checkedIn == true
+                updateSlideButton(isDayStarted)
+                if(isDayStarted) checkPermissionForLiveLocation()
+            }
+            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
+            ValConstants.BAD_REQUEST_CODE -> alertDialogShow(requireContext(), getString(R.string.alert), response.message ?: getString(R.string.something_went_wrong))
+            else -> handleCheckInStatusError(response?.message)
+        }
+    }
+
+    private fun handleError(throwable: Throwable?, message: String?) {
+        dismissProgress()
+        if (throwable is HttpException && throwable.code() ==ValConstants.UNAUTHORIZED_CODE) {
+            tokenExpiresAlert()
+        } else {
+            alertDialogShow(requireContext(), getString(R.string.alert), message ?: throwable?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    private fun handleCheckInStatusError(message: String?) {
+        alertDialogShow(
+            requireContext(),
+            getString(R.string.alert),
+            message ?: getString(R.string.something_went_wrong),
+            getString(R.string.retry),
+            DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
+            false
+        )
+    }
+
+    private fun updateSlideButton(isStarted: Boolean) = with(binding.appDashHeader) {
+        if (isStarted) {
+            slideStartDay.text = getString(R.string.end_day)
+            slideStartDay.outerColor = ContextCompat.getColor(requireContext(), R.color.red)
+            slideStartDay.isReversed = true
+        } else {
+            slideStartDay.text = getString(R.string.start_day)
+            slideStartDay.outerColor = ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
+            slideStartDay.isReversed = false
+        }
     }
 
     @SuppressLint("MissingPermission")
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                lat = location.latitude
-                long = location.longitude
-            } else {
-                lat = 0.0
-                long = 0.0
-            }
+            lat = location?.latitude ?: 0.0
+            long = location?.longitude ?: 0.0
         }.addOnFailureListener {
             lat = 0.0
             long = 0.0
         }
-
         setupTabBar()
         setupSwipeButton()
         horizontalScrollTextView()
@@ -322,36 +222,22 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         viewModel.checkInStatusAttendance()
     }
 
-    private fun handleCheckInStatusError(message: String?) {
-        alertDialogShow(
-            requireContext(),
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong),
-            getString(R.string.retry),
-            DialogInterface.OnClickListener { dialog, which ->
-                checkInAttendanceStatus()
-            }, false
-        )
-    }
-
     @SuppressLint("MissingPermission")
     private fun isWithinGeofence(onResult: (Boolean) -> Unit) {
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location == null) {
-                lat = 0.0
-                long = 0.0
-                onResult(false)
-            } else {
-                lat = location.latitude
-                long = location.longitude
-                val distance = FloatArray(1)
-                Location.distanceBetween(
-                    location!!.latitude, location!!.longitude,
-                    GEOFENCE_LAT, GEOFENCE_LON,
-                    distance
-                )
-                onResult(distance[0] <= GEOFENCE_RADIUS_METERS)
+            lat = location?.latitude ?: 0.0
+            long = location?.longitude ?: 0.0
+            val distance = FloatArray(1)
+            viewModel.GEOFENCE_LAT.get()?.let {
+                viewModel.GEOFENCE_LON.get()?.let { it1 ->
+                    Location.distanceBetween(
+                        lat, long,
+                        it, it1,
+                        distance
+                    )
+                }
             }
+            onResult(distance[0] <= GEOFENCE_RADIUS_METERS)
         }.addOnFailureListener {
             lat = 0.0
             long = 0.0
@@ -360,23 +246,23 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun setupUserData(userData: EmpData?) {
-        //var userData: User? = PrefMethods.getUserData(prefMain) ?: return
+        if (userData == null) return
+        setGeofenceLocation(userData?.officialLocation?.latitude ?: 0.0, userData?.officialLocation?.longitude ?: 0.0)
         binding.appDashHeader.userData = userData
     }
 
-    /**
-     * Sets up the swipe button to start or end the day.
-     * The button's text, color, and state change based on whether the day is started or ended.
-     */
+    private fun setGeofenceLocation(lat: Double, lon: Double) {
+        viewModel.GEOFENCE_LAT.set(lat)
+        viewModel.GEOFENCE_LON.set(lon)
+    }
+
     private fun setupSwipeButton() {
         binding.appDashHeader.slideStartDay.onSlideCompleteListener =
             object : SlideToActView.OnSlideCompleteListener {
                 override fun onSlideComplete(view: SlideToActView) {
                     val permissions = getRequiredPermissions()
                     when {
-                        hasAllPermissions(permissions) -> {
-                            manageDayStartEnd()
-                        }
+                        hasAllPermissions(permissions) -> manageDayStartEnd()
                         permissions.any { shouldShowRequestPermissionRationale(it) } -> {
                             binding.appDashHeader.slideStartDay.setCompleted(false, true)
                             showPermissionDeniedPermanently()
@@ -390,42 +276,35 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
     }
 
-
     @SuppressLint("MissingPermission")
     private fun manageDayStartEnd() {
         if (isDayStarted) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                if (location == null) {
-                    lat = 0.0
-                    long = 0.0
-                } else {
-                    lat = location.latitude
-                    long = location.longitude
-                    viewModel.checkOutAttendance(lat, long)
-                }
-
+                lat = location?.latitude ?: 0.0
+                long = location?.longitude ?: 0.0
+                viewModel.checkOutAttendance(lat, long)
             }.addOnFailureListener {
                 lat = 0.0
                 long = 0.0
             }
         } else {
-            // Logic to start the day
-            isWithinGeofence { isWithinGeofence ->
-                if (isWithinGeofence) {
+            isWithinGeofence { isWithin ->
+                if (isWithin) {
                     checkPermissionsAndUpdateGeofence()
                 } else {
                     binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                    alertDialogShow(requireContext(), "Start day only from the home location")
+                    alertDialogShow(requireContext(), getString(R.string.home_location_check))
                 }
             }
         }
     }
 
     private fun setupTabBar() {
-        val adapter = DashboardPagerAdapter(requireActivity())
-        adapter.addFragment(AttendanceStatusFragment())
-        adapter.addFragment(MyTargetsFragment())
-        adapter.addFragment(ProjectDashboardFragment())
+        val adapter = DashboardPagerAdapter(requireActivity()).apply {
+            addFragment(AttendanceStatusFragment())
+            addFragment(MyTargetsFragment())
+            addFragment(ProjectDashboardFragment())
+        }
         binding.viewPager.adapter = adapter
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
@@ -445,36 +324,17 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         )
         val adapter = MarqueeAdapter(items)
         binding.appDashHeader.marqueeRecyclerView.adapter = adapter
-        val layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-        binding.appDashHeader.marqueeRecyclerView.layoutManager = layoutManager
-        /*val handler = Handler(Looper.getMainLooper())
-        val scrollRunnable = object : Runnable {
-            override fun run() {
-                val currentPosition = layoutManager.findFirstVisibleItemPosition()
-                val nextPosition = (currentPosition + 1) % items.size
-                binding.appDashHeader.marqueeRecyclerView.smoothScrollToPosition(nextPosition)
-                handler.postDelayed(this, 2000) // Adjust delay as needed
-            }
-        }
-        handler.post(scrollRunnable)*/
+        binding.appDashHeader.marqueeRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
     }
-
 
     private val permissionLauncherLocationTracking = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
-            permissions.all { it.value } -> {
-                viewModel.startTracking()
-            }
-
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
-                showPermissionDeniedPermanently()
-            }
-
-            else -> {
-                showPermissionRationale()
-            }
+            permissions.all { it.value } -> viewModel.startTracking()
+            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
+            else -> showPermissionRationale()
         }
     }
 
@@ -482,18 +342,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
-            permissions.all { it.value } -> {
-                viewModel.checkInAttendance(lat, long)
-                //manageDayStartEnd()
-            }
-
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
-                showPermissionDeniedPermanently()
-            }
-
-            else -> {
-                showPermissionRationale()
-            }
+            permissions.all { it.value } -> viewModel.checkInAttendance(lat, long)
+            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
+            else -> showPermissionRationale()
         }
     }
 
@@ -503,21 +354,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         startActivity(intent)
     }
 
-
     private fun checkPermissionForLiveLocation() {
         val permissions = getRequiredPermissions()
         when {
-            hasAllPermissions(permissions) -> {
-                viewModel.startTracking()
-            }
-
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                showPermissionRationale()
-            }
-
-            else -> {
-                permissionLauncherLocationTracking.launch(permissions)
-            }
+            hasAllPermissions(permissions) -> viewModel.startTracking()
+            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
+            else -> permissionLauncherLocationTracking.launch(permissions)
         }
     }
 
@@ -525,7 +367,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         val permissions = getRequiredPermissions()
         if (hasAllPermissions(permissions)) {
             viewModel.checkInAttendance(lat, long)
-            //manageDayStartEnd()
         } else {
             permissionLauncherGeofencing.launch(permissions)
         }
@@ -536,11 +377,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             list.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             list.add(Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -549,10 +388,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private fun hasAllPermissions(permissions: Array<String>): Boolean =
         permissions.all {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                it
-            ) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
         }
 
     private fun showPermissionRationale() {
@@ -560,7 +396,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             .setTitle(R.string.permission_required)
             .setMessage(R.string.location_permission_rationale)
             .setPositiveButton(R.string.retry) { _, _ ->
-                // Launch permission request after showing rationale
                 permissionLauncherLocationTracking.launch(getRequiredPermissions())
             }
             .setNegativeButton(R.string.cancel, null)
@@ -571,32 +406,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.permission_denied)
             .setMessage(R.string.permission_denied_permanently)
-            .setPositiveButton(R.string.open_settings) { _, _ ->
-                openApplicationSettings()
-            }
+            .setPositiveButton(R.string.open_settings) { _, _ -> openApplicationSettings() }
             .setNegativeButton(R.string.cancel, null)
             .show()
     }
-
-
-    /*
-    * Runtime permission request for location tracking.
-    * */
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
-            permissions.all { it.value } -> {
-                manageDayStartEnd()
-            }
-            permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
-                showPermissionDeniedPermanently()
-            }
-            else -> {
-                showPermissionDeniedPermanently()
-            }
+            permissions.all { it.value } -> manageDayStartEnd()
+            permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
+            else -> showPermissionDeniedPermanently()
         }
     }
-
 }
+

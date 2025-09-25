@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.MaterialComponents.Light">
 
-        <!-- Collapsing Toolbar -->
         <include
             android:id="@+id/appDashHeader"
             layout="@layout/appbar_header_dashboard"

@@ -8,4 +8,7 @@ object ValConstants {
     const val COMPLETED = "COMPLETED"
     const val REVISIT = "REVISIT"
     const val REJECTED = "REJECTED"
+    const val SUCCESS_CODE = 200
+    const val UNAUTHORIZED_CODE = 401
+    const val BAD_REQUEST_CODE = 400
 }

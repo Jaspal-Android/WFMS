@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,7 @@ import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
+import com.atvantiq.wfms.services.LocationTrackingService
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
@@ -62,9 +64,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         super.onViewCreated(view, savedInstanceState)
         setUpWorkAssignmentList()
         swipeRefresh()
-        if (savedInstanceState == null) {
-            getWorkAssignedAll() // Fetch data only on first creation
-        }
+        page = 1
+        isLastPage = false
+        adapter?.submitList(emptyList()) // Clear adapter data
+        getWorkAssignedAll() // Fetch data only on first creation
     }
 
     override fun onDestroyView() {
@@ -77,26 +80,32 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         binding.vm = vm
 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
+            if (!isLifeCycleResumed()) return@observe
             handleClickEvents(event)
-        }
 
+        }
         vm.workAssignedAllResponse.observe(viewLifecycleOwner) { response ->
+            if (!isLifeCycleStarted()) return@observe
             handleWorkAssignedResponse(response)
         }
 
         vm.workAcceptResponse.observe(viewLifecycleOwner) { response ->
+            if (!isLifeCycleResumed()) return@observe
             handleAcceptWorkResponse(response, R.string.work_accepted, ValConstants.ACCEPTED)
         }
 
         vm.workStartResponse.observe(viewLifecycleOwner) { response ->
+            if (!isLifeCycleResumed()) return@observe
             handleStartWorkResponse(response, R.string.work_started, ValConstants.WIP)
         }
 
         vm.workEndResponse.observe(viewLifecycleOwner) { response ->
+            if (!isLifeCycleResumed()) return@observe
             handleWorkEndResponse(response)
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
+            if (!isLifeCycleResumed()) return@observe
             handleAttendanceCheckInResponse(response)
         }
     }
@@ -135,13 +144,23 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun handleWorkAssignedSuccess(records: List<WorkRecord>) {
+        adapter?.removeLoadingFooter() // Always remove loading footer before updating list
+        if (page == 1) {
+            adapter?.submitList(emptyList()) // Clear adapter data on refresh
+        }
         if (records.isEmpty()) {
             isLastPage = true
             if (page == 1) emptyDataLayout() else adapter?.removeLoadingFooter()
         } else {
             mainLayout()
-            if (page == 1) adapter?.submitList(records) else adapter?.addData(records)
-            page++
+            if (page == 1) {
+                adapter?.submitList(records)
+            } else {
+                adapter?.addData(records)
+            }
+            if (records.size < pageSize) {
+                isLastPage = true
+            }
         }
     }
 
@@ -255,7 +274,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun showLoadingIndicator() {
-        if (page == 1) showProgress() else adapter?.addLoadingFooter()
+        if (page == 1) showProgress() else {
+            adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
+            adapter?.addLoadingFooter()
+        }
     }
 
     private fun checkAttendanceStatus(id: Long, position: Int) {
@@ -287,6 +309,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                         if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0
                         ) {
+                            page += 1
                             getWorkAssignedAll()
                         }
                     }
@@ -309,7 +332,11 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 viewModel.workAccept(assignedTask.id, position)
             },
             onStartWork = { assignedTask, position ->
-                checkAttendanceStatus(assignedTask.id, position)
+                //checkAttendanceStatus(assignedTask.id, position)
+                val intent = Intent(requireContext(), LocationTrackingService::class.java)
+                intent.action = "com.atvantiq.wfms.ACTION_START_WORK"
+                intent.putExtra("WORK_ID", "0002")
+                ContextCompat.startForegroundService(requireContext(), intent)
             },
             onEndWork = { assignedTask, position ->
                 endWorkWithLocationPermissions(assignedTask.id, position)
@@ -347,6 +374,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     private fun startRefreshingData() {
         page = 1
         isLastPage = false // Reset last page flag
+        adapter?.removeLoadingFooter() // Remove loading footer on refresh
+        adapter?.submitList(emptyList()) // Clear adapter data on refresh
         viewModel.getWorkAssignedAll(page, pageSize)
     }
 
@@ -380,91 +409,59 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         startActivity(intent)
     }
 
-    @SuppressLint("MissingPermission")
-    private fun startWorkWithLocationPermissions(workId: Long, position: Int) {
+    private fun handleLocationPermissions(
+        onPermissionsGranted: () -> Unit,
+        onPermissionsDenied: () -> Unit = { showPermissionRationale() },
+        onPermissionsDeniedPermanently: () -> Unit = { showPermissionDeniedPermanently() }
+    ) {
         val permissions = getRequiredPermissions()
         when {
-            hasAllPermissions(permissions) -> {
-                //find the location and start work
-                fusedLocationClient.lastLocation.addOnSuccessListener {
-                    if (it != null) {
-                        val latitude = it.latitude.toString()
-                        val longitude = it.longitude.toString()
-                        var startWorkBottomSheet =
-                            StartWorkBottomSheet(latitude, longitude) { imagePath ->
-                                viewModel.workStart(
-                                    workId.toString(),
-                                    latitude,
-                                    longitude,
-                                    imagePath,
-                                    position
-                                )
-                            }
-                        startWorkBottomSheet.show(
-                            requireActivity().supportFragmentManager,
-                            "StartWorkBottomSheet"
-                        )
-                    } else {
-                        showToast(requireContext(), getString(R.string.location_not_found))
-                    }
-                }.addOnFailureListener { exception ->
-                    showToast(requireContext(), getString(R.string.location_error))
-                }
-            }
-
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                showPermissionRationale()
-            }
-
-            else -> {
-                permissionLauncher.launch(permissions)
-            }
+            hasAllPermissions(permissions) -> onPermissionsGranted()
+            permissions.any { shouldShowRequestPermissionRationale(it) } -> onPermissionsDenied()
+            else -> permissionLauncher.launch(permissions)
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun endWorkWithLocationPermissions(workId: Long, position: Int) {
-        val permissions = getRequiredPermissions()
-        when {
-            hasAllPermissions(permissions) -> {
-                //find the location and start work
-                fusedLocationClient.lastLocation.addOnSuccessListener {
-                    if (it != null) {
-                        val latitude = it.latitude
-                        val longitude = it.longitude
-                        var endWorkBottomSheet = EndWorkBottomSheet(
-                            latitude.toString(),
-                            longitude.toString()
-                        ) { statusId, remarks ->
-                            viewModel.workEnd(
-                                workId,
-                                latitude,
-                                longitude,
-                                statusId,
-                                remarks,
-                                position
-                            )
-                        }
-                        endWorkBottomSheet.show(
-                            requireActivity().supportFragmentManager,
-                            "EndWorkBottomSheet"
-                        )
+    private fun startWorkWithLocationPermissions(workId: Long, position: Int) {
+        handleLocationPermissions(
+            onPermissionsGranted = {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val latitude = location.latitude.toString()
+                        val longitude = location.longitude.toString()
+                        StartWorkBottomSheet(latitude, longitude) { imagePath ->
+                            viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
+                        }.show(requireActivity().supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
                     } else {
                         showToast(requireContext(), getString(R.string.location_not_found))
                     }
-                }.addOnFailureListener { exception ->
+                }.addOnFailureListener {
                     showToast(requireContext(), getString(R.string.location_error))
                 }
             }
+        )
+    }
 
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                showPermissionRationale()
+    @SuppressLint("MissingPermission")
+    private fun endWorkWithLocationPermissions(workId: Long, position: Int) {
+        handleLocationPermissions(
+            onPermissionsGranted = {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val latitude = location.latitude.toString()
+                        val longitude = location.longitude.toString()
+                        EndWorkBottomSheet(latitude, longitude) { statusId, remarks ->
+                            viewModel.workEnd(workId, latitude.toDouble(), longitude.toDouble(), statusId, remarks, position)
+                        }.show(requireActivity().supportFragmentManager, "END_WORK_BOTTOM_SHEET_TAG")
+                    } else {
+                        showToast(requireContext(), getString(R.string.location_not_found))
+                    }
+                }.addOnFailureListener {
+                    showToast(requireContext(), getString(R.string.location_error))
+                }
             }
-
-            else -> {
-                permissionLauncher.launch(permissions)
-            }
-        }
+        )
     }
 
     private fun getRequiredPermissions(): Array<String> {
@@ -511,4 +508,5 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 startRefreshingData()
             }
         }
+
 }

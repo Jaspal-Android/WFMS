@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -25,7 +26,7 @@ import retrofit2.HttpException
 
 
 @AndroidEntryPoint
-class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,AttendanceViewModel>() {
+class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
 
@@ -55,50 +56,44 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,At
     }
 
     private fun setupUI(record: Record?) {
-       binding.item = record
+        binding.item = record
 
-       if(record?.checkin?.latitude!= null && record?.checkin?.logitude != null) {
-           Utils.getAddressFromLatLong(this,record?.checkin?.latitude, record.checkin.logitude) { it ->
-               binding.checkInAddressString = it
-           }
-       } else {
-           binding.checkInAddressString  = getString(R.string.address_not_found)
-       }
-
-        if(record?.checkout?.latitude!= null && record?.checkout?.logitude != null) {
-            Utils.getAddressFromLatLong(this,record?.checkout?.latitude, record.checkout.logitude) { it ->
-                binding.checkOutAddressString = it
+        record?.checkin?.let { checkin ->
+            if (checkin.latitude != null && checkin.logitude != null) {
+                Utils.getAddressFromLatLong(this, checkin.latitude, checkin.logitude) {
+                    binding.checkInAddressString = it
+                }
+            } else {
+                binding.checkInAddressString = getString(R.string.address_not_found)
             }
-        } else {
+        } ?: run {
+            binding.checkInAddressString = getString(R.string.address_not_found)
+        }
+
+        record?.checkout?.let { checkout ->
+            if (checkout.latitude != null && checkout.logitude != null) {
+                Utils.getAddressFromLatLong(this, checkout.latitude, checkout.logitude) {
+                    binding.checkOutAddressString = it
+                }
+            } else {
+                binding.checkOutAddressString = getString(R.string.address_not_found)
+            }
+        } ?: run {
             binding.checkOutAddressString = getString(R.string.address_not_found)
         }
 
-        viewModel.workDetailsByDate(DateUtils.formatApiDateToYMD(record?.checkin?.time ?: "").toString())
-
-       /* binding.viewWorkDetailsButton.setOnClickListener {
-            if (record != null) {
-                Utils.jumpActivityWithData(
-                    this,
-                    WorkDetailsByDateActivity::class.java,
-                    Bundle().apply {
-                        putString(SharingKeys.workDate, DateUtils.formatApiDateToYMD(record.checkin?.time ?: ""))
-                    }
-                )
-            } else {
-                Log.e("AttendanceDetailActivity", "Record is null, cannot view work details.")
-            }
-        }*/
+        val workDate = DateUtils.formatApiDateToYMD(record?.checkin?.time.orEmpty())
+        workDate?.let { viewModel.workDetailsByDate(it) }
     }
 
-    private fun setToolbar() {
-        binding.attendanceDetailToolbar.toolbarTitle.text = getString(R.string.details)
-        binding.attendanceDetailToolbar.toolbarBackButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+    private fun setToolbar() = binding.attendanceDetailToolbar.apply {
+        toolbarTitle.text = getString(R.string.details)
+        toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
-    private fun setWorkList(){
-        adapter = AssignedTasksListAdapter(true,
+    private fun setWorkList() {
+        adapter = AssignedTasksListAdapter(
+            true,
             onViewAssignedTask = { assignedTask, position ->
                 Utils.jumpActivityWithData(
                     this,
@@ -109,76 +104,57 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding,At
                     }
                 )
             },
-            onAcceptTask = { assignedTask, position ->
-                // Handle accept task click
-            },
-            onStartWork = { assignedTask, position ->
-                // Handle start work click
-            },
-            onEndWork = { assignedTask, position ->
-                // Handle end work click
-            }
+            onAcceptTask = { _, _ -> /* Handle accept task click if needed */ },
+            onStartWork = { _, _ -> /* Handle start work click if needed */ },
+            onEndWork = { _, _ -> /* Handle end work click if needed */ }
         )
-        binding.workList.addItemDecoration(
-            androidx.recyclerview.widget.DividerItemDecoration(
-                this,
-                LinearLayoutManager.VERTICAL
-            )
-        )
-        binding.workList.adapter = adapter
+        binding.workList.apply {
+            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            adapter = this@AttendanceDetailActivity.adapter
+        }
     }
-
 
     override fun subscribeToEvents(vm: AttendanceViewModel) {
         vm.workDetailsByDateResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
                     dismissProgress()
-                    if (response.response?.code == 200) {
-                        if (response.response.data.isEmpty()) {
-                            binding.isNoDataAvailable = true
-                            showToast(
-                                this,
-                                getString(R.string.no_work_details_found)
-                            )
-                        } else {
-                            binding.isNoDataAvailable = false
-                            adapter?.submitList(response.response.data)
+                    val resp = response.response
+                    when (resp?.code) {
+                        200 -> {
+                            if (resp.data.isEmpty()) {
+                                binding.isNoDataAvailable = true
+                                showToast(this, getString(R.string.no_work_details_found))
+                            } else {
+                                binding.isNoDataAvailable = false
+                                adapter?.submitList(resp.data)
+                            }
                         }
-                    } else if (response.response?.code == 401) {
-                        tokenExpiresAlert()
-                        binding.isNoDataAvailable = true
-                    } else {
-                        binding.isNoDataAvailable = true
-                        alertDialogShow(
-                            this,
-                            getString(R.string.alert),
-                            response.response?.message
-                                ?: getString(R.string.something_went_wrong)
-                        )
+                        401 -> {
+                            tokenExpiresAlert()
+                            binding.isNoDataAvailable = true
+                        }
+                        else -> {
+                            binding.isNoDataAvailable = true
+                            alertDialogShow(
+                                this,
+                                getString(R.string.alert),
+                                resp?.message ?: getString(R.string.something_went_wrong)
+                            )
+                        }
                     }
                 }
-
                 Status.ERROR -> {
                     dismissProgress()
                     binding.isNoDataAvailable = true
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    (response.throwable as? HttpException)?.let {
+                        if (it.code() == 401) tokenExpiresAlert()
+                    } ?: showToast(
+                        this,
+                        response.throwable?.message ?: getString(R.string.something_went_wrong)
+                    )
                 }
-
-                Status.LOADING -> {
-                    showProgress()
-
-                }
+                Status.LOADING -> showProgress()
             }
         }
     }
