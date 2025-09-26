@@ -39,10 +39,10 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
     private val navController: androidx.navigation.NavController
         get() = findNavController(R.id.nav_host_fragment_content_dashboard)
 
-    // Register the permission launcher
     private val requestNotificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
+
     }
 
     override val bindingActivity: ActivityBinding
@@ -54,19 +54,27 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
         var userData = PrefMethods.getUserData(prefMain)
         setupDataDrawerHeader(userData)
-        requestPostNotificationsPermissionIfNeeded()
         batterOptimizationCheck()
     }
 
     private fun batterOptimizationCheck() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent()
             val packageName = packageName
             val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
             if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-                intent.data = Uri.parse("package:$packageName")
-                startActivity(intent)
+                alertDialogShow(this,
+                    getString(R.string.battery_optimization),
+                    getString(R.string.battery_optimization_msg),
+                    getString(R.string.ok),
+                    { dialog, which ->
+                        dialog.dismiss()
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.parse("package:$packageName")
+                        startActivity(intent)
+                    },
+                    { dialog, which ->
+                        dialog.dismiss()
+                    })
             }
         }
     }
@@ -120,11 +128,11 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
                         getString(R.string.logout),
                         getString(R.string.logout_confirmation),
                         getString(R.string.yes),
-                        DialogInterface.OnClickListener { dialog, which ->
+                        { dialog, which ->
                             dialog.dismiss()
                             performLogout()
                         },
-                        DialogInterface.OnClickListener { dialog, which ->
+                        { dialog, which ->
                            dialog.dismiss()
                         })
                     true

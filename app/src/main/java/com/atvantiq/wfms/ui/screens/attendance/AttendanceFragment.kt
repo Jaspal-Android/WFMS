@@ -332,11 +332,11 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 viewModel.workAccept(assignedTask.id, position)
             },
             onStartWork = { assignedTask, position ->
-                //checkAttendanceStatus(assignedTask.id, position)
-                val intent = Intent(requireContext(), LocationTrackingService::class.java)
+                checkAttendanceStatus(assignedTask.id, position)
+               /* val intent = Intent(requireContext(), LocationTrackingService::class.java)
                 intent.action = "com.atvantiq.wfms.ACTION_START_WORK"
                 intent.putExtra("WORK_ID", "0002")
-                ContextCompat.startForegroundService(requireContext(), intent)
+                ContextCompat.startForegroundService(requireContext(), intent)*/
             },
             onEndWork = { assignedTask, position ->
                 endWorkWithLocationPermissions(assignedTask.id, position)

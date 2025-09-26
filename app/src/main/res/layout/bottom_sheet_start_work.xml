@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -24,34 +25,45 @@
         android:orientation="vertical"
         android:padding="@dimen/padding">
 
+        <ImageView
+            android:layout_gravity="center"
+            android:src="@drawable/ic_pull"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></ImageView>
+
         <TextView
-            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_gravity="center"
+            style="@style/CustomLargeDarkTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Photo with Lat. Long."
+            android:layout_marginTop="@dimen/margin"
+            android:text="@string/start_work_with_photo_lat_long"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/btn_photo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
+            android:layout_width="140dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin"
             android:background="@android:drawable/btn_default"
             android:contentDescription="Add photo"
             android:padding="@dimen/padding"
-            android:src="@drawable/ic_menu_camera" />
+            android:src="@drawable/ic_menu_camera"
+            android:visibility="@{hasPreviewImage?View.GONE:View.VISIBLE}" />
 
         <TextView
-            android:visibility="@{showImageError?View.VISIBLE:View.GONE}"
             style="@style/CustomMediumTextView"
-            android:text="@string/no_image_selected"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/no_image_selected"
             android:textColor="@color/red"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="@{showImageError?View.VISIBLE:View.GONE}" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -67,13 +79,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent=".35"
-                tools:visibility="gone">
+                app:layout_constraintWidth_percent=".45"
+                tools:visibility="visible">
 
-                <ImageView
-                    android:id="@+id/capturedImagePreview"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardElevation="@dimen/elevation_small">
+
+                    <ImageView
+                        android:scaleType="centerCrop"
+                        android:id="@+id/capturedImagePreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </androidx.cardview.widget.CardView>
 
             </RelativeLayout>
 

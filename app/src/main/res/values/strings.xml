@@ -183,5 +183,10 @@
     <string name="designation_label">Designation</string>
     <string name="attendance_already_marked">Attendance is already marked for today. You don’t need to mark it again.</string>
     <string name="home_location_check">Attendance can only be marked when you are within 500 meters of your registered location (office/home). Please move closer to the location to proceed.</string>
+    <string name="no_actions_available">No actions available</string>
+    <string name="end_work_with_details">Provide details to end your work for today.</string>
+    <string name="start_work_with_photo_lat_long">Please take a photo and confirm your location to start work.</string>
+    <string name="battery_optimization">Battery Optimization</string>
+    <string name="battery_optimization_msg">To ensure the app functions correctly, please disable battery optimization for this app in your device settings.</string>
 
 </resources>

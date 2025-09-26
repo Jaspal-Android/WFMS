@@ -181,22 +181,24 @@ class AttendanceStatusFragment :
     }
 
     private fun resetAttendanceSummary() = with(binding) {
-        presentText.text = "0"
-        absentText.text = "0"
-        leaveText.text = "0"
-        idleText.text = "0"
-        holidayText.text = "0"
-        workOffText.text = "0"
-        naText.text = "0"
+        binding.presentText.text = "0"
+        binding.absentText.text = "0"
+        binding.leaveText.text = "0"
+        binding.idleText.text = "0"
+        binding.holidayText.text = "0"
+        binding.workOffText.text = "0"
+        binding.noActionText.text = "0"
+        binding.naText.text = "0"
     }
 
     private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) = with(binding) {
-        presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
-        absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
-        leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
-        idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
-        holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"
-        workOffText.text = statusCounts[AttendanceStatus.WORK_OFF]?.toString() ?: "0"
+        binding.presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
+        binding.absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
+        binding.leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
+        binding.idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
+        binding.holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"
+        binding.workOffText.text = statusCounts[AttendanceStatus.WORK_OFF]?.toString() ?: "0"
+        binding.noActionText.text = statusCounts[AttendanceStatus.NO_ACTION]?.toString() ?: "0"
         naText.text = noApiDays.toString()
     }
 }

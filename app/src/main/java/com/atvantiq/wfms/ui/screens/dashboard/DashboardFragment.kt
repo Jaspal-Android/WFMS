@@ -80,40 +80,44 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
 
         vm.empDetailsResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
-            when (response.status) {
-                Status.SUCCESS -> handleEmpDetailsResponse(response.response)
-                Status.ERROR -> handleError(response.throwable, response.response?.message)
-                Status.LOADING -> { /* showProgress() if needed */ }
+            if (isLifeCycleResumed()) {
+                when (response.status) {
+                    Status.SUCCESS -> handleEmpDetailsResponse(response.response)
+                    Status.ERROR -> handleError(response.throwable, response.response?.message)
+                    Status.LOADING -> { /* showProgress() if needed */ }
+                }
             }
         }
 
         vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
-            when (response.status) {
-                Status.SUCCESS -> handleCheckInResponse(response.response)
-                Status.ERROR -> handleError(response.throwable, response.response?.message)
-                Status.LOADING -> showProgress()
+            if (isLifeCycleResumed()) {
+                when (response.status) {
+                    Status.SUCCESS -> handleCheckInResponse(response.response)
+                    Status.ERROR -> handleError(response.throwable, response.response?.message)
+                    Status.LOADING -> showProgress()
+                }
+                binding.appDashHeader.slideStartDay.setCompleted(false, true)
             }
-            binding.appDashHeader.slideStartDay.setCompleted(false, true)
         }
 
         vm.attendanceCheckOutResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
-            when (response.status) {
-                Status.SUCCESS -> handleCheckOutResponse(response.response)
-                Status.ERROR -> handleError(response.throwable, response.response?.message)
-                Status.LOADING -> showProgress()
+            if (isLifeCycleResumed()) {
+                when (response.status) {
+                    Status.SUCCESS -> handleCheckOutResponse(response.response)
+                    Status.ERROR -> handleError(response.throwable, response.response?.message)
+                    Status.LOADING -> showProgress()
+                }
+                binding.appDashHeader.slideStartDay.setCompleted(false, true)
             }
-            binding.appDashHeader.slideStartDay.setCompleted(false, true)
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
-            when (response.status) {
-                Status.SUCCESS -> handleCheckInStatusResponse(response.response)
-                Status.ERROR -> handleCheckInStatusError(response.response?.message)
-                Status.LOADING -> showProgress()
+            if (isLifeCycleResumed()){
+                when (response.status) {
+                    Status.SUCCESS -> handleCheckInStatusResponse(response.response)
+                    Status.ERROR -> handleCheckInStatusError(response.response?.message)
+                    Status.LOADING -> showProgress()
+                }
             }
         }
     }
@@ -396,7 +400,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             .setTitle(R.string.permission_required)
             .setMessage(R.string.location_permission_rationale)
             .setPositiveButton(R.string.retry) { _, _ ->
-                permissionLauncherLocationTracking.launch(getRequiredPermissions())
+                //permissionLauncherLocationTracking.launch(getRequiredPermissions())
+                openApplicationSettings()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

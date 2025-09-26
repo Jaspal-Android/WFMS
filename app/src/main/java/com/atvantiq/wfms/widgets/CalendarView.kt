@@ -8,6 +8,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.databinding.CalendarViewBinding
 import com.atvantiq.wfms.models.calendar.AttendanceDay
 import com.atvantiq.wfms.ui.screens.adapters.CalendarAdapter
@@ -168,7 +169,7 @@ class CalendarView : LinearLayoutCompat {
                 attendanceData.add(
                     AttendanceDay(
                         date = "",
-                        status = "NO_ACTION" // Default status for padding days
+                        status = AttendanceStatus.UNKNOWN // Default status for padding days
                     )
                 )
             }
@@ -187,7 +188,7 @@ class CalendarView : LinearLayoutCompat {
 
             // Check if the date exists in the API data
             val matchingRecord = apiAttendanceData.find { it.date == dateString }
-            val status = matchingRecord?.status ?: "NO_ACTION" // Default to "NO_ACTION" if no match
+            val status = matchingRecord?.status ?: AttendanceStatus.UNKNOWN // Default to "NO_ACTION" if no match
 
             if (matchingRecord == null) {
                 noApiDataDays.add(dateString) // Add to no API data list
@@ -210,7 +211,7 @@ class CalendarView : LinearLayoutCompat {
                 attendanceData.add(
                     AttendanceDay(
                         date = "",
-                        status = "NO_ACTION" // Default status for padding days
+                        status = AttendanceStatus.UNKNOWN // Default status for padding days
                     )
                 )
             }

@@ -31,15 +31,17 @@ class StatusAdapter(
         val item = items[position]
         val isSelected = selectedPosition == position
         val statusName = holder.binding.statusName
+        val statusLayout = holder.binding.statusBoxLayout
 
         statusName.text = item.name
         if (isSelected) {
-            statusName.setBackgroundResource(R.drawable.bg_selected_status)
+            statusLayout.setBackgroundResource(R.drawable.bg_selected_status)
             statusName.setTextColor(Color.WHITE)
         } else {
-            statusName.setBackgroundColor(Color.TRANSPARENT)
+            statusLayout.setBackgroundColor(Color.TRANSPARENT)
             statusName.setTextColor(Color.BLACK)
         }
+        holder.binding.statusCheckBox.isChecked = isSelected
 
         holder.binding.root.setOnClickListener {
             val previousPosition = selectedPosition

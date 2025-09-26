@@ -43,7 +43,7 @@ class CalendarAdapter(
                 tvDay.text = day.date.substringAfterLast("-")
                 tvDay.setBackgroundColor(
                     when (day.status) {
-                        AttendanceStatus.NO_ACTION -> context.getColor(R.color.lightGray)
+                        AttendanceStatus.NO_ACTION -> context.getColor(R.color.primary_dark_pastal)
                         AttendanceStatus.PRESENT -> context.getColor(R.color.green_pastel)
                         AttendanceStatus.ABSENT -> context.getColor(R.color.red_pastel)
                         AttendanceStatus.LEAVE -> context.getColor(R.color.primary_pastal)

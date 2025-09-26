@@ -53,7 +53,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_client"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom">
@@ -73,6 +73,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_project"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
@@ -102,6 +103,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_po_number"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
@@ -131,6 +133,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_circle"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
@@ -160,6 +163,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_site"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
@@ -190,6 +194,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_type"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
@@ -220,6 +225,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_activity"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"

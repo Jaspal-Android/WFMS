@@ -36,11 +36,11 @@ class SplashActivity : AppCompatActivity() {
     private fun splashTimer() {
         var token:String? = PrefMethods.getUserToken(prefMain)
         Handler(mainLooper).postDelayed({
-            //if(token.isNullOrEmpty() || token.isNullOrBlank()){
-            //    Utils.jumpActivity(this, LoginActivity::class.java)
-            //}else{
+            if(token.isNullOrEmpty() || token.isNullOrBlank()){
+                Utils.jumpActivity(this, LoginActivity::class.java)
+            }else{
                 Utils.jumpActivity(this, DashboardActivity::class.java)
-            //}
+            }
             finish()
         }, 2000)
     }
