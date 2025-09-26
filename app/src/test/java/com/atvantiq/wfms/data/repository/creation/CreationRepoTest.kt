@@ -100,27 +100,27 @@ class CreationRepoTest {
     }
 
     @Test
-    fun `typeListByProject calls apiService with correct token and projectId`() = runTest {
-        val projectId = 1213L
+    fun `typeListByPo calls apiService with correct token and poId`() = runTest {
+        val poId = 1213L
         val expectedResponse = mockk<TypeListByProjectResponse>()
-        coEvery { apiService.typeListByProject(any(), projectId) } returns expectedResponse
+        coEvery { apiService.typeListByPo(any(), poId) } returns expectedResponse
 
-        val result = repo.typeListByProject(projectId)
+        val result = repo.typeListByPo(poId)
 
-        coVerify { apiService.typeListByProject("Bearer $token", projectId) }
+        coVerify { apiService.typeListByPo("Bearer $token", poId) }
         assertEquals(expectedResponse, result)
     }
 
     @Test
-    fun `activityListByProjectType calls apiService with correct token, projectId and typeId`() = runTest {
-        val projectId = 1415L
+    fun `activityListByPoType calls apiService with correct token, poId and typeId`() = runTest {
+        val poId = 1415L
         val typeId = 1617L
         val expectedResponse = mockk<ActivityListByProjectTypeResponse>()
-        coEvery { apiService.activityListByProjectType(any(), projectId, typeId) } returns expectedResponse
+        coEvery { apiService.activityListByPoType(any(), poId, typeId) } returns expectedResponse
 
-        val result = repo.activityListByProjectType(projectId, typeId)
+        val result = repo.activityListByPoType(poId, typeId)
 
-        coVerify { apiService.activityListByProjectType("Bearer $token", projectId, typeId) }
+        coVerify { apiService.activityListByPoType("Bearer $token", poId, typeId) }
         assertEquals(expectedResponse, result)
     }
 }

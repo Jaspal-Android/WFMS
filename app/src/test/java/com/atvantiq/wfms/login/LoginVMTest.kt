@@ -14,6 +14,7 @@ import org.mockito.Mockito.mock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.models.loginResponse.Data
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginResponse.OfficialLocation
 import com.atvantiq.wfms.models.loginResponse.User
 
 class LoginVMTest {
@@ -36,38 +37,30 @@ class LoginVMTest {
     fun `isValidLoginDetails returns false and sets EMPTY_USERNAME when username is blank`() {
         viewModel.userName.value = ""
         viewModel.password.value = "password"
-        val result = viewModel.run { 
-            val method = this.javaClass.getDeclaredMethod("isValidLoginDetails")
-            method.isAccessible = true
-            method.invoke(this) as Boolean
-        }
-        assertFalse(result)
+        // Use onSubmitLoginClick which calls isValidLoginDetails internally
+        viewModel.onSubmitLoginClick()
         assertEquals(LoginErrorHandler.EMPTY_USERNAME, viewModel.errorHandler.value)
+        assertNull(viewModel.loginResponse.value)
     }
 
     @Test
     fun `isValidLoginDetails returns false and sets EMPTY_PASSWORD when password is blank`() {
         viewModel.userName.value = "user"
         viewModel.password.value = ""
-        val result = viewModel.run { 
-            val method = this.javaClass.getDeclaredMethod("isValidLoginDetails")
-            method.isAccessible = true
-            method.invoke(this) as Boolean
-        }
-        assertFalse(result)
+        viewModel.onSubmitLoginClick()
         assertEquals(LoginErrorHandler.EMPTY_PASSWORD, viewModel.errorHandler.value)
+        assertNull(viewModel.loginResponse.value)
     }
 
     @Test
     fun `isValidLoginDetails returns true when username and password are not blank`() {
         viewModel.userName.value = "user"
         viewModel.password.value = "password"
-        val result = viewModel.run { 
-            val method = this.javaClass.getDeclaredMethod("isValidLoginDetails")
-            method.isAccessible = true
-            method.invoke(this) as Boolean
-        }
-        assertTrue(result)
+        // Should trigger loginRequest, but since repo is mocked, just check button state
+        viewModel.onSubmitLoginClick()
+        assertNull(viewModel.errorHandler.value)
+        // Button should be disabled during request
+        assertFalse(viewModel.isButtonEnabled.value!!)
     }
 
     @Test
@@ -76,6 +69,7 @@ class LoginVMTest {
         viewModel.clickEvents.observeForever(observer)
         viewModel.onForgetPasswordClick()
         assertEquals(LoginClickEvents.ON_FORGET_PASSWORD_CLICK, viewModel.clickEvents.value)
+        viewModel.clickEvents.removeObserver(observer)
     }
 
     @Test
@@ -84,6 +78,7 @@ class LoginVMTest {
         viewModel.clickEvents.observeForever(observer)
         viewModel.onPasswordToggleClick()
         assertEquals(LoginClickEvents.ON_PASSWORD_TOGGLE, viewModel.clickEvents.value)
+        viewModel.clickEvents.removeObserver(observer)
     }
 
     val loginResponse = LoginResponse(
@@ -98,7 +93,11 @@ class LoginVMTest {
                 firstName = "Happy",
                 lastName = "Singh",
                 shortName = "Happy",
-                role = "Employee"
+                role = "Employee",
+                officialLocation = OfficialLocation(
+                    latitude = 28.6139,
+                    longitude = 77.2090
+                )
             )
         ),
         success = true

@@ -30,6 +30,7 @@ import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.empDetail.Permission
 import com.atvantiq.wfms.models.empDetail.ReportingManager
+import com.atvantiq.wfms.models.loginResponse.OfficialLocation
 import com.atvantiq.wfms.utils.Utils
 
 @ExperimentalCoroutinesApi
@@ -160,7 +161,7 @@ class DashboardViewModelTest {
                 name = "Happy Singh",
                 shortName = "Happy",
                 dob = "2000-06-06",
-                gender = null,
+                gender = "male",
                 email = "employee@atvantiq.com",
                 role = "Employee",
                 permissions = listOf(
@@ -224,7 +225,11 @@ class DashboardViewModelTest {
                     id = 45608697,
                     name = "string"
                 ),
-                dateOfJoining = "2025-06-11"
+                dateOfJoining = "2023-11-01",
+                officialLocation = OfficialLocation(
+                    latitude = 28.6139,
+                    longitude = 77.209,
+                )
             )
         )
         coEvery { authRepo.empDetails() } returns response

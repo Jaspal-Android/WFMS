@@ -10,6 +10,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.Data
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginResponse.OfficialLocation
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
@@ -96,7 +97,11 @@ class LoginVMTest {
                     firstName = "Happy",
                     lastName = "Singh",
                     shortName = "Happy",
-                    role = "Employee"
+                    role = "Employee",
+                    officialLocation = OfficialLocation(
+                        latitude = 28.6139,
+                        longitude = 77.209,
+                    )
                 )
             )
         )

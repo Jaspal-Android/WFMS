@@ -123,6 +123,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
+        dismissProgress() // Ensure progress is dismissed before showing any message
         when (empDetailResponse?.code) {
             ValConstants.SUCCESS_CODE -> {
                 PrefMethods.saveEmpDetailResponse(prefMain, empDetailResponse.data)
@@ -184,6 +185,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun handleCheckInStatusError(message: String?) {
+        dismissProgress() // Ensure progress is dismissed before showing error dialog
         alertDialogShow(
             requireContext(),
             getString(R.string.alert),
