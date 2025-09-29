@@ -188,5 +188,7 @@
     <string name="start_work_with_photo_lat_long">Please take a photo and confirm your location to start work.</string>
     <string name="battery_optimization">Battery Optimization</string>
     <string name="battery_optimization_msg">To ensure the app functions correctly, please disable battery optimization for this app in your device settings.</string>
+    <string name="location_tracking_active">Location Tracking Active</string>
+    <string name="your_location_tracked">Your location is being tracked for attendance</string>
 
 </resources>

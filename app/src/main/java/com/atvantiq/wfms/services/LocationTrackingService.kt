@@ -112,8 +112,8 @@ class LocationTrackingService : Service() {
         )
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Location Tracking Active")
-            .setContentText("Your location is being tracked for attendance")
+            .setContentTitle(getString(R.string.location_tracking_active))
+            .setContentText(getString(R.string.your_location_tracked))
             .setSmallIcon(R.drawable.ic_loc)
             .setPriority(NotificationCompat.PRIORITY_HIGH) // Changed to HIGH
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
