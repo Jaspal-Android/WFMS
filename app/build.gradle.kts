@@ -53,19 +53,19 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
-            /*applicationIdSuffix = ".dev"*/
+            applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             buildConfigField("String", "BASE_URL", "\"http://69.62.85.16:8000/\"")
         }
         create("beta") {
             dimension = "environment"
-            /*applicationIdSuffix = ".beta"*/
+            applicationIdSuffix = ".beta"
             versionNameSuffix = "-beta"
-            buildConfigField("String", "BASE_URL", "\"http://69.62.85.16:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"http://157.173.220.189:8000/\"")
         }
         create("prod") {
             dimension = "environment"
-            buildConfigField("String", "BASE_URL", "\"http://69.62.85.16:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"http://157.173.220.189:8000/\"")
         }
     }
 

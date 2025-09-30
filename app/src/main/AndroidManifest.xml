@@ -144,10 +144,9 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/app_id"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            tools:ignore="ManifestResource">
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/path_provider" />
