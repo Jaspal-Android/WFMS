@@ -39,14 +39,14 @@ class CreationRepo @Inject constructor(private val apiService: ApiService, priva
         projectId = projectId
     )
 
-    override suspend fun typeListByProject(projectId: Long): TypeListByProjectResponse = apiService.typeListByProject(
+    override suspend fun typeListByPo(poId: Long): TypeListByProjectResponse = apiService.typeListByPo(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-        projectId = projectId
+        poId = poId
     )
 
-    override suspend fun activityListByProjectType(projectId: Long, typeId: Long)  = apiService.activityListByProjectType(
+    override suspend fun activityListByPoType(poId: Long, typeId: Long)  = apiService.activityListByPoType(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-        projectId = projectId,
+        poId = poId,
         typeId = typeId
     )
 

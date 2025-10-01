@@ -5,9 +5,13 @@ import com.google.gson.annotations.SerializedName
 
 data class Data(
     @SerializedName("attendance_id")
-    val attendanceId: Any?,
+    val attendanceId: Long,
     @SerializedName("checked_in")
     val checkedIn: Boolean,
+    @SerializedName("checked_out")
+    val checkedOut: Boolean,
     @SerializedName("checkin_time")
-    val checkinTime: Any?
+    val checkinTime: String,
+    @SerializedName("checkout_time")
+    val checkoutTime: String
 )

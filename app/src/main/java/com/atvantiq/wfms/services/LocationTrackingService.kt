@@ -16,6 +16,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.data.repository.tracking.ITrackingRepo
 import com.atvantiq.wfms.network.ApiService
 import com.atvantiq.wfms.ui.screens.SplashActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -24,6 +25,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.gson.JsonObject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +39,8 @@ class LocationTrackingService : Service() {
     companion object {
         private const val CHANNEL_ID = "location_service_channel"
         private const val NOTIFICATION_ID = 12345
-        private const val LOCATION_UPDATE_INTERVAL = 10000L // 10 seconds
+        //private const val LOCATION_UPDATE_INTERVAL = 10 * 60 * 1000L
+        private const val LOCATION_UPDATE_INTERVAL = 40000L
     }
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
@@ -46,6 +49,9 @@ class LocationTrackingService : Service() {
 
     @Inject
     lateinit var api: ApiService // Your API service interface
+
+    @Inject
+    lateinit var trackingService: ITrackingRepo
 
     override fun onCreate() {
         super.onCreate()
@@ -81,6 +87,13 @@ class LocationTrackingService : Service() {
             startForeground(NOTIFICATION_ID, buildNotification())
             isServiceRunning = true
             startLocationUpdates()
+            when (intent?.action) {
+                "com.atvantiq.wfms.ACTION_START_WORK" -> {
+                    val workId = intent.getStringExtra("WORK_ID")
+                    Log.e("jaspal", "Work ID: $workId")
+                }
+                // handle other actions if needed
+            }
             return START_STICKY
         } catch (e: Exception) {
             Log.e("LocationService", "Error starting service", e)
@@ -99,8 +112,8 @@ class LocationTrackingService : Service() {
         )
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Location Tracking Active")
-            .setContentText("Your location is being tracked for attendance")
+            .setContentTitle(getString(R.string.location_tracking_active))
+            .setContentText(getString(R.string.your_location_tracked))
             .setSmallIcon(R.drawable.ic_loc)
             .setPriority(NotificationCompat.PRIORITY_HIGH) // Changed to HIGH
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -121,8 +134,11 @@ class LocationTrackingService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Location Tracking",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH // Use HIGH importance
             )
+            channel.setShowBadge(false)
+            channel.enableLights(false)
+            channel.enableVibration(false)
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
@@ -162,17 +178,13 @@ class LocationTrackingService : Service() {
     private fun sendLocationToServer(location: Location) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Log.d(
-                    "LocationTrackingService",
-                    "Sending location: ${location.latitude}, ${location.longitude}"
-                )
-                /*api.sendLocation(
-                    CustomLocationRequest(
-                        latitude = location.latitude,
-                        longitude = location.longitude,
-                        timestamp = System.currentTimeMillis()
-                    )
-                )*/
+                val params = JsonObject().apply {
+                    addProperty("latitude", location.latitude)
+                    addProperty("longitude", location.longitude)
+                }
+               var response = trackingService.sendLocation(params)
+                Log.d("jaspal","Location Response: $response")
+                Log.d("LocationService", "Location sent: ${location.latitude}, ${location.longitude}")
             } catch (e: Exception) {
                 e.printStackTrace()
             }

@@ -7,7 +7,7 @@ data class Permission(
     @SerializedName("access_levels")
     val accessLevels: List<AccessLevel>,
     @SerializedName("feature_id")
-    val featureId: Int,
+    val featureId: Long,
     @SerializedName("feature_name")
     val featureName: String
 )

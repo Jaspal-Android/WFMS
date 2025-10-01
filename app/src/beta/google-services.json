@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "141409785813",
+    "project_id": "wfms-beta",
+    "storage_bucket": "wfms-beta.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141409785813:android:6875943052302c7c97cf5c",
+        "android_client_info": {
+          "package_name": "com.atvantiq.wfms.beta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhQWKt7JGYgt9KCvHEq3kbYnvq7W6T-dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

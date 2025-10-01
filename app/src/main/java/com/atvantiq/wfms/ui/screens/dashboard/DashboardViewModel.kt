@@ -3,12 +3,12 @@ package com.atvantiq.wfms.ui.screens.dashboard
 import android.app.Application
 import android.content.Intent
 import android.os.Build
-import androidx.lifecycle.AndroidViewModel
+import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
-import com.atvantiq.wfms.data.repository.auth.AuthRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -27,16 +27,20 @@ class DashboardViewModel @Inject constructor(
     application: Application,
     private val attendanceRepo: IAttendanceRepo,
     private val authRepo: IAuthRepo
-) : AndroidViewModel(application) {
+) : BaseViewModel(application) {
 
-    // variables initializations
     var clickEvents = MutableLiveData<DashboardClickEvents>()
-
 
     private val _isTracking = MutableLiveData<Boolean>(false)
     val isTracking: LiveData<Boolean> get() = _isTracking
 
-    // Methods
+    var GEOFENCE_LAT = ObservableField<Double>().apply {
+        set(0.0)
+    }
+    var GEOFENCE_LON = ObservableField<Double>().apply {
+        set(0.0)
+    }
+
     fun onAnnouncementsClicks() {
         clickEvents.value = DashboardClickEvents.onAnnouncementsClicks
     }
@@ -57,96 +61,51 @@ class DashboardViewModel @Inject constructor(
         getApplication<Application>().stopService(serviceIntent)
     }
 
-
-        //*----------------------------API's------------------------------*//*
-
-    /*
-     * Attendance Check In API
-     */
     var attendanceCheckInResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
     fun checkInAttendance(latitude: Double, longitude: Double) {
-        if (Utils.isInternet(getApplication())) {
-            var params = JsonObject()
-            params.addProperty("latitude", latitude)
-            params.addProperty("longitude",longitude)
-
-            viewModelScope.launch {
-                attendanceCheckInResponse.postValue(ApiState.loading())
-                try {
-                    var response = attendanceRepo.attendanceCheckInRequest(params)
-                    attendanceCheckInResponse.postValue(ApiState.success(response))
-                } catch (e: Exception) {
-                    attendanceCheckInResponse.postValue(ApiState.error(e))
-                }
-            }
-        } else {
-            attendanceCheckInResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
+        val params = JsonObject().apply {
+            addProperty("latitude", latitude)
+            addProperty("longitude", longitude)
+        }
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
+                liveData = attendanceCheckInResponse
+            )
         }
     }
 
-
-    /*
-     * Attendance Check Out API
-     */
     var attendanceCheckOutResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
     fun checkOutAttendance(lat: Double, long: Double) {
-        if (Utils.isInternet(getApplication())) {
-            var params = JsonObject()
-            params.addProperty("latitude", lat)
-            params.addProperty("longitude",long)
-
-            viewModelScope.launch {
-                attendanceCheckOutResponse.postValue(ApiState.loading())
-                try {
-                    var response = attendanceRepo.attendanceCheckOutRequest(params)
-                    attendanceCheckOutResponse.postValue(ApiState.success(response))
-                } catch (e: Exception) {
-                    attendanceCheckOutResponse.postValue(ApiState.error(e))
-                }
-            }
-        } else {
-            attendanceCheckOutResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
+        val params = JsonObject().apply {
+            addProperty("latitude", lat)
+            addProperty("longitude", long)
+        }
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceCheckOutRequest(params) },
+                liveData = attendanceCheckOutResponse
+            )
         }
     }
 
-    /*
-     * Attendance Check In Status API
-     */
     var attendanceCheckInStatusResponse = MutableLiveData<ApiState<CheckInStatusResponse>>()
     fun checkInStatusAttendance() {
-        if (Utils.isInternet(getApplication())) {
-            viewModelScope.launch {
-                attendanceCheckInStatusResponse.postValue(ApiState.loading())
-                try {
-                    var response = attendanceRepo.attendanceCheckInStatus()
-                    attendanceCheckInStatusResponse.postValue(ApiState.success(response))
-                } catch (e: Exception) {
-                    attendanceCheckInStatusResponse.postValue(ApiState.error(e))
-                }
-            }
-        } else {
-            attendanceCheckInStatusResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceCheckInStatus() },
+                liveData = attendanceCheckInStatusResponse
+            )
         }
     }
 
-    /*
-    * get Emp details API
-    * */
     var empDetailsResponse = MutableLiveData<ApiState<EmpDetailResponse>>()
     fun getEmpDetails() {
-        if (Utils.isInternet(getApplication())) {
-            viewModelScope.launch {
-                empDetailsResponse.postValue(ApiState.loading())
-                try {
-                    var response = authRepo.empDetails()
-                    empDetailsResponse.postValue(ApiState.success(response))
-                } catch (e: Exception) {
-                    empDetailsResponse.postValue(ApiState.error(e))
-                }
-            }
-        } else {
-            empDetailsResponse.postValue(ApiState.error(NoInternetException("No Internet Connection")))
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { authRepo.empDetails() },
+                liveData = empDetailsResponse
+            )
         }
     }
-
 }

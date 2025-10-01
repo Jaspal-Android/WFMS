@@ -6,11 +6,13 @@ on:
   push:
     branches:
       - master
-      - dev
+      - develop
+      - beta
   pull_request:
     branches:
       - master
-      - dev
+      - develop
+      - beta
   workflow_dispatch:
 
 # Environment variables
@@ -177,43 +179,108 @@ jobs:
       - name: Enable detailed deprecation warnings
         run: echo -e "\norg.gradle.warning.mode=all" >> gradle.properties
 
-      - name: Build Debug APKs
+      # Build Debug APK for dev branch
+      - name: Place google-services.json (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
-          ./gradlew assembleDevDebug
-          ./gradlew assembleBetaDebug
-          ./gradlew assembleProdDebug
+          mkdir -p app/src/dev
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_DEV }}" | base64 --decode > app/src/dev/google-services.json
 
-      - name: Upload Debug APKs
+      - name: Validate google-services.json (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: |
+          jq empty app/src/dev/google-services.json || (echo "Malformed google-services.json for dev flavor" && exit 1)
+
+      - name: Build Debug APK (dev flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: ./gradlew assembleDevDebug
+
+      - name: Upload Debug APK (dev flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apks
-          path: app/build/outputs/apk/*/debug/*.apk
+          name: dev-debug-apk
+          path: app/build/outputs/apk/dev/debug/*.apk
           retention-days: 7
 
+      # Build Debug APK for beta branch
+      - name: Place google-services.json (beta debug)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: |
+          mkdir -p app/src/beta
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BETA }}" | base64 --decode > app/src/beta/google-services.json
+
+      - name: Build Debug APK (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: ./gradlew assembleBetaDebug
+
+      - name: Upload Debug APK (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        uses: actions/upload-artifact@v4
+        with:
+          name: beta-debug-apk
+          path: app/build/outputs/apk/beta/debug/*.apk
+          retention-days: 7
+
+      # Build Release APK for beta branch
+      - name: Place google-services.json (beta)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: |
+          mkdir -p app/src/beta
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BETA }}" | base64 --decode > app/src/beta/google-services.json
+
       - name: Decode Keystore
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
         run: |
           echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
         env:
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
 
-      - name: Build Release APKs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          ./gradlew assembleDevRelease
-          ./gradlew assembleBetaRelease
-          ./gradlew assembleProdRelease
+      - name: Build Release APK (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: ./gradlew assembleBetaRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
 
-      - name: Upload Release APKs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Upload Release APK (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
         uses: actions/upload-artifact@v4
         with:
-          name: release-apks
-          path: app/build/outputs/apk/*/release/*.apk
+          name: beta-release-apk
+          path: app/build/outputs/apk/beta/release/*.apk
           retention-days: 30
-          if-no-files-found: error
+
+      # Build Release APK for master branch
+      - name: Place google-services.json (prod)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p app/src/prod
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_PROD }}" | base64 --decode > app/src/prod/google-services.json
+
+      - name: Decode Keystore
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          echo "${{ secrets.KEYSTORE_FILE }}" | base64 --decode > keystore.jks
+        env:
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Build Release APK (prod flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: ./gradlew assembleProdRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Upload Release APK (prod flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-release-apk
+          path: app/build/outputs/apk/prod/release/*.apk
+          retention-days: 30
+

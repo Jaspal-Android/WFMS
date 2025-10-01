@@ -11,7 +11,7 @@ data class EndWorkData(
     @SerializedName("ended_longitude")
     val endedLongitude: Double,
     @SerializedName("progress_id")
-    val progressId: Int,
+    val progressId: Long,
     @SerializedName("remarks")
     val remarks: String,
     @SerializedName("status")

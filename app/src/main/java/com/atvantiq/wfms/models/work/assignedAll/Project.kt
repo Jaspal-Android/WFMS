@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Project(
     @SerializedName("client")
-    val client: Int,
+    val client: Long,
     @SerializedName("id")
     val id: Long,
     @SerializedName("name")
