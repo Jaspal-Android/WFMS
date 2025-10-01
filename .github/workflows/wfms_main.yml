@@ -180,7 +180,6 @@ jobs:
         run: echo -e "\norg.gradle.warning.mode=all" >> gradle.properties
 
       # Build Debug APK for dev branch
-      # NOTE: GOOGLE_SERVICES_JSON_DEV must be base64-encoded content of google-services.json
       - name: Place google-services.json (dev)
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
@@ -284,3 +283,4 @@ jobs:
           name: prod-release-apk
           path: app/build/outputs/apk/prod/release/*.apk
           retention-days: 30
+
