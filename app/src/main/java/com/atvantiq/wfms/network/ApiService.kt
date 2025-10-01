@@ -8,6 +8,7 @@ import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
@@ -109,5 +110,8 @@ interface ApiService {
 
 	@POST(NetworkEndPoints.geoTrackingLocation)
 	suspend fun sendLocation(@Header("Authorization") token: String, @Body params: JsonObject) : SendLocationResponse
+
+	@POST(NetworkEndPoints.notificationToken)
+	suspend fun sendNotificationToken(@Header("Authorization") token: String, @Body params: JsonObject) : UpdateNotificationTokenResponse
 
 }

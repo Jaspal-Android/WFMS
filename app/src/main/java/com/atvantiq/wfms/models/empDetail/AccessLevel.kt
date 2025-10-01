@@ -7,5 +7,5 @@ data class AccessLevel(
     @SerializedName("access")
     val access: String,
     @SerializedName("access_id")
-    val accessId: Int
+    val accessId: Long
 )

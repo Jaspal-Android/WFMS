@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -9,11 +10,13 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityLoginBinding
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.DashboardActivity
 import com.atvantiq.wfms.ui.screens.forgotPassword.ForgotPasswordActivity
 import com.atvantiq.wfms.utils.Utils
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,6 +41,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         vm.clickEvents.observe(this, Observer { handleClickEvents(it, vm) })
         vm.errorHandler.observe(this, Observer { handleErrors(it) })
         vm.loginResponse.observe(this, Observer { handleLoginResponse(it) })
+        vm.sendNotificationTokenResponse.observe(this, Observer { handleSendNotificationTokenResponse(it) })
     }
 
     private fun handleClickEvents(event: LoginClickEvents, vm: LoginVM) {
@@ -78,14 +82,36 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         }
     }
 
+    private fun handleSendNotificationTokenResponse(response: ApiState<UpdateNotificationTokenResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                showToast(this, getString(R.string.login_success))
+                navigateToDashboard()
+            }
+            Status.LOADING -> {showProgress()}
+            Status.ERROR -> {
+                dismissProgress()
+                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+            }
+        }
+    }
+
     private fun handleLoginSuccess(response: ApiState<LoginResponse>) {
         dismissProgress()
         response.response?.let {
             if (it.code == 200 && it.success) {
-                showToast(this, getString(R.string.login_success))
                 PrefMethods.saveUserToken(prefMain, it.data?.accessToken.orEmpty())
                 PrefMethods.saveUserData(prefMain, it.data?.user)
-                navigateToDashboard()
+                FirebaseMessaging.getInstance().token
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val token = task.result
+                            viewModel.sendNotificationToken(it.data?.user?.userId.toString(), token)
+                        } else {
+                            Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                        }
+                    }
             } else {
                 alertDialogShow(this, getString(R.string.alert), it.message.orEmpty()) { dialog, _ ->
                     dialog.dismiss()

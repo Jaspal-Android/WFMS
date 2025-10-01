@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.constants
 
 object ValConstants {
+    const val ANDROID = "ANDROID"
     const val OPEN = "OPEN"
     const val ACCEPTED = "ACCEPTED"
     const val WIP = "WIP"

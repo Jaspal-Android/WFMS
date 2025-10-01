@@ -180,11 +180,17 @@ jobs:
         run: echo -e "\norg.gradle.warning.mode=all" >> gradle.properties
 
       # Build Debug APK for dev branch
+      # NOTE: GOOGLE_SERVICES_JSON_DEV must be base64-encoded content of google-services.json
       - name: Place google-services.json (dev)
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           mkdir -p app/src/dev
           echo "${{ secrets.GOOGLE_SERVICES_JSON_DEV }}" | base64 --decode > app/src/dev/google-services.json
+
+      - name: Validate google-services.json (dev)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        run: |
+          jq empty app/src/dev/google-services.json || (echo "Malformed google-services.json for dev flavor" && exit 1)
 
       - name: Build Debug APK (dev flavor)
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'

@@ -50,4 +50,7 @@ object NetworkEndPoints {
 
 	/*Send Geo Location*/
 	const val geoTrackingLocation="geo-tracking/location"
+
+	/*Notification*/
+	const val notificationToken="notifications/notification-token"
 }

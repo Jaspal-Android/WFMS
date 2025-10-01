@@ -3,8 +3,10 @@ package com.atvantiq.wfms.ui.screens.login
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
@@ -26,6 +28,7 @@ class LoginVM @Inject constructor(
     val errorHandler = MutableLiveData<LoginErrorHandler>()
     val networkError = MutableLiveData<Boolean>()
     val loginResponse = MutableLiveData<ApiState<LoginResponse>>()
+    val sendNotificationTokenResponse = MutableLiveData<ApiState<UpdateNotificationTokenResponse>>()
 
     // Click event handlers
     fun onForgetPasswordClick() = postClickEvent(LoginClickEvents.ON_FORGET_PASSWORD_CLICK)
@@ -61,6 +64,18 @@ class LoginVM @Inject constructor(
             liveData = loginResponse,
             onSuccess = { isButtonEnabled.value = true },
             onError = { isButtonEnabled.value = true }
+        )
+    }
+
+    fun sendNotificationToken(empId:String,token: String) {
+        val params = JsonObject().apply {
+            addProperty("employee_id", empId)
+            addProperty("token", token)
+            addProperty("device_type", ValConstants.ANDROID)
+        }
+        executeApiCall(
+            apiCall = {authRepo.sendNotificationToken(params)},
+            liveData = sendNotificationTokenResponse,
         )
     }
 }
