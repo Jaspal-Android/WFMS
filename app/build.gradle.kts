@@ -55,7 +55,7 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            buildConfigField("String", "BASE_URL", "\"http://69.62.85.16:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"http://31.97.62.78:8000/\"")
         }
         create("beta") {
             dimension = "environment"
