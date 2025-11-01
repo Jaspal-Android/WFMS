@@ -190,11 +190,10 @@ open class BaseFragmentSimple : Fragment() {
 	}
 
 	fun dismissProgress() {
-		// Use dismissAllowingStateLoss for reliability
-		if (progressDialog?.isVisible == true) {
+		//if (progressDialog?.isVisible == true) {
 			progressDialog?.dismissAllowingStateLoss()
 			progressDialog = null
-		}
+		//}
 	}
 
 	fun isLifeCycleResumed() =
