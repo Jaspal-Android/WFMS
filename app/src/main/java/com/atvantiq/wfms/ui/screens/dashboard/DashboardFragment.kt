@@ -70,7 +70,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
-        checkInAttendanceStatus()
 
         vm.clickEvents.observe(viewLifecycleOwner) {
             if (!isLifeCycleResumed()) return@observe
@@ -116,10 +115,17 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 when (response.status) {
                     Status.SUCCESS -> handleCheckInStatusResponse(response.response)
                     Status.ERROR -> handleCheckInStatusError(response.response?.message)
-                    Status.LOADING -> showProgress()
+                    Status.LOADING -> {
+                        showProgress()
+                    }
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkInAttendanceStatus()
     }
 
     private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
