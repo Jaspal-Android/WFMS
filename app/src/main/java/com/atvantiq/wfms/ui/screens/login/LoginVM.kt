@@ -8,6 +8,7 @@ import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +35,7 @@ class LoginVM @Inject constructor(
     fun onForgetPasswordClick() = postClickEvent(LoginClickEvents.ON_FORGET_PASSWORD_CLICK)
     fun onSubmitLoginClick() { if (isValidLoginDetails()) loginRequest() }
     fun onPasswordToggleClick() = postClickEvent(LoginClickEvents.ON_PASSWORD_TOGGLE)
+    fun onFetchCurrentLatitudeLongitudeClicks() = postClickEvent(LoginClickEvents.ON_FETCH_CURRENT_LATITUDE_LONGITUDE_CLICKS)
 
     private fun postClickEvent(event: LoginClickEvents) {
         clickEvents.value = event

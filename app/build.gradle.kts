@@ -55,7 +55,7 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            buildConfigField("String", "BASE_URL", "\"http://31.97.62.78:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://devapi.onaqt.com/\"")
         }
         create("beta") {
             dimension = "environment"

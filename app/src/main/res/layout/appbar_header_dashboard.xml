@@ -42,12 +42,43 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Hello, Jaspal"></TextView>
 
+            <LinearLayout
+                android:onClick="@{()->vm.onFetchCurrentLatitudeLongitudeClicks()}"
+                android:paddingVertical="@dimen/padding_x_small"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
+                android:id="@+id/locationMarkerView"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/icLocationPic"
+                    android:padding="2dp"
+                    android:src="@drawable/rounded_location_on_24"
+                    app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:background="@drawable/ic_circular_bg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvEmpName"
+                    app:layout_constraintStart_toEndOf="@+id/icLocationPic"
+                    android:text="@string/get_current_latitude_longitude" />
+            </LinearLayout>
+
 
             <com.ncorti.slidetoact.SlideToActView
                 android:id="@+id/slideStartDay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginTop="@dimen/margin"
                 app:animation_duration="250"
                 app:area_margin="5dp"
                 app:border_radius="@dimen/card_radius"
@@ -56,7 +87,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
+                app:layout_constraintTop_toBottomOf="@+id/locationMarkerView"
                 app:outer_color="@color/colorPrimaryDark"
                 app:slider_height="50dp"
                 app:text="@string/start_day"
