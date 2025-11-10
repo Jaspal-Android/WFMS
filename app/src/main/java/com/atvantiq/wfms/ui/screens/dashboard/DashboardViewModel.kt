@@ -45,6 +45,10 @@ class DashboardViewModel @Inject constructor(
         clickEvents.value = DashboardClickEvents.onAnnouncementsClicks
     }
 
+    fun onFetchCurrentLatitudeLongitudeClicks() {
+        clickEvents.value = DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks
+    }
+
     fun startTracking() {
         _isTracking.value = true
         val serviceIntent = Intent(getApplication(), LocationTrackingService::class.java)

@@ -190,5 +190,11 @@
     <string name="battery_optimization_msg">To ensure the app functions correctly, please disable battery optimization for this app in your device settings.</string>
     <string name="location_tracking_active">Location Tracking Active</string>
     <string name="your_location_tracked">Your location is being tracked for attendance</string>
+    <string name="current_location">Current Location</string>
+    <string name="unable_to_fetch_location">Unable to fetch location. Please try again.</string>
+    <string name="get_current_latitude_longitude">Get my current latitude and longitude</string>
+    <string name="Latitude">Latitude</string>
+    <string name="Longitude">Longitude</string>
+    <string name="Address">Address</string>
 
 </resources>
