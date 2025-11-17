@@ -12,6 +12,8 @@ import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
+import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
+import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
 import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
@@ -20,6 +22,8 @@ import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
+import com.atvantiq.wfms.models.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -114,4 +118,15 @@ interface ApiService {
 	@POST(NetworkEndPoints.notificationToken)
 	suspend fun sendNotificationToken(@Header("Authorization") token: String, @Body params: JsonObject) : UpdateNotificationTokenResponse
 
+	@GET(NetworkEndPoints.siteListAll)
+	suspend fun siteListAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("limit") limit:Int,@Query("is_active") is_active:Int): SitesListAllResponse
+
+	@POST(NetworkEndPoints.createSite)
+	suspend fun createSite(@Header("Authorization") token: String, @Body params: JsonObject): CreateSiteResponse
+
+	@GET(NetworkEndPoints.workSites)
+	suspend fun workSites(@Header("Authorization") token: String, @Path("employee_id") employeeId: String, @Query("date") date: String): WorkSitesResponse
+
+	@POST(NetworkEndPoints.approveWorkSite)
+	suspend fun approveWorkSite(@Header("Authorization") token: String, @Body params: JsonObject): ApproveWorkSiteResponse
 }

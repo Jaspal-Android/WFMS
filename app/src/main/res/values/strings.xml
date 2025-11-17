@@ -196,5 +196,17 @@
     <string name="Latitude">Latitude</string>
     <string name="Longitude">Longitude</string>
     <string name="Address">Address</string>
+    <string name="sites">Sites</string>
+    <string name="add_site">Add Site</string>
+    <string name="siteNameHint">Enter Site Name</string>
+    <string name="siteIdHint">Enter Site ID</string>
+    <string name="siteAddressHint">Enter Site Address</string>
+    <string name="siteLatitudeHint">Enter Site Latitude</string>
+    <string name="siteLongitudeHint">Enter Site Longitude</string>
+    <string name="site_created_successfully">Site created successfully</string>
+    <string name="site">Site</string>
+    <string name="approve_site">Approve Site</string>
+    <string name="approve_claims">Approve Claims</string>
+    <string name="no_action">No Action</string>
 
 </resources>

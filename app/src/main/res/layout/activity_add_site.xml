@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="dateString"
+            type="String" />
+
+        <variable
+            name="timeString"
+            type="String" />
+
+        <variable
+            name="locationString"
+            type="String" />
+
+        <variable
+            name="hasPreviewImage"
+            type="Boolean" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteVM" />
+    </data>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:isScrollContainer="true"
+        android:overScrollMode="always"
+        android:scrollbars="vertical"
+        tools:context=".ui.screens.admin.ui.site.addSite.AddSiteActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:id="@+id/addSiteToolbar"
+                layout="@layout/custom_toolbar"></include>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/select_client"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/client_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/select_project"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/project_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:enabled="@{!vm.isProjectLoading}"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true" />
+
+                    <ProgressBar
+                        tools:visibility="gone"
+                        android:id="@+id/project_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/select_circle"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/CustomSelectableTextInputEditStyle"
+                        android:id="@+id/circle_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:enabled="@{!vm.isCircleLoading}" />
+
+                    <ProgressBar
+                        tools:visibility="gone"
+                        android:id="@+id/circle_progress"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/siteIdHint"
+                    android:minHeight="@dimen/text_input_edit_text_min_height">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/site_id_et"
+                        style="@style/CustomEditInputTextRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapCharacters"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.siteId}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/siteNameHint"
+                    android:minHeight="@dimen/text_input_edit_text_min_height">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/site_name_et"
+                        style="@style/CustomEditInputTextRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapCharacters"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.siteName}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/siteAddressHint"
+                    android:minHeight="@dimen/text_input_edit_text_min_height">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/site_address_et"
+                        style="@style/CustomEditInputTextRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPostalAddress"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.siteAddress}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/siteLatitudeHint"
+                    android:minHeight="@dimen/text_input_edit_text_min_height">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/site_latitude_et"
+                        style="@style/CustomEditInputTextRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:imeOptions="actionNext"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.siteLatitude}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/siteLongitudeHint"
+                    android:minHeight="@dimen/text_input_edit_text_min_height">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/site_longitude_et"
+                        style="@style/CustomEditInputTextRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:imeOptions="actionDone"
+                        android:inputType="numberDecimal"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.siteLongitude}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomPrimaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:onClick="@{()->vm.onSaveClick()}"
+                    android:text="@string/add_site" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomRedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:onClick="@{()->vm.onCancelClick()}"
+                    android:text="@string/cancel" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</layout>

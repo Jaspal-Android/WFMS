@@ -655,40 +655,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     }
 
     // Generic dialog creator for single selection
-    private fun <T> showSelectionDialog(
-        items: List<T>,
-        title: String,
-        layoutResId: Int,
-        bind: (view: android.view.View, item: T) -> Unit,
-        onItemSelected: (T) -> Unit,
-        filterCondition: (T, String) -> Boolean,
-        emptyMessage: String,
-        retryAction: () -> Unit,
-        tag: String
-    ) {
-        if (items.isNotEmpty()) {
-            val dialog = GenericBottomSheetDialog(
-                context = this,
-                items = items,
-                layoutResId = layoutResId,
-                bind = bind,
-                onItemSelected = {
-                    onItemSelected(it)
-                },
-                filterCondition = filterCondition,
-                title = title
-            )
-            dialog.show(supportFragmentManager, tag)
-        } else {
-            alertDialogShow(
-                this,
-                getString(R.string.alert),
-                emptyMessage,
-                getString(R.string.retry),
-                okLister = DialogInterface.OnClickListener { _, _ -> retryAction() },
-            )
-        }
-    }
+
 
     private fun showClientSelectionDialog(clients: List<Client>) {
         showSelectionDialog(

@@ -23,6 +23,7 @@ import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 
 
@@ -204,6 +205,7 @@ open class BaseFragmentSimple : Fragment() {
 				viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 
 	fun performLogout(){
+		FirebaseMessaging.getInstance().deleteToken()
 		prefMain.deleteAll()
 		Utils.jumpActivity(requireContext(), LoginActivity::class.java)
 		requireActivity().finish()

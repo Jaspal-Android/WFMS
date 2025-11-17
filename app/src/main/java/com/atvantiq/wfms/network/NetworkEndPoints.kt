@@ -40,6 +40,12 @@ object NetworkEndPoints {
 
 	/*Site*/
 	const val siteListByProject = "site/project/{project_id}"
+	const val createSite="site/create"
+	const val workSites = "work/sites/{employee_id}"
+	const val approveWorkSite = "/work/approve"
+
+	/*Sites all by page and limit*/
+	const val siteListAll = "site/all"
 
 	/*Type*/
 	//const val typeListByPorject = "type/project/{project_id}"
@@ -53,4 +59,6 @@ object NetworkEndPoints {
 
 	/*Notification*/
 	const val notificationToken="notifications/notification-token"
+
+
 }

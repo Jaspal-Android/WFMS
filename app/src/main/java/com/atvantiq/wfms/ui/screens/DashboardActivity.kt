@@ -28,6 +28,7 @@ import com.atvantiq.wfms.databinding.NavHeaderDashboardBinding
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -192,6 +193,7 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
     }
 
     private fun performLogout() {
+        FirebaseMessaging.getInstance().deleteToken()
         prefMain.deleteAll()
         Utils.jumpActivity(this, LoginActivity::class.java)
         finish()

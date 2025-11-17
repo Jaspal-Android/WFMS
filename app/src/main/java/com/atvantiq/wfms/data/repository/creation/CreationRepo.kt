@@ -6,8 +6,11 @@ import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
+import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
+import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
+import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefKeys
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -50,4 +53,15 @@ class CreationRepo @Inject constructor(private val apiService: ApiService, priva
         typeId = typeId
     )
 
+    override suspend fun siteListAll(page: Int, limit: Int, is_active: Int): SitesListAllResponse = apiService.siteListAll(
+            token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+            page = page,
+            limit = limit,
+            is_active = is_active
+    )
+
+    override suspend fun createSite(params: JsonObject): CreateSiteResponse  = apiService.createSite(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+        params = params
+    )
 }

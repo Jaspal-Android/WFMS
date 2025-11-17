@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="item"
+            type="com.atvantiq.wfms.models.attendance.attendanceDetails.Record" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/cardAttendanceItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvEmployeeName"
+                        style="@style/CustomRegularDarkTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{item.employee.name}"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText"
+                        tools:text="Jaspal Kumar" />
+
+                    <TextView
+                        android:id="@+id/tvEmployeeCode"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{item.employee.code}"
+                        tools:ignore="HardcodedText"
+                        tools:text="jaspal006" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    style="@style/CustomMediumTextView"
+                    attendanceStatus="@{item.status}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/padding_medium"
+                    android:paddingVertical="@dimen/padding_x_small"
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText"
+                    tools:text="Present" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gark_primary_trans_bg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/padding_small"
+                    android:paddingVertical="@dimen/padding_x_small">
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:contentDescription="Date"
+                        android:src="@drawable/ic_calendar_today"
+                        app:tint="@color/colorPrimaryDark" />
+
+                    <TextView
+                        android:id="@+id/tvDate"
+                        style="@style/CustomSmallDarkPrimaryTextView"
+                        formatApiDateToMonthDayYear="@{item.createdAt}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:text="Oct 31, 2025"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomSmallDarkPrimaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:text='@{"Total Work Hours "+item.workHours + " hrs"}'
+                    android:textStyle="bold"
+                    tools:text="Total Work Hours 8 hrs" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:cardBackgroundColor="@color/checkin_bg"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="@color/checkin_bg">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="@dimen/margin_small_extra"
+                                android:contentDescription="Check In"
+                                android:src="@drawable/ic_clock_16"
+                                app:tint="@color/green" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <View
+                            android:id="@+id/viewTimelineLine"
+                            android:layout_width="2dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginVertical="@dimen/margin_small_extra"
+                            android:background="@drawable/ic_gradient_timelime" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/checkin_bg"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/checkin_bg"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding_small">
+
+                            <TextView
+                                style="@style/CustomSmallDarkTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.05"
+                                android:text="CHECK IN"
+                                android:textColor="@color/green"
+                                android:textStyle="bold"
+                                tools:ignore="HardcodedText" />
+
+                            <TextView
+                                android:id="@+id/tvCheckinTime"
+                                style="@style/CustomRegularDarkTextView"
+                                formatApiDateToTime="@{item.checkin.time}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:textColor="@color/checkin_dark"
+                                android:textStyle="bold"
+                                tools:ignore="HardcodedText"
+                                tools:text="08:25 AM" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{item.checkin.time.isEmpty() ? View.GONE : View.VISIBLE}">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:contentDescription="Location"
+                                    android:src="@drawable/rounded_location_on_24"
+                                    app:tint="@color/green" />
+
+                                <TextView
+                                    android:id="@+id/tvCheckinLocation"
+                                    style="@style/CustomSmallDarkTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:text="@{item.checkin.latitude + `, ` + item.checkin.logitude}"
+                                    android:textColor="@color/green"
+                                    tools:ignore="HardcodedText"
+                                    tools:text="30.7150, 76.7034" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardCheckoutIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:cardBackgroundColor="@color/checkout_bg"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="@color/checkout_bg">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="@dimen/margin_small_extra"
+                                android:contentDescription="Check Out"
+                                android:src="@drawable/ic_clock_16"
+                                app:tint="@color/red" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardCheckout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/checkout_bg"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/checkout_bg"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding_small">
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.05"
+                                android:text="CHECK OUT"
+                                android:textColor="@color/red"
+                                android:textStyle="bold"
+                                tools:ignore="HardcodedText" />
+
+                            <TextView
+                                android:id="@+id/tvCheckoutTime"
+                                style="@style/CustomRegularDarkTextView"
+                                formatApiDateToTime="@{item.checkout.time}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:textColor="@color/checkout_dark"
+                                android:textStyle="bold"
+                                tools:ignore="HardcodedText"
+                                tools:text="--:--" />
+
+                            <LinearLayout
+                                android:id="@+id/layoutCheckoutLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="@{item.checkout.time.isEmpty() ? View.GONE : View.VISIBLE}">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:contentDescription="Location"
+                                    android:src="@drawable/rounded_location_on_24"
+                                    app:tint="@color/red" />
+
+                                <TextView
+                                    android:id="@+id/tvCheckoutLocation"
+                                    style="@style/CustomSmallTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/margin_small_extra"
+                                    android:text="@{item.checkout.latitude + `, ` + item.checkout.logitude}"
+                                    android:textColor="@color/red"
+                                    tools:ignore="HardcodedText"
+                                    tools:text="40.500, 55.555" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/viewSitesBt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/primary_bt_bg"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding_small">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/rounded_location_on_24" />
+
+                <TextView
+                    style="@style/CustomMediumLightTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="View Sites Visited"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

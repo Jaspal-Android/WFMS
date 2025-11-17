@@ -7,5 +7,7 @@ data class Circle(
     @SerializedName("id")
     val id: Long,
     @SerializedName("name")
-    val name: String
+    val name: String,
+    @SerializedName("code")
+    val code: String
 )

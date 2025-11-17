@@ -12,3 +12,4 @@ data class OfficialLocation(
     @SerializedName("longitude")
     val longitude: Double
 ): Parcelable
+

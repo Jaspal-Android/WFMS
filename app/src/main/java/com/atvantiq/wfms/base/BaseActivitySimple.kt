@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.base
 
+import GenericBottomSheetDialog
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -20,6 +21,7 @@ import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -175,6 +177,7 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 		view.startAnimation(animation)
 	}
 	private fun performGlobalLogout(){
+		FirebaseMessaging.getInstance().deleteToken()
 		prefMain.deleteAll()
 		Utils.jumpActivity(this, LoginActivity::class.java)
 		finish()
@@ -190,6 +193,41 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 				dialog.dismiss()
 				performGlobalLogout()
 			})
+	}
+
+	fun <T> showSelectionDialog(
+		items: List<T>,
+		title: String,
+		layoutResId: Int,
+		bind: (view: android.view.View, item: T) -> Unit,
+		onItemSelected: (T) -> Unit,
+		filterCondition: (T, String) -> Boolean,
+		emptyMessage: String,
+		retryAction: () -> Unit,
+		tag: String
+	) {
+		if (items.isNotEmpty()) {
+			val dialog = GenericBottomSheetDialog(
+				context = this,
+				items = items,
+				layoutResId = layoutResId,
+				bind = bind,
+				onItemSelected = {
+					onItemSelected(it)
+				},
+				filterCondition = filterCondition,
+				title = title
+			)
+			dialog.show(supportFragmentManager, tag)
+		} else {
+			alertDialogShow(
+				this,
+				getString(R.string.alert),
+				emptyMessage,
+				getString(R.string.retry),
+				okLister = DialogInterface.OnClickListener { _, _ -> retryAction() },
+			)
+		}
 	}
 
 }
