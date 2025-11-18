@@ -208,5 +208,6 @@
     <string name="approve_site">Approve Site</string>
     <string name="approve_claims">Approve Claims</string>
     <string name="no_action">No Action</string>
+    <string name="attendance_completed_for_day">Attendance completed for today.</string>
 
 </resources>

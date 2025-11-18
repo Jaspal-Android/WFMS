@@ -3,6 +3,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel" />
@@ -10,6 +12,10 @@
         <variable
             name="userNameString"
             type="String" />
+
+        <variable
+            name="isAttendacneCompleted"
+            type="Boolean" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -131,11 +137,11 @@
                                     app:layout_constraintTop_toBottomOf="@+id/tvEmpName" />
 
                                 <TextView
-                                    android:onClick="@{()->vm.onFetchCurrentLatitudeLongitudeClicks()}"
                                     style="@style/CustomMediumDarkTextView"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/margin_small"
+                                    android:onClick="@{()->vm.onFetchCurrentLatitudeLongitudeClicks()}"
                                     android:text="@string/get_current_latitude_longitude"
                                     app:layout_constraintBottom_toBottomOf="@+id/tvEmpName"
                                     app:layout_constraintStart_toEndOf="@+id/icLocationPic" />
@@ -146,7 +152,7 @@
                                 android:id="@+id/slideStartDay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin"
+                                android:layout_marginTop="@dimen/margin_small"
                                 app:animation_duration="250"
                                 app:area_margin="5dp"
                                 app:border_radius="@dimen/card_radius"
@@ -161,6 +167,15 @@
                                 app:text="@string/start_day"
                                 app:text_color="@color/white"
                                 app:text_size="@dimen/default_text" />
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:text="@string/attendance_completed_for_day"
+                                android:textColor="@color/red"
+                                android:visibility="@{isAttendacneCompleted?View.VISIBLE:View.GONE}"></TextView>
 
                             <LinearLayout
                                 android:layout_width="match_parent"

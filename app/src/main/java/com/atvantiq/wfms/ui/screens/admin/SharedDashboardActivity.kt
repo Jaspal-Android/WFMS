@@ -223,8 +223,10 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                 if(isDayStarted) checkPermissionForLiveLocation()
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            ValConstants.BAD_REQUEST_CODE -> alertDialogShow(this, getString(R.string.alert), response.message
-                ?: getString(R.string.something_went_wrong))
+            ValConstants.BAD_REQUEST_CODE ->
+            {
+                binding.isAttendacneCompleted =true
+            }
             else -> handleCheckInStatusError(response?.message)
         }
     }
