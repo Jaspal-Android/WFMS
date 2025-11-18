@@ -79,6 +79,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
                     getCurrentLatitudeLongitudePermissions()
                 }
+                DashboardClickEvents.OPEN_SITES_CLICK -> TODO()
+                DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK -> TODO()
+                DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK -> TODO()
+                DashboardClickEvents.OPEN_PROFILE_CLICK -> TODO()
+                DashboardClickEvents.LOGOUT_CLICK -> TODO()
             }
         }
 
