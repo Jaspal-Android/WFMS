@@ -25,6 +25,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.CheckoutData
 import com.atvantiq.wfms.models.empDetail.AccessLevel
 import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
@@ -117,7 +118,10 @@ class DashboardViewModelTest {
             code = 200,
             message = "Attendance marked successfully for today.",
             success = true,
-            data = null
+            data = CheckoutData(
+                attendanceId = 222355621489,
+                dayProgress = false
+            )
         )
         coEvery { attendanceRepo.attendanceCheckInRequest(any()) } returns response
 
@@ -136,11 +140,14 @@ class DashboardViewModelTest {
                 code = 200,
                 message = "Attendance check-out marked successfully.",
                 success = true,
-                data = null
+                data  = CheckoutData(
+                    attendanceId = 222355621489,
+                    dayProgress = false
+                )
             )
             coEvery { attendanceRepo.attendanceCheckOutRequest(any()) } returns response
 
-            viewModel.checkOutAttendance(12.34, 56.78)
+            viewModel.checkOutAttendance(12.34, 56.78,true)
             testDispatcher.scheduler.advanceUntilIdle()
 
             coVerify(exactly = 1) { attendanceRepo.attendanceCheckOutRequest(any()) }
