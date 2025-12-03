@@ -7,9 +7,10 @@ on:
     branches:
       - develop
       - beta
+      - master
   pull_request:
     branches:
-      - master
+
   workflow_dispatch:
 
 # Environment variables
