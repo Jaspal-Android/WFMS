@@ -6,7 +6,13 @@ import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
+import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
+import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
+import com.google.gson.JsonObject
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.Query
 
 interface ICreationRepo {
     suspend fun clientList(): ClientListResponse
@@ -16,4 +22,7 @@ interface ICreationRepo {
     suspend fun siteListByProject(projectId: Long): SiteListByProjectResponse
     suspend fun typeListByPo(poId: Long): TypeListByProjectResponse
     suspend fun activityListByPoType(poId: Long, typeId: Long): ActivityListByProjectTypeResponse
+    suspend fun siteListAll(page:Int,limit:Int,is_active:Int): SitesListAllResponse
+    suspend fun createSite(params: JsonObject): CreateSiteResponse
+
 }

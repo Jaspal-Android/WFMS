@@ -15,12 +15,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.constants.SharingKeys
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityLoginBinding
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.DashboardActivity
+import com.atvantiq.wfms.ui.screens.admin.SharedDashboardActivity
 import com.atvantiq.wfms.ui.screens.forgotPassword.ForgotPasswordActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -121,11 +124,13 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             if (it.code == 200 && it.success) {
                 PrefMethods.saveUserToken(prefMain, it.data?.accessToken.orEmpty())
                 PrefMethods.saveUserData(prefMain, it.data?.user)
+                val user = it.data?.user
+                viewModel.user = user
                 FirebaseMessaging.getInstance().token
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val token = task.result
-                            viewModel.sendNotificationToken(it.data?.user?.userId.toString(), token)
+                            viewModel.sendNotificationToken(user?.userId.toString(), token)
                         } else {
                             Log.w("FCM", "Fetching FCM registration token failed", task.exception)
                         }
@@ -149,7 +154,18 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     }
 
     private fun navigateToDashboard() {
-        Utils.jumpActivity(this, DashboardActivity::class.java)
+        val role = viewModel.user?.role ?: ""
+        val permissions = viewModel?.user?.permissions
+
+        if (role.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true)) {
+            Utils.jumpActivityWithData(this, DashboardActivity::class.java,Bundle().apply {
+                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS,permissions as ArrayList)
+            })
+        } else {
+            Utils.jumpActivityWithData(this, SharedDashboardActivity::class.java,Bundle().apply {
+                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS,permissions as ArrayList)
+            })
+        }
         finish()
     }
 

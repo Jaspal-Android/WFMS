@@ -50,10 +50,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
 
-    companion object {
-        private const val GEOFENCE_RADIUS_METERS = 500
-    }
-
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_dashboard, DashboardViewModel::class.java)
 
@@ -79,6 +75,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
                     getCurrentLatitudeLongitudePermissions()
                 }
+                DashboardClickEvents.OPEN_SITES_CLICK -> TODO()
+                DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK -> TODO()
+                DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK -> TODO()
+                DashboardClickEvents.OPEN_PROFILE_CLICK -> TODO()
+                DashboardClickEvents.LOGOUT_CLICK -> TODO()
             }
         }
 
@@ -125,6 +126,25 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 }
             }
         }
+
+        vm.attendanceRemarksResponse.observe(viewLifecycleOwner) { response ->
+            if (isLifeCycleResumed()) {
+                when (response.status) {
+                    Status.SUCCESS -> {
+                        dismissProgress()
+                        if (response.response?.code == ValConstants.SUCCESS_CREATION_CODE) {
+                            performCheckOut(false)
+                        }
+                        alertDialogShow(
+                            requireContext(),
+                            getString(R.string.alert),
+                            response.response?.message.toString())
+                    }
+                    Status.ERROR -> handleError(response.throwable, response.response?.message)
+                    Status.LOADING -> showProgress()
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -162,13 +182,20 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         dismissProgress()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
-                isDayStarted = false
-                updateSlideButton(false)
-                viewModel.stopTracking()
+              performCheckOut(true)
+            }
+            3001 ->{
+                handleNoWorkForDay(response?.data?.attendanceId)
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
         }
+    }
+
+    private fun performCheckOut(isShowProgress:Boolean){
+        isDayStarted = false
+        updateSlideButton(isShowProgress)
+        viewModel.stopTracking()
     }
 
     private fun handleCheckInStatusResponse(response: CheckInStatusResponse?) = with(binding.appDashHeader) {
@@ -204,6 +231,28 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
             false
         )
+    }
+
+    private fun handleNoWorkForDay(attendanceId: Long?) {
+        alertDialogShow(requireContext(),
+            getString(R.string.no_work_started_title),
+            getString(R.string.no_work_started_message),
+            getString(R.string.enter_work_details),
+            DialogInterface.OnClickListener { _, _ ->
+
+            },
+            getString(R.string.mark_idle),
+            DialogInterface.OnClickListener { _, _ ->
+                showRemarksDialog(attendanceId ?: 0L)
+            }
+        )
+    }
+
+    private fun showRemarksDialog(attendanceId: Long) {
+        var remarksBottomSheet = AttendanceRemarksBottomSheet{remarks ->
+            viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+        }
+        remarksBottomSheet.show(parentFragmentManager, "AttendanceRemarksBottomSheet")
     }
 
     private fun updateSlideButton(isStarted: Boolean) = with(binding.appDashHeader) {
@@ -254,7 +303,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     )
                 }
             }
-            onResult(distance[0] <= GEOFENCE_RADIUS_METERS)
+            onResult(distance[0] <= ValConstants.GEOFENCE_RADIUS_METERS)
         }.addOnFailureListener {
             lat = 0.0
             long = 0.0
@@ -299,7 +348,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 lat = location?.latitude ?: 0.0
                 long = location?.longitude ?: 0.0
-                viewModel.checkOutAttendance(lat, long)
+                viewModel.checkOutAttendance(lat, long,true)
             }.addOnFailureListener {
                 lat = 0.0
                 long = 0.0
@@ -325,10 +374,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         binding.viewPager.adapter = adapter
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> getString(R.string.attendance_status)
+                0 -> getString(R.string.attendance)
                 1 -> getString(R.string.my_targets)
                 2 -> getString(R.string.projects)
-                else -> getString(R.string.attendance_status)
+                else -> getString(R.string.attendance)
             }
         }.attach()
     }

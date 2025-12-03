@@ -15,8 +15,12 @@ data class User(
     val lastName: String,
     @SerializedName("official_location")
     val officialLocation: OfficialLocation,
+    @SerializedName("permissions")
+    val permissions: List<Permission>,
     @SerializedName("role")
     val role: String,
+    @SerializedName("role_id")
+    val roleId: Long,
     @SerializedName("short_name")
     val shortName: String,
     @SerializedName("user_id")

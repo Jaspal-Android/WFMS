@@ -7,6 +7,7 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailDat
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.Checkin
 import com.atvantiq.wfms.models.attendance.attendanceDetails.Checkout
+import com.atvantiq.wfms.models.attendance.attendanceDetails.Employee
 import com.atvantiq.wfms.models.attendance.attendanceDetails.Record
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
@@ -48,6 +49,7 @@ class AttendanceStatusVMTest {
 
     @Test
     fun `getAttendanceDetails calls attendanceRepo and updates LiveData`() = runTest {
+
         val response = AttendanceDetailListResponse(
             code = 200,
             message = "Attendance records fetched successfully.",
@@ -61,7 +63,11 @@ class AttendanceStatusVMTest {
                 records = listOf(
                     Record(
                         id = 562030799601,
-                        employeeId = 39580123,
+                        employee = Employee(
+                            id = 12345,
+                            code = "EMP001",
+                            name = "John Doe"
+                        ),
                         checkin = Checkin(
                             time = "2025-08-28T06:17:56.848415",
                             latitude = 30.7149134,
@@ -75,7 +81,7 @@ class AttendanceStatusVMTest {
                         status = 2,
                         workHours = "00:00",
                         createdAt = "2025-08-28T06:17:56.848415",
-                        canHrMarkAttendance = false
+                        canHrMarkAttendance = false,
                     )
                 )
             )

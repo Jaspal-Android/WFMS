@@ -4,8 +4,20 @@ import android.app.Application
 import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.data.repository.auth.IAuthRepo
+import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
+import com.atvantiq.wfms.network.ApiState
+import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ForgotPasswordVM(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class ForgotPasswordVM @Inject constructor(
+    application: Application,
+    private val authRepo: IAuthRepo
+) : BaseViewModel(application) {
 
     //Variable declaration
 
@@ -40,5 +52,19 @@ class ForgotPasswordVM(application: Application) : AndroidViewModel(application)
                 true
             }
         }
+    }
+
+    /*
+    * ForgetPassword API
+    * */
+    var forgotPasswordResponse  = MutableLiveData<ApiState<ForgotPasswordResponse>>()
+    fun sendForgotPassword(email:String) {
+        val params = JsonObject().apply {
+            addProperty("email", email)
+        }
+        executeApiCall(
+            apiCall = {authRepo.forgotPassword(params)},
+            liveData = forgotPasswordResponse,
+        )
     }
 }

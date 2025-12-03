@@ -8,9 +8,11 @@ import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
+import com.atvantiq.wfms.models.loginResponse.AccessLevel
 import com.atvantiq.wfms.models.loginResponse.Data
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginResponse.OfficialLocation
+import com.atvantiq.wfms.models.loginResponse.Permission
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
@@ -87,23 +89,40 @@ class LoginVMTest {
         val response = LoginResponse(
             code = 200,
             message = "Login successful",
-            success = true,
             data = Data(
-                accessToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6IjVtUUlQanJ6QmFnSDFzOVciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2hmemdjd25ja25iYnFxY211Y2h1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyMzdhMDk4Ny02MGFjLTQ5NDItOTM2Ni0zYmU2YzE4ODk4YWYiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzU2OTE3MDk0LCJpYXQiOjE3NTY4MzA2OTQsImVtYWlsIjoiZW1wbG95ZWVAYXR2YW50aXEuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NTY4MzA2OTR9XSwic2Vzc2lvbl9pZCI6ImY2ZjhkYjQ2LWZmOTktNGYyOS05MDM5LWZmZTA0ZmQ1YjYwMCIsImlzX2Fub255bW91cyI6ZmFsc2V9.c5SRBzYE4E1gm_LbYp5VzEd7L0nJS5bV2nNkQMo3ToU",
-                refreshToken = "zpykmth3agug",
+                accessToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6InZ2SWRHZHkxanpUQVZEUm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2VtY2tmZmJncnh3aWZ3eW1oaWt2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNWY3M2MwNC01YTQwLTQ3N2YtOGY0My1mYWFiMzRiNjNlN2QiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY0MDY4ODIwLCJpYXQiOjE3NjM0NjQwMjAsImVtYWlsIjoiamFzcGFsMDA2QHlvcG1haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjM0NjQwMjB9XSwic2Vzc2lvbl9pZCI6IjBlOTljMDNiLTYxMDItNGM4My1iYTc3LTczZmUwZjU5YWM4ZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.G2658-GyjlBNiRGkVsejNp2QQlX3N-BpvelPY-RjeAg",
+                refreshToken = "iptpjd5rgnpv",
                 user = User(
-                    userId = 39580123,
-                    email = "employee@atvantiq.com",
-                    firstName = "Happy",
-                    lastName = "Singh",
-                    shortName = "Happy",
+                    userId = 324475492436,
+                    email = "jaspal006@yopmail.com",
+                    firstName = "Jaspal",
+                    lastName = "Kumar",
+                    shortName = "Jaspal Kumar",
                     role = "Employee",
+                    roleId = 199427269040,
                     officialLocation = OfficialLocation(
-                        latitude = 28.6139,
-                        longitude = 77.209,
+                        latitude = 30.7149239,
+                        longitude = 76.7033976
+                    ),
+                    permissions = listOf(
+                        Permission(
+                            featureId = 976896675679,
+                            featureName = "Employee Deck",
+                            accessLevels = listOf(
+                                AccessLevel( "Full Access",851659960058),
+                            )
+                        ),
+                        Permission(
+                            featureId = 751345906091,
+                            featureName = "Type Activity",
+                            accessLevels = listOf(
+                                AccessLevel( "Full Access",851659960058),
+                            )
+                        )
                     )
                 )
-            )
+            ),
+            success = true
         )
 
         coEvery { authRepo.loginRequest(any()) } returns response

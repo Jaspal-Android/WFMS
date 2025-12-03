@@ -39,8 +39,7 @@ class LocationTrackingService : Service() {
     companion object {
         private const val CHANNEL_ID = "location_service_channel"
         private const val NOTIFICATION_ID = 12345
-        //private const val LOCATION_UPDATE_INTERVAL = 10 * 60 * 1000L
-        private const val LOCATION_UPDATE_INTERVAL = 40000L
+        private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
     }
 
     private var fusedLocationClient: FusedLocationProviderClient? = null

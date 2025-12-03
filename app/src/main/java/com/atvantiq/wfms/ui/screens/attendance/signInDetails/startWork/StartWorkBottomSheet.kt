@@ -63,7 +63,7 @@ class StartWorkBottomSheet(var latitude:String,var longitude:String,var onImageS
 		pickMediaHelper = PickMediaHelper(requireContext(), cameraLauncher, galleryLauncher, permissionLauncher, object : PickMediaHelper.Callback {
 			override fun onImagePicked(path: String, request: Int) {
 				if(!path.isNullOrBlank()){
-					imagePath = path
+					imagePath = pickMediaHelper.compressImageTo1MB(path)
 					binding.hasPreviewImage = true
 					var bitmap = pickMediaHelper.decodeBitmap(path)
 					binding.capturedImagePreview.setImageBitmap(bitmap)

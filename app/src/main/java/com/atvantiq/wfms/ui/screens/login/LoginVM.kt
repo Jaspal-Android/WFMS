@@ -6,6 +6,7 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents
@@ -24,6 +25,7 @@ class LoginVM @Inject constructor(
     val userName = MutableLiveData<String>("")
     val password = MutableLiveData<String>("")
     val isButtonEnabled = MutableLiveData<Boolean>(true)
+    var user:User?=null
 
     val clickEvents = MutableLiveData<LoginClickEvents>()
     val errorHandler = MutableLiveData<LoginErrorHandler>()

@@ -22,7 +22,9 @@ import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 
 
@@ -139,6 +141,22 @@ open class BaseFragmentSimple : Fragment() {
 		alertDialog.show()
 	}
 
+	fun alertDialogShow(
+		context: Context, title: String, message: String,
+		okButtonTitle: String,
+		okLister: DialogInterface.OnClickListener,
+		neutralButtonTitle: String,
+		neutralLister: DialogInterface.OnClickListener
+	) {
+		MaterialAlertDialogBuilder(context)
+			.setTitle(title)
+			.setMessage(message)
+			.setPositiveButton(okButtonTitle, okLister)
+			.setNeutralButton(neutralButtonTitle, neutralLister)
+			.setNegativeButton(getString(R.string.cancel), null)
+			.show()
+	}
+
 	fun showToast(context: Context, message: String) {
 		Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 	}
@@ -204,6 +222,7 @@ open class BaseFragmentSimple : Fragment() {
 				viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 
 	fun performLogout(){
+		FirebaseMessaging.getInstance().deleteToken()
 		prefMain.deleteAll()
 		Utils.jumpActivity(requireContext(), LoginActivity::class.java)
 		requireActivity().finish()

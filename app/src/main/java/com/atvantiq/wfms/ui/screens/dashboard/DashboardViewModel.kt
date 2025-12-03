@@ -11,10 +11,12 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
+import com.atvantiq.wfms.ui.screens.admin.SharedDashClickEvents
 import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
@@ -30,6 +32,7 @@ class DashboardViewModel @Inject constructor(
 ) : BaseViewModel(application) {
 
     var clickEvents = MutableLiveData<DashboardClickEvents>()
+
 
     private val _isTracking = MutableLiveData<Boolean>(false)
     val isTracking: LiveData<Boolean> get() = _isTracking
@@ -80,10 +83,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     var attendanceCheckOutResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
-    fun checkOutAttendance(lat: Double, long: Double) {
+    fun checkOutAttendance(lat: Double, long: Double,requiredDayProgress:Boolean) {
         val params = JsonObject().apply {
             addProperty("latitude", lat)
             addProperty("longitude", long)
+            addProperty("day_progress", requiredDayProgress)
         }
         viewModelScope.launch {
             executeApiCall(
@@ -103,6 +107,19 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    var attendanceRemarksResponse = MutableLiveData<ApiState<AttendanceRemarksResponse>>()
+    fun setAttendanceEmpRemarks(attendanceId: Long,remarks:String) {
+        val params = JsonObject().apply {
+            addProperty("remarks", remarks)
+        }
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceEmpRemarks(attendanceId,params) },
+                liveData = attendanceRemarksResponse
+            )
+        }
+    }
+
     var empDetailsResponse = MutableLiveData<ApiState<EmpDetailResponse>>()
     fun getEmpDetails() {
         viewModelScope.launch {
@@ -112,4 +129,26 @@ class DashboardViewModel @Inject constructor(
             )
         }
     }
+
+
+    fun onLogoutClick(){
+        clickEvents.value = DashboardClickEvents.LOGOUT_CLICK
+    }
+
+    fun onSitesClick(){
+        clickEvents.value = DashboardClickEvents.OPEN_SITES_CLICK
+    }
+
+    fun onSitesApprovalsClick(){
+        clickEvents.value = DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK
+    }
+
+    fun onClaimApprovalsClick(){
+        clickEvents.value = DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK
+    }
+
+    fun onProfileClick(){
+        clickEvents.value = DashboardClickEvents.OPEN_PROFILE_CLICK
+    }
+
 }
