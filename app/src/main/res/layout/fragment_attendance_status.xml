@@ -82,6 +82,7 @@
                         android:padding="@dimen/padding">
 
                         <TextView
+                            android:textStyle="bold"
                             android:id="@+id/summaryLabel"
                             style="@style/CustomLargeDarkTextView"
                             android:layout_width="wrap_content"
@@ -90,7 +91,6 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
-
 
                         <TextView
                             android:id="@+id/totalDaysLabel"
@@ -367,7 +367,7 @@
                             android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
-                            android:text="@string/no_actions_available"
+                            android:text="@string/attendance_submitted"
                             app:layout_constraintEnd_toStartOf="@+id/noActionText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/no_action_box"
@@ -405,7 +405,7 @@
                             android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
-                            android:text="@string/n_a"
+                            android:text="@string/unmarked_days"
                             app:layout_constraintEnd_toStartOf="@+id/naText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/na_box"

@@ -11,6 +11,9 @@ object NetworkEndPoints {
 	const val loginRequest = "login"
 	const val empDetails = "employee/me"
 
+	/*Forgot password*/
+	const val forgotPassword = "forgot-password"
+
 	/*Day Attendance*/
 	const val attendanceCheckIn = "attendance/checkin"
 	const val attendanceCheckOut = "attendance/checkout"
@@ -25,6 +28,7 @@ object NetworkEndPoints {
 	const val workSelfAssign = "work/self-assign"
 	const val workById = "work/{work_id}"
 	const val workDetailByDate = "work/details"
+	const val attendanceEmpRemarks = "attendance/emp/remarks/{attendance_id}"
 
 	/*Client*/
 	const val clientList = "client/all"

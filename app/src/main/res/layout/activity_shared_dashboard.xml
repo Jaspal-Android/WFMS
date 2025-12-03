@@ -117,10 +117,34 @@
                                 tools:text="Hello, Jaspal"></TextView>
 
                             <LinearLayout
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_weight="1"
+                                    android:id="@+id/tvUserEmail"
+                                    style="@style/CustomMediumDarkTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    tools:text="Email@gmil.com"></TextView>
+
+                                <TextView
+                                    android:layout_weight="1"
+                                    android:id="@+id/tvUserRole"
+                                    style="@style/CustomMediumDarkTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/margin_small"
+                                    tools:text="Circle Head"></TextView>
+                            </LinearLayout>
+
+                            <LinearLayout
                                 android:id="@+id/locationMarkerView"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:layout_marginTop="@dimen/margin"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/padding_x_small"
@@ -152,7 +176,7 @@
                                 android:id="@+id/slideStartDay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small"
+                                android:layout_marginTop="@dimen/margin"
                                 app:animation_duration="250"
                                 app:area_margin="5dp"
                                 app:border_radius="@dimen/card_radius"
@@ -177,33 +201,7 @@
                                 android:textColor="@color/red"
                                 android:visibility="@{isAttendacneCompleted?View.VISIBLE:View.GONE}"></TextView>
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small"
-                                android:orientation="horizontal">
 
-                                <TextView
-                                    android:id="@+id/tvUserEmail"
-                                    style="@style/CustomSmallDarkPrimaryTextView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/whit_bg"
-                                    android:paddingHorizontal="@dimen/padding_medium"
-                                    android:paddingVertical="@dimen/padding_x_small"
-                                    tools:text="Email@gmil.com"></TextView>
-
-                                <TextView
-                                    android:id="@+id/tvUserRole"
-                                    style="@style/CustomSmallDarkPrimaryTextView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/margin_small"
-                                    android:background="@drawable/whit_bg"
-                                    android:paddingHorizontal="@dimen/padding_medium"
-                                    android:paddingVertical="@dimen/padding_x_small"
-                                    tools:text="Circle Head"></TextView>
-                            </LinearLayout>
                         </LinearLayout>
 
                     </androidx.cardview.widget.CardView>
@@ -332,6 +330,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
+                        android:onClick="@{()->vm.onClaimApprovalsClick()}"
                         android:id="@+id/cardApproveClaims"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

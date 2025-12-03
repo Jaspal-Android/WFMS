@@ -11,6 +11,7 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.ApiState
@@ -82,10 +83,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     var attendanceCheckOutResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
-    fun checkOutAttendance(lat: Double, long: Double) {
+    fun checkOutAttendance(lat: Double, long: Double,requiredDayProgress:Boolean) {
         val params = JsonObject().apply {
             addProperty("latitude", lat)
             addProperty("longitude", long)
+            addProperty("day_progress", requiredDayProgress)
         }
         viewModelScope.launch {
             executeApiCall(
@@ -101,6 +103,19 @@ class DashboardViewModel @Inject constructor(
             executeApiCall(
                 apiCall = { attendanceRepo.attendanceCheckInStatus() },
                 liveData = attendanceCheckInStatusResponse
+            )
+        }
+    }
+
+    var attendanceRemarksResponse = MutableLiveData<ApiState<AttendanceRemarksResponse>>()
+    fun setAttendanceEmpRemarks(attendanceId: Long,remarks:String) {
+        val params = JsonObject().apply {
+            addProperty("remarks", remarks)
+        }
+        viewModelScope.launch {
+            executeApiCall(
+                apiCall = { attendanceRepo.attendanceEmpRemarks(attendanceId,params) },
+                liveData = attendanceRemarksResponse
             )
         }
     }

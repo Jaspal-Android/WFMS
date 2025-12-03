@@ -1,13 +1,13 @@
-package com.atvantiq.wfms.models.attendance
+package com.atvantiq.wfms.models.attendance.attendanceRemarks
 
 
 import com.google.gson.annotations.SerializedName
 
-data class CheckInOutResponse(
+data class AttendanceRemarksResponse(
     @SerializedName("code")
     val code: Int,
     @SerializedName("data")
-    val `data`: CheckoutData,
+    val `data`: Data,
     @SerializedName("message")
     val message: String,
     @SerializedName("success")

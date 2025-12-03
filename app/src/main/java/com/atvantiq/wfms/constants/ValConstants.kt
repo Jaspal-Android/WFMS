@@ -18,4 +18,5 @@ object ValConstants {
     const val ROLE_PM = "Pm"
     const val ROLE_OPS = "Ops"
     const val ROLE_Admin = "Ops"
+    const val GEOFENCE_RADIUS_METERS = 800
 }

@@ -2,10 +2,12 @@ package com.atvantiq.wfms.network
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
+import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
+import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
@@ -129,4 +131,10 @@ interface ApiService {
 
 	@POST(NetworkEndPoints.approveWorkSite)
 	suspend fun approveWorkSite(@Header("Authorization") token: String, @Body params: JsonObject): ApproveWorkSiteResponse
+
+	@POST(NetworkEndPoints.attendanceEmpRemarks)
+	suspend fun attendanceEmpRemarks(@Header("Authorization") token: String, @Path("attendance_id") attendanceId: Long,@Body params: JsonObject) : AttendanceRemarksResponse
+
+	@POST(NetworkEndPoints.forgotPassword)
+	suspend fun forgotPassword(@Header("Authorization") token: String, @Body params: JsonObject): ForgotPasswordResponse
 }

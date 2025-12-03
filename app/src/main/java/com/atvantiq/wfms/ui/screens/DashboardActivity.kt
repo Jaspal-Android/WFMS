@@ -98,6 +98,7 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
         val headerView = binding.navView.getHeaderView(0)
         val navHeaderBinding = NavHeaderDashboardBinding.bind(headerView)
         navHeaderBinding.textView.text = userData?.email
+        navHeaderBinding.appNameText.text = getString(R.string.app_name)
     }
 
     private fun setupNavigationDrawer() {

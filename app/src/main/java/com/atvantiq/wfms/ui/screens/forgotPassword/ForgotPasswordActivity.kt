@@ -5,20 +5,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
-import com.atvantiq.wfms.ui.screens.forgotPassword.dialog.GetOTPBottomSheetDialog
-import com.atvantiq.wfms.ui.screens.forgotPassword.newPassword.NewPasswordActivity
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityForgotPasswordBinding
+import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
+import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.forgotPassword.vm.ForgotPassClickEvents
 import com.atvantiq.wfms.ui.screens.forgotPassword.vm.ForgotPassErrorHandler
 import com.atvantiq.wfms.ui.screens.forgotPassword.vm.ForgotPasswordVM
-import com.atvantiq.wfms.utils.Utils
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ForgotPasswordActivity : BaseActivity<ActivityForgotPasswordBinding, ForgotPasswordVM>() {
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_forgot_password, ForgotPasswordVM::class.java)
+
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -30,7 +32,7 @@ class ForgotPasswordActivity : BaseActivity<ActivityForgotPasswordBinding, Forgo
         initToolbar()
     }
 
-    private fun initToolbar(){
+    private fun initToolbar() {
         binding.toolbar.toolbarTitle.text = getString(R.string.forgotYourPassword)
         binding.toolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -41,32 +43,73 @@ class ForgotPasswordActivity : BaseActivity<ActivityForgotPasswordBinding, Forgo
         binding.vm = vm
 
         vm.errorHandler.observe(this, Observer {
-            when(it){
+            when (it) {
                 ForgotPassErrorHandler.EMPTY_EMAIL_ADDRESS
                 -> {
                     binding.phoneNumberEt.error = getString(R.string.enter_email)
                     binding.phoneNumberEt.requestFocus()
-                    shakeEditText(this,binding.phoneNumberEt)
+                    shakeEditText(this, binding.phoneNumberEt)
                 }
             }
         })
 
         vm.clickEvents.observe(this, Observer {
-            when(it){
+            when (it) {
                 ForgotPassClickEvents.ON_RESET_PASSWORD_CLICK -> {
-                    val otpBottomSheet = GetOTPBottomSheetDialog(){
-                        Utils.jumpActivity(this, NewPasswordActivity::class.java)
-                        finish()
+                    val email = binding.phoneNumberEt.text.toString().trim()
+                    if (email.isNotEmpty()) {
+                        sendPasswordResetEmail(email)
+                    } else {
+                        binding.phoneNumberEt.error = getString(R.string.enter_email)
+                        binding.phoneNumberEt.requestFocus()
+                        shakeEditText(this, binding.phoneNumberEt)
                     }
-                    otpBottomSheet.show(supportFragmentManager, "OtpBottomSheetDialog")
                 }
+
                 ForgotPassClickEvents.ON_BACK_TO_LOGIN_CLICK -> {
                     finish()
                 }
+
                 else -> {
 
                 }
             }
         })
+
+        vm.forgotPasswordResponse.observe(this, Observer {
+            handleForgotResponse(it)
+        })
+
+    }
+
+    private fun handleForgotResponse(response: ApiState<ForgotPasswordResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                val message =
+                    response.response?.message ?: getString(R.string.reset_password_email_sent)
+                MaterialAlertDialogBuilder(this)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                        finish()
+                    }
+                    .show()
+            }
+
+            Status.LOADING -> showProgress()
+            Status.ERROR -> {
+                dismissProgress()
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    response.throwable?.message.orEmpty()
+                )
+            }
+        }
+    }
+
+    private fun sendPasswordResetEmail(email: String) {
+        viewModel.sendForgotPassword(email)
     }
 }

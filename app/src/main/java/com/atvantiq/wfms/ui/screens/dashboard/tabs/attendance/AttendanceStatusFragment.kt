@@ -11,6 +11,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.constants.SharingKeys
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentAttendanceStatusBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.calendar.AttendanceDay
@@ -35,11 +36,6 @@ class AttendanceStatusFragment :
     BaseFragment<FragmentAttendanceStatusBinding, AttendanceStatusVM>() {
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
-
-    companion object {
-        private const val SUCCESS_CODE = 200
-        private const val UNAUTHORIZED_CODE = 401
-    }
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance_status, AttendanceStatusVM::class.java)
@@ -131,8 +127,8 @@ class AttendanceStatusFragment :
 
     private fun handleSuccessResponse(response: AttendanceDetailListResponse?) {
         when (response?.code) {
-            SUCCESS_CODE -> handleAttendanceDetailsResponse(response)
-            UNAUTHORIZED_CODE -> tokenExpiresAlert()
+            ValConstants.SUCCESS_CODE -> handleAttendanceDetailsResponse(response)
+            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             else -> alertDialogShow(
                 requireContext(),
                 getString(R.string.alert),
@@ -142,7 +138,7 @@ class AttendanceStatusFragment :
     }
 
     private fun handleErrorResponse(throwable: Throwable?) {
-        if (throwable is HttpException && throwable.code() == UNAUTHORIZED_CODE) {
+        if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
             tokenExpiresAlert()
         } else {
             showToast(

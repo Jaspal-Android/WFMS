@@ -2,6 +2,7 @@ package com.atvantiq.wfms.data.repository.atten
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
+import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.workSites.WorkSitesResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
@@ -52,6 +53,12 @@ class AttendanceRepo @Inject constructor(
         params: JsonObject
     ): ApproveWorkSiteResponse = apiService.approveWorkSite(
         "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
+        params
+    )
+
+    override suspend fun attendanceEmpRemarks(attendanceId: Long,params: JsonObject): AttendanceRemarksResponse  = apiService.attendanceEmpRemarks(
+        "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
+        attendanceId,
         params
     )
 }

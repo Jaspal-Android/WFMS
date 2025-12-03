@@ -44,9 +44,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     var lat: Double = 0.0
     var long: Double = 0.0
-    companion object {
-        private const val GEOFENCE_RADIUS_METERS = 500
-    }
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_shared_dashboard, DashboardViewModel::class.java)
@@ -70,8 +67,8 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             return
         setGeofenceLocation(userData.officialLocation.latitude ?: 0.0, userData.officialLocation.longitude ?: 0.0)
         binding.userNameString = (userData.firstName ?: "") + " " + (userData.lastName ?: "")
-        binding.tvUserEmail.text = userData?.email ?: ""
-        binding.tvUserRole.text = userData?.role ?: ""
+        binding.tvUserEmail.text = getString(R.string.email)+": "+userData?.email ?: ""
+        binding.tvUserRole.text = getString(R.string.role)+": "+userData?.role ?: ""
     }
 
     private fun logoutUser(){
@@ -106,7 +103,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                     Utils.jumpActivity(this, WorkSitesApprovalActivity::class.java)
                 }
                 DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK -> {
-
+                    showToast(this,getString(R.string.under_development))
                 }
                 DashboardClickEvents.OPEN_PROFILE_CLICK -> {
 
@@ -282,7 +279,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                     )
                 }
             }
-            onResult(distance[0] <= GEOFENCE_RADIUS_METERS)
+            onResult(distance[0] <= ValConstants.GEOFENCE_RADIUS_METERS)
         }.addOnFailureListener {
             lat = 0.0
             long = 0.0
@@ -321,7 +318,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 lat = location?.latitude ?: 0.0
                 long = location?.longitude ?: 0.0
-                viewModel.checkOutAttendance(lat, long)
+                viewModel.checkOutAttendance(lat, long,false)
             }.addOnFailureListener {
                 lat = 0.0
                 long = 0.0

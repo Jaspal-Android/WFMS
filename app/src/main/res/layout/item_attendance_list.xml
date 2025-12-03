@@ -23,10 +23,11 @@
         app:cardUseCompatPadding="true">
 
         <LinearLayout
+            android:layout_marginVertical="@dimen/padding_small"
+            android:layout_marginHorizontal="@dimen/padding_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/padding">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -131,7 +132,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -207,72 +207,9 @@
                                 tools:ignore="HardcodedText"
                                 tools:text="08:25 AM" />
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small_extra"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
-                                android:visibility="@{item.checkin.time.isEmpty() ? View.GONE : View.VISIBLE}">
-
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:contentDescription="Location"
-                                    android:src="@drawable/rounded_location_on_24"
-                                    app:tint="@color/green" />
-
-                                <TextView
-                                    android:id="@+id/tvCheckinLocation"
-                                    style="@style/CustomSmallDarkTextView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
-                                    android:text="@{item.checkin.latitude + `, ` + item.checkin.logitude}"
-                                    android:textColor="@color/green"
-                                    tools:ignore="HardcodedText"
-                                    tools:text="30.7150, 76.7034" />
-
-                            </LinearLayout>
-
                         </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/cardCheckoutIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:cardBackgroundColor="@color/checkout_bg"
-                            app:cardCornerRadius="20dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="@color/checkout_bg">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_margin="@dimen/margin_small_extra"
-                                android:contentDescription="Check Out"
-                                android:src="@drawable/ic_clock_16"
-                                app:tint="@color/red" />
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                    </LinearLayout>
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardCheckout"
@@ -314,35 +251,6 @@
                                 tools:ignore="HardcodedText"
                                 tools:text="--:--" />
 
-                            <LinearLayout
-                                android:id="@+id/layoutCheckoutLocation"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small_extra"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal"
-                                android:visibility="@{item.checkout.time.isEmpty() ? View.GONE : View.VISIBLE}">
-
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:contentDescription="Location"
-                                    android:src="@drawable/rounded_location_on_24"
-                                    app:tint="@color/red" />
-
-                                <TextView
-                                    android:id="@+id/tvCheckoutLocation"
-                                    style="@style/CustomSmallTextView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/margin_small_extra"
-                                    android:text="@{item.checkout.latitude + `, ` + item.checkout.logitude}"
-                                    android:textColor="@color/red"
-                                    tools:ignore="HardcodedText"
-                                    tools:text="40.500, 55.555" />
-
-                            </LinearLayout>
-
                         </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
@@ -355,7 +263,7 @@
                 android:id="@+id/viewSitesBt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_small"
                 android:background="@drawable/primary_bt_bg"
                 android:gravity="center"
                 android:orientation="horizontal"
