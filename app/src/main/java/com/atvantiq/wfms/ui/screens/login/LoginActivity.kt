@@ -1,31 +1,45 @@
 package com.atvantiq.wfms.ui.screens.login
 
-import android.content.DialogInterface
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
-import com.atvantiq.wfms.data.prefs.PrefMain
-import com.atvantiq.wfms.data.prefs.SecurePrefMain
-import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.databinding.ActivityLoginBinding
+import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
+import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.DashboardActivity
 import com.atvantiq.wfms.ui.screens.forgotPassword.ForgotPasswordActivity
 import com.atvantiq.wfms.utils.Utils
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
 
+    var lat: Double = 0.0
+    var long: Double = 0.0
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_login, LoginVM::class.java)
-
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -34,78 +48,204 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
     }
+
     override fun subscribeToEvents(vm: LoginVM) {
         binding.vm = vm
 
-        vm.clickEvents.observe(this, Observer {
-            when(it){
-                LoginClickEvents.ON_PASSWORD_TOGGLE -> {
-                    handlePasswordToggle(vm)
+        vm.clickEvents.observe(this, Observer { handleClickEvents(it, vm) })
+        vm.errorHandler.observe(this, Observer { handleErrors(it) })
+        vm.loginResponse.observe(this, Observer { handleLoginResponse(it) })
+        vm.sendNotificationTokenResponse.observe(this, Observer { handleSendNotificationTokenResponse(it) })
+    }
+
+    private fun handleClickEvents(event: LoginClickEvents, vm: LoginVM) {
+        when (event) {
+            LoginClickEvents.ON_PASSWORD_TOGGLE -> handlePasswordToggle(vm)
+            LoginClickEvents.ON_LOGIN_CLICK -> navigateToDashboard()
+            LoginClickEvents.ON_FORGET_PASSWORD_CLICK -> navigateToForgotPassword()
+            LoginClickEvents.ON_FETCH_CURRENT_LATITUDE_LONGITUDE_CLICKS -> getCurrentLatitudeLongitudePermissions()
+        }
+    }
+
+    private fun handleErrors(error: LoginErrorHandler) {
+        when (error) {
+            LoginErrorHandler.EMPTY_USERNAME -> {
+                binding.phoneEmailInput?.apply {
+                    setError(getString(R.string.enter_username))
+                    requestFocus()
                 }
-                LoginClickEvents.ON_LOGIN_CLICK -> {
-                    Utils.jumpActivity(this, DashboardActivity::class.java)
-                    finish()
-                }
-                LoginClickEvents.ON_FORGET_PASSWORD_CLICK -> {
-                    Utils.jumpActivity(this, ForgotPasswordActivity::class.java)
-                }
+                shakeEditText(this, binding.phoneEmailInput)
             }
-        })
-
-        vm.errorHandler.observe(this, Observer {
-            when(it){
-                LoginErrorHandler.EMPTY_USERNAME -> {
-                    binding?.phoneEmailInput?.error = getString(R.string.enter_username)
-                    binding.phoneEmailInput?.requestFocus()
-                    shakeEditText(this,binding.phoneEmailInput)
+            LoginErrorHandler.EMPTY_PASSWORD -> {
+                binding.passwordEt?.apply {
+                    setError(getString(R.string.enter_password))
+                    requestFocus()
                 }
-
-                LoginErrorHandler.EMPTY_PASSWORD -> {
-                    binding?.passwordEt?.error = getString(R.string.enter_password)
-                    binding?.passwordEt?.requestFocus()
-                    shakeEditText(this,binding.passwordEt)
-                }
+                shakeEditText(this, binding.passwordEt)
             }
-        })
+        }
+    }
 
-        vm.loginResponse.observe(this@LoginActivity, Observer {
-            when(it.status){
-                Status.SUCCESS -> {
-                    dismissProgress()
-                    if(it.response?.code == 200 && it?.response?.success == true){
-                        showToast(this,getString(R.string.login_success))
-                        PrefMethods.saveUserToken(prefMain,it?.response?.data?.accessToken?:"")
-                        PrefMethods.saveUserData(prefMain,it?.response?.data?.user)
-                        Utils.jumpActivity(this,DashboardActivity::class.java)
-                        finish()
-                    }else{
-                        alertDialogShow(this,getString(R.string.alert),it?.response?.message.toString()) { dialog, which ->
-                            dialog.dismiss()
+    private fun handleLoginResponse(response: ApiState<LoginResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> handleLoginSuccess(response)
+            Status.LOADING -> showProgress()
+            Status.ERROR -> {
+                dismissProgress()
+                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+            }
+        }
+    }
+
+    private fun handleSendNotificationTokenResponse(response: ApiState<UpdateNotificationTokenResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                dismissProgress()
+                showToast(this, getString(R.string.login_success))
+                navigateToDashboard()
+            }
+            Status.LOADING -> {showProgress()}
+            Status.ERROR -> {
+                dismissProgress()
+                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+            }
+        }
+    }
+
+    private fun handleLoginSuccess(response: ApiState<LoginResponse>) {
+        dismissProgress()
+        response.response?.let {
+            if (it.code == 200 && it.success) {
+                PrefMethods.saveUserToken(prefMain, it.data?.accessToken.orEmpty())
+                PrefMethods.saveUserData(prefMain, it.data?.user)
+                FirebaseMessaging.getInstance().token
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val token = task.result
+                            viewModel.sendNotificationToken(it.data?.user?.userId.toString(), token)
+                        } else {
+                            Log.w("FCM", "Fetching FCM registration token failed", task.exception)
                         }
                     }
-                }
-                Status.LOADING -> {
-                   showProgress()
-                }
-                Status.ERROR ->{
-                    dismissProgress()
-                    alertDialogShow(this,getString(R.string.alert),it?.throwable?.message.toString())
+            } else {
+                alertDialogShow(this, getString(R.string.alert), it.message.orEmpty()) { dialog, _ ->
+                    dialog.dismiss()
                 }
             }
-        })
+        }
     }
 
     private fun handlePasswordToggle(vm: LoginVM) {
+        vm.isPasswordVisible = !vm.isPasswordVisible
+        binding.isToggle = !vm.isPasswordVisible
         if (vm.isPasswordVisible) {
-            Utils.hidePassword(binding?.passwordEt)
-            binding?.isToggle = true
-            vm.isPasswordVisible = false
+            Utils.showPassword(binding.passwordEt)
         } else {
-            Utils.showPassword(binding?.passwordEt)
-            binding?.isToggle = false
-            vm.isPasswordVisible = true
+            Utils.hidePassword(binding.passwordEt)
         }
+    }
+
+    private fun navigateToDashboard() {
+        Utils.jumpActivity(this, DashboardActivity::class.java)
+        finish()
+    }
+
+    private fun navigateToForgotPassword() {
+        Utils.jumpActivity(this, ForgotPasswordActivity::class.java)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLatitudeLongitudePermissions() {
+        val permissions = getLocationRequiredPermissions()
+        when {
+            hasAllPermissions(permissions) -> {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    val latitude = location?.latitude
+                    val longitude = location?.longitude
+                    lat = latitude ?: 0.0
+                    long = longitude ?: 0.0
+                    if (latitude != null && longitude != null) {
+                        Utils.getAddressFromLatLong(this, lat, long) { addressFromLatLon ->
+                            runOnUiThread {
+                                alertDialogShow(
+                                    this,
+                                    getString(R.string.current_location),
+                                    "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${getString(R.string.Address)}: $addressFromLatLon"
+                                )
+                            }
+                        }
+                    } else {
+                        alertDialogShow(
+                           this,
+                            getString(R.string.alert),
+                            getString(R.string.unable_to_fetch_location)
+                        )
+                    }
+                }.addOnFailureListener {
+                    lat = 0.0
+                    long = 0.0
+                    alertDialogShow(this
+                        , getString(R.string.alert), getString(R.string.unable_to_fetch_location))
+                }
+            }
+            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
+            else -> permissionLauncherCurrentLatLon.launch(permissions)
+        }
+    }
+
+    private fun getLocationRequiredPermissions(): Array<String> {
+        val list = mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        return list.toTypedArray()
+    }
+
+    private fun hasAllPermissions(permissions: Array<String>): Boolean =
+        permissions.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
+
+    private val permissionLauncherCurrentLatLon = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.all { it.value } -> {
+                getCurrentLatitudeLongitudePermissions()
+            }
+            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
+            else -> showPermissionRationale()
+        }
+    }
+
+    private fun showPermissionRationale() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.permission_required)
+            .setMessage(R.string.location_permission_rationale)
+            .setPositiveButton(R.string.retry) { _, _ ->
+                //permissionLauncherLocationTracking.launch(getRequiredPermissions())
+                openApplicationSettings()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun showPermissionDeniedPermanently() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.permission_denied)
+            .setMessage(R.string.permission_denied_permanently)
+            .setPositiveButton(R.string.open_settings) { _, _ -> openApplicationSettings() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openApplicationSettings() {
+        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = android.net.Uri.fromParts("package", this.packageName, null)
+        startActivity(intent)
     }
 
 }

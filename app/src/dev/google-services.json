@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927965717895",
+    "project_id": "wfms-a85aa",
+    "storage_bucket": "wfms-a85aa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927965717895:android:e1cf2b901375e75a715f22",
+        "android_client_info": {
+          "package_name": "com.atvantiq.wfms.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4ar1J8wqcWryp-XQhtnVci24VkH4pOXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

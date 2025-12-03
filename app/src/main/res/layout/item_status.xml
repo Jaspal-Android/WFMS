@@ -3,13 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
+        android:id="@+id/statusBoxLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/margin_small_extra"
-        app:cardElevation="0dp"
-        android:clickable="true"
-        android:focusable="true">
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:checked="true"
+            android:id="@+id/statusCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="@dimen/padding_medium"
+            android:paddingEnd="@dimen/padding_small"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
 
         <TextView
             android:id="@+id/statusName"
@@ -17,7 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding_medium" />
-    </androidx.cardview.widget.CardView>
 
-
+    </LinearLayout>
 </layout>

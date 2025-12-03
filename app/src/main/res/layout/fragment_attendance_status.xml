@@ -350,6 +350,44 @@
                             app:layout_constraintTop_toTopOf="@+id/holidayLabel" />
 
                         <View
+                            android:id="@+id/no_action_box"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:background="@color/primary_dark_pastal"
+                            app:layout_constraintBottom_toBottomOf="@+id/noActionLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/noActionLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/noActionLabel" />
+
+                        <TextView
+                            android:id="@+id/noActionLabel"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:gravity="start"
+                            android:text="@string/no_actions_available"
+                            app:layout_constraintEnd_toStartOf="@+id/noActionText"
+                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintStart_toEndOf="@+id/no_action_box"
+                            app:layout_constraintTop_toBottomOf="@+id/holidayText" />
+
+                        <TextView
+                            android:id="@+id/noActionText"
+                            style="@style/CustomMediumDarkTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:gravity="end"
+                            tools:text="1"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintStart_toEndOf="@+id/noActionLabel"
+                            app:layout_constraintTop_toTopOf="@+id/noActionLabel" />
+
+                        <View
                             android:id="@+id/na_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
@@ -371,7 +409,7 @@
                             app:layout_constraintEnd_toStartOf="@+id/naText"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/na_box"
-                            app:layout_constraintTop_toBottomOf="@+id/holidayText" />
+                            app:layout_constraintTop_toBottomOf="@+id/noActionText" />
 
                         <TextView
                             android:id="@+id/naText"

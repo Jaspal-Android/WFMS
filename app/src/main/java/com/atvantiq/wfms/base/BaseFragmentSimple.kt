@@ -40,12 +40,12 @@ open class BaseFragmentSimple : Fragment() {
 	fun showSnackbar(view: View, messsage: Int) {
 		Snackbar.make(view, getString(messsage), Snackbar.LENGTH_SHORT).show()
 	}
-	
+
 	fun showSnackbar(view: View, messsage: String) {
 		Snackbar.make(view, messsage, Snackbar.LENGTH_SHORT).show()
 	}
-	
-	
+
+
 	fun alertDialogShow(context: Context, message: String) {
 		val builder = AlertDialog.Builder(context)
 		builder.setMessage(message)
@@ -53,7 +53,7 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
-	
+
 	fun alertDialogShow(context: Context, title: String, message: String) {
 		val builder = AlertDialog.Builder(context)
 		builder.setMessage(message)
@@ -62,7 +62,7 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
-	
+
 	fun alertDialogShow(
 		context: Context,
 		title: String,
@@ -76,7 +76,7 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
-	
+
 	fun alertDialogShow(
 		context: Context,
 		message: String,
@@ -88,7 +88,7 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
-	
+
 	fun alertDialogShow(
 		context: Context,
 		title: String,
@@ -120,8 +120,8 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
-	
-	
+
+
 	fun alertDialogShow(
 		context: Context,
 		title: String,
@@ -138,11 +138,11 @@ open class BaseFragmentSimple : Fragment() {
 		val alertDialog = builder.create()
 		alertDialog.show()
 	}
-	
+
 	fun showToast(context: Context, message: String) {
 		Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 	}
-	
+
 	fun setItemsVisibility(menu: Menu, exception: MenuItem, visible: Boolean?) {
 		for (i in 0 until menu.size()) {
 			val item = menu.getItem(i)
@@ -151,11 +151,11 @@ open class BaseFragmentSimple : Fragment() {
 			}
 		}
 	}
-	
+
 	fun hideKeyboard(activity: Activity) {
 		val inputManager = activity
 			.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-		
+
 		// check if no view has focus:
 		val currentFocusedView = activity.currentFocus
 		if (currentFocusedView != null) {
@@ -165,37 +165,43 @@ open class BaseFragmentSimple : Fragment() {
 			)
 		}
 	}
-	
+
 	lateinit var progressCirluarDialog: ProgressCircularDialog
 	private var progressDialog: ProgressDialog? = null
 
-	
 	fun showCircularProgress() {
+		// Prevent showing multiple dialogs
+		if (::progressCirluarDialog.isInitialized && progressCirluarDialog.isVisible) return
 		progressCirluarDialog = ProgressCircularDialog()
 		progressCirluarDialog.show(parentFragmentManager, progressCirluarDialog.tag)
-		
 	}
-	
+
 	fun dismissCircularProgress() {
-		if (progressCirluarDialog != null) {
-			progressCirluarDialog.dismiss()
+		if (::progressCirluarDialog.isInitialized && progressCirluarDialog.isVisible) {
+			progressCirluarDialog.dismissAllowingStateLoss()
 		}
 	}
 
 	fun showProgress() {
+		// Prevent showing multiple dialogs
+		if (progressDialog?.isVisible == true) return
 		progressDialog = ProgressDialog()
 		progressDialog?.show(parentFragmentManager, "")
 	}
 
 	fun dismissProgress() {
-		if (progressDialog != null) {
-			progressDialog?.dismiss()
-			progressDialog=null
-		}
+		//if (progressDialog?.isVisible == true) {
+			progressDialog?.dismissAllowingStateLoss()
+			progressDialog = null
+		//}
 	}
-	
+
 	fun isLifeCycleResumed() =
 		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
+
+	fun isLifeCycleStarted() =
+		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.CREATED||viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.STARTED||
+				viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 
 	fun performLogout(){
 		prefMain.deleteAll()
@@ -214,3 +220,4 @@ open class BaseFragmentSimple : Fragment() {
 			})
 	}
 }
+

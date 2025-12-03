@@ -15,6 +15,7 @@ import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.models.StatusOption
 import com.atvantiq.wfms.ui.screens.adapters.StatusAdapter
 import com.atvantiq.wfms.utils.files.PickMediaHelper
+import com.atvantiq.wfms.widgets.DividerItemDecoration
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class EndWorkBottomSheet(
@@ -78,6 +79,9 @@ class EndWorkBottomSheet(
             StatusOption(7, "REJECTED")
         )
         binding.statusRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.statusRecyclerView.setHasFixedSize(true)
+        binding.statusRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(),R.drawable.custom_divider))
+
         binding.statusRecyclerView.adapter = StatusAdapter(statusOptions) { selected ->
             selectedStatus = selected
         }

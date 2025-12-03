@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import java.io.File
 import java.io.IOException
@@ -77,7 +78,8 @@ class PickMediaHelper(
     private fun launchCamera() {
         photoFile = createFile()
         photoFile?.let {
-            val uri = FileProvider.getUriForFile(context, context.getString(R.string.app_id), it)
+            val authority = "${BuildConfig.APPLICATION_ID}.provider"
+            val uri = FileProvider.getUriForFile(context, authority, it)
             cameraLauncher.launch(uri)
         } ?: callback.onError(context.getString(R.string.file_creation_error))
     }

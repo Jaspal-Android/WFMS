@@ -2,6 +2,16 @@ package com.atvantiq.wfms.ui.screens
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -26,8 +36,14 @@ import javax.inject.Inject
 class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    val navController: androidx.navigation.NavController
+    private val navController: androidx.navigation.NavController
         get() = findNavController(R.id.nav_host_fragment_content_dashboard)
+
+    private val requestNotificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+
+    }
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_dashboard)
@@ -38,6 +54,41 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
         var userData = PrefMethods.getUserData(prefMain)
         setupDataDrawerHeader(userData)
+        batterOptimizationCheck()
+    }
+
+    private fun batterOptimizationCheck() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val packageName = packageName
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                alertDialogShow(this,
+                    getString(R.string.battery_optimization),
+                    getString(R.string.battery_optimization_msg),
+                    getString(R.string.ok),
+                    { dialog, which ->
+                        dialog.dismiss()
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.parse("package:$packageName")
+                        startActivity(intent)
+                    },
+                    { dialog, which ->
+                        dialog.dismiss()
+                    })
+            }
+        }
+    }
+
+    private fun requestPostNotificationsPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     private fun setupDataDrawerHeader(userData: User?) {
@@ -77,11 +128,11 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
                         getString(R.string.logout),
                         getString(R.string.logout_confirmation),
                         getString(R.string.yes),
-                        DialogInterface.OnClickListener { dialog, which ->
+                        { dialog, which ->
                             dialog.dismiss()
                             performLogout()
                         },
-                        DialogInterface.OnClickListener { dialog, which ->
+                        { dialog, which ->
                            dialog.dismiss()
                         })
                     true

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171934135221",
+    "project_id": "wfms-prod-ce7b6",
+    "storage_bucket": "wfms-prod-ce7b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171934135221:android:a5033524571e7a1ce35ffc",
+        "android_client_info": {
+          "package_name": "com.atvantiq.wfms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASp2Qi7RX14-37eD3vCSGLC-dRhZ6dOGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

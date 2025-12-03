@@ -6,6 +6,8 @@ import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.data.repository.auth.AuthRepo
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
+import com.atvantiq.wfms.data.repository.tracking.ITrackingRepo
+import com.atvantiq.wfms.data.repository.tracking.TrackingRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.data.repository.work.WorkRepo
 import dagger.Module
@@ -34,4 +36,8 @@ class RepoModule() {
 	@Provides
 	@Singleton
 	fun provideICreationRepo(creationRepo: CreationRepo): ICreationRepo = creationRepo
+
+	@Provides
+	@Singleton
+	fun provideITrackingRepo(trackingRepo: TrackingRepo): ITrackingRepo = trackingRepo
 }
