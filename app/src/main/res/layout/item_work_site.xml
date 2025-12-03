@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="item"
+            type="com.atvantiq.wfms.models.workSites.WorkSite" />
+
+        <variable
+            name="timeRangeString"
+            type="String" />
+
+        <variable
+            name="isApproved"
+            type="Boolean" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small"
+        app:cardUseCompatPadding="true"
+        app:strokeColor="@color/lightGray"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding">
+
+            <ImageView
+                android:id="@+id/ivSiteIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/rounded_location_on_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/tvSiteName"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@{item.site.name}"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/ivSiteIcon"
+                app:layout_constraintTop_toTopOf="@id/ivSiteIcon"
+                tools:text="Chandigarh site" />
+
+            <!-- <TextView
+                 android:text="@{item.}"
+                 android:id="@+id/tvStatus"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/status_gray_bg"
+                 android:paddingHorizontal="10dp"
+                 android:paddingVertical="4dp"
+                 android:textSize="11sp"
+                 android:textStyle="bold"
+                 android:visibility="gone"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintTop_toTopOf="parent"
+                 tools:text="Approved"
+                 tools:visibility="visible" />
+ -->
+            <TextView
+                android:id="@+id/tvSiteId"
+                style="@style/CustomMediumTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:text="@{item.site.siteId}"
+                app:layout_constraintStart_toStartOf="@id/tvSiteName"
+                app:layout_constraintTop_toBottomOf="@id/tvSiteName"
+                tools:text="CHD-345-POWN-234" />
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/background_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSiteId" />
+
+            <ImageView
+                android:id="@+id/ivProjectIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/ic_briefcase_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider1"
+                app:tint="@color/darkGray" />
+
+            <TextView
+                android:id="@+id/tvProjectName"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@{item.project.name}"
+                app:layout_constraintBottom_toBottomOf="@id/ivProjectIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivProjectIcon"
+                app:layout_constraintTop_toTopOf="@id/ivProjectIcon"
+                tools:text="ERRICSON-TOWER-110" />
+
+            <ImageView
+                android:id="@+id/ivCircleIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_circle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvProjectName"
+                app:tint="@color/darkGray" />
+
+            <TextView
+                android:id="@+id/tvCircleName"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@{item.circle.name}"
+                app:layout_constraintBottom_toBottomOf="@id/ivCircleIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivCircleIcon"
+                app:layout_constraintTop_toTopOf="@id/ivCircleIcon"
+                tools:text="Harayana" />
+
+            <ImageView
+                android:id="@+id/ivClockIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_clock_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvCircleName"
+                app:tint="@color/darkGray" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                style="@style/CustomMediumTextView"
+                formatApiDateToMonthDayYear="@{item.startTime}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                app:layout_constraintBottom_toBottomOf="@id/ivClockIcon"
+                app:layout_constraintStart_toEndOf="@id/ivClockIcon"
+                app:layout_constraintTop_toTopOf="@id/ivClockIcon"
+                tools:text="Oct 14, 2025" />
+
+            <TextView
+                android:id="@+id/tvBullet1"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="•"
+                app:layout_constraintBottom_toBottomOf="@id/tvDate"
+                app:layout_constraintStart_toEndOf="@id/tvDate"
+                app:layout_constraintTop_toTopOf="@id/tvDate" />
+
+            <TextView
+                android:id="@+id/tvTimeRange"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@{timeRangeString}"
+                app:layout_constraintBottom_toBottomOf="@id/tvDate"
+                app:layout_constraintStart_toEndOf="@id/tvBullet1"
+                app:layout_constraintTop_toTopOf="@id/tvDate"
+                tools:text="07:05 AM - 07:13 AM" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/background_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ivClockIcon" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="@{isApproved ? View.GONE : View.VISIBLE}"
+                android:id="@+id/buttonContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider2">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnReject"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:text="Reject"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/default_text"
+                    android:textStyle="bold"
+                    app:cornerRadius="@dimen/card_radius"
+                    app:icon="@drawable/ic_close_16"
+                    app:iconGravity="textStart"
+                    app:iconPadding="@dimen/padding_small"
+                    app:iconTint="@color/red"
+                    app:layout_constraintEnd_toStartOf="@id/btnApprove"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@color/red_pastel"
+                    app:strokeWidth="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnApprove"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/green"
+                    android:text="Approve"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/default_text"
+                    android:textStyle="bold"
+                    app:cornerRadius="@dimen/card_radius"
+                    app:icon="@drawable/ic_check_16"
+                    app:iconGravity="textStart"
+                    app:iconPadding="@dimen/padding_small"
+                    app:iconTint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/btnReject"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

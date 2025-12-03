@@ -135,7 +135,8 @@ class AttendanceViewModelTest {
                         ),
                         circle = Circle(
                             id = 37851209,
-                            name = "Chandigarh"
+                            name = "Chandigarh",
+                            code = "CH"
                         ),
                         status = "COMPLETED",
                         assignedBy = AssignedBy(
@@ -218,7 +219,8 @@ class AttendanceViewModelTest {
                 ),
                 circle = Circle(
                     id = 37851209,
-                    name = "Chandigarh"
+                    name = "Chandigarh",
+                    code = "CF"
                 ),
                 status = "COMPLETED",
                 assignedBy = AssignedBy(
@@ -301,7 +303,8 @@ class AttendanceViewModelTest {
                         ),
                         circle = Circle(
                             id = 37851209,
-                            name = "Chandigarh"
+                            name = "Chandigarh",
+                            code = "CH"
                         ),
                         status = "COMPLETED",
                         assignedBy = AssignedBy(

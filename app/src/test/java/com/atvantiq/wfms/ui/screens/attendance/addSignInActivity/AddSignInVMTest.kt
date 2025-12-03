@@ -364,7 +364,7 @@ class AddSignInVMTest {
             data = SelfAssignData(
                 client = com.atvantiq.wfms.models.work.selfAssign.Client(id = 68067649, name = "Airtel"),
                 project = Project(id = 57941758, name = "Airtel-HR-5G-Rollout", client =68067649),
-                circle = Circle(id = 37851209, name = "Chandigarh"),
+                circle = Circle(id = 37851209, name = "Chandigarh", code = "CH"),
                 results = listOf(
                     Result(
                         message = "Work assigned for Employee 39580123, Site 535937546585, Type 62653421, Activity 45508443.",

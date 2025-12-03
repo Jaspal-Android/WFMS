@@ -68,7 +68,7 @@ class CalendarView : LinearLayoutCompat {
             }
         }
         binding.calendarGrid.layoutManager = GridLayoutManager(context, 7)
-        binding.calendarGrid.addItemDecoration(GridSpacingItemDecoration(7, Utils.dpToPx(4f,context), true))
+        binding.calendarGrid.addItemDecoration(GridSpacingItemDecoration(7, Utils.dpToPx(4f,context), false))
         binding.calendarGrid.adapter = calendarAdapter
     }
 

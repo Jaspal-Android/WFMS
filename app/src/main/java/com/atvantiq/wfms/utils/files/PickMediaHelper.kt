@@ -129,6 +129,45 @@ class PickMediaHelper(
         return BitmapFactory.decodeFile(path)
     }
 
+    /**
+     * Compress image to <= 1MB and return the path to the compressed file.
+     * Supports SDK 24-34.
+     */
+    fun compressImageTo1MB(originalPath: String): String? {
+        val originalFile = File(originalPath)
+        val bitmap = BitmapFactory.decodeFile(originalPath)
+        var quality = 90
+        val maxSizeBytes = 1024 * 1024 // 1MB
+
+        // Create a temp file for compressed image
+        val compressedFile = File.createTempFile("compressed_", ".jpg", context.cacheDir)
+        var outputStream = compressedFile.outputStream()
+
+        // Compress with decreasing quality until <= 1MB or quality too low
+        while (quality > 10) {
+            outputStream = compressedFile.outputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            if (compressedFile.length() <= maxSizeBytes) break
+            quality -= 10
+        }
+
+        // If still too large, resize bitmap and try again
+        if (compressedFile.length() > maxSizeBytes) {
+            val scale = Math.sqrt(maxSizeBytes.toDouble() / compressedFile.length())
+            val newWidth = (bitmap.width * scale).toInt()
+            val newHeight = (bitmap.height * scale).toInt()
+            val resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+            outputStream = compressedFile.outputStream()
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
+        }
+
+        return if (compressedFile.length() <= maxSizeBytes) compressedFile.absolutePath else null
+    }
+
     interface Callback {
         fun onImagePicked(path: String, request: Int)
         fun onError(message: String)

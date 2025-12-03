@@ -81,6 +81,8 @@
     <!--Extra-->
     <dimen name="item_category_small">75dp</dimen>
     <dimen name="chat_image_size">25dp</dimen>
+    <dimen name="card_dashboard_height">48dp</dimen>
+    <dimen name="border_width_1dp">1dp</dimen>
 
     <!--Shimmer-->
     <dimen name="shimmer_thik_text">16dp</dimen>

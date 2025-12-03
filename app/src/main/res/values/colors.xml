@@ -10,7 +10,9 @@
     <color name="colorPrimary">#0AC3F2</color>
     <color name="colorPrimaryDark">#2B5DE6</color>
     <color name="colorAccent">#FFFFFF</color>
-    <color name="green">#4eb300</color>
+    <color name="green">#059669</color>
+    <color name="cardLightBackground">#EEF2F6</color>
+    <color name="cardLightStroke">#D8E0EB</color>
 
     <color name="green_pastel">#C5E7B0</color>
     <color name="red_pastel">#FAC0C3</color>
@@ -22,8 +24,20 @@
     <color name="primary_dark_pastal">#7AC1E4</color>
 
     <color name="red">#FF0000</color>
+    <color name="red_light">#FEF2F2</color>
     <color name="orange">#ffa500</color>
     <color name="yellow">#FFEB3B</color>
     <color name="purple">#9C27B0</color>
     <color name="flatCalendar">#7AF4F4F4</color>
+
+    <color name="background_light">#F3F4F6</color>
+
+    <!-- Check In Colors -->
+    <color name="checkin_bg">#D1FAE5</color>
+    <color name="checkin_dark">#047857</color>
+
+    <!-- Check Out Colors -->
+    <color name="checkout_bg">#FEE2E2</color>
+    <color name="checkout_dark">#B91C1C</color>
+
 </resources>

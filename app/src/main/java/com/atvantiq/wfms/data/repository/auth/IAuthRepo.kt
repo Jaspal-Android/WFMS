@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.data.repository.auth
 import com.atvantiq.wfms.models.Posts
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
+import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.google.gson.JsonObject
@@ -12,4 +13,5 @@ interface IAuthRepo {
     suspend fun loginRequest(params: JsonObject): LoginResponse
     suspend fun empDetails(): EmpDetailResponse
     suspend fun sendNotificationToken(params: JsonObject) : UpdateNotificationTokenResponse
+    suspend fun forgotPassword(params: JsonObject): ForgotPasswordResponse
 }

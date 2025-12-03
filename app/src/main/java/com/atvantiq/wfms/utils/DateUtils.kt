@@ -1,9 +1,12 @@
 package com.atvantiq.wfms.utils
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.view.LayoutInflater
+import android.widget.NumberPicker
 import android.widget.TimePicker
 import com.atvantiq.wfms.R
 import java.text.SimpleDateFormat
@@ -21,6 +24,45 @@ object DateUtils {
     private const val TIME_12_FORMAT = "hh:mm a"
     private const val API_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     private const val API_DISPLAY_FORMAT = "hh:mm a  dd-MM-yyyy"
+
+
+    fun showMonthYearPickerDialog(context: Context, month: Int?, year: Int?, param: (Int, Int) -> Unit
+    ) {
+        var layoutInflater = LayoutInflater.from(context)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_month_year_picker, null)
+        val monthPicker = dialogView.findViewById<NumberPicker>(R.id.monthPicker)
+        val yearPicker = dialogView.findViewById<NumberPicker>(R.id.yearPicker)
+
+        val months = arrayOf(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        )
+
+        monthPicker.minValue = 0
+        monthPicker.maxValue = 11
+        monthPicker.displayedValues = months
+        monthPicker.wrapSelectorWheel = true
+
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        yearPicker.minValue = 2000
+        yearPicker.maxValue = 2100
+        yearPicker.value = year ?: currentYear
+
+        // Set initial month value if provided, else use current month
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
+        monthPicker.value = (month?.let { it - 1 } ?: currentMonth)
+
+        AlertDialog.Builder(context)
+            .setTitle("Select Month and Year")
+            .setView(dialogView)
+            .setPositiveButton("OK") { _, _ ->
+                val selectedMonth = monthPicker.value
+                val selectedYear = yearPicker.value
+                param(selectedMonth + 1, selectedYear)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
 
     fun onDateClick(context: Context, callBack: DateCallBack) {
         val c = Calendar.getInstance()
@@ -191,6 +233,35 @@ object DateUtils {
             }
             val parsedDate = isoFormat.parse(trimmed)
             val outputFormat = SimpleDateFormat(API_DISPLAY_FORMAT, Locale.getDefault())
+            outputFormat.format(parsedDate)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun formatApiDateToTime(apiDate: String?): String? {
+        return try {
+            val trimmed = apiDate?.substringBefore(".")?.plus("Z")
+            val isoFormat = SimpleDateFormat(API_ISO_FORMAT, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val parsedDate = isoFormat.parse(trimmed)
+            val outputFormat = SimpleDateFormat(TIME_12_FORMAT, Locale.getDefault())
+            outputFormat.format(parsedDate)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // create method to Nov 1, 2025
+    fun formatApiDateToMonthDayYear(apiDate: String?): String? {
+        return try {
+            val trimmed = apiDate?.substringBefore(".")?.plus("Z")
+            val isoFormat = SimpleDateFormat(API_ISO_FORMAT, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            val parsedDate = isoFormat.parse(trimmed)
+            val outputFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
             outputFormat.format(parsedDate)
         } catch (e: Exception) {
             null
