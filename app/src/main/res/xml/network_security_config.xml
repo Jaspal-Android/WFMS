@@ -4,5 +4,6 @@
     <domain includeSubdomains="true">31.97.62.78</domain>
     <domain includeSubdomains="true">157.173.220.189</domain>
     <domain includeSubdomains="true">devapi.onaqt.com</domain>
+    <domain includeSubdomains="true">api.onaqt.com</domain>
 </domain-config>
 </network-security-config>

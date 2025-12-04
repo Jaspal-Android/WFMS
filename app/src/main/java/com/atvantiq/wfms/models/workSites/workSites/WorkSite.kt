@@ -1,4 +1,4 @@
-package com.atvantiq.wfms.models.workSites
+package com.atvantiq.wfms.models.workSites.workSites
 
 
 import com.google.gson.annotations.SerializedName
@@ -10,14 +10,14 @@ data class WorkSite(
     val endTime: String,
     @SerializedName("id")
     val id: Long,
+    @SerializedName("ops")
+    val ops: Ops,
+    @SerializedName("pm")
+    val pm: Pm,
     @SerializedName("project")
     val project: Project,
     @SerializedName("site")
     val site: Site,
     @SerializedName("start_time")
-    val startTime: String,
-    @SerializedName("approved_by_pm")
-    val approvedByPm: Boolean,
-    @SerializedName("approved_by_ops")
-    val approvedByOps: Boolean
+    val startTime: String
 )

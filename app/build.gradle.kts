@@ -65,7 +65,7 @@ android {
         }
         create("prod") {
             dimension = "environment"
-            buildConfigField("String", "BASE_URL", "\"http://157.173.220.189:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.onaqt.com/\"")
         }
     }
 

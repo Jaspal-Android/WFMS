@@ -1,4 +1,4 @@
-package com.atvantiq.wfms.models.workSites
+package com.atvantiq.wfms.models.workSites.workSites
 
 
 import com.google.gson.annotations.SerializedName

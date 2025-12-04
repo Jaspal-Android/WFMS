@@ -4,8 +4,8 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
-import com.atvantiq.wfms.models.workSites.WorkSitesResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefKeys
