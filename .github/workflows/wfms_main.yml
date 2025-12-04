@@ -7,9 +7,10 @@ on:
     branches:
       - develop
       - beta
+      - master
   pull_request:
     branches:
-      - master
+
   workflow_dispatch:
 
 # Environment variables
@@ -250,6 +251,43 @@ jobs:
           path: app/build/outputs/apk/beta/release/*.apk
           retention-days: 30
 
+      # Build Release App Bundle for beta branch
+      - name: Build Release App Bundle (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        run: ./gradlew bundleBetaRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Upload Release App Bundle (beta flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/beta'
+        uses: actions/upload-artifact@v4
+        with:
+          name: beta-release-aab
+          path: app/build/outputs/bundle/betaRelease/*.aab
+          retention-days: 30
+
+      # Build Debug APK for master branch
+      - name: Place google-services.json (prod debug)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p app/src/prod
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_PROD }}" | base64 --decode > app/src/prod/google-services.json
+
+      - name: Build Debug APK (prod flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: ./gradlew assembleProdDebug
+
+      - name: Upload Debug APK (prod flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-debug-apk
+          path: app/build/outputs/apk/prod/debug/*.apk
+          retention-days: 7
+
       # Build Release APK for master branch
       - name: Place google-services.json (prod)
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -281,3 +319,20 @@ jobs:
           path: app/build/outputs/apk/prod/release/*.apk
           retention-days: 30
 
+      # Build Release App Bundle for master branch
+      - name: Build Release App Bundle (prod flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: ./gradlew bundleProdRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+
+      - name: Upload Release App Bundle (prod flavor)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-release-aab
+          path: app/build/outputs/bundle/prodRelease/*.aab
+          retention-days: 30
