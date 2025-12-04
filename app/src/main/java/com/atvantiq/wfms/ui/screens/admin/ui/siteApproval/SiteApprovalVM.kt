@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
-import com.atvantiq.wfms.models.workSites.WorkSitesResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiState
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel

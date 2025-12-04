@@ -65,7 +65,7 @@ android {
         }
         create("prod") {
             dimension = "environment"
-            buildConfigField("String", "BASE_URL", "\"http://157.173.220.189:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.onaqt.com/\"")
         }
     }
 
@@ -159,6 +159,10 @@ dependencies {
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
+    //Auto update app
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+
 }
 
 kapt {

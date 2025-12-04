@@ -1,9 +1,9 @@
-package com.atvantiq.wfms.models.workSites
+package com.atvantiq.wfms.models.workSites.workSites
 
 
 import com.google.gson.annotations.SerializedName
 
-data class Circle(
+data class ReportingManager(
     @SerializedName("id")
     val id: Long,
     @SerializedName("name")

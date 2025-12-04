@@ -4,8 +4,8 @@ import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
-import com.atvantiq.wfms.models.workSites.WorkSitesResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.Header

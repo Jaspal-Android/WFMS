@@ -1,54 +1,75 @@
 package com.atvantiq.wfms.ui.screens.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.ValConstants
-import com.atvantiq.wfms.databinding.ItemAttendanceListBinding
 import com.atvantiq.wfms.databinding.ItemWorkSiteBinding
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Record
-import com.atvantiq.wfms.models.workSites.WorkSite
+import com.atvantiq.wfms.models.workSites.workSites.WorkSite
 import com.atvantiq.wfms.utils.DateUtils
-import com.google.android.gms.common.util.DataUtils
-import com.google.errorprone.annotations.Var
 
 class WorkSitesAdapter(
-    var role: String,
-    var onSiteApprovedReject: (status: Int, workSite: WorkSite) -> Unit
+    private val context: Context,
+    private val role: String,
+    private val onSiteApprovedReject: (status: Int, workSite: WorkSite) -> Unit
 ) : RecyclerView.Adapter<WorkSitesAdapter.Holder>() {
 
-    private var workSties = ArrayList<WorkSite>()
+    private val workSties = ArrayList<WorkSite>()
 
-    inner class Holder(var binding: ItemWorkSiteBinding) :
+    inner class Holder(val binding: ItemWorkSiteBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        var infalter = LayoutInflater.from(parent.context)
-        var binding: ItemWorkSiteBinding = ItemWorkSiteBinding.inflate(infalter, parent, false)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemWorkSiteBinding.inflate(inflater, parent, false)
         return Holder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return workSties.size
-    }
+    override fun getItemCount(): Int = workSties.size
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        var workSite = workSties[position]
-        var timeRange = DateUtils.formatApiDateToTime(
-            workSite.startTime ?: "",
-        ) + " - " + DateUtils.formatApiDateToTime(
-            workSite.endTime ?: "",
-        )
+        val workSite = workSties[position]
+        val timeRange = buildString {
+            append(DateUtils.formatApiDateToTime(workSite.startTime ?: ""))
+            append(" - ")
+            append(DateUtils.formatApiDateToTime(workSite.endTime ?: ""))
+        }
         holder.binding.timeRangeString = timeRange
         holder.binding.item = workSite
 
-        if (role.equals(ValConstants.ROLE_PM, true) || role.equals(ValConstants.ROLE_Admin, true) && workSite.approvedByPm) {
-            holder.binding.isApproved = true
-        }else if (role.equals(ValConstants.ROLE_OPS, true) || role.equals(ValConstants.ROLE_Admin, true) && workSite.approvedByOps) {
-            holder.binding.isApproved = true
-        } else {
-            holder.binding.isApproved = false
+        val isPmPending = role.equals(ValConstants.ROLE_PM, true) && workSite.pm.status == 0
+        val isOpsPending = role.equals(ValConstants.ROLE_OPS, true) && workSite.ops.status == 0
+        val isAdminPending = role.equals(ValConstants.ROLE_Admin, true) &&
+            (workSite.pm.status == 0 || workSite.ops.status == 0)
+        holder.binding.isPending = isPmPending || isOpsPending || isAdminPending
+
+        if (role.equals(ValConstants.ROLE_PM, true)) {
+            holder.binding.approverString = when (workSite.pm.status) {
+                0 -> context.getString(R.string.pending)
+                1 -> context.getString(R.string.approved)
+                2 -> context.getString(R.string.rejected)
+                else -> ""
+            }
+        }
+
+        if (role.equals(ValConstants.ROLE_OPS, true)) {
+            holder.binding.showPmStatus = true
+            holder.binding.pmStatusTextView.text = context.getString(R.string.pm_status) + " " +
+                when (workSite.pm.status) {
+                    0 -> context.getString(R.string.pending)
+                    1 -> context.getString(R.string.approved)
+                    2 -> context.getString(R.string.rejected)
+                    else -> ""
+                }
+            holder.binding.pmRemarksTextView.text = context.getString(R.string.pm_remarks) + " " + (workSite.pm.remarks ?: "")
+            holder.binding.approverString = when (workSite.ops.status) {
+                0 -> context.getString(R.string.pending)
+                1 -> context.getString(R.string.approved)
+                2 -> context.getString(R.string.rejected)
+                else -> ""
+            }
         }
 
         holder.binding.btnApprove.setOnClickListener {
