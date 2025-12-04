@@ -7,14 +7,20 @@
 
         <variable
             name="item"
-            type="com.atvantiq.wfms.models.workSites.WorkSite" />
+            type="com.atvantiq.wfms.models.workSites.workSites.WorkSite" />
 
         <variable
             name="timeRangeString"
             type="String" />
 
         <variable
-            name="isApproved"
+            name="isPending"
+            type="Boolean" />
+        <variable
+            name="approverString"
+            type="String" />
+        <variable
+            name="showPmStatus"
             type="Boolean" />
     </data>
 
@@ -57,8 +63,7 @@
                 app:layout_constraintTop_toTopOf="@id/ivSiteIcon"
                 tools:text="Chandigarh site" />
 
-            <!-- <TextView
-                 android:text="@{item.}"
+             <TextView
                  android:id="@+id/tvStatus"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
@@ -67,12 +72,11 @@
                  android:paddingVertical="4dp"
                  android:textSize="11sp"
                  android:textStyle="bold"
-                 android:visibility="gone"
+                 android:text="@{approverString}"
                  app:layout_constraintEnd_toEndOf="parent"
                  app:layout_constraintTop_toTopOf="parent"
                  tools:text="Approved"
                  tools:visibility="visible" />
- -->
             <TextView
                 android:id="@+id/tvSiteId"
                 style="@style/CustomMediumTextView"
@@ -195,15 +199,46 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ivClockIcon" />
 
+            <LinearLayout
+                android:visibility="@{showPmStatus ? View.VISIBLE : View.GONE}"
+                android:layout_marginTop="@dimen/margin_small"
+                android:id="@+id/pmStatusView"
+                app:layout_constraintTop_toBottomOf="@+id/divider2"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_weight="1"
+                    tools:text="Approved"
+                    android:id="@+id/pmStatusTextView"
+                    style="@style/CustomSmallDarkPrimaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_weight="1"
+                    tools:text="Remarks: All good"
+                    android:id="@+id/pmRemarksTextView"
+                    style="@style/CustomSmallDarkPrimaryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:visibility="@{isApproved ? View.GONE : View.VISIBLE}"
+                android:visibility="@{isPending ? View.VISIBLE : View.GONE}"
                 android:id="@+id/buttonContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider2">
+                app:layout_constraintTop_toBottomOf="@id/pmStatusView">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnReject"

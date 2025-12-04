@@ -1,11 +1,11 @@
-package com.atvantiq.wfms.models.workSites
+package com.atvantiq.wfms.models.workSites.workSites
 
 
 import com.google.gson.annotations.SerializedName
 
 data class Employee(
     @SerializedName("circle")
-    val circle: CircleX,
+    val circle: Circle,
     @SerializedName("date_of_joining")
     val dateOfJoining: String,
     @SerializedName("designation")
@@ -17,5 +17,11 @@ data class Employee(
     @SerializedName("phone")
     val phone: String,
     @SerializedName("reporting_manager")
-    val reportingManager: ReportingManager
+    val reportingManager: ReportingManager,
+    @SerializedName("signin_time")
+    val signinTime: String,
+    @SerializedName("signout_time")
+    val signoutTime: String,
+    @SerializedName("total_working_hours")
+    val totalWorkingHours: String
 )
