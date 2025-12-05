@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.ui.AppBarConfiguration
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.ValConstants
@@ -31,6 +32,13 @@ import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ncorti.slidetoact.SlideToActView
 import com.ssas.jibli.data.prefs.PrefMethods
@@ -44,6 +52,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     var lat: Double = 0.0
     var long: Double = 0.0
+    private lateinit var appUpdateManager: AppUpdateManager
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_shared_dashboard, DashboardViewModel::class.java)
@@ -60,6 +69,8 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
         viewModel.getEmpDetails()
         setupHeaderData(userData)
         setupSwipeButton()
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+        checkForUpdates()
     }
 
     private fun setupHeaderData(userData: User?) {
@@ -169,6 +180,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     override fun onResume() {
         super.onResume()
         checkInAttendanceStatus()
+        checkUpdateFlow()
     }
 
     private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
@@ -487,4 +499,48 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
         }
     }
 
+    private fun checkForUpdates() {
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && info.isUpdateTypeAllowed(
+                    AppUpdateType.IMMEDIATE)) {
+                val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                appUpdateManager.startUpdateFlow(
+                    info,
+                    this,            // Activity
+                    options          // AppUpdateOptions
+                )
+            } else if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && info.isUpdateTypeAllowed(
+                    AppUpdateType.FLEXIBLE)) {
+                val options = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                appUpdateManager.startUpdateFlow(
+                    info,
+                    this,
+                    options
+                )
+                listenFlexibleUpdate()
+            }
+        }
+    }
+
+    private fun listenFlexibleUpdate() {
+        appUpdateManager.registerListener { state ->
+            if (state.installStatus() == InstallStatus.DOWNLOADED) {
+                Snackbar.make(
+                    findViewById(android.R.id.content), getString(R.string.update_downloaded),
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(getString(R.string.install)) {
+                    appUpdateManager.completeUpdate()
+                }.show()
+            }
+        }
+    }
+
+    private fun checkUpdateFlow(){
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                appUpdateManager.startUpdateFlow(info, this, options)
+            }
+        }
+    }
 }

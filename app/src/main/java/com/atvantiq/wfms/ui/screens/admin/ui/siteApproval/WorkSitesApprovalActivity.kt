@@ -11,7 +11,6 @@ import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityWorkSitesApprovalBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
-import com.atvantiq.wfms.models.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceListAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.sites.WorkSitesActivity

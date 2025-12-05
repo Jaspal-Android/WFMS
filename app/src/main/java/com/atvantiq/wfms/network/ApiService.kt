@@ -24,8 +24,8 @@ import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
-import com.atvantiq.wfms.models.workSites.WorkSitesResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

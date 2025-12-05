@@ -10,7 +10,7 @@ import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.databinding.ActivityWorkSitesBinding
-import com.atvantiq.wfms.models.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceListAdapter
 import com.atvantiq.wfms.ui.screens.adapters.WorkSitesAdapter
@@ -99,7 +99,8 @@ class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>
 
     private fun setUpAttendanceListAdapter() {
         if (workSiteAdapter == null) {
-            workSiteAdapter = WorkSitesAdapter(employeeRole,
+            workSiteAdapter = WorkSitesAdapter(
+                this, employeeRole,
                 onSiteApprovedReject = { status, workSite ->
                    viewModel.approveRejectWorkSite(
                        siteWorkId = workSite.id,
