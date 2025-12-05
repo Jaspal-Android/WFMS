@@ -132,8 +132,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 when (response.status) {
                     Status.SUCCESS -> {
                         dismissProgress()
-                        if (response.response?.code == ValConstants.SUCCESS_CREATION_CODE) {
-                            performCheckOut(false)
+                        if (response.response?.code == ValConstants.SUCCESS_CODE) {
+                            checkInAttendanceStatus()
                         }
                         alertDialogShow(
                             requireContext(),
@@ -194,7 +194,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private fun performCheckOut(isShowProgress:Boolean){
         isDayStarted = false
-        updateSlideButton(isShowProgress)
+        updateSlideButton(false)
         viewModel.stopTracking()
     }
 
