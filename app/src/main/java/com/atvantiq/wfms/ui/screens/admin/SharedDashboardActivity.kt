@@ -76,7 +76,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     private fun setupHeaderData(userData: User?) {
         if (userData == null)
             return
-        setGeofenceLocation(userData.officialLocation.latitude ?: 0.0, userData.officialLocation.longitude ?: 0.0)
+        setGeofenceLocation(userData.officialLocation?.latitude ?: 0.0, userData.officialLocation?.longitude ?: 0.0)
         binding.userNameString = (userData.firstName ?: "") + " " + (userData.lastName ?: "")
         binding.tvUserEmail.text = getString(R.string.email)+": "+userData?.email ?: ""
         binding.tvUserRole.text = getString(R.string.role)+": "+userData?.role ?: ""
