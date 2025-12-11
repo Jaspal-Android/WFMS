@@ -1,6 +1,5 @@
 package com.atvantiq.wfms.models.loginResponse
 
-
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -8,21 +7,21 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class User(
     @SerializedName("email")
-    val email: String,
+    val email: String?,
     @SerializedName("first_name")
-    val firstName: String,
+    val firstName: String?,
     @SerializedName("last_name")
-    val lastName: String,
+    val lastName: String?,
     @SerializedName("official_location")
-    val officialLocation: OfficialLocation,
+    val officialLocation: OfficialLocation?,
     @SerializedName("permissions")
-    val permissions: List<Permission>,
+    val permissions: List<Permission>?,
     @SerializedName("role")
-    val role: String,
+    val role: String?,
     @SerializedName("role_id")
-    val roleId: Long,
+    val roleId: Long?,
     @SerializedName("short_name")
-    val shortName: String,
+    val shortName: String?,
     @SerializedName("user_id")
-    val userId: Long
-):Parcelable
+    val userId: Long?
+) : Parcelable

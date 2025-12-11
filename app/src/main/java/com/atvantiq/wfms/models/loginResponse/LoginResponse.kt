@@ -7,7 +7,7 @@ data class LoginResponse(
     @SerializedName("code")
     val code: Int,
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: Data?,
     @SerializedName("message")
     val message: String,
     @SerializedName("success")
