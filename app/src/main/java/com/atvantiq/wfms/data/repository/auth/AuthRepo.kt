@@ -5,6 +5,7 @@ import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.network.ApiService
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefKeys
@@ -29,5 +30,9 @@ class AuthRepo @Inject constructor(private val apiService: ApiService, private v
     override suspend fun forgotPassword(params: JsonObject): ForgotPasswordResponse = apiService.forgotPassword(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         params = params)
+
+    override suspend fun requestOTP(params: JsonObject): RequestOtpResponse = apiService.requestOTP(params)
+
+    override suspend fun verifyOTP(params: JsonObject): LoginResponse = apiService.verifyOTP(params)
 }
 

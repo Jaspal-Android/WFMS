@@ -1,12 +1,14 @@
 package com.atvantiq.wfms.ui.screens.login
 
 import android.app.Application
+import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginResponse.User
+import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents
@@ -26,16 +28,19 @@ class LoginVM @Inject constructor(
     val password = MutableLiveData<String>("")
     val isButtonEnabled = MutableLiveData<Boolean>(true)
     var user:User?=null
+    val userEmailId = ObservableField<String>().apply { set("") }
 
     val clickEvents = MutableLiveData<LoginClickEvents>()
     val errorHandler = MutableLiveData<LoginErrorHandler>()
     val networkError = MutableLiveData<Boolean>()
     val loginResponse = MutableLiveData<ApiState<LoginResponse>>()
     val sendNotificationTokenResponse = MutableLiveData<ApiState<UpdateNotificationTokenResponse>>()
+    val requestOtpResponse = MutableLiveData<ApiState<RequestOtpResponse>>()
 
     // Click event handlers
     fun onForgetPasswordClick() = postClickEvent(LoginClickEvents.ON_FORGET_PASSWORD_CLICK)
     fun onSubmitLoginClick() { if (isValidLoginDetails()) loginRequest() }
+    fun onLoginWithOtpClick() = postClickEvent(LoginClickEvents.ON_LOGIN_WITH_OTP_CLICK)
     fun onPasswordToggleClick() = postClickEvent(LoginClickEvents.ON_PASSWORD_TOGGLE)
     fun onFetchCurrentLatitudeLongitudeClicks() = postClickEvent(LoginClickEvents.ON_FETCH_CURRENT_LATITUDE_LONGITUDE_CLICKS)
 
@@ -80,6 +85,27 @@ class LoginVM @Inject constructor(
         executeApiCall(
             apiCall = {authRepo.sendNotificationToken(params)},
             liveData = sendNotificationTokenResponse,
+        )
+    }
+
+    fun requestLoginWithOtp() {
+        val params = JsonObject().apply {
+            addProperty("email", userEmailId.get().toString().trim())
+        }
+        executeApiCall(
+            apiCall = {authRepo.requestOTP(params)},
+            liveData = requestOtpResponse,
+        )
+    }
+
+    fun verifyLoginWithOtp(otp:String) {
+        val params = JsonObject().apply {
+            addProperty("email", userEmailId.get().orEmpty().trim())
+            addProperty("otp", otp)
+        }
+        executeApiCall(
+            apiCall = {authRepo.verifyOTP(params)},
+            liveData = loginResponse,
         )
     }
 }

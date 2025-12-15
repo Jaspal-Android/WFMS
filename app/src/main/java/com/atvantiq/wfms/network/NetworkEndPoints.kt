@@ -13,6 +13,8 @@ object NetworkEndPoints {
 
 	/*Forgot password*/
 	const val forgotPassword = "forgot-password"
+	const val requestOTP = "request-otp"
+	const val verifyOTP="verify-otp"
 
 	/*Day Attendance*/
 	const val attendanceCheckIn = "attendance/checkin"
