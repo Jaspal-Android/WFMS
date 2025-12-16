@@ -200,6 +200,11 @@
         <item name="android:background">@drawable/primary_bt_bg</item>
     </style>
 
+    <style name="CustomSmallBlueButton" parent="CustomSmallButtonStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/blue_bt_bg</item>
+    </style>
+
     <style name="CustomSmallGreenButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/day_background</item>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveVM" />
+
+        <variable
+            name="hasPreviewImage"
+            type="boolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.screens.attendance.applyLeave.ApplyLeaveActivity">
+
+        <include
+            android:id="@+id/applyLeaveToolbar"
+            layout="@layout/custom_toolbar" />
+
+        <!-- Scrollable Content -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/applyLeaveToolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/padding">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/leave_start_date_required"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:endIconDrawable="@drawable/ic_calendar_today"
+                    app:endIconMode="custom"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/start_date_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:onClick="@{() -> vm.onClickStartDate()}"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.leaveStartDate}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/leave_end_date_required"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:endIconDrawable="@drawable/ic_calendar_today"
+                    app:endIconMode="custom"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/end_date_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:onClick="@{() -> vm.onClickEndDate()}"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.leaveEndDate}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/leave_type_required"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                    app:endIconMode="custom"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/leave_type_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:onClick="@{() -> vm.onClickLeaveType()}"
+                        android:padding="@dimen/padding"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:text="@={vm.leaveType}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:hint="@string/reason_required"
+                    android:minHeight="@dimen/text_input_edit_text_min_height">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/leave_reason_et"
+                        style="@style/CustomEditInputTextRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:ellipsize="start"
+                        android:gravity="start"
+                        android:imeOptions="actionNext"
+                        android:inputType="textMultiLine"
+                        android:maxLines="4"
+                        android:minLines="4"
+                        android:padding="@dimen/padding"
+                        android:text="@={vm.leaveReason}" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin"
+                    android:text="@string/attachment_optional" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/attachmentContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="@{() -> vm.onClickAttachment()}"
+                    android:paddingVertical="@dimen/padding"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ivUpload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/upload"
+                        android:src="@drawable/baseline_attach_file_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvFileName"
+                        style="@style/CustomRegularDarkTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:ellipsize="middle"
+                        android:maxLines="1"
+                        android:text="@string/no_file_selected"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivUpload"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/tvFileHint"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="@string/file_hint"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/attachmentContainer" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/imagePreviewView"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small"
+                        app:cardPreventCornerOverlap="true"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".4"
+                        tools:visibility="visible">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/capturedImagePreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop" />
+
+                            <ImageView
+                                android:id="@+id/cancelImageBt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_margin="@dimen/margin_small_extra"
+                                android:onClick="@{()->vm.onClickCancelUploadImage()}"
+                                android:paddingStart="@dimen/padding_small"
+                                android:paddingBottom="@dimen/padding_small"
+                                android:src="@drawable/baseline_cancel_24"
+                                app:tint="@color/red" />
+                        </RelativeLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    style="@style/CustomPrimaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:onClick="@{()->vm.onClickSubmitLeave()}"
+                    android:text="@string/submit_leave_request">
+
+                </androidx.appcompat.widget.AppCompatButton>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

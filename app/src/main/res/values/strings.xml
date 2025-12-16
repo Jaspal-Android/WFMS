@@ -226,5 +226,31 @@
     <string name="pending">Pending</string>
     <string name="pm_status">PM Status: </string>
     <string name="pm_remarks">PM Remarks: </string>
+    <string name="apply_leave">Apply Leave</string>
+    <string name="back">Back</string>
+    <string name="leave_start_date_required">Leave Start Date *</string>
+    <string name="leave_end_date_required">Leave End Date *</string>
+    <string name="leave_type_required">Leave Type *</string>
+    <string name="reason_required">Reason *</string>
+    <string name="attachment_optional">Attachment (Optional)</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_end_date">Select end date</string>
+    <string name="select_leave_type">Select Leave Type</string>
+    <string name="enter_reason">Enter reason for leave</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="browse">Browse</string>
+    <string name="upload">Upload</string>
+    <string name="file_hint">Supported: PDF, JPG, PNG (Max 5MB)</string>
+    <string name="submit_leave_request">Submit Leave Request</string>
+    <string name="start_must_be_before_end">Start date must be before end date</string>
+    <string name="end_must_be_after_start">End date must be after start date</string>
+
+    <string-array name="leave_types">
+        <item>Sick Leave</item>
+        <item>Casual Leave</item>
+        <item>Paid Leave</item>
+        <item>Unpaid Leave</item>
+        <item>Emergency Leave</item>
+    </string-array>
 
 </resources>

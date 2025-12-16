@@ -151,4 +151,7 @@ class DashboardViewModel @Inject constructor(
         clickEvents.value = DashboardClickEvents.OPEN_PROFILE_CLICK
     }
 
+    fun onApplyLeaveClick(){
+        clickEvents.value = DashboardClickEvents.APPLY_LEAVE_CLICK
+    }
 }
