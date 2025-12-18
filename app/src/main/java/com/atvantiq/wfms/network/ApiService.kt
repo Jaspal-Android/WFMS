@@ -11,6 +11,7 @@ import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
@@ -149,4 +150,10 @@ interface ApiService {
 		@Part("reason") reason: RequestBody,
 		@Part attachment: MultipartBody.Part?
 	): ApplyLeaveResponse
+
+	@POST(NetworkEndPoints.requestOTP)
+	suspend fun requestOTP(@Body params: JsonObject): RequestOtpResponse
+
+	@POST(NetworkEndPoints.verifyOTP)
+	suspend fun verifyOTP(@Body params: JsonObject): LoginResponse
 }

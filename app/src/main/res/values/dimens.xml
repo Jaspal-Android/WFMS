@@ -1,7 +1,7 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="otp_et_width">50dp</dimen>
-    <dimen name="otp_et_height">60dp</dimen>
+    <dimen name="otp_et_width">36dp</dimen>
+    <dimen name="otp_et_height">46dp</dimen>
 
     <!--TextInputEditText min height-->
     <dimen name="text_input_edit_text_min_height">40dp</dimen>

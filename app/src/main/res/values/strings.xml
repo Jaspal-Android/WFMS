@@ -253,4 +253,12 @@
         <item>Emergency Leave</item>
     </string-array>
 
+    <string name="login_with_otp">Login with OTP</string>
+    <string name="request_login_otp">Request Login OTP</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="please_enter_email">Please enter email</string>
+    <string name="please_enter_otp">Please enter OTP</string>
+    <string name="we_have_sent_otp_email">We have sent an OTP on given Email Address</string>
+    <string name="invalid_otp">Invalid OTP. Please try again.</string>
+    <string name="resend_otp">Resend OTP</string>
 </resources>

@@ -165,6 +165,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/forgot_password" />
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:textStyle="bold"
+                    style="@style/CustomPrimaryWireButton"
+                    android:id="@+id/login_otp_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin"
+                    android:onClick="@{()->vm.onLoginWithOtpClick()}"
+                    android:text="@string/login_with_otp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/login_button" />
+
                 <LinearLayout
                     android:onClick="@{()-> vm.onFetchCurrentLatitudeLongitudeClicks()}"
                     android:paddingVertical="@dimen/padding_x_small"
@@ -172,7 +185,7 @@
                     android:orientation="horizontal"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/login_button"
+                    app:layout_constraintTop_toBottomOf="@+id/login_otp_button"
                     android:id="@+id/locationMarkerView"
                     android:gravity="center_vertical"
                     android:layout_width="wrap_content"
