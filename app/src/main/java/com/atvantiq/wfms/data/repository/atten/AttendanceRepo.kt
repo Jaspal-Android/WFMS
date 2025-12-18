@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.data.repository.atten
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
+import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -9,6 +10,8 @@ import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefKeys
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -60,5 +63,20 @@ class AttendanceRepo @Inject constructor(
         "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
         attendanceId,
         params
+    )
+
+    override suspend fun applyLeave(
+        leaveType: RequestBody,
+        fromDate: RequestBody,
+        toDate: RequestBody,
+        reason: RequestBody,
+        attachment: MultipartBody.Part?
+    ): ApplyLeaveResponse = apiService.applyLeave(
+        "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
+        leaveType = leaveType,
+        fromDate = fromDate,
+        toDate = toDate,
+        reason = reason,
+        attachment = attachment
     )
 }

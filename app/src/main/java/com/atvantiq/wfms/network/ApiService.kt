@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.network
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -137,4 +138,15 @@ interface ApiService {
 
 	@POST(NetworkEndPoints.forgotPassword)
 	suspend fun forgotPassword(@Header("Authorization") token: String, @Body params: JsonObject): ForgotPasswordResponse
+
+	@Multipart
+	@POST(NetworkEndPoints.applyLeave)
+	suspend fun applyLeave(
+		@Header("Authorization") token: String,
+		@Part("leave_type") leaveType: RequestBody,
+		@Part("from_date") fromDate: RequestBody,
+		@Part("to_date") toDate: RequestBody,
+		@Part("reason") reason: RequestBody,
+		@Part attachment: MultipartBody.Part?
+	): ApplyLeaveResponse
 }
