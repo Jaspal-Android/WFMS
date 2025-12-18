@@ -4,11 +4,27 @@ import android.app.Application
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
+import com.atvantiq.wfms.data.repository.auth.IAuthRepo
+import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.DateUtils
+import com.ssas.jibli.data.prefs.PrefMethods
+import dagger.hilt.android.lifecycle.HiltViewModel
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import javax.inject.Inject
 
-class ApplyLeaveVM(application: Application) : BaseViewModel(application) {
+@HiltViewModel
+class ApplyLeaveVM @Inject constructor(
+    application: Application,
+    private val attendanceRepo: IAttendanceRepo,
+) : BaseViewModel(application) {
 
     // variables and methods for Apply Leave functionality can be added here
 
@@ -79,7 +95,45 @@ class ApplyLeaveVM(application: Application) : BaseViewModel(application) {
 
     fun onClickSubmitLeave() {
         if(isValidFormDetails()){
-            // Proceed with leave submission logic
+            applyLeave()
         }
+    }
+
+    var applyLeaveResponse  = MutableLiveData<ApiState<ApplyLeaveResponse>>()
+    fun applyLeave() {
+        val path = leaveAttachmentPath.get().toString().trim()
+        val attachmentPart = if (path.isNotBlank()) {
+            val file = File(path)
+            if (file.exists()) {
+                MultipartBody.Part.createFormData("attachment", file.name, file.asRequestBody("image/*".toMediaType()))
+            } else {
+                null
+            }
+        } else {
+            null
+        }
+        val leaveType = leaveType.get().toString().trim().toRequestBody("text/plain".toMediaType())
+        val fromDate = leaveStartDate.get().toString().trim().toRequestBody("text/plain".toMediaType())
+        val toDate = leaveEndDate.get().toString().trim().toRequestBody("text/plain".toMediaType())
+        val reason = leaveReason.get().toString().trim().toRequestBody("text/plain".toMediaType())
+
+        executeApiCall(
+            apiCall = { attendanceRepo.applyLeave(
+                leaveType = leaveType,
+                fromDate = fromDate,
+                toDate = toDate,
+                reason = reason,
+                attachment = attachmentPart
+            ) },
+            liveData = applyLeaveResponse,
+        )
+    }
+
+    fun clearData(){
+        leaveStartDate.set("")
+        leaveEndDate.set("")
+        leaveType.set("")
+        leaveReason.set("")
+        leaveAttachmentPath.set("")
     }
 }

@@ -22,6 +22,11 @@ import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -129,7 +134,6 @@ class DashboardViewModel @Inject constructor(
             )
         }
     }
-
 
     fun onLogoutClick(){
         clickEvents.value = DashboardClickEvents.LOGOUT_CLICK

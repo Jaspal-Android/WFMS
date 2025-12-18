@@ -2,17 +2,18 @@ package com.atvantiq.wfms.ui.screens.attendance.applyLeave
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityApplyLeaveBinding
+import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.dialogs.SimpleBottomSheetDialog
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.files.PickMediaHelper
@@ -88,6 +89,35 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
 
         vm.errorHandler.observe(this) { error ->
             handleErrors(error)
+        }
+
+        vm.applyLeaveResponse.observe(this,{handleApplyLeaveResponse(it)})
+    }
+
+    private fun handleApplyLeaveResponse(response: ApiState<ApplyLeaveResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> handleApplyLeaveSuccess(response)
+            Status.LOADING -> showProgress()
+            Status.ERROR -> {
+                dismissProgress()
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    response.throwable?.message.orEmpty()
+                )
+            }
+        }
+    }
+
+    private fun handleApplyLeaveSuccess(response: ApiState<ApplyLeaveResponse>) {
+        dismissProgress()
+        if(response.response?.code == ValConstants.SUCCESS_CODE){
+            alertDialogShow(this,response.response.message)
+            showToast(this,response.response.message)
+            viewModel.clearData()
+            binding.hasPreviewImage = false
+        }else{
+            alertDialogShow(this,response?.response?.message?:getString(R.string.something_went_wrong))
         }
     }
 

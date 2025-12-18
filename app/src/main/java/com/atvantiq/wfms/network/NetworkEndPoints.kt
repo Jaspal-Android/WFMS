@@ -20,7 +20,7 @@ object NetworkEndPoints {
 	const val attendanceCheckInStatus = "attendance/checkin/status"
 	const val attendanceDetails = "attendance/details"
 
-	/*Attendance Management*/
+	/*Work Management*/
 	const val workAssignedAll = "work/all"
 	const val workAccept = "work/accept/{work_id}"
 	const val workStart = "work/start"
@@ -29,6 +29,7 @@ object NetworkEndPoints {
 	const val workById = "work/{work_id}"
 	const val workDetailByDate = "work/details"
 	const val attendanceEmpRemarks = "attendance/emp/remarks/{attendance_id}"
+	const val applyLeave  = "attendance/apply-leave"
 
 	/*Client*/
 	const val clientList = "client/all"
