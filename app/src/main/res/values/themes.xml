@@ -195,6 +195,11 @@
         <item name="android:background">@drawable/primary_bt_bg</item>
     </style>
 
+    <style name="CustomGreenButton" parent="CustomButtonStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/day_background</item>
+    </style>
+
     <style name="CustomSmallPrimaryButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/primary_bt_bg</item>

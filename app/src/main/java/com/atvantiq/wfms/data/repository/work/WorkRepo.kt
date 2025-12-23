@@ -6,6 +6,7 @@ import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
 import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
@@ -19,7 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class WorkRepo @Inject constructor(private val apiService: ApiService, private val prefMain: SecurePrefMain) : IWorkRepo {
 
-    override suspend fun workAssignedAll(page: Int, pageSize: Int): WorkAssignedAllResponse = apiService.workAssignedAll(
+    override suspend fun workAssignedAll(page: Int, pageSize: Int): WorkAssignedResponse = apiService.workAssignedAll(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         page = page,
         page_size = pageSize

@@ -15,6 +15,7 @@ import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
 import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
 import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiState
@@ -48,7 +49,7 @@ class AttendanceViewModel @Inject constructor(
     val isTracking: LiveData<Boolean> get() = _isTracking
 
     // Common LiveData for API responses
-    val workAssignedAllResponse = MutableLiveData<ApiState<WorkAssignedAllResponse>>()
+    val workAssignedAllResponse = MutableLiveData<ApiState<WorkAssignedResponse>>()
     val workByIdResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
     val workDetailsByDateResponse = MutableLiveData<ApiState<WorkDetailsByDateResponse>>()
     val workAcceptResponse = MutableLiveData<ApiState<AcceptWorkResponse>>()

@@ -104,9 +104,9 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
                     }
                 )
             },
-            onAcceptTask = { _, _ -> /* Handle accept task click if needed */ },
-            onStartWork = { _, _ -> /* Handle start work click if needed */ },
-            onEndWork = { _, _ -> /* Handle end work click if needed */ }
+            /*onAcceptTask = { _, _ -> *//* Handle accept task click if needed *//* },
+            onStartWork = { _, _ -> *//* Handle start work click if needed *//* },
+            onEndWork = { _, _ -> *//* Handle end work click if needed *//* }*/
         )
         binding.workList.apply {
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
@@ -127,7 +127,7 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
                                 showToast(this, getString(R.string.no_work_details_found))
                             } else {
                                 binding.isNoDataAvailable = false
-                                adapter?.submitList(resp.data)
+                                //adapter?.submitList(resp.data)
                             }
                         }
                         401 -> {

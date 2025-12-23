@@ -63,7 +63,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                     }
                 )
             },
-            onAcceptTask = { assignedTask, position ->
+           /* onAcceptTask = { assignedTask, position ->
                 // Handle accept task click
             },
             onStartWork = { assignedTask, position ->
@@ -71,7 +71,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
             },
             onEndWork = { assignedTask, position ->
                 // Handle end work click
-            }
+            }*/
         )
         binding.workList.adapter = adapter
     }
@@ -90,7 +90,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                             )
                         } else {
                             binding.isNoDataAvailable = false
-                            adapter?.submitList(response.response.data)
+                            //adapter?.submitList(response.response.data)
                         }
                     } else if (response.response?.code == 401) {
                         tokenExpiresAlert()

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_small_extra"
+        android:paddingHorizontal="@dimen/padding_medium"
+        android:paddingVertical="@dimen/padding_x_small"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorPrimary"
+        style="@style/CustomMediumTextView"
+        android:background="@drawable/bg_type_item"/>
+</layout>

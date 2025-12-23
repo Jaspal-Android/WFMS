@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/margin_small"
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="@dimen/elevation_small"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/padding"
+        android:paddingVertical="@dimen/padding_medium">
+
+        <!-- Work Type Name -->
+        <TextView
+            android:id="@+id/tvTypeName"
+            style="@style/CustomRegularDarkTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Vivo"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"
+            app:layout_constraintStart_toEndOf="@id/cbWorkType"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Work Type Checkbox -->
+        <CheckBox
+            android:id="@+id/cbWorkType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="@dimen/margin_small"/>
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/tvTypeStatus"
+            style="@style/CustomSmallTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/status_green_bg"
+            android:paddingHorizontal="@dimen/padding_small"
+            android:paddingVertical="@dimen/padding_x_small"
+            android:text="OPEN"
+            android:textColor="#16A34A"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Work Type ID -->
+        <TextView
+            android:id="@+id/tvTypeId"
+            style="@style/CustomMediumTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small_extra"
+            android:text="ID: 389964340690"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvTypeName"
+            app:layout_constraintTop_toBottomOf="@id/tvTypeName" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
+</layout>

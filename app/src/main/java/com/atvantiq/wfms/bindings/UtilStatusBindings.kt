@@ -89,4 +89,47 @@ object UtilStatusBindings {
             }
         }
     }
+
+    @JvmStatic
+    @BindingAdapter(value = ["assignedSiteStatus"])
+    fun assignedSiteStatus(textView: TextView, status: Int?) {
+        when (status) {
+            1 -> { // OPEN
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
+                textView.setBackgroundResource(R.drawable.status_primary_bg)
+            }
+            2 -> { // ACCEPTED
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+            3 -> { // WIP
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+            4 -> { // ACCESS ISSUE
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+                textView.setBackgroundResource(R.drawable.status_red_bg)
+            }
+            5 -> { // COMPLETED
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.green))
+                textView.setBackgroundResource(R.drawable.status_green_bg)
+            }
+            6 -> { // REVISIT
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+            7 -> { // REJECTED
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+                textView.setBackgroundResource(R.drawable.status_red_bg)
+            }
+            8 -> { // REMOVED
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+                textView.setBackgroundResource(R.drawable.status_red_bg)
+            }
+            else -> {
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+        }
+    }
 }

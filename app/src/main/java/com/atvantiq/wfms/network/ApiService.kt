@@ -24,6 +24,7 @@ import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
 import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
@@ -64,7 +65,7 @@ interface ApiService {
 	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int): AttendanceDetailListResponse
 
 	@GET(NetworkEndPoints.workAssignedAll)
-	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedAllResponse
+	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedResponse
 
 	@GET(NetworkEndPoints.workById)
 	suspend fun workById(@Header("Authorization") token: String, @Path("work_id") workId:Long): WorkDetailResponse

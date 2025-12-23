@@ -23,7 +23,7 @@ object NetworkEndPoints {
 	const val attendanceDetails = "attendance/details"
 
 	/*Work Management*/
-	const val workAssignedAll = "work/all"
+	const val workAssignedAll = "work/site/assigned"
 	const val workAccept = "work/accept/{work_id}"
 	const val workStart = "work/start"
 	const val workEnd = "work/end"

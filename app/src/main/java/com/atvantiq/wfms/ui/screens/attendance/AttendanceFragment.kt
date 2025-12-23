@@ -25,6 +25,8 @@ import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
 import com.atvantiq.wfms.models.work.assignedAll.WorkRecord
 import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.Site
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.services.LocationTrackingService
@@ -125,14 +127,14 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
 
-    private fun handleWorkAssignedResponse(response: ApiState<WorkAssignedAllResponse>) {
+    private fun handleWorkAssignedResponse(response: ApiState<WorkAssignedResponse>) {
         when (response.status) {
             Status.SUCCESS -> {
                 dismissProgress()
                 stopRefreshingData()
                 response.response?.let {
                     if (it.code == 200) {
-                        handleWorkAssignedSuccess(it.data.records)
+                        handleWorkAssignedSuccess(it.data.results)
                     } else {
                         handleErrorResponse(it.code, it.message)
                     }
@@ -143,7 +145,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
 
-    private fun handleWorkAssignedSuccess(records: List<WorkRecord>) {
+    private fun handleWorkAssignedSuccess(records: List<Site>) {
         adapter?.removeLoadingFooter() // Always remove loading footer before updating list
         if (page == 1) {
             adapter?.submitList(emptyList()) // Clear adapter data on refresh
@@ -328,19 +330,19 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                     }
                 )
             },
-            onAcceptTask = { assignedTask, position ->
+            /*onAcceptTask = { assignedTask, position ->
                 viewModel.workAccept(assignedTask.id, position)
             },
             onStartWork = { assignedTask, position ->
                 checkAttendanceStatus(assignedTask.id, position)
-               /* val intent = Intent(requireContext(), LocationTrackingService::class.java)
+               *//* val intent = Intent(requireContext(), LocationTrackingService::class.java)
                 intent.action = "com.atvantiq.wfms.ACTION_START_WORK"
                 intent.putExtra("WORK_ID", "0002")
-                ContextCompat.startForegroundService(requireContext(), intent)*/
+                ContextCompat.startForegroundService(requireContext(), intent)*//*
             },
             onEndWork = { assignedTask, position ->
                 endWorkWithLocationPermissions(assignedTask.id, position)
-            }
+            }*/
         )
         binding.rvAssignedTasks.addItemDecoration(
             DividerItemDecoration(

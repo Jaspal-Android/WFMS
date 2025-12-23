@@ -73,10 +73,8 @@ class EndWorkBottomSheet(
 
     private fun initStatusList() {
         val statusOptions = listOf(
-            StatusOption(4, "ACCESS ISSUE"),
-            StatusOption(5, "COMPLETED"),
-            StatusOption(6, "REVISIT"),
-            StatusOption(7, "REJECTED")
+            StatusOption(5, getString(R.string.completed)),
+            StatusOption(6, getString(R.string.pending)),
         )
         binding.statusRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.statusRecyclerView.setHasFixedSize(true)
