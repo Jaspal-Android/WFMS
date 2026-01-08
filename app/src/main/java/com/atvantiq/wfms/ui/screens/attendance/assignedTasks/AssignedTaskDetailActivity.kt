@@ -73,13 +73,17 @@ class AssignedTaskDetailActivity :
 
     private fun initListeners() {
         binding.btnAccept.setOnClickListener {
-            viewModel.workAccept(workSiteId ?:-1, position = itemPosition)
+            viewModel.workAccept(workSiteId ?: -1, position = itemPosition)
         }
         binding.btnStartWork.setOnClickListener {
-            checkAttendanceStatus(workSiteId ?:-1, position = itemPosition)
+            checkAttendanceStatus(workSiteId ?: -1, position = itemPosition)
         }
         binding.btnEndWork.setOnClickListener {
-            endWorkWithLocationPermissions(workSiteId ?: -1, itemTypeAdapter?.getSelectedTypes() ?: emptyList(), itemPosition)
+            endWorkWithLocationPermissions(
+                workSiteId ?: -1,
+                itemTypeAdapter?.getSelectedTypes() ?: emptyList(),
+                itemPosition
+            )
         }
     }
 
@@ -88,8 +92,12 @@ class AssignedTaskDetailActivity :
         if (workSiteId != null) {
             itemPosition = intent.getIntExtra(SharingKeys.WORK_POSITION, -1)
             viewModel.itemPosition.value = itemPosition
-            viewModel.workById(workSiteId!!)
+            getWorkDetailsById()
         }
+    }
+
+    private fun getWorkDetailsById() {
+        viewModel.workById(workSiteId!!)
     }
 
     private fun setupWokTypeRecyclerView() {
@@ -150,11 +158,13 @@ class AssignedTaskDetailActivity :
 
         }
 
-        val hasEligibleToEnd = record?.status?.code !in listOf(
+        /*val hasEligibleToEnd = record?.status?.code !in listOf(
             StatusCodes.OPEN,
             StatusCodes.ACCEPTED,
             StatusCodes.COMPLETED
-        )
+        )*/
+        val hasEligibleToEnd = record?.status?.code in listOf(StatusCodes.WIP)
+
         if (record?.type?.isNullOrEmpty() == true) {
             binding.showSelectAll = false
         } else {
@@ -165,7 +175,7 @@ class AssignedTaskDetailActivity :
                 binding.showEndAssignment = true
             }
         }
-        itemTypeAdapter?.setData(record?.type ?: emptyList(),hasEligibleToEnd)
+        itemTypeAdapter?.setData(record?.type ?: emptyList(), hasEligibleToEnd)
     }
 
 
@@ -241,6 +251,7 @@ class AssignedTaskDetailActivity :
                     }
                 }
             }
+
             Status.ERROR -> handleError(response.throwable)
             Status.LOADING -> showProgress()
         }
@@ -262,6 +273,7 @@ class AssignedTaskDetailActivity :
                     }
                 }
             }
+
             Status.ERROR -> handleError(response.throwable)
             Status.LOADING -> showProgress()
         }
@@ -272,27 +284,43 @@ class AssignedTaskDetailActivity :
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
-                        showToast(this, it.message ?: getString(R.string.work_ended))
-                        handleStatusUpdateResponse(it.data)
-                    } else {
-                        handleErrorResponse(it.code, it.message)
+                    when (it.code) {
+                        200 -> {
+                            showToast(this, it.message ?: getString(R.string.work_ended))
+                            handleStatusUpdateResponse(it.data, isEndWorkCase = true)
+                        }
+                        206 -> {
+                            showToast(this, it.message ?: getString(R.string.work_ended))
+                            handleStatusUpdateResponse(it.data, isEndWorkCase = true)
+                        }
+                        else -> {
+                            handleErrorResponse(it.code, it.message)
+                        }
                     }
                 }
             }
+
             Status.ERROR -> handleError(response.throwable)
             Status.LOADING -> showProgress()
         }
     }
 
 
-    private fun handleStatusUpdateResponse(data: WorkDetailData?) {
-        setupUI(data)
+    private fun handleStatusUpdateResponse(data: WorkDetailData?, isEndWorkCase: Boolean = false) {
         val resultIntent = Intent().apply {
             putExtra(SharingKeys.WORK_POSITION, viewModel.itemPosition.value)
-            putExtra(SharingKeys.UPDATED_STATUS, data?.status?.code) // Add any other updated data as needed
+            putExtra(
+                SharingKeys.UPDATED_STATUS,
+                data?.status?.code
+            )
         }
         setResult(RESULT_OK, resultIntent)
+        /*Refreshing UI Date*/
+        if (isEndWorkCase) {
+            getWorkDetailsById()
+        } else {
+            setupUI(data)
+        }
     }
 
     private fun checkAttendanceStatus(id: Long, position: Int) {
@@ -307,23 +335,35 @@ class AssignedTaskDetailActivity :
                 dismissProgress()
                 response.response?.let {
                     if (it.code == 200 && it.data?.checkedIn == true) {
-                        startWorkWithLocationPermissions(viewModel.currentWorkId ?: -1, viewModel.itemPosition.value ?: -1)
+                        startWorkWithLocationPermissions(
+                            viewModel.currentWorkId ?: -1,
+                            viewModel.itemPosition.value ?: -1
+                        )
                     } else {
-                        alertDialogShow(this, getString(R.string.alert), getString(R.string.please_check_in_first), okLister = DialogInterface.OnClickListener { dialog, _ ->
-                            dialog.dismiss()
-                            setResult(ValConstants.RESULT_MARK_ATTENDANCE)
-                            finish()
-                        })
+                        alertDialogShow(
+                            this,
+                            getString(R.string.alert),
+                            getString(R.string.please_check_in_first),
+                            okLister = DialogInterface.OnClickListener { dialog, _ ->
+                                dialog.dismiss()
+                                setResult(ValConstants.RESULT_MARK_ATTENDANCE)
+                                finish()
+                            })
                     }
                 }
             }
+
             Status.ERROR -> handleError(response.throwable)
             Status.LOADING -> showProgress()
         }
     }
 
     private fun handleErrorResponse(code: Int?, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+        if (code == 401) tokenExpiresAlert() else alertDialogShow(
+            this,
+            getString(R.string.alert),
+            message ?: getString(R.string.something_went_wrong)
+        )
     }
 
     private fun handleError(throwable: Throwable?) {
@@ -420,7 +460,13 @@ class AssignedTaskDetailActivity :
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
                         StartWorkBottomSheet(latitude, longitude) { imagePath ->
-                            viewModel.workStart(workSiteId.toString(), latitude, longitude, imagePath, position)
+                            viewModel.workStart(
+                                workSiteId.toString(),
+                                latitude,
+                                longitude,
+                                imagePath,
+                                position
+                            )
                         }.show(supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
                     } else {
                         showToast(this, getString(R.string.location_not_found))

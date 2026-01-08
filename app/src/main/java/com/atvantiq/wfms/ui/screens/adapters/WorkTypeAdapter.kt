@@ -48,11 +48,29 @@ class WorkTypeAdapter(
         }
     }
 
-    fun setAllSelected(selected: Boolean) {
+   /* fun setAllSelected(selected: Boolean) {
         selectedStates.replaceAll { selected }
         selectedTypes.clear()
         if (selected) {
             selectedTypes.addAll(workTypes)
+        }
+        notifyDataSetChanged()
+        onSelectionChanged?.invoke(selectedTypes.toList())
+    }*/
+
+    fun setAllSelected(selected: Boolean) {
+        selectedTypes.clear()
+        for (i in workTypes.indices) {
+            // Only select if checkbox is visible (showSelectableOption == true)
+            val isSelectable = workTypes[i].status?.code == StatusCodes.WIP && hasEligibleToEnd
+            if (isSelectable) {
+                selectedStates[i] = selected
+                if (selected) {
+                    selectedTypes.add(workTypes[i])
+                }
+            } else {
+                selectedStates[i] = false
+            }
         }
         notifyDataSetChanged()
         onSelectionChanged?.invoke(selectedTypes.toList())
