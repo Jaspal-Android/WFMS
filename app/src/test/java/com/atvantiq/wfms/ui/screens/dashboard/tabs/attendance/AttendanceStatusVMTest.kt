@@ -3,12 +3,6 @@ package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
-import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailData
-import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Checkin
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Checkout
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Employee
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Record
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.Utils

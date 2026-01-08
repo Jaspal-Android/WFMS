@@ -99,8 +99,8 @@ class AssignedTasksListAdapter(
         notifyDataSetChanged()
     }
 
-    fun setUpdateStatus(position: Int, status: String) {
-        //assignedTasks?.get(position)?.status = status
+    fun setUpdateStatus(position: Int, status: Int) {
+        assignedTasks?.get(position)?.status?.code = status
         notifyItemChanged(position)
     }
 

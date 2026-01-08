@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="typeStatusInteger"
+            type="Integer" />
+
+        <variable
+            name="assignedDate"
+            type="String" />
+
+        <variable
+            name="showSelectableOption"
+            type="Boolean" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_small"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small"
+        app:strokeWidth="1dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/padding_medium"
+            android:paddingEnd="@dimen/padding">
+
+            <!-- Work Type Name -->
+            <TextView
+                android:layout_marginStart="@dimen/margin"
+                android:id="@+id/tvTypeName"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Vivo"
+                android:textStyle="bold"
+                android:layout_marginEnd="@dimen/margin_small"
+                app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"
+                app:layout_constraintStart_toEndOf="@id/cbWorkType"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Work Type Checkbox -->
+
+            <!-- Status -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                style="@style/CustomCheckBox"
+                android:layout_marginStart="@dimen/margin_small"
+                android:id="@+id/cbWorkType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility='@{showSelectableOption ? View.VISIBLE : View.GONE}'
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTypeStatus"
+                style="@style/CustomSmallTextView"
+                assignedSiteStatus="@{typeStatusInteger}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/status_green_bg"
+                android:paddingHorizontal="@dimen/padding_small"
+                android:paddingVertical="@dimen/padding_x_small"
+                android:textColor="#16A34A"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="OPEN" />
+
+            <!-- Work Type ID -->
+            <TextView
+                formatApiDateToMonthDayYear="@{assignedDate}"
+                android:id="@+id/tvTypeId"
+                style="@style/CustomMediumTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                tools:text="12-12-2026"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tvTypeName"
+                app:layout_constraintTop_toBottomOf="@id/tvTypeName" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

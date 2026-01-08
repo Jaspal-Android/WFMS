@@ -6,6 +6,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="siteStatusInteger"
+            type="Integer" />
+
+        <variable
             name="isOpenAssignment"
             type="Boolean" />
 
@@ -14,7 +18,11 @@
             type="Boolean" />
 
         <variable
-            name="isWorkEnded"
+            name="showEndAssignment"
+            type="Boolean" />
+
+        <variable
+            name="showSelectAll"
             type="Boolean" />
 
         <variable
@@ -166,6 +174,7 @@
                             app:layout_constraintTop_toBottomOf="@id/tvCircleLabel" />
 
                         <TextView
+                            assignedSiteStatus="@{siteStatusInteger}"
                             android:id="@+id/tvStatus"
                             style="@style/CustomMediumTextView"
                             android:layout_width="wrap_content"
@@ -173,7 +182,7 @@
                             android:background="@drawable/status_green_bg"
                             android:paddingHorizontal="@dimen/padding"
                             android:paddingVertical="@dimen/padding_x_small"
-                            android:text="OPEN"
+                            tools:text="OPEN"
                             android:textColor="#16A34A"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -196,6 +205,7 @@
 
                 <!-- Select All Checkbox -->
                 <CheckBox
+                    android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
                     android:id="@+id/cbSelectAllWorkTypes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -204,6 +214,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvWorkTitle" />
 
                 <TextView
+                    android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
                     style="@style/CustomRegularDarkTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -258,6 +269,7 @@
                 android:visibility="@{isAcceptedAssignment ? View.VISIBLE : View.GONE}" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:visibility="@{showEndAssignment ? View.VISIBLE : View.GONE}"
                 android:id="@+id/btnEndWork"
                 style="@style/CustomRedButton"
                 android:layout_width="match_parent"

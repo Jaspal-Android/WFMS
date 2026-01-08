@@ -1,9 +1,6 @@
 package com.atvantiq.wfms.data.repository.work
 
-import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
-import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
-import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
@@ -15,15 +12,15 @@ interface IWorkRepo {
 
     suspend fun workAssignedAll(page:Int,pageSize:Int): WorkAssignedResponse
 
-    suspend fun workAccept(workId: Long): AcceptWorkResponse
+    suspend fun workAccept(workSiteId: Long): WorkDetailResponse
 
-    suspend fun workStart(workId: RequestBody, latitude: RequestBody, longitude: RequestBody, photo: MultipartBody.Part): StartWorkResponse
+    suspend fun workStart(workSiteId: RequestBody, latitude: RequestBody, longitude: RequestBody, photo: MultipartBody.Part): WorkDetailResponse
 
-    suspend fun workEnd(params: JsonObject): EndWorkResponse
+    suspend fun workEnd(params: JsonObject): WorkDetailResponse
 
     suspend fun workSelfAssign(params: JsonObject): SelfAssignResponse
 
-    suspend fun workById(workId:Long): WorkDetailResponse
+    suspend fun workById(workSiteId:Long): WorkDetailResponse
 
     suspend fun workDetailByDate(date: String): WorkDetailsByDateResponse
 }

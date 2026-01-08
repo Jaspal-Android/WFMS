@@ -272,5 +272,12 @@
     <string name="assigned_work">Assigned Work</string>
     <string name="site_id">Site ID: </string>
     <string name="project_colon">Project: </string>
+    <string name="open">Open</string>
+    <string name="accepted">Accepted</string>
+    <string name="revisited">Revisited</string>
+    <string name="removed">Removed</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="work_site_approval_successful">Work site approval successful</string>
 
 </resources>

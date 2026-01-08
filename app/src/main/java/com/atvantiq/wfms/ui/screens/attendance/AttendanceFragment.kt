@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,16 +19,11 @@ import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentAttendanceBinding
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
-import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
-import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
-import com.atvantiq.wfms.models.work.assignedAll.WorkRecord
-import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
-import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
 import com.atvantiq.wfms.models.work.workAssigned.Site
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
+import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.services.LocationTrackingService
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
@@ -167,7 +161,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun handleAcceptWorkResponse(
-        response: ApiState<AcceptWorkResponse>,
+        response: ApiState<WorkDetailResponse>,
         successMessage: Int,
         status: String
     ) {
@@ -177,10 +171,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(requireContext(), it.message ?: getString(successMessage))
-                        adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
+                        //adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
                         viewModel.itemPosition.value = -1
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        //handleErrorResponse(it.code, it.message)
                     }
                 }
             }
@@ -190,7 +184,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun handleStartWorkResponse(
-        response: ApiState<StartWorkResponse>,
+        response: ApiState<WorkDetailResponse>,
         successMessage: Int,
         status: String
     ) {
@@ -200,10 +194,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(requireContext(), it.message ?: getString(successMessage))
-                        adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
+                        //adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
                         viewModel.itemPosition.value = -1
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        it.code?.let { it1 -> handleErrorResponse(it1, it.message) }
                     }
                 }
             }
@@ -212,20 +206,20 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
 
-    private fun handleWorkEndResponse(response: ApiState<EndWorkResponse>) {
+    private fun handleWorkEndResponse(response: ApiState<WorkDetailResponse>) {
         when (response.status) {
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(requireContext(), it.message ?: getString(R.string.work_ended))
-                        adapter?.setUpdateStatus(
+                        /*adapter?.setUpdateStatus(
                             viewModel.itemPosition.value ?: -1,
                             it.data?.status ?: ValConstants.COMPLETED
-                        )
+                        )*/
                         viewModel.itemPosition.value = -1
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        it.code?.let { it1 -> handleErrorResponse(it1, it.message) }
                     }
                 }
             }
@@ -321,14 +315,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
 
         adapter = AssignedTasksListAdapter(false,
             onViewAssignedTask = { assignedTask, position ->
-                Utils.jumpActivityWithData(
-                    requireContext(),
-                    AssignedTaskDetailActivity::class.java,
-                    Bundle().apply {
-                        putInt(SharingKeys.WORK_POSITION, position)
-                        putLong(SharingKeys.WORK_ID, assignedTask.id)
-                    }
-                )
+                launchAssignedTaskDetail(position, assignedTask)
             },
             /*onAcceptTask = { assignedTask, position ->
                 viewModel.workAccept(assignedTask.id, position)
@@ -454,7 +441,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
                         EndWorkBottomSheet(latitude, longitude) { statusId, remarks ->
-                            viewModel.workEnd(workId, latitude.toDouble(), longitude.toDouble(), statusId, remarks, position)
+                            //viewModel.workEnd(workId, latitude.toDouble(), longitude.toDouble(), statusId, remarks, position)
                         }.show(requireActivity().supportFragmentManager, "END_WORK_BOTTOM_SHEET_TAG")
                     } else {
                         showToast(requireContext(), getString(R.string.location_not_found))
@@ -510,5 +497,28 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 startRefreshingData()
             }
         }
+
+    private val assignedTaskDetailLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val position = result.data?.getIntExtra(SharingKeys.WORK_POSITION, -1) ?: -1
+                val updatedStatus = result.data?.getIntExtra(SharingKeys.UPDATED_STATUS,-1) ?: -1
+                if (position != -1 && updatedStatus != null) {
+                    adapter?.setUpdateStatus(position, updatedStatus)
+                }
+            }
+
+            if(result.resultCode == ValConstants.RESULT_MARK_ATTENDANCE){
+                navigateToDashboard()
+            }
+        }
+
+    private fun launchAssignedTaskDetail(position: Int, assignedTask: Site) {
+        val intent = Intent(requireContext(), AssignedTaskDetailActivity::class.java).apply {
+            putExtra(SharingKeys.WORK_POSITION, position)
+            putExtra(SharingKeys.WORK_ID, assignedTask.workSiteId)
+        }
+        assignedTaskDetailLauncher.launch(intent)
+    }
 
 }

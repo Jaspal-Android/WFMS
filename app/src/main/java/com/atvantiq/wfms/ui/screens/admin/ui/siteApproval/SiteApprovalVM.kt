@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
-import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
+import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
+import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiState
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -18,8 +21,9 @@ class SiteApprovalVM @Inject constructor(
     private val attendanceRepo: IAttendanceRepo
 ) : BaseViewModel(application) {
 
-    var attendanceDetailsResponse = MutableLiveData<ApiState<AttendanceDetailListResponse>>()
+    var itemPosition = MutableLiveData<Int>().apply { value = -1 }
 
+    var attendanceDetailsResponse = MutableLiveData<ApiState<AttendanceDetailListResponse>>()
     fun getAttendanceDetails(month: Int, year: Int) {
         executeApiCall(
             apiCall = { attendanceRepo.attendanceDetails(month, year) },
@@ -28,7 +32,6 @@ class SiteApprovalVM @Inject constructor(
     }
 
     var workSites  = MutableLiveData<ApiState<WorkSitesResponse>>()
-
     fun getWorkSites(employeeId: String,date: String) {
         executeApiCall(
             apiCall = { attendanceRepo.workSites(employeeId,date) },
@@ -36,22 +39,36 @@ class SiteApprovalVM @Inject constructor(
         )
     }
 
-    var approveWorkSiteResponse  = MutableLiveData<ApiState<ApproveWorkSiteResponse>>()
+    var workSiteDetails = MutableLiveData<ApiState<WorkSiteDetailResponse>>()
+    fun getWorkSiteDetails(workSiteId: Long,employeeId: String,date: String) {
+        executeApiCall(
+            apiCall = { attendanceRepo.workSiteDetailsAdmin(workSiteId,employeeId,date) },
+            liveData = workSiteDetails
+        )
+    }
+
+    var approveWorkSiteResponse  = MutableLiveData<ApiState<ApproveWorkSiteTypeResponse>>()
     fun approveRejectWorkSite(
-        siteWorkId: Long,
+        workSiteId: Long,
         employeeId: Long,
         status: Int,
-        remarks: String
+        remarks: String,
+        selectedTypes: List<WorkType>?
     ) {
-        val params = JsonObject().apply {
-            addProperty("work_site_id", siteWorkId)
-            addProperty("employee_id", employeeId)
-            addProperty("status", status)
-            if (remarks.isNotEmpty()) addProperty("remarks", remarks)
+        val paramsArray = JsonArray()
+        selectedTypes?.forEach { workType ->
+            val params = JsonObject().apply {
+                addProperty("work_site_id", workSiteId)
+                addProperty("type_id", workType.id)
+                addProperty("employee_id", employeeId)
+                addProperty("status", status)
+                addProperty("remarks",remarks)
+            }
+            paramsArray.add(params)
         }
         executeApiCall(
             apiCall = {
-                attendanceRepo.approveWorkSite(params)
+                attendanceRepo.approveWorkSite(paramsArray)
             },
             liveData = approveWorkSiteResponse
         )

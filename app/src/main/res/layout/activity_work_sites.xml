@@ -17,7 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".ui.screens.admin.ui.siteApproval.sites.WorkSitesActivity">
+        android:background="@color/cardLightBackground"
+        tools:context=".ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity">
 
         <include
             android:id="@+id/siteApprovalToolbar"

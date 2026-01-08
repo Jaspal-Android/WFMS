@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.BindingAdapter
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.AttendanceStatus
+import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.utils.Utils
 
@@ -94,39 +95,47 @@ object UtilStatusBindings {
     @BindingAdapter(value = ["assignedSiteStatus"])
     fun assignedSiteStatus(textView: TextView, status: Int?) {
         when (status) {
-            1 -> { // OPEN
+            StatusCodes.OPEN -> { // OPEN
+                textView.text = textView.context.getString(R.string.open)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
                 textView.setBackgroundResource(R.drawable.status_primary_bg)
             }
-            2 -> { // ACCEPTED
+            StatusCodes.ACCEPTED -> { // ACCEPTED
+                textView.text = textView.context.getString(R.string.accepted)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
                 textView.setBackgroundResource(R.drawable.status_orange_bg)
             }
-            3 -> { // WIP
+            StatusCodes.WIP -> { // WIP
+                textView.text = textView.context.getString(R.string.pending)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
                 textView.setBackgroundResource(R.drawable.status_orange_bg)
             }
-            4 -> { // ACCESS ISSUE
+            StatusCodes.ACCESS_ISSUE -> { // ACCESS ISSUE
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
                 textView.setBackgroundResource(R.drawable.status_red_bg)
             }
-            5 -> { // COMPLETED
+            StatusCodes.COMPLETED -> { // COMPLETED
+                textView.text = textView.context.getString(R.string.completed)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.green))
                 textView.setBackgroundResource(R.drawable.status_green_bg)
             }
-            6 -> { // REVISIT
+            StatusCodes.REVISIT -> { // REVISIT
+                textView.text = textView.context.getString(R.string.revisited)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
                 textView.setBackgroundResource(R.drawable.status_orange_bg)
             }
-            7 -> { // REJECTED
+            StatusCodes.REJECTED -> { // REJECTED
+                textView.text = textView.context.getString(R.string.rejected)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
                 textView.setBackgroundResource(R.drawable.status_red_bg)
             }
-            8 -> { // REMOVED
+            StatusCodes.REMOVED -> { // REMOVED
+                textView.text = textView.context.getString(R.string.removed)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
                 textView.setBackgroundResource(R.drawable.status_red_bg)
             }
             else -> {
+                textView.text  = textView.context.getString(R.string.not_available)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
                 textView.setBackgroundResource(R.drawable.status_orange_bg)
             }

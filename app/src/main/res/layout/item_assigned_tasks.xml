@@ -65,7 +65,6 @@
                 android:layout_marginEnd="@dimen/margin_small"
                 android:paddingHorizontal="@dimen/padding_small"
                 android:paddingVertical="@dimen/padding_x_small"
-                android:text="@{siteItem.status.label}"
                 android:textColor="@color/green"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/barrier"
@@ -141,7 +140,7 @@
                 android:id="@+id/typeFlow"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/typeLabelText"
                 app:layout_constraintTop_toTopOf="@+id/typeLabelText" />
 

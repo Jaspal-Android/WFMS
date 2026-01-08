@@ -2,7 +2,6 @@ package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
@@ -47,7 +46,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
     }
 
     private fun fetchWorkDetailsByDate() {
-        val date = intent.getStringExtra(SharingKeys.workDate) ?: return
+        val date = intent.getStringExtra(SharingKeys.WORK_DATE) ?: return
         viewModel.workDetailsByDate(date)
     }
 

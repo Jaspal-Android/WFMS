@@ -8,9 +8,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Checkin(
     @SerializedName("latitude")
-    val latitude: Double,
+    val latitude: Double?,
     @SerializedName("logitude")
-    val logitude: Double,
+    val logitude: Double?,
     @SerializedName("time")
-    val time: String
+    val time: String?
 ):Parcelable

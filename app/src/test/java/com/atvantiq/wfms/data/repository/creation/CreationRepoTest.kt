@@ -7,7 +7,6 @@ import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
-import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
 import com.ssas.jibli.data.prefs.PrefKeys
 import io.mockk.*

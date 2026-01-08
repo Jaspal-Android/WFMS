@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.atvantiq.wfms.models.attendance.attendanceDetails.Record" />
+            type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
     </data>
 
     <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -66,7 +66,7 @@
                 <TextView
                     android:id="@+id/tvStatus"
                     style="@style/CustomMediumTextView"
-                    attendanceStatus="@{item.status}"
+                    attendanceStatus="@{item.status.code}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="@dimen/padding_medium"

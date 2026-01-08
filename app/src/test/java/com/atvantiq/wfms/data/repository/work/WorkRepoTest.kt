@@ -1,12 +1,10 @@
 package com.atvantiq.wfms.data.repository.work
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
-import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
 import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
 import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
-import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject

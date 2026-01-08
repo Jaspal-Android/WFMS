@@ -5,6 +5,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_small_extra"
+        android:layout_marginBottom="@dimen/padding_x_small"
         android:paddingHorizontal="@dimen/padding_medium"
         android:paddingVertical="@dimen/padding_x_small"
         android:gravity="center_vertical"

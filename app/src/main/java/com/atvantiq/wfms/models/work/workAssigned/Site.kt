@@ -14,8 +14,10 @@ data class Site(
     val project: Project,
     @SerializedName("site_id")
     val siteId: String,
+    @SerializedName("work_site_id")
+    val workSiteId: Long,
     @SerializedName("status")
-    val status: Status,
+    var status: Status,
     @SerializedName("type")
     val type: List<Type>
 )

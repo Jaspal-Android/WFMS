@@ -194,23 +194,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/announcementText"></TextView>
 
-            <LinearLayout
-                android:id="@+id/marqueeLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/announcementText">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/marqueeRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small_extra"
-                    tools:itemCount="3"
-                    tools:listitem="@layout/item_marquee" />
-            </LinearLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.CollapsingToolbarLayout>
 </layout>

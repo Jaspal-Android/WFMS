@@ -6,21 +6,29 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Record(
+data class AttendanceRecord(
+    @SerializedName("action")
+    val action: String?,
+    @SerializedName("approval_status")
+    val approvalStatus: Int?,
     @SerializedName("can_hr_mark_attendance")
-    val canHrMarkAttendance: Boolean,
+    val canHrMarkAttendance: Boolean?,
     @SerializedName("checkin")
-    val checkin: Checkin,
+    val checkin: Checkin?,
     @SerializedName("checkout")
-    val checkout: Checkout,
+    val checkout: Checkout?,
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerializedName("employee")
     val employee: Employee?,
+    @SerializedName("employee_remarks")
+    val employeeRemarks: String?,
     @SerializedName("id")
-    val id: Long,
+    val id: Long?,
+    @SerializedName("logs")
+    val logs: Logs?,
     @SerializedName("status")
-    val status: Int,
+    val status: Status?,
     @SerializedName("work_hours")
-    val workHours: String
+    val workHours: String?
 ):Parcelable

@@ -11,7 +11,6 @@ import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
-import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.AddedBy
@@ -19,7 +18,6 @@ import com.atvantiq.wfms.models.client.ClientData
 import com.atvantiq.wfms.models.po.PoData
 import com.atvantiq.wfms.models.project.ProjectData
 import com.atvantiq.wfms.models.site.SiteData
-import com.atvantiq.wfms.models.type.TypeData
 import com.atvantiq.wfms.models.work.assignedAll.Circle
 import com.atvantiq.wfms.models.work.assignedAll.Project
 import com.atvantiq.wfms.models.work.selfAssign.Activity
