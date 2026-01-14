@@ -44,7 +44,7 @@
     <dimen name="elevation_small">2dp</dimen>
 
     <!--margins-->
-    <dimen name="margin_small_extra">5dp</dimen>
+    <dimen name="margin_small_extra">4dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin">16dp</dimen>
     <dimen name="margin_large">18dp</dimen>

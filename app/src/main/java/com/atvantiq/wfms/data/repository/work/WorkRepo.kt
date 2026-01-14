@@ -1,11 +1,8 @@
 package com.atvantiq.wfms.data.repository.work
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
-import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
-import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
-import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
-import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
@@ -19,24 +16,24 @@ import javax.inject.Singleton
 @Singleton
 class WorkRepo @Inject constructor(private val apiService: ApiService, private val prefMain: SecurePrefMain) : IWorkRepo {
 
-    override suspend fun workAssignedAll(page: Int, pageSize: Int): WorkAssignedAllResponse = apiService.workAssignedAll(
+    override suspend fun workAssignedAll(page: Int, pageSize: Int): WorkAssignedResponse = apiService.workAssignedAll(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         page = page,
         page_size = pageSize
     )
 
-    override suspend fun workAccept(workId:Long): AcceptWorkResponse = apiService.workAccept(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),workId)
+    override suspend fun workAccept(workSiteId:Long): WorkDetailResponse = apiService.workAccept(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),workSiteId)
 
-    override suspend fun workStart(workId: RequestBody,latitude: RequestBody,longitude: RequestBody,photo: MultipartBody.Part): StartWorkResponse = apiService.workStart(
+    override suspend fun workStart(workSiteId: RequestBody,latitude: RequestBody,longitude: RequestBody,photo: MultipartBody.Part): WorkDetailResponse = apiService.workStart(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-        workId = workId,
+        workSiteId = workSiteId,
         latitude = latitude,
         longitude = longitude,
         photo = photo
     )
 
-    override suspend fun workEnd(params: JsonObject): EndWorkResponse = apiService.workEnd(
+    override suspend fun workEnd(params: JsonObject): WorkDetailResponse = apiService.workEnd(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         params = params
     )
@@ -46,9 +43,9 @@ class WorkRepo @Inject constructor(private val apiService: ApiService, private v
         params = params
     )
 
-    override suspend fun workById(workId: Long): WorkDetailResponse  = apiService.workById(
+    override suspend fun workById(workSiteId: Long): WorkDetailResponse = apiService.workById(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-        workId = workId
+        workSiteId = workSiteId
     )
 
     override suspend fun workDetailByDate(date: String): WorkDetailsByDateResponse  = apiService.workDetailByDate(

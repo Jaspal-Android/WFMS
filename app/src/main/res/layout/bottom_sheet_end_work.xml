@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
 
         <variable
@@ -11,55 +11,79 @@
             type="String" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="@dimen/padding">
 
+        <!-- Pull Indicator -->
         <ImageView
-            android:layout_gravity="center"
-            android:src="@drawable/ic_pull"
+            android:id="@+id/ivPull"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></ImageView>
-
-        <TextView
-            android:layout_marginTop="@dimen/margin_small"
-            android:gravity="start"
-            android:textStyle="bold"
-            android:text="@string/end_work_with_details"
-            style="@style/CustomLargeDarkTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"></TextView>
-
-        <TextView
-            style="@style/CustomMediumTextView"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/work_location"
-            android:textStyle="bold" />
+            android:layout_marginBottom="@dimen/margin"
+            android:background="@drawable/ic_pull"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Title -->
         <TextView
+            android:id="@+id/tvTitle"
+            style="@style/CustomLargeDarkTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_status_and_remarks"
+            android:textStyle="bold"
+            android:layout_marginTop="@dimen/margin"
+            app:layout_constraintTop_toBottomOf="@id/ivPull"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Work Location Label -->
+        <TextView
+            android:id="@+id/tvWorkLocationLabel"
+            style="@style/CustomMediumTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:text="@string/work_location"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Work Location Value -->
+        <TextView
+            android:id="@+id/tvWorkLocation"
             style="@style/CustomRegularDarkTextView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small_extra"
             android:text="@{locationString}"
-            tools:text="4545,5454"></TextView>
+            tools:text="Sector 45, Gurgaon"
+            app:layout_constraintTop_toBottomOf="@id/tvWorkLocationLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Remarks Label -->
         <TextView
+            android:id="@+id/tvRemarksLabel"
             style="@style/CustomMediumTextView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin"
             android:text="@string/enter_remarks"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/tvWorkLocation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Remarks Input -->
         <EditText
             android:id="@+id/remarksEditText"
             style="@style/CustomEditRegularStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
             android:gravity="top|start"
@@ -67,40 +91,61 @@
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             android:maxLines="3"
-            android:minLines="2"
-            android:scrollbars="vertical" />
+            android:minLines="1"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tvRemarksLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Status Label -->
         <TextView
-            style="@style/CustomMediumTextView"
-            android:layout_width="match_parent"
+            android:id="@+id/tvStatusLabel"
+            style="@style/CustomRegularDarkTextView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin"
             android:text="@string/select_status"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/remarksEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Status List -->
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/statusRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
             tools:itemCount="3"
             tools:listitem="@layout/item_status"
-            android:id="@+id/statusRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small" />
+            app:layout_constraintTop_toBottomOf="@id/tvStatusLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Submit Button -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_done"
             style="@style/CustomPrimaryButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/done" />
+            android:text="@string/submit"
+            app:layout_constraintTop_toBottomOf="@id/statusRecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Cancel Button -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
             style="@style/CustomRedButton"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            app:layout_constraintTop_toBottomOf="@id/btn_done"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

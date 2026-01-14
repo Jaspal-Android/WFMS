@@ -1,25 +1,26 @@
 package com.atvantiq.wfms.ui.screens.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.atvantiq.wfms.R
-import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ItemAssignedTasksBinding
-import com.atvantiq.wfms.models.work.assignedAll.Type
-import com.atvantiq.wfms.models.work.assignedAll.WorkRecord
+import com.atvantiq.wfms.models.work.workAssigned.Site
 import com.atvantiq.wfms.widgets.FooterRecyclerView
+import com.atvantiq.wfms.R
+import com.atvantiq.wfms.databinding.ItemTypeChipBinding
+
 
 class AssignedTasksListAdapter(
     var hideButtons:Boolean,
-    var onViewAssignedTask: (assignedTask: WorkRecord, position: Int) -> Unit,
-    var onAcceptTask: (assignedTask: WorkRecord, position: Int) -> Unit,
-    var onStartWork: (assignedTask: WorkRecord, position: Int) -> Unit,
-    var onEndWork: (assignedTask: WorkRecord, position: Int) -> Unit
+    var onViewAssignedTask: (assignedTask: Site, position: Int) -> Unit,
 ) : FooterRecyclerView() {
 
-    private var assignedTasks: MutableList<WorkRecord>? = mutableListOf()
+    private var assignedTasks: MutableList<Site>? = mutableListOf()
     private val VIEW_TYPE_ITEM = 1
 
     inner class AssignedTasksViewHolder(var binding: ItemAssignedTasksBinding) :
@@ -44,17 +45,17 @@ class AssignedTasksListAdapter(
         if (holder is AssignedTasksViewHolder) {
             holder.binding.hideButtons = hideButtons
             val assignedTask = assignedTasks?.get(position)
-            holder.binding.itemWorkRecord = assignedTask
+            holder.binding.siteItem = assignedTask
 
-            holder.binding.isOpenAssignment = assignedTask?.status == ValConstants.OPEN
+           // holder.binding.isOpenAssignment = assignedTask?.status == ValConstants.OPEN
 
-            holder.binding.isAcceptedAssignment = assignedTask?.status == ValConstants.ACCEPTED
+           // holder.binding.isAcceptedAssignment = assignedTask?.status == ValConstants.ACCEPTED
 
-            holder.binding.isWorkEnded = assignedTask?.status == ValConstants.WIP
+           // holder.binding.isWorkEnded = assignedTask?.status == ValConstants.WIP
 
-            getTypesWithActivities(assignedTask?.type)?.let { types ->
+           /* getTypesWithActivities(assignedTask?.type)?.let { types ->
                 holder.binding.tvTasks.text = types
-            }
+            }*/
 
             holder.binding.root.setOnClickListener {
                 assignedTask?.let { task ->
@@ -62,7 +63,7 @@ class AssignedTasksListAdapter(
                 }
             }
 
-            holder.binding.btnAccept.setOnClickListener {
+            /*holder.binding.btnAccept.setOnClickListener {
                 assignedTask?.let { task ->
                     onAcceptTask.invoke(assignedTask,position)
                 }
@@ -78,34 +79,32 @@ class AssignedTasksListAdapter(
                 assignedTask?.let { task ->
                     onEndWork.invoke(assignedTask, position)
                 }
-            }
+            }*/
 
+            holder.binding.typeFlow.removeAllViews()
+
+            assignedTask?.type?.forEach { type ->
+                val chip = LayoutInflater.from(holder.itemView.context)
+                    .inflate(R.layout.item_type_chip, holder.binding.typeFlow, false) as TextView
+
+                chip.text = type.name
+                holder.binding.typeFlow.addView(chip)
+            }
             holder.binding.executePendingBindings()
         }
     }
 
-    private fun getTypesWithActivities(type: List<Type>?): String {
-        if (type != null) {
-            return type.joinToString("\n") { t ->
-                val activities = t.activity.joinToString { it.name }
-                "${t.name} (${activities})"
-            }
-        } else {
-            return ""
-        }
-    }
-
-    fun addData(assignedTasks: List<WorkRecord>) {
+    fun addData(assignedTasks: List<Site>) {
         this.assignedTasks?.addAll(assignedTasks)
         notifyDataSetChanged()
     }
 
-    fun setUpdateStatus(position: Int, status: String) {
-        assignedTasks?.get(position)?.status = status
+    fun setUpdateStatus(position: Int, status: Int) {
+        assignedTasks?.get(position)?.status?.code = status
         notifyItemChanged(position)
     }
 
-    fun submitList(newItems: List<WorkRecord>) {
+    fun submitList(newItems: List<Site>) {
         this.assignedTasks?.clear()
         this.assignedTasks?.addAll(newItems)
         notifyDataSetChanged()

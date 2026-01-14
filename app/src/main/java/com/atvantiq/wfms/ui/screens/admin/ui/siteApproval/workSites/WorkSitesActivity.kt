@@ -1,31 +1,32 @@
-package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.sites
+package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSites
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
-import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.databinding.ActivityWorkSitesBinding
+import com.atvantiq.wfms.models.workSites.workSites.WorkSite
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.ui.screens.adapters.AttendanceListAdapter
 import com.atvantiq.wfms.ui.screens.adapters.WorkSitesAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.SiteApprovalVM
-import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSiteDetail.SiteWorkDetailActivity
+import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
 import com.ssas.jibli.data.prefs.PrefMethods
 import retrofit2.HttpException
-import javax.inject.Inject
 
 class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>() {
 
-
     private var workSiteAdapter: WorkSitesAdapter? = null
     private var employeeId: String = ""
-    private var employeeRole:String = ""
+    private var date:String = ""
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_work_sites, SiteApprovalVM::class.java)
@@ -37,21 +38,17 @@ class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        getUserDetails()
         setUpToolbarTitle()
         setUpAttendanceListAdapter()
         swipeRefresh()
         getWorkSites()
     }
-    private fun getUserDetails() {
-        var userData = PrefMethods.getUserData(prefMain)
-        employeeRole = userData?.role?:""
-    }
+
 
     private fun getWorkSites(){
         intent?.let {
             employeeId = it.getStringExtra(SharingKeys.EMPLOYEE_ID)?:""
-            val date = it.getStringExtra(SharingKeys.DATE)?:""
+            date = it.getStringExtra(SharingKeys.DATE)?:""
             viewModel.getWorkSites(employeeId,date)
         }
     }
@@ -71,45 +68,13 @@ class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>
                 Status.LOADING -> showProgress()
             }
         }
-
-        vm.approveWorkSiteResponse.observe(this) { response ->
-            when (response.status) {
-                Status.SUCCESS -> {
-                    dismissProgress()
-                    if(response.response?.code == ValConstants.SUCCESS_CODE){
-                        showToast(this, response.response?.message.toString() )
-                        getWorkSites()
-                    }else{
-                        alertDialogShow(
-                            this, getString(R.string.alert),
-                            response.response?.message ?: getString(R.string.something_went_wrong))
-                    }
-                }
-                Status.ERROR -> {
-                    dismissProgress()
-                    showToast(
-                        this,
-                        response.throwable?.message ?: getString(R.string.something_went_wrong)
-                    )
-                }
-                Status.LOADING -> showProgress()
-            }
-        }
     }
 
     private fun setUpAttendanceListAdapter() {
         if (workSiteAdapter == null) {
-            workSiteAdapter = WorkSitesAdapter(
-                this, employeeRole,
-                onSiteApprovedReject = { status, workSite ->
-                   viewModel.approveRejectWorkSite(
-                       siteWorkId = workSite.id,
-                       employeeId = employeeId.toLong(),
-                       status = status,
-                       remarks = ""
-                   )
-                }
-            )
+            workSiteAdapter = WorkSitesAdapter( onTapSite = { position, item ->
+                launchWorkSiteDetails(position,item)
+            })
             binding.rvWorkSites.adapter = workSiteAdapter
         }
     }
@@ -174,5 +139,23 @@ class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>
 
     private fun emptyDataLayout() {
         binding.isEmptyWorkSites = true
+    }
+
+    private val assignedTaskDetailLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                //val position = result.data?.getIntExtra(SharingKeys.WORK_POSITION, -1) ?: -1
+                getWorkSites()
+            }
+        }
+
+    private fun launchWorkSiteDetails(position: Int, item: WorkSite) {
+        val intent = Intent(this, SiteWorkDetailActivity::class.java).apply {
+            putExtra(SharingKeys.WORK_POSITION, position)
+            putExtra(SharingKeys.WORK_ID, item.id)
+            putExtra(SharingKeys.EMPLOYEE_ID, employeeId)
+            putExtra(SharingKeys.WORK_DATE, date)
+        }
+        assignedTaskDetailLauncher.launch(intent)
     }
 }

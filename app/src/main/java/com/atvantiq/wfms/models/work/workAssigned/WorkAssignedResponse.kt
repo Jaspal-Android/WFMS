@@ -1,13 +1,13 @@
-package com.atvantiq.wfms.models.work.endWork
+package com.atvantiq.wfms.models.work.workAssigned
 
 
 import com.google.gson.annotations.SerializedName
 
-data class EndWorkResponse(
+data class WorkAssignedResponse(
     @SerializedName("code")
     val code: Int,
     @SerializedName("data")
-    val data: EndWorkData,
+    val `data`: AssignedWorkData,
     @SerializedName("message")
     val message: String,
     @SerializedName("success")

@@ -21,7 +21,6 @@ import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteData
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.create.CreateSiteResponse
-import com.atvantiq.wfms.models.type.TypeData
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AssignTaskError

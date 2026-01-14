@@ -50,4 +50,10 @@ object UtilBindings {
         }
     }
 
+    @JvmStatic
+    @BindingAdapter("workHoursOrDefault")
+    fun setWorkHoursOrDefault(textView: TextView, workHours: String?) {
+        textView.text = if (workHours.isNullOrEmpty()) "--:--" else workHours
+    }
+
 }

@@ -23,12 +23,13 @@ object NetworkEndPoints {
 	const val attendanceDetails = "attendance/details"
 
 	/*Work Management*/
-	const val workAssignedAll = "work/all"
-	const val workAccept = "work/accept/{work_id}"
+	const val workAssignedAll = "work/site/assigned"
+	const val workAccept = "work/accept/{work_site_id}"
 	const val workStart = "work/start"
 	const val workEnd = "work/end"
 	const val workSelfAssign = "work/self-assign"
 	const val workById = "work/{work_id}"
+	const val workSiteDetails ="work/site/{work_site_id}/types"
 	const val workDetailByDate = "work/details"
 	const val attendanceEmpRemarks = "attendance/emp/remarks/{attendance_id}"
 	const val applyLeave  = "attendance/apply-leave"
@@ -49,7 +50,8 @@ object NetworkEndPoints {
 	const val siteListByProject = "site/project/{project_id}"
 	const val createSite="site/create"
 	const val workSites = "work/sites/{employee_id}"
-	const val approveWorkSite = "/work/approve"
+	const val workSiteDetailsAdmin ="/work/site/progress/{work_site_id}"
+	const val approveWorkSite = "work/approve"
 
 	/*Sites all by page and limit*/
 	const val siteListAll = "site/all"

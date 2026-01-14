@@ -261,4 +261,29 @@
     <string name="we_have_sent_otp_email">We have sent an OTP on given Email Address</string>
     <string name="invalid_otp">Invalid OTP. Please try again.</string>
     <string name="resend_otp">Resend OTP</string>
+    <string name="types">Types: </string>
+    <string name="select_all">Select All</string>
+    <string name="accept">Accept</string>
+    <string name="start_site">Start Site</string>
+    <string name="end_work">End Work</string>
+    <string name="site_information">Site Information</string>
+    <string name="enter_status_and_remarks">Enter Status and Remarks</string>
+    <string name="completed">COMPLETED</string>
+    <string name="assigned_work">Assigned Work</string>
+    <string name="site_id">Site ID: </string>
+    <string name="project_colon">Project: </string>
+    <string name="open">Open</string>
+    <string name="accepted">Accepted</string>
+    <string name="revisited">Revisited</string>
+    <string name="removed">Removed</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="approved_by">Approved By</string>
+    <string name="rejected_by">Rejected By</string>
+    <string name="work_site_approval_successful">Work site approval successful</string>
+    <string name="pm">PM</string>
+    <string name="ops">OPS</string>
+    <string name="admin">Admin</string>
+    <string name="started">Started</string>
+
 </resources>

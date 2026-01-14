@@ -5,7 +5,7 @@
 
     <data>
         <import type="android.view.View" />
-        <variable name="item" type="com.atvantiq.wfms.models.attendance.attendanceDetails.Record" />
+        <variable name="item" type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
         <variable name="checkInAddressString" type="String" />
         <variable name="checkOutAddressString" type="String" />
         <variable name="totalHoursString" type="String" />
@@ -13,6 +13,7 @@
     </data>
 
     <LinearLayout
+        android:background="@color/cardLightBackground"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,10 +28,10 @@
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <com.google.android.material.appbar.AppBarLayout
+                android:layout_marginHorizontal="@dimen/margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -41,161 +42,169 @@
                     android:fitsSystemWindows="true"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <com.google.android.material.card.MaterialCardView
+                        app:cardElevation="@dimen/elevation_small"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardBackgroundColor="@color/white"
+                        app:layout_collapseMode="parallax"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_collapseMode="parallax">
+                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/workingHoursLabel"
-                            style="@style/CustomMediumTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin"
-                            android:text="@string/working_hours"
-                            android:contentDescription="@string/working_hours"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/workingHours"
-                            style="@style/CustomLargeDarkTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small"
-                            android:text="@{item.workHours}"
-                            android:textStyle="bold"
-                            android:contentDescription="@string/working_hours"
-                            app:layout_constraintEnd_toEndOf="@+id/workingHoursLabel"
-                            app:layout_constraintStart_toStartOf="@+id/workingHoursLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/workingHoursLabel"
-                            tools:text="09:30" />
-
-                        <View
-                            android:id="@+id/divider1"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="@dimen/margin"
-                            android:background="@drawable/custom_divider"
-                            app:layout_constraintTop_toBottomOf="@+id/workingHours" />
+                            android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/checkInTimeLabel"
-                            style="@style/CustomMediumTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin"
-                            android:layout_marginTop="@dimen/margin"
-                            android:text="@string/check_in_time"
-                            android:contentDescription="@string/check_in_time"
-                            app:layout_constraintEnd_toStartOf="@+id/checkOutTimeLabel"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/divider1" />
+                            <TextView
+                                android:id="@+id/workingHoursLabel"
+                                style="@style/CustomMediumTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:text="@string/working_hours"
+                                android:contentDescription="@string/working_hours"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
-                            android:id="@+id/checkInTime"
-                            style="@style/CustomMediumDarkTextView"
-                            attendanceDateFormat="@{item.checkin.time}"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small_extra"
-                            android:contentDescription="@string/check_in_time"
-                            app:layout_constraintStart_toStartOf="@+id/checkInTimeLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/checkInTimeLabel"
-                            tools:text="20:80" />
+                            <TextView
+                                android:id="@+id/workingHours"
+                                style="@style/CustomLargeDarkTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                app:workHoursOrDefault="@{item.workHours}"
+                                android:textStyle="bold"
+                                android:contentDescription="@string/working_hours"
+                                app:layout_constraintEnd_toEndOf="@+id/workingHoursLabel"
+                                app:layout_constraintStart_toStartOf="@+id/workingHoursLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/workingHoursLabel"
+                                tools:text="09:30" />
 
-                        <TextView
-                            android:id="@+id/checkOutTimeLabel"
-                            style="@style/CustomMediumTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin"
-                            android:layout_marginEnd="@dimen/margin"
-                            android:gravity="end"
-                            android:text="@string/check_out_time"
-                            android:contentDescription="@string/check_out_time"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/checkInTimeLabel"
-                            app:layout_constraintTop_toTopOf="@+id/checkInTimeLabel" />
+                            <View
+                                android:id="@+id/divider1"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="@dimen/margin"
+                                android:background="@drawable/custom_divider"
+                                app:layout_constraintTop_toBottomOf="@+id/workingHours" />
 
-                        <TextView
-                            android:id="@+id/checkOutTime"
-                            style="@style/CustomMediumDarkTextView"
-                            attendanceDateFormat="@{item.checkout.time}"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small_extra"
-                            android:contentDescription="@string/check_out_time"
-                            app:layout_constraintEnd_toEndOf="@+id/checkOutTimeLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/checkOutTimeLabel"
-                            tools:text="04:30" />
+                            <TextView
+                                android:id="@+id/checkInTimeLabel"
+                                style="@style/CustomMediumTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:text="@string/check_in_time"
+                                android:contentDescription="@string/check_in_time"
+                                app:layout_constraintEnd_toStartOf="@+id/checkOutTimeLabel"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/divider1" />
 
-                        <TextView
-                            style="@style/CustomMediumTextView"
-                            android:id="@+id/checkInAddressLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin"
-                            android:text="@string/check_in_address"
-                            android:contentDescription="@string/check_in_address"
-                            app:layout_constraintStart_toStartOf="@+id/checkInTimeLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/checkInTime" />
+                            <TextView
+                                android:id="@+id/checkInTime"
+                                style="@style/CustomMediumDarkTextView"
+                                attendanceDateFormat="@{item.checkin.time}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:contentDescription="@string/check_in_time"
+                                app:layout_constraintStart_toStartOf="@+id/checkInTimeLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/checkInTimeLabel"
+                                tools:text="20:80" />
 
-                        <TextView
-                            android:id="@+id/checkInAddress"
-                            style="@style/CustomMediumDarkTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small_extra"
-                            android:text="@{checkInAddressString}"
-                            android:contentDescription="@string/check_in_address"
-                            app:layout_constraintEnd_toEndOf="@+id/checkInTimeLabel"
-                            app:layout_constraintStart_toStartOf="@+id/checkInAddressLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/checkInAddressLabel"
-                            tools:text="123 Main St, City, Country" />
+                            <TextView
+                                android:id="@+id/checkOutTimeLabel"
+                                style="@style/CustomMediumTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:gravity="end"
+                                android:text="@string/check_out_time"
+                                android:contentDescription="@string/check_out_time"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/checkInTimeLabel"
+                                app:layout_constraintTop_toTopOf="@+id/checkInTimeLabel" />
 
-                        <TextView
-                            style="@style/CustomMediumTextView"
-                            android:id="@+id/checkOutAddressLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin"
-                            android:text="@string/check_out_address"
-                            android:contentDescription="@string/check_out_address"
-                            app:layout_constraintEnd_toEndOf="@+id/checkOutTimeLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/checkOutTime" />
+                            <TextView
+                                android:id="@+id/checkOutTime"
+                                style="@style/CustomMediumDarkTextView"
+                                attendanceDateFormat="@{item.checkout.time}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:contentDescription="@string/check_out_time"
+                                app:layout_constraintEnd_toEndOf="@+id/checkOutTimeLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/checkOutTimeLabel"
+                                tools:text="04:30" />
 
-                        <TextView
-                            android:id="@+id/checkOutAddress"
-                            style="@style/CustomMediumDarkTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small_extra"
-                            android:gravity="end"
-                            android:text="@{checkOutAddressString}"
-                            android:contentDescription="@string/check_out_address"
-                            app:layout_constraintEnd_toEndOf="@+id/checkOutAddressLabel"
-                            app:layout_constraintStart_toStartOf="@+id/checkOutTimeLabel"
-                            app:layout_constraintTop_toBottomOf="@+id/checkOutAddressLabel"
-                            tools:text="456 Elm St, City, Country" />
+                            <TextView
+                                style="@style/CustomMediumTextView"
+                                android:id="@+id/checkInAddressLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:text="@string/check_in_address"
+                                android:contentDescription="@string/check_in_address"
+                                app:layout_constraintStart_toStartOf="@+id/checkInTimeLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/checkInTime" />
 
-                        <androidx.constraintlayout.widget.Barrier
-                            android:id="@+id/addressBarrier"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:barrierDirection="bottom"
-                            app:constraint_referenced_ids="checkInAddress" />
+                            <TextView
+                                android:id="@+id/checkInAddress"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:text="@{checkInAddressString}"
+                                android:contentDescription="@string/check_in_address"
+                                app:layout_constraintEnd_toEndOf="@+id/checkInTimeLabel"
+                                app:layout_constraintStart_toStartOf="@+id/checkInAddressLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/checkInAddressLabel"
+                                tools:text="123 Main St, City, Country" />
 
-                        <View
-                            android:id="@+id/divider2"
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="@dimen/margin"
-                            android:background="@drawable/custom_divider"
-                            app:layout_constraintTop_toBottomOf="@+id/addressBarrier" />
+                            <TextView
+                                style="@style/CustomMediumTextView"
+                                android:id="@+id/checkOutAddressLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:text="@string/check_out_address"
+                                android:contentDescription="@string/check_out_address"
+                                app:layout_constraintEnd_toEndOf="@+id/checkOutTimeLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/checkOutTime" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/checkOutAddress"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:gravity="end"
+                                android:text="@{checkOutAddressString}"
+                                android:contentDescription="@string/check_out_address"
+                                app:layout_constraintEnd_toEndOf="@+id/checkOutAddressLabel"
+                                app:layout_constraintStart_toStartOf="@+id/checkOutTimeLabel"
+                                app:layout_constraintTop_toBottomOf="@+id/checkOutAddressLabel"
+                                tools:text="456 Elm St, City, Country" />
+
+                            <androidx.constraintlayout.widget.Barrier
+                                android:id="@+id/addressBarrier"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:barrierDirection="bottom"
+                                app:constraint_referenced_ids="checkInAddress" />
+
+                            <View
+                                android:id="@+id/divider2"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="@dimen/margin"
+                                android:background="@drawable/custom_divider"
+                                app:layout_constraintTop_toBottomOf="@+id/addressBarrier" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                 </com.google.android.material.appbar.CollapsingToolbarLayout>
             </com.google.android.material.appbar.AppBarLayout>
@@ -229,6 +238,7 @@
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <androidx.recyclerview.widget.RecyclerView
+                            android:padding="@dimen/padding"
                             android:id="@+id/workList"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"

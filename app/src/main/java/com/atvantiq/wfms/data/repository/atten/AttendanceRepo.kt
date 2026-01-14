@@ -5,9 +5,11 @@ import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
-import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
+import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiService
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefKeys
 import okhttp3.MultipartBody
@@ -52,9 +54,17 @@ class AttendanceRepo @Inject constructor(
             date
         )
 
+    override suspend fun workSiteDetailsAdmin(workSiteId: Long, employeeId: String, date: String): WorkSiteDetailResponse =
+        apiService.workSiteDetailsAdmin(
+            "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
+            workSiteId,
+            employeeId,
+            date
+        )
+
     override suspend fun approveWorkSite(
-        params: JsonObject
-    ): ApproveWorkSiteResponse = apiService.approveWorkSite(
+        params: JsonArray
+    ): ApproveWorkSiteTypeResponse = apiService.approveWorkSite(
         "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
         params
     )
