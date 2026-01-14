@@ -153,8 +153,8 @@ class AttendanceStatusFragment :
         if (!records.isNullOrEmpty()) {
             val attendanceDays = records.map { detail ->
                 AttendanceDay(
-                    date = DateUtils.formatApiDateToYMD(detail.checkin.time).toString(),
-                    status = mapStatus(detail.status),
+                    date = DateUtils.formatApiDateToYMD(detail.checkin?.time).toString(),
+                    status = mapStatus(detail.status?.code ?: -1),
                     record = detail
                 )
             }

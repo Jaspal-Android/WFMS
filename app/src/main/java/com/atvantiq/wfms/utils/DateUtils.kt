@@ -252,7 +252,6 @@ object DateUtils {
             null
         }
     }
-
     // create method to Nov 1, 2025
     fun formatApiDateToMonthDayYear(apiDate: String?): String? {
         return try {
@@ -265,6 +264,28 @@ object DateUtils {
             outputFormat.format(parsedDate)
         } catch (e: Exception) {
             null
+        }
+    }
+
+    fun isStartDateBeforeEndDate(startDate:String,endDate:String): Boolean {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return try {
+            val startDate = format.parse(startDate)
+            val endDate = format.parse(endDate)
+            startDate != null && endDate != null && !startDate.after(endDate)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun isEndDateAfterStartDate(startDate:String,endDate:String): Boolean {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return try {
+            val startDate = format.parse(startDate)
+            val endDate = format.parse(endDate)
+            startDate != null && endDate != null && !endDate.before(startDate)
+        } catch (e: Exception) {
+            false
         }
     }
 }

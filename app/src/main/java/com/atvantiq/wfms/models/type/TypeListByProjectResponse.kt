@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 data class TypeListByProjectResponse(
     @SerializedName("code")
-    val code: Int,
+    val code: Int?,
     @SerializedName("data")
-    val `data`: List<TypeData>,
+    val `data`: List<TypeData>?,
     @SerializedName("message")
-    val message: String,
+    val message: String?,
     @SerializedName("success")
-    val success: Boolean
+    val success: Boolean?
 )

@@ -1,19 +1,25 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityAttendanceDetailBinding
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Record
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
+import com.atvantiq.wfms.models.work.workAssigned.Site
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
@@ -26,12 +32,16 @@ import retrofit2.HttpException
 
 
 @AndroidEntryPoint
-class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, AttendanceViewModel>() {
+class AttendanceDetailActivity :
+    BaseActivity<ActivityAttendanceDetailBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
 
     override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(R.layout.activity_attendance_detail, AttendanceViewModel::class.java)
+        get() = ActivityBinding(
+            R.layout.activity_attendance_detail,
+            AttendanceViewModel::class.java
+        )
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -46,16 +56,16 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
     }
 
     private fun fetchAttendanceDetailFromBundle() {
-        val record: Record? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(SharingKeys.attendanceRecord, Record::class.java)
+        val record: AttendanceRecord? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(SharingKeys.attendanceRecord, AttendanceRecord::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra(SharingKeys.attendanceRecord) as? Record
+            intent.getParcelableExtra(SharingKeys.attendanceRecord) as? AttendanceRecord
         }
         setupUI(record)
     }
 
-    private fun setupUI(record: Record?) {
+    private fun setupUI(record: AttendanceRecord?) {
         binding.item = record
 
         record?.checkin?.let { checkin ->
@@ -95,21 +105,17 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
         adapter = AssignedTasksListAdapter(
             true,
             onViewAssignedTask = { assignedTask, position ->
-                Utils.jumpActivityWithData(
-                    this,
-                    AssignedTaskDetailActivity::class.java,
-                    Bundle().apply {
-                        putInt(SharingKeys.WORK_POSITION, position)
-                        putLong(SharingKeys.WORK_ID, assignedTask.id)
-                    }
-                )
+                launchAssignedTaskDetail(position, assignedTask)
             },
-            onAcceptTask = { _, _ -> /* Handle accept task click if needed */ },
-            onStartWork = { _, _ -> /* Handle start work click if needed */ },
-            onEndWork = { _, _ -> /* Handle end work click if needed */ }
+            /*onAcceptTask = { _, _ -> *//* Handle accept task click if needed */
+            /* },
+                        onStartWork = { _, _ -> */
+            /* Handle start work click if needed */
+            /* },
+                        onEndWork = { _, _ -> */
+            /* Handle end work click if needed *//* }*/
         )
         binding.workList.apply {
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
             adapter = this@AttendanceDetailActivity.adapter
         }
     }
@@ -130,10 +136,12 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
                                 adapter?.submitList(resp.data)
                             }
                         }
+
                         401 -> {
                             tokenExpiresAlert()
                             binding.isNoDataAvailable = true
                         }
+
                         else -> {
                             binding.isNoDataAvailable = true
                             alertDialogShow(
@@ -144,6 +152,7 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
                         }
                     }
                 }
+
                 Status.ERROR -> {
                     dismissProgress()
                     binding.isNoDataAvailable = true
@@ -154,8 +163,32 @@ class AttendanceDetailActivity : BaseActivity<ActivityAttendanceDetailBinding, A
                         response.throwable?.message ?: getString(R.string.something_went_wrong)
                     )
                 }
+
                 Status.LOADING -> showProgress()
             }
         }
+    }
+
+    private val assignedTaskDetailLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val position = result.data?.getIntExtra(SharingKeys.WORK_POSITION, -1) ?: -1
+                val updatedStatus = result.data?.getIntExtra(SharingKeys.UPDATED_STATUS, -1) ?: -1
+                if (position != -1 && updatedStatus != null) {
+                    adapter?.setUpdateStatus(position, updatedStatus)
+                }
+            }
+
+            if (result.resultCode == ValConstants.RESULT_MARK_ATTENDANCE) {
+                finish()
+            }
+        }
+
+    private fun launchAssignedTaskDetail(position: Int, assignedTask: Site) {
+        val intent = Intent(this, AssignedTaskDetailActivity::class.java).apply {
+            putExtra(SharingKeys.WORK_POSITION, position)
+            putExtra(SharingKeys.WORK_ID, assignedTask.workSiteId)
+        }
+        assignedTaskDetailLauncher.launch(intent)
     }
 }

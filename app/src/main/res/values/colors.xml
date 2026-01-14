@@ -9,7 +9,8 @@
     <color name="darker_gray">#7A7A7A</color>
     <color name="colorPrimary">#0AC3F2</color>
     <color name="colorPrimaryDark">#2B5DE6</color>
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorPrimaryDarkLight">#89A4EF</color>
+    <color name="colorAccent">#000000</color>
     <color name="green">#059669</color>
     <color name="cardLightBackground">#EEF2F6</color>
     <color name="cardLightStroke">#D8E0EB</color>

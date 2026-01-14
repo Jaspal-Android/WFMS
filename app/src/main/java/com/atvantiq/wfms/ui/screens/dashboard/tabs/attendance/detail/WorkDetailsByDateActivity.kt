@@ -2,7 +2,6 @@ package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
@@ -47,7 +46,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
     }
 
     private fun fetchWorkDetailsByDate() {
-        val date = intent.getStringExtra(SharingKeys.workDate) ?: return
+        val date = intent.getStringExtra(SharingKeys.WORK_DATE) ?: return
         viewModel.workDetailsByDate(date)
     }
 
@@ -63,7 +62,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                     }
                 )
             },
-            onAcceptTask = { assignedTask, position ->
+           /* onAcceptTask = { assignedTask, position ->
                 // Handle accept task click
             },
             onStartWork = { assignedTask, position ->
@@ -71,7 +70,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
             },
             onEndWork = { assignedTask, position ->
                 // Handle end work click
-            }
+            }*/
         )
         binding.workList.adapter = adapter
     }
@@ -90,7 +89,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                             )
                         } else {
                             binding.isNoDataAvailable = false
-                            adapter?.submitList(response.response.data)
+                            //adapter?.submitList(response.response.data)
                         }
                     } else if (response.response?.code == 401) {
                         tokenExpiresAlert()

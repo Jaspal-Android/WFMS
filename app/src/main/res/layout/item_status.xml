@@ -8,6 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingEnd="@dimen/padding"
+        android:paddingVertical="@dimen/padding_x_small"
         android:orientation="horizontal">
 
         <CheckBox
@@ -16,13 +18,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:paddingStart="@dimen/padding_medium"
-            android:paddingEnd="@dimen/padding_small"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false" />
 
         <TextView
+            android:textAllCaps="true"
             android:id="@+id/statusName"
             style="@style/CustomMediumDarkTextView"
             android:layout_width="match_parent"

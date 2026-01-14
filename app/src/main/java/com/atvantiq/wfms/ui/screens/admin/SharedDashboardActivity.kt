@@ -129,6 +129,8 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
                     getCurrentLatitudeLongitudePermissions()
                 }
+
+                DashboardClickEvents.APPLY_LEAVE_CLICK -> TODO()
             }
         }
 

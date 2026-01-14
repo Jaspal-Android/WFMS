@@ -3,34 +3,27 @@ package com.atvantiq.wfms.ui.screens.attendance
 import android.app.Application
 import android.content.Intent
 import android.os.Build
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
-import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
-import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
-import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
-import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
+import com.atvantiq.wfms.models.work.workDetail.Type
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
-import com.atvantiq.wfms.utils.NoInternetException
-import com.atvantiq.wfms.utils.Utils
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import javax.inject.Inject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody // Import for toRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import javax.inject.Inject
 
 
 @HiltViewModel
@@ -48,12 +41,12 @@ class AttendanceViewModel @Inject constructor(
     val isTracking: LiveData<Boolean> get() = _isTracking
 
     // Common LiveData for API responses
-    val workAssignedAllResponse = MutableLiveData<ApiState<WorkAssignedAllResponse>>()
+    val workAssignedAllResponse = MutableLiveData<ApiState<WorkAssignedResponse>>()
     val workByIdResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
     val workDetailsByDateResponse = MutableLiveData<ApiState<WorkDetailsByDateResponse>>()
-    val workAcceptResponse = MutableLiveData<ApiState<AcceptWorkResponse>>()
-    val workStartResponse = MutableLiveData<ApiState<StartWorkResponse>>()
-    val workEndResponse = MutableLiveData<ApiState<EndWorkResponse>>()
+    val workAcceptResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
+    val workStartResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
+    val workEndResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
     val attendanceCheckInStatusResponse = MutableLiveData<ApiState<CheckInStatusResponse>>()
 
     // Click event handlers
@@ -112,10 +105,10 @@ class AttendanceViewModel @Inject constructor(
         )
     }
 
-    fun workAccept(workId: Long, position: Int) {
+    fun workAccept(workSiteId: Long, position: Int) {
         itemPosition.postValue(position)
         executeApiCall(
-            apiCall = { workRepo.workAccept(workId) },
+            apiCall = { workRepo.workAccept(workSiteId) },
             liveData = workAcceptResponse,
             onSuccess = { response ->
                 if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(-1)
@@ -144,15 +137,22 @@ class AttendanceViewModel @Inject constructor(
         )
     }
 
-    fun workEnd(workId: Long, latitude: Double, longitude: Double, status: Int, remarks: String, position: Int) {
+    fun workEnd(workSiteId: Long, latitude: Double, longitude: Double, types: List<Type>,statusId:Int,remarks:String,position: Int) {
         val params = JsonObject().apply {
-            addProperty("work_id", workId)
+            addProperty("work_site_id", workSiteId)
             addProperty("latitude", latitude)
             addProperty("longitude", longitude)
-            addProperty("status", status)
-            if (remarks.isNotEmpty()) addProperty("remarks", remarks)
+            val typesArray = JsonArray()
+            types.forEach { type ->
+                val typeObject = JsonObject().apply {
+                    addProperty("type_id", type.id)
+                    addProperty("status", statusId)
+                    addProperty("remarks",remarks)
+                }
+                typesArray.add(typeObject)
+            }
+            add("types", typesArray)
         }
-
         itemPosition.postValue(position)
         executeApiCall(
             apiCall = { workRepo.workEnd(params) },
