@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools">
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/padding"
-    android:focusableInTouchMode="true"
-    android:descendantFocusability="beforeDescendants"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants"
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
         <TextView
             style="@style/CustomLargeDarkTextView"
             android:id="@+id/otp_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please enter OTP"
+            android:text="@string/please_enter_otp"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/margin_big" />
 
@@ -21,7 +21,7 @@
             style="@style/CustomMediumTextView"
             android:layout_marginBottom="@dimen/margin"
             android:layout_gravity="center"
-            android:text="We have sent an OTP on given Email Address"
+            android:text="@string/we_have_sent_otp_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -33,51 +33,100 @@
             android:layout_marginBottom="@dimen/margin_large">
 
             <EditText
+                android:imeOptions="actionNext"
                 style="@style/EditOTPStyle"
                 tools:text="1"
                 android:id="@+id/otp_box_1"
                 android:background="@drawable/otp_box_background"
                 android:gravity="center"
                 android:inputType="numberPassword"
-                android:maxLength="1" />
+                android:maxLength="1"
+                android:digits="0123456789" />
 
             <Space
-                android:layout_width="@dimen/margin_small"
+                android:layout_width="@dimen/margin_small_extra"
                 android:layout_height="0dp" />
 
             <EditText
+                android:imeOptions="actionNext"
                 style="@style/EditOTPStyle"
                 android:id="@+id/otp_box_2"
                 android:background="@drawable/otp_box_background"
                 android:gravity="center"
                 android:inputType="numberPassword"
-                android:maxLength="1" />
+                android:maxLength="1"
+                android:digits="0123456789" />
 
             <Space
-                android:layout_width="@dimen/margin_small"
+                android:layout_width="@dimen/margin_small_extra"
                 android:layout_height="0dp" />
 
             <EditText
+                android:imeOptions="actionNext"
                 style="@style/EditOTPStyle"
                 android:id="@+id/otp_box_3"
                 android:background="@drawable/otp_box_background"
                 android:gravity="center"
                 android:inputType="numberPassword"
-                android:maxLength="1" />
+                android:maxLength="1"
+                android:digits="0123456789" />
 
             <Space
-                android:layout_width="@dimen/margin_small"
+                android:layout_width="@dimen/margin_small_extra"
                 android:layout_height="0dp" />
 
             <EditText
+                android:imeOptions="actionNext"
                 style="@style/EditOTPStyle"
                 android:id="@+id/otp_box_4"
                 android:background="@drawable/otp_box_background"
                 android:gravity="center"
                 android:inputType="numberPassword"
                 android:maxLength="1"
-                 />
+                android:digits="0123456789" />
+
+            <Space
+                android:layout_width="@dimen/margin_small_extra"
+                android:layout_height="0dp" />
+
+            <EditText
+                android:imeOptions="actionNext"
+                style="@style/EditOTPStyle"
+                android:id="@+id/otp_box_5"
+                android:background="@drawable/otp_box_background"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:digits="0123456789" />
+
+            <Space
+                android:layout_width="@dimen/margin_small_extra"
+                android:layout_height="0dp" />
+
+            <EditText
+                style="@style/EditOTPStyle"
+                android:id="@+id/otp_box_6"
+                android:background="@drawable/otp_box_background"
+                android:gravity="center"
+                android:inputType="numberPassword"
+                android:maxLength="1"
+                android:imeOptions="actionDone"
+                android:digits="0123456789" />
         </LinearLayout>
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/resend_otp_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/resend_otp"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center"
+            android:paddingTop="@dimen/margin"
+            android:clickable="true"
+            android:focusable="true"
+            tools:visibility="visible"
+            />
 
         <androidx.appcompat.widget.AppCompatButton
             style="@style/CustomPrimaryButton"
@@ -88,8 +137,8 @@
             android:id="@+id/btn_submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
+            android:text="@string/submit"
             android:layout_marginTop="@dimen/margin"
-             />
+            />
     </LinearLayout>
 </layout>

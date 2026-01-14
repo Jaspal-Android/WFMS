@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.network
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -10,6 +11,7 @@ import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
@@ -17,15 +19,14 @@ import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
 import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
-import com.atvantiq.wfms.models.work.acceptWork.AcceptWorkResponse
-import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
-import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
-import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
-import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteResponse
+import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
+import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -62,29 +63,29 @@ interface ApiService {
 	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int): AttendanceDetailListResponse
 
 	@GET(NetworkEndPoints.workAssignedAll)
-	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedAllResponse
+	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedResponse
 
-	@GET(NetworkEndPoints.workById)
-	suspend fun workById(@Header("Authorization") token: String, @Path("work_id") workId:Long): WorkDetailResponse
+	@GET(NetworkEndPoints.workSiteDetails)
+	suspend fun workById(@Header("Authorization") token: String, @Path("work_site_id") workSiteId:Long): WorkDetailResponse
 
 	@GET(NetworkEndPoints.workDetailByDate)
 	suspend fun workDetailByDate(@Header("Authorization") token: String, @Query("date") date: String): WorkDetailsByDateResponse
 
 	@PUT(NetworkEndPoints.workAccept)
-	suspend fun workAccept(@Header("Authorization") token: String,@Path("work_id") workId:Long): AcceptWorkResponse
+	suspend fun workAccept(@Header("Authorization") token: String,@Path("work_site_id") workSiteId:Long): WorkDetailResponse
 
 	@Multipart
 	@POST(NetworkEndPoints.workStart)
 	suspend fun workStart(
 		@Header("Authorization") token: String,
-		@Part("work_id") workId: RequestBody,
+		@Part("work_site_id") workSiteId: RequestBody,
 		@Part("latitude") latitude: RequestBody,
 		@Part("longitude") longitude: RequestBody,
 		@Part photo: MultipartBody.Part
-	): StartWorkResponse
+	): WorkDetailResponse
 
 	@POST(NetworkEndPoints.workEnd)
-	suspend fun workEnd(@Header("Authorization") token: String, @Body params: JsonObject): EndWorkResponse
+	suspend fun workEnd(@Header("Authorization") token: String, @Body params: JsonObject): WorkDetailResponse
 
 	@POST(NetworkEndPoints.workSelfAssign)
 	suspend fun workSelfAssign(@Header("Authorization") token: String, @Body params: JsonObject): SelfAssignResponse
@@ -129,12 +130,32 @@ interface ApiService {
 	@GET(NetworkEndPoints.workSites)
 	suspend fun workSites(@Header("Authorization") token: String, @Path("employee_id") employeeId: String, @Query("date") date: String): WorkSitesResponse
 
+	@GET(NetworkEndPoints.workSiteDetailsAdmin)
+	suspend fun workSiteDetailsAdmin(@Header("Authorization") token: String, @Path("work_site_id") workSiteId: Long, @Query("employee_id") employeeId: String, @Query("date") date: String): WorkSiteDetailResponse
+
 	@POST(NetworkEndPoints.approveWorkSite)
-	suspend fun approveWorkSite(@Header("Authorization") token: String, @Body params: JsonObject): ApproveWorkSiteResponse
+	suspend fun approveWorkSite(@Header("Authorization") token: String, @Body params: JsonArray): ApproveWorkSiteTypeResponse
 
 	@POST(NetworkEndPoints.attendanceEmpRemarks)
 	suspend fun attendanceEmpRemarks(@Header("Authorization") token: String, @Path("attendance_id") attendanceId: Long,@Body params: JsonObject) : AttendanceRemarksResponse
 
 	@POST(NetworkEndPoints.forgotPassword)
 	suspend fun forgotPassword(@Header("Authorization") token: String, @Body params: JsonObject): ForgotPasswordResponse
+
+	@Multipart
+	@POST(NetworkEndPoints.applyLeave)
+	suspend fun applyLeave(
+		@Header("Authorization") token: String,
+		@Part("leave_type") leaveType: RequestBody,
+		@Part("from_date") fromDate: RequestBody,
+		@Part("to_date") toDate: RequestBody,
+		@Part("reason") reason: RequestBody,
+		@Part attachment: MultipartBody.Part?
+	): ApplyLeaveResponse
+
+	@POST(NetworkEndPoints.requestOTP)
+	suspend fun requestOTP(@Body params: JsonObject): RequestOtpResponse
+
+	@POST(NetworkEndPoints.verifyOTP)
+	suspend fun verifyOTP(@Body params: JsonObject): LoginResponse
 }

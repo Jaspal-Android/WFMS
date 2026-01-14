@@ -5,9 +5,13 @@ import com.google.gson.annotations.SerializedName
 
 data class Site(
     @SerializedName("id")
-    val id: Long,
+    val id: Long?,
+    @SerializedName("latitude")
+    val latitude: Any?,
+    @SerializedName("longitude")
+    val longitude: Any?,
     @SerializedName("name")
-    val name: String,
+    val name: String?,
     @SerializedName("site_id")
-    val siteId: String
+    val siteId: String?
 )

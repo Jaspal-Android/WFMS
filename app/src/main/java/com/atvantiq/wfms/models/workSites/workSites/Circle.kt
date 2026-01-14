@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Circle(
     @SerializedName("id")
-    val id: Long,
+    val id: Long?,
     @SerializedName("name")
-    val name: String
+    val name: String?
 )

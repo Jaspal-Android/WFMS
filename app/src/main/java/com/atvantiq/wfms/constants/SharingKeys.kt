@@ -3,10 +3,11 @@ package com.atvantiq.wfms.constants
 object SharingKeys {
     const val EMPLOYEE_ID = "EMPLOYEE_ID"
     const val DATE = "DATE"
-    const val workDate = "workDate"
+    const val WORK_DATE = "workDate"
     const val attendanceRecord = "attendanceRecord"
     const val WORK_POSITION = "WORK_POSITION"
     const val WORK_ID = "WORK_ID"
     const val REFRESH_ASSIGN_TASK = "2001"
     const val ROLE_PERMISSIONS = "ROLE_PERMISSIONS"
+    const val UPDATED_STATUS = "UPDATED_STATUS"
 }

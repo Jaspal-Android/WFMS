@@ -8,9 +8,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Employee(
     @SerializedName("code")
-    val code: String,
+    val code: String?,
     @SerializedName("id")
-    val id: Long,
+    val id: Long?,
     @SerializedName("name")
-    val name: String
+    val name: String?
 ):Parcelable

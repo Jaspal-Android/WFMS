@@ -21,10 +21,12 @@ import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteData
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.type.TypeData
+import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -55,7 +57,7 @@ class AddSignInVM @Inject constructor(
     var types: List<TypeData> = ArrayList()
     var activities: List<ActivityData> = ArrayList()
 
-    var selectedTypeIdList: ArrayList<Long>? = ArrayList()
+    var selectedTypeIdList: ArrayList<TypeData>? = ArrayList()
     var selectedActivityIdList: ArrayList<Long>? = ArrayList()
 
     val isClientLoading = ObservableField<Boolean>().apply { set(false) }
@@ -67,7 +69,6 @@ class AddSignInVM @Inject constructor(
     val isActivityLoading = ObservableField<Boolean>().apply { set(false) }
 
     // Click event handlers
-    fun onCameraClick() = postClickEvent(AddSignInClickEvents.ON_CAMERA_CLICK)
     fun onSaveClick() = getWorkAssigned()
     fun onCancelClick() = postClickEvent(AddSignInClickEvents.ON_CANCEL_CLICK)
 
@@ -81,7 +82,7 @@ class AddSignInVM @Inject constructor(
     var poNumberListByProjectResponse = MutableLiveData<ApiState<PoListByProjectResponse>>()
     var circleListByProjectResponse = MutableLiveData<ApiState<CircleListByProjectResponse>>()
     var siteListByProjectResponse = MutableLiveData<ApiState<SiteListByProjectResponse>>()
-    var typeListByProjectResponse = MutableLiveData<ApiState<com.atvantiq.wfms.models.type.TypeListByProjectResponse>>()
+    var typeListByProjectResponse = MutableLiveData<ApiState<TypeListByProjectResponse>>()
     var activityListByProjectTypeResponse = MutableLiveData<ApiState<com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse>>()
     var workAssignedResponse = MutableLiveData<ApiState<SelfAssignResponse>>()
 
@@ -183,10 +184,6 @@ class AddSignInVM @Inject constructor(
                 errorHandler.value = AssignTaskError.ON_TYPE_ERROR
                 false
             }
-            selectedActivityIdList.isNullOrEmpty() -> {
-                errorHandler.value = AssignTaskError.ON_ACTIVITY_ERROR
-                false
-            }
             else -> true
         }
     }
@@ -200,24 +197,24 @@ class AddSignInVM @Inject constructor(
             addProperty("client_id", selectedClient?.id)
             addProperty("project_id", selectedProjectId)
             addProperty("circle_id", selectedCircleId)
+
             // Site array
-            val siteArray = com.google.gson.JsonArray()
+            val siteArray = JsonArray()
             val siteObj = JsonObject()
             siteObj.addProperty("id", selectedSiteId)
             siteArray.add(siteObj)
             add("site", siteArray)
 
             // Type array
-            val typeArray = com.google.gson.JsonArray()
+            val typeArray = JsonArray()
             for (type in selectedTypeIdList ?: emptyList()) {
                 val typeObj = JsonObject()
-                typeObj.addProperty("id", type)
-
-                // Dynamic activity array inside type
-                val activityArray = com.google.gson.JsonArray()
-                for (activity in selectedActivityIdList ?: emptyList()) {
+                typeObj.addProperty("id", type?.id)
+                // Activity array inside type
+                val activityArray = JsonArray()
+                for (activity in type.activities ?: emptyList()) {
                     val activityObj = JsonObject()
-                    activityObj.addProperty("id", activity)
+                    activityObj.addProperty("id", activity?.id)
                     activityArray.add(activityObj)
                 }
                 typeObj.add("activity", activityArray)
