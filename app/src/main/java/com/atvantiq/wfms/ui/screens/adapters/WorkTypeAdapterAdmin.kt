@@ -3,12 +3,14 @@ package com.atvantiq.wfms.ui.screens.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ItemWorkTypeAdminBinding
 import com.atvantiq.wfms.databinding.ItemWorkTypeBinding
 import com.atvantiq.wfms.models.work.workDetail.Type
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
+import com.atvantiq.wfms.utils.DateUtils
 
 class WorkTypeAdapterAdmin(
     private var employeeRole:String,
@@ -35,7 +37,11 @@ class WorkTypeAdapterAdmin(
             var workType = workTypes[position]
             tvTypeName.text = workTypes[position].name
             typeStatusInteger = workTypes[position].status?.code
-            assignedDate = workTypes[position].workStartedAt
+            assignedDate = tvTypeId.context.getString(R.string.started)+": "+ DateUtils.formatApiDateToMonthDayYear(workTypes[position].workStartedAt)
+            pmStatus = workTypes[position].pm?.status ?: -1
+            opsStatus = workTypes[position].ops?.status ?: -1
+            adminStatus = workTypes[position].admin?.status ?: -1
+
             cbWorkType.setOnCheckedChangeListener(null)
             cbWorkType.isChecked = selectedStates[position]
             cbWorkType.setOnCheckedChangeListener { _, isChecked ->

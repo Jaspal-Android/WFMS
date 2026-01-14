@@ -83,7 +83,7 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
             workSiteId ?: -1,
             employeeId.toLongOrNull() ?: -1, // Type ID can be set as needed
             status,
-            "Approved by admin",
+            if(status ==1){getString(R.string.approved_by)+" "+employeeRole}else{getString(R.string.rejected_by)+" "+employeeRole},
             itemTypeAdapter?.getSelectedTypes()
         )
     }

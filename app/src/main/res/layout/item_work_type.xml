@@ -41,7 +41,7 @@
                 style="@style/CustomRegularDarkTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Vivo"
+                tools:text="Vivo"
                 android:textStyle="bold"
                 android:layout_marginEnd="@dimen/margin_small"
                 app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"

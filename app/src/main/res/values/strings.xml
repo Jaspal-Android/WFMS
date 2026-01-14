@@ -278,6 +278,12 @@
     <string name="removed">Removed</string>
     <string name="approve">Approve</string>
     <string name="reject">Reject</string>
+    <string name="approved_by">Approved By</string>
+    <string name="rejected_by">Rejected By</string>
     <string name="work_site_approval_successful">Work site approval successful</string>
+    <string name="pm">PM</string>
+    <string name="ops">OPS</string>
+    <string name="admin">Admin</string>
+    <string name="started">Started</string>
 
 </resources>

@@ -2,6 +2,7 @@ package com.atvantiq.wfms.data.repository.atten
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject

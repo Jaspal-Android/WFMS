@@ -4,6 +4,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.databinding.BindingAdapter
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.constants.ApprovalStatusCodes
 import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
@@ -138,6 +139,29 @@ object UtilStatusBindings {
                 textView.text  = textView.context.getString(R.string.not_available)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
                 textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter(value = ["workApprovalStatus"])
+    fun workApprovalStatus(textView: TextView, status: Int?) {
+        when (status) {
+            ApprovalStatusCodes.OPEN -> { // OPEN
+                textView.text = textView.context.getString(R.string.pending)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+            }
+            ApprovalStatusCodes.ACCEPTED -> { // ACCEPTED
+                textView.text = textView.context.getString(R.string.accepted)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.green))
+            }
+            ApprovalStatusCodes.REJECTED -> { // REJECTED
+                textView.text = textView.context.getString(R.string.rejected)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+            }
+            else -> {
+                textView.text  = textView.context.getString(R.string.not_available)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
             }
         }
     }

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
 
         <variable
             name="typeStatusInteger"
@@ -17,6 +18,18 @@
         <variable
             name="showSelectableOption"
             type="Boolean" />
+
+        <variable
+            name="pmStatus"
+            type="Integer" />
+
+        <variable
+            name="opsStatus"
+            type="Integer" />
+
+        <variable
+            name="adminStatus"
+            type="Integer" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -36,14 +49,14 @@
 
             <!-- Work Type Name -->
             <TextView
-                android:layout_marginStart="@dimen/margin"
                 android:id="@+id/tvTypeName"
                 style="@style/CustomRegularDarkTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:text="Vivo"
                 android:textStyle="bold"
-                android:layout_marginEnd="@dimen/margin_small"
                 app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"
                 app:layout_constraintStart_toEndOf="@id/cbWorkType"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -52,11 +65,11 @@
 
             <!-- Status -->
             <com.google.android.material.checkbox.MaterialCheckBox
-                style="@style/CustomCheckBox"
-                android:layout_marginStart="@dimen/margin_small"
                 android:id="@+id/cbWorkType"
+                style="@style/CustomCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
                 android:visibility='@{showSelectableOption ? View.VISIBLE : View.GONE}'
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -78,16 +91,116 @@
 
             <!-- Work Type ID -->
             <TextView
-                formatApiDateToMonthDayYear="@{assignedDate}"
+                android:drawableTint="@color/darkGray"
+                android:drawablePadding="@dimen/margin_small"
+                android:drawableStart="@drawable/ic_clock_16"
                 android:id="@+id/tvTypeId"
                 style="@style/CustomMediumTextView"
+                android:text="@{assignedDate}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small_extra"
-                tools:text="12-12-2026"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tvTypeName"
-                app:layout_constraintTop_toBottomOf="@id/tvTypeName" />
+                app:layout_constraintTop_toBottomOf="@id/tvTypeName"
+                tools:text="12-12-2026" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_small"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTypeId">
+
+                <!-- PM Approval -->
+                <LinearLayout
+                    android:id="@+id/llPmApproval"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_approval_pending"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/padding_x_small">
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pm"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        workApprovalStatus="@{pmStatus}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Approved"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- OPS Approval -->
+                <LinearLayout
+                    android:id="@+id/llOpsApproval"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_approval_pending"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/padding_x_small">
+
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ops"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        workApprovalStatus="@{opsStatus}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pending"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Admin Approval -->
+                <LinearLayout
+                    android:id="@+id/llAdminApproval"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_approval_pending"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="@dimen/padding_x_small">
+
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/admin"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        workApprovalStatus="@{adminStatus}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pending"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

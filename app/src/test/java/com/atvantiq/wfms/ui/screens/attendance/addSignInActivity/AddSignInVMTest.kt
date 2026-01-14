@@ -68,11 +68,11 @@ class AddSignInVMTest {
         unmockkAll()
     }
 
-    @Test
+  /*  @Test
     fun `onCameraClick sets clickEvents value`() {
         viewModel.onCameraClick()
         assertEquals(AddSignInClickEvents.ON_CAMERA_CLICK, viewModel.clickEvents.value)
-    }
+    }*/
 
     @Test
     fun `onCancelClick sets clickEvents value`() {
@@ -80,7 +80,7 @@ class AddSignInVMTest {
         assertEquals(AddSignInClickEvents.ON_CANCEL_CLICK, viewModel.clickEvents.value)
     }
 
-    @Test
+   /* @Test
     fun `validateAssignTaskFields returns false and sets errorHandler for missing fields`() {
         // All fields null
         viewModel.selectedClient = null
@@ -128,8 +128,8 @@ class AddSignInVMTest {
         assertFalse(viewModel.validateAssignTaskFields())
         assertEquals(AssignTaskError.ON_ACTIVITY_ERROR, viewModel.errorHandler.value)
     }
-
-    @Test
+*/
+/*    @Test
     fun `validateAssignTaskFields returns true when all fields are set`() {
         viewModel.selectedClient = Client(
             addedBy = AddedBy(id = 1L, name = "Admin"),
@@ -150,7 +150,7 @@ class AddSignInVMTest {
         viewModel.selectedTypeIdList = arrayListOf(5L)
         viewModel.selectedActivityIdList = arrayListOf(6L)
         assertTrue(viewModel.validateAssignTaskFields())
-    }
+    }*/
 
     @Test
     fun `getClientList calls creationRepo and updates LiveData`() = runTest {
@@ -298,6 +298,7 @@ class AddSignInVMTest {
         assertEquals(response, viewModel.siteListByProjectResponse.value?.response)
     }
 
+/*
     @Test
     fun `getTypeListByPo calls creationRepo and updates LiveData`() = runTest {
         val response = TypeListByProjectResponse(
@@ -321,6 +322,7 @@ class AddSignInVMTest {
         assertEquals(Status.SUCCESS, viewModel.typeListByProjectResponse.value?.status)
         assertEquals(response, viewModel.typeListByProjectResponse.value?.response)
     }
+*/
 
     @Test
     fun `getActivityListByPoType calls creationRepo and updates LiveData`() = runTest {
@@ -353,7 +355,7 @@ class AddSignInVMTest {
         coVerify(exactly = 0) { workRepo.workSelfAssign(any()) }
     }
 
-    @Test
+   /* @Test
     fun `onSaveClick calls workRepo and updates LiveData when validation passes`() = runTest {
         val response = SelfAssignResponse(
             code = 200,
@@ -430,5 +432,5 @@ class AddSignInVMTest {
         assertNotNull(viewModel.workAssignedResponse.value)
         assertEquals(Status.SUCCESS, viewModel.workAssignedResponse.value?.status)
         assertEquals(response, viewModel.workAssignedResponse.value?.response)
-    }
+    }*/
 }

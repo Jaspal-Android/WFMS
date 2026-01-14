@@ -1,10 +1,9 @@
 package com.atvantiq.wfms.data.repository.work
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
-import com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse
-import com.atvantiq.wfms.models.work.endWork.EndWorkResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
-import com.atvantiq.wfms.models.work.startWork.StartWorkResponse
+import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
+import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
@@ -45,7 +44,7 @@ class WorkRepoTest {
     fun `workAssignedAll calls apiService with correct token, page, and pageSize`() = runTest {
         val page = 1
         val pageSize = 10
-        val expectedResponse = mockk<WorkAssignedAllResponse>()
+        val expectedResponse = mockk<WorkAssignedResponse>()
         coEvery { apiService.workAssignedAll(any(), page, pageSize) } returns expectedResponse
 
         val result = repo.workAssignedAll(page, pageSize)
@@ -57,7 +56,7 @@ class WorkRepoTest {
     @Test
     fun `workAccept calls apiService with correct token and workId`() = runTest {
         val workId = 123L
-        val expectedResponse = mockk<AcceptWorkResponse>()
+        val expectedResponse = mockk<WorkDetailResponse>()
         coEvery { apiService.workAccept(any(), workId) } returns expectedResponse
 
         val result = repo.workAccept(workId)
@@ -72,7 +71,7 @@ class WorkRepoTest {
         val latitude = mockk<RequestBody>()
         val longitude = mockk<RequestBody>()
         val photo = mockk<MultipartBody.Part>()
-        val expectedResponse = mockk<StartWorkResponse>()
+        val expectedResponse = mockk<WorkDetailResponse>()
         coEvery { apiService.workStart(any(), workId, latitude, longitude, photo) } returns expectedResponse
 
         val result = repo.workStart(workId, latitude, longitude, photo)
@@ -84,7 +83,7 @@ class WorkRepoTest {
     @Test
     fun `workEnd calls apiService with correct token and params`() = runTest {
         val params = JsonObject()
-        val expectedResponse = mockk<EndWorkResponse>()
+        val expectedResponse = mockk<WorkDetailResponse>()
         coEvery { apiService.workEnd(any(), params) } returns expectedResponse
 
         val result = repo.workEnd(params)
