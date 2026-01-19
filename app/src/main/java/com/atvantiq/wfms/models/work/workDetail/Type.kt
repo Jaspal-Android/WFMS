@@ -11,5 +11,7 @@ data class Type(
     @SerializedName("name")
     val name: String?,
     @SerializedName("status")
-    val status: Status?
+    val status: Status?,
+    @SerializedName("ended_today")
+    val endedToday: Boolean?
 )

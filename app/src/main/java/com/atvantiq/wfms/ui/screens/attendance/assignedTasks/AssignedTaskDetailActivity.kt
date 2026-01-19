@@ -168,11 +168,14 @@ class AssignedTaskDetailActivity :
         if (record?.type?.isNullOrEmpty() == true) {
             binding.showSelectAll = false
         } else {
-            val hasOpenWorkType = record?.type?.any { it.status?.code == StatusCodes.WIP }
+            val hasOpenWorkType = record?.type?.any { it.status?.code == StatusCodes.WIP && (it.endedToday != true)}
 
             if (hasOpenWorkType == true && hasEligibleToEnd) {
                 binding.showSelectAll = true
                 binding.showEndAssignment = true
+            }else{
+                binding.showSelectAll = false
+                binding.showEndAssignment = false
             }
         }
         itemTypeAdapter?.setData(record?.type ?: emptyList(), hasEligibleToEnd)

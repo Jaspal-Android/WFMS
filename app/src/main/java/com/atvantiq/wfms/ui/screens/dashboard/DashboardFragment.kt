@@ -12,8 +12,6 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.constants.ValConstants
@@ -24,7 +22,6 @@ import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
-import com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter
 import com.atvantiq.wfms.ui.screens.announcements.AnnouncementsActivity
 import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceCommunicationViewModel
@@ -123,7 +120,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             if (isLifeCycleResumed()){
                 when (response.status) {
                     Status.SUCCESS -> handleCheckInStatusResponse(response.response)
-                    Status.ERROR -> handleCheckInStatusError(response.response?.message)
+                    Status.ERROR -> handleCheckInStatusError(response.response?.message,response.throwable)
                     Status.LOADING -> {
                         showProgress()
                     }
@@ -212,7 +209,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             ValConstants.BAD_REQUEST_CODE -> alertDialogShow(requireContext(), getString(R.string.alert), response.message ?: getString(R.string.something_went_wrong))
-            else -> handleCheckInStatusError(response?.message)
+            else -> handleCheckInStatusError(response?.message, null)
         }
     }
 
@@ -225,16 +222,34 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    private fun handleCheckInStatusError(message: String?) {
+    private fun handleCheckInStatusError(message: String?, throwable: Throwable?) {
         dismissProgress() // Ensure progress is dismissed before showing error dialog
-        alertDialogShow(
-            requireContext(),
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong),
-            getString(R.string.retry),
-            DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
-            false
-        )
+        if (throwable is HttpException) {
+            when (throwable.code()) {
+                ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
+                ValConstants.SERVER_ERROR_CODE -> alertDialogShow(
+                    requireContext(),
+                    throwable.message ?: getString(R.string.something_went_wrong)
+                )
+                else -> alertDialogShow(
+                    requireContext(),
+                    getString(R.string.alert),
+                    message ?: getString(R.string.something_went_wrong),
+                    getString(R.string.retry),
+                    DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
+                    false
+                )
+            }
+        } else {
+            alertDialogShow(
+                requireContext(),
+                getString(R.string.alert),
+                message ?: getString(R.string.something_went_wrong),
+                getString(R.string.retry),
+                DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
+                false
+            )
+        }
     }
 
     private fun handleNoWorkForDay(attendanceId: Long?) {
