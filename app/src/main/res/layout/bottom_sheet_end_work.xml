@@ -132,18 +132,18 @@
             android:text="@string/submit"
             app:layout_constraintTop_toBottomOf="@id/statusRecyclerView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/btn_cancel" />
 
         <!-- Cancel Button -->
         <androidx.appcompat.widget.AppCompatButton
+            android:layout_marginStart="@dimen/margin"
             android:id="@+id/btn_cancel"
             style="@style/CustomRedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
             android:text="@string/cancel"
-            app:layout_constraintTop_toBottomOf="@id/btn_done"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btn_done"
+            app:layout_constraintStart_toEndOf="@+id/btn_done"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
