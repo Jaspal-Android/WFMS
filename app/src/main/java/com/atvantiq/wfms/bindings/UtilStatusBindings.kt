@@ -4,7 +4,9 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.databinding.BindingAdapter
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.constants.ApprovalStatusCodes
 import com.atvantiq.wfms.constants.AttendanceStatus
+import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.utils.Utils
 
@@ -86,6 +88,80 @@ object UtilStatusBindings {
                 textView.text = textView.context.getString(R.string.no_action)
                 textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
                 textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter(value = ["assignedSiteStatus"])
+    fun assignedSiteStatus(textView: TextView, status: Int?) {
+        when (status) {
+            StatusCodes.OPEN -> { // OPEN
+                textView.text = textView.context.getString(R.string.open)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
+                textView.setBackgroundResource(R.drawable.status_primary_bg)
+            }
+            StatusCodes.ACCEPTED -> { // ACCEPTED
+                textView.text = textView.context.getString(R.string.accepted)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+            StatusCodes.WIP -> { // WIP
+                textView.text = textView.context.getString(R.string.pending)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+            StatusCodes.ACCESS_ISSUE -> { // ACCESS ISSUE
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+                textView.setBackgroundResource(R.drawable.status_red_bg)
+            }
+            StatusCodes.COMPLETED -> { // COMPLETED
+                textView.text = textView.context.getString(R.string.completed)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.green))
+                textView.setBackgroundResource(R.drawable.status_green_bg)
+            }
+            StatusCodes.REVISIT -> { // REVISIT
+                textView.text = textView.context.getString(R.string.revisited)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+            StatusCodes.REJECTED -> { // REJECTED
+                textView.text = textView.context.getString(R.string.rejected)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+                textView.setBackgroundResource(R.drawable.status_red_bg)
+            }
+            StatusCodes.REMOVED -> { // REMOVED
+                textView.text = textView.context.getString(R.string.removed)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+                textView.setBackgroundResource(R.drawable.status_red_bg)
+            }
+            else -> {
+                textView.text  = textView.context.getString(R.string.not_available)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
+                textView.setBackgroundResource(R.drawable.status_orange_bg)
+            }
+        }
+    }
+
+    @JvmStatic
+    @BindingAdapter(value = ["workApprovalStatus"])
+    fun workApprovalStatus(textView: TextView, status: Int?) {
+        when (status) {
+            ApprovalStatusCodes.OPEN -> { // OPEN
+                textView.text = textView.context.getString(R.string.pending)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.orange))
+            }
+            ApprovalStatusCodes.ACCEPTED -> { // ACCEPTED
+                textView.text = textView.context.getString(R.string.accepted)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.green))
+            }
+            ApprovalStatusCodes.REJECTED -> { // REJECTED
+                textView.text = textView.context.getString(R.string.rejected)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.red))
+            }
+            else -> {
+                textView.text  = textView.context.getString(R.string.not_available)
+                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.black))
             }
         }
     }

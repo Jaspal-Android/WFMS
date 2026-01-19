@@ -1,17 +1,15 @@
 package com.atvantiq.wfms.ui.screens.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.databinding.ItemAttendanceListBinding
-import com.atvantiq.wfms.models.attendance.attendanceDetails.Record
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.utils.DateUtils
-import com.google.android.gms.common.util.DataUtils
 
 class AttendanceListAdapter(var onViewSitesClicked:(employeeId: String,date: String)->Unit) : RecyclerView.Adapter<AttendanceListAdapter.Holder>(){
 
-    private var attendanceRecordList =  ArrayList<Record>()
+    private var attendanceRecordList =  ArrayList<AttendanceRecord>()
 
     inner class Holder(var binding:ItemAttendanceListBinding):
         RecyclerView.ViewHolder(binding.root)
@@ -36,7 +34,7 @@ class AttendanceListAdapter(var onViewSitesClicked:(employeeId: String,date: Str
         holder.binding.executePendingBindings()
     }
 
-    fun submitData(data: List<Record>){
+    fun submitData(data: List<AttendanceRecord>){
         attendanceRecordList.clear()
         attendanceRecordList.addAll(data)
         notifyDataSetChanged()

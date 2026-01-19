@@ -1,18 +1,11 @@
 package com.atvantiq.wfms.ui.screens.attendance.addSignInActivity
 
-import AutoCompleteTempAdapter
-import GenericBottomSheetDialog
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
-import android.location.Location
 import android.os.Bundle
 import android.widget.CheckBox
-import android.widget.MultiAutoCompleteTextView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
@@ -28,11 +21,6 @@ import com.atvantiq.wfms.models.type.TypeData
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.utils.DateUtils
-import com.atvantiq.wfms.utils.PermissionUtils
-import com.atvantiq.wfms.utils.Utils
-import com.atvantiq.wfms.utils.files.PickMediaHelper
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
@@ -41,33 +29,6 @@ import java.util.Locale
 @AndroidEntryPoint
 
 class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() {
-
-    /*Location API Variables*/
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-    //--------------------------------------------------//
-
-    // Image Picker Code
-    private val cameraLauncher =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            pickMediaHelper.handleCameraResult(success)
-        }
-
-    private val galleryLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                pickMediaHelper.handleGalleryResult(result.data)
-            }
-        }
-
-    private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            pickMediaHelper.handlePermissionResult(permissions)
-        }
-
-    private lateinit var pickMediaHelper: PickMediaHelper
-    //---------------------------------------------------------//
-
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_add_sign_in, AddSignInVM::class.java)
@@ -80,16 +41,9 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             insets
         }
         setUpToolbar()
-        setUpPlaceLocations()
         setDateTimeAttendance()
-        setImagePicker()
         getClientList()
         initListeners()
-    }
-
-    private fun setUpPlaceLocations() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        requestCurrentLocation()
     }
 
     private fun setUpToolbar() {
@@ -102,27 +56,6 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     private fun setDateTimeAttendance() {
         binding.dateString = DateUtils.getCurrentDate()
         binding.timeString = DateUtils.getCurrentTime()
-    }
-
-    private fun setImagePicker() {
-        pickMediaHelper = PickMediaHelper(
-            this,
-            cameraLauncher,
-            galleryLauncher,
-            permissionLauncher,
-            object : PickMediaHelper.Callback {
-                override fun onImagePicked(path: String, request: Int) {
-                    if (!path.isNullOrBlank()) {
-                        binding.hasPreviewImage = true
-                        var bitmap = pickMediaHelper.decodeBitmap(path)
-                        //binding.capturedImagePreview.setImageBitmap(bitmap)
-                    }
-                }
-
-                override fun onError(message: String) {
-                    binding.hasPreviewImage = false
-                }
-            })
     }
 
     private fun initListeners() {
@@ -207,24 +140,11 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         getTypeListByPo(selectedPo.id)
     }
 
-    private fun onTypeSelected(selectedType: TypeData) {
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
-        binding.activitiesEt.setText("")
-        viewModel.selectedTypeIdList?.add(selectedType.id)
-        binding.typeEt.setText(selectedType.name)
-        getActivityListByPoType(viewModel.selectedPoNumberId ?: 0L, selectedType.id)
-    }
-
     override fun subscribeToEvents(vm: AddSignInVM) {
         binding.vm = vm
 
         vm.clickEvents.observe(this) {
             when (it) {
-                AddSignInClickEvents.ON_CAMERA_CLICK -> {
-                    pickMediaHelper.showDialog()
-                }
-
                 AddSignInClickEvents.ON_SAVE_CLICK -> {
                     finish()
                 }
@@ -306,7 +226,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                         if (throwable.code() == 401) {
                             tokenExpiresAlert()
                         }
-                    }else {
+                    } else {
                         showToast(
                             this,
                             response.throwable?.message ?: getString(R.string.something_went_wrong)
@@ -670,7 +590,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 onClientSelected(it)
             },
             filterCondition = { client, query ->
-                client.companyName.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+                client.companyName.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
             },
             emptyMessage = getString(R.string.no_clients_available),
             retryAction = { getClientList() },
@@ -691,7 +612,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 onProjectSelected(it)
             },
             filterCondition = { project, query ->
-                project.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+                project.name.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
             },
             emptyMessage = getString(R.string.no_projects_available),
             retryAction = { getProjectListByClientId(viewModel.selectedClient?.id ?: 0L) },
@@ -712,7 +634,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 onPoSelected(it)
             },
             filterCondition = { poNumber, query ->
-                poNumber.poNumber.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+                poNumber.poNumber.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
             },
             emptyMessage = getString(R.string.no_po_numbers_available),
             retryAction = { getPoNumberListByProject(viewModel.selectedProjectId ?: 0L) },
@@ -734,7 +657,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 binding.circleEt.setText(it.name)
             },
             filterCondition = { circle, query ->
-                circle.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+                circle.name.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
             },
             emptyMessage = getString(R.string.no_circles_available),
             retryAction = { getCircleListByProject(viewModel.selectedProjectId ?: 0L) },
@@ -756,7 +680,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 binding.siteEt.setText(it.name)
             },
             filterCondition = { site, query ->
-                site.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+                site.name.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
             },
             emptyMessage = getString(R.string.no_sites_available),
             retryAction = { getSiteListByProject(viewModel.selectedProjectId ?: 0L) },
@@ -765,24 +690,45 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     }
 
     private fun showTypeSelectionDialog(types: List<TypeData>) {
-        showSelectionDialog(
-            items = types,
-            title = getString(R.string.select_type),
-            layoutResId = R.layout.item_generic_adapter,
-            bind = { view, type ->
-                view.findViewById<TextView>(R.id.text1).text = type.name
-            },
-            onItemSelected = {
-                binding.typeEt.error = null
-                onTypeSelected(it)
-            },
-            filterCondition = { type, query ->
-                type.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
-            },
-            emptyMessage = getString(R.string.no_types_available),
-            retryAction = { getTypeListByPo(viewModel.selectedPoNumberId ?: 0L) },
-            tag = "TypeSelectionDialog"
-        )
+        if (types.isEmpty()) {
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_types_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    getTypeListByPo(viewModel.selectedPoNumberId ?: 0L)
+                },
+            )
+        }else{
+            val preSelectedTypes = viewModel.selectedTypeIdList?.mapNotNull { type ->
+                types.find { it.id == type?.id }
+            }?.toSet() ?: emptySet()
+
+            val dialog = MultiSelectBottomSheetDialog(
+                context = this,
+                items = types,
+                preSelectedItems = preSelectedTypes,
+                bind = { view, type, isSelected ->
+                    view.findViewById<TextView>(R.id.textView).text = type.name
+                    view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
+                },
+                onSelectionChanged = { selectedTypes ->
+                    binding.typeEt.error = null
+                    updateSelectedTypes(selectedTypes)
+                },
+                onSubmit = { selectedTypes ->
+                    binding.typeEt.error = null
+                    updateSelectedTypes(selectedTypes)
+                },
+                filterCondition = { type, query ->
+                    type.name?.lowercase(Locale.getDefault())
+                        ?.contains(query.lowercase(Locale.getDefault()))?:false
+                },
+                title = getString(R.string.select_type)
+            )
+            dialog.show(supportFragmentManager, "TypeSelectionDialog")
+        }
     }
 
     private fun showActivitySelectionDialog(activities: List<ActivityData>) {
@@ -808,7 +754,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     updateSelectedActivities(selectedActivities)
                 },
                 filterCondition = { activity, query ->
-                    activity.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
+                    activity.name.lowercase(Locale.getDefault())
+                        .contains(query.lowercase(Locale.getDefault()))
                 },
                 title = getString(R.string.select_activities)
             )
@@ -822,12 +769,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 okLister = DialogInterface.OnClickListener { _, _ ->
                     getActivityListByPoType(
                         viewModel.selectedPoNumberId ?: 0L,
-                        viewModel.selectedTypeIdList?.firstOrNull() ?: 0L
+                        viewModel.selectedTypeIdList?.firstOrNull()?.id ?: 0L
                     )
                 },
             )
         }
     }
+
+    private fun updateSelectedTypes(selectedTypes: Set<TypeData>) {
+        viewModel.selectedTypeIdList?.clear()
+        viewModel.selectedTypeIdList?.addAll(selectedTypes)
+        binding.typeEt.setText(selectedTypes.joinToString(", ") { it.name.toString() })
+    }
+
 
     private fun updateSelectedActivities(selectedActivities: Set<ActivityData>) {
         viewModel.selectedActivityIdList?.clear()
@@ -880,63 +834,6 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     * */
     private fun getActivityListByPoType(poId: Long, typeId: Long) {
         viewModel.getActivityListByPoType(poId, typeId)
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun requestCurrentLocation() {
-        if (PermissionUtils.hasLocationPermissions(this)) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    location?.let {
-                        var locationString =
-                            location?.latitude.toString() + " " + location?.longitude.toString()
-                        binding.locationString = locationString
-                    } ?: run {
-                        Toast.makeText(this, "Unable to get location", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-        } else {
-            requestLocationPermission()
-        }
-    }
-
-    private fun requestLocationPermission() {
-        when {
-            PermissionUtils.hasLocationPermissions(this) -> {
-                requestCurrentLocation()
-            }
-
-            else -> {
-                requestPermissionLauncher.launch(PermissionUtils.LOCATION_PERMISSIONS)
-            }
-        }
-    }
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            permissions.entries.forEach { entry ->
-                val permissionName = entry.key
-                val isGranted = entry.value
-                if (isGranted) {
-                    requestCurrentLocation()
-                } else {
-                    showLocationPermissionDialog()
-                }
-            }
-        }
-
-    private fun showLocationPermissionDialog() {
-        alertDialogShow(this,
-            getString(R.string.warning_gps_needed),
-            getString(R.string.warning_location_permission),
-            getString(R.string.go_to_settings),
-            okLister = DialogInterface.OnClickListener { p0, p1 ->
-                Utils.openAppSettings(this)
-            },
-            canelLister = DialogInterface.OnClickListener { p0, p1 ->
-            }
-        )
     }
 }
 

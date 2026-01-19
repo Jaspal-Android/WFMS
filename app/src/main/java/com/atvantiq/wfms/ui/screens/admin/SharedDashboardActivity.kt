@@ -25,6 +25,7 @@ import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.admin.ui.site.SitesActivity
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity
+import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
 import com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents
 import com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
@@ -128,6 +129,10 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                 }
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
                     getCurrentLatitudeLongitudePermissions()
+                }
+
+                DashboardClickEvents.APPLY_LEAVE_CLICK -> {
+                    Utils.jumpActivity(this, ApplyLeaveActivity::class.java)
                 }
             }
         }

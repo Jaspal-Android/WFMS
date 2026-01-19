@@ -13,10 +13,12 @@ object ValConstants {
     const val SUCCESS_CREATION_CODE = 201
     const val UNAUTHORIZED_CODE = 401
     const val BAD_REQUEST_CODE = 400
+    const val SERVER_ERROR_CODE = 500
     const val FORBIDDEN_CODE = 403
     const val ROLE_EMPLOYEE = "Employee"
-    const val ROLE_PM = "Pm"
-    const val ROLE_OPS = "Ops"
+    const val ROLE_PM = "pm"
+    const val ROLE_OPS = "ops"
     const val ROLE_Admin = "admin"
     const val GEOFENCE_RADIUS_METERS = 800
+    const val RESULT_MARK_ATTENDANCE = -2
 }

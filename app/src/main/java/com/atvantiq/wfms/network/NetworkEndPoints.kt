@@ -13,6 +13,8 @@ object NetworkEndPoints {
 
 	/*Forgot password*/
 	const val forgotPassword = "forgot-password"
+	const val requestOTP = "request-otp"
+	const val verifyOTP="verify-otp"
 
 	/*Day Attendance*/
 	const val attendanceCheckIn = "attendance/checkin"
@@ -20,15 +22,17 @@ object NetworkEndPoints {
 	const val attendanceCheckInStatus = "attendance/checkin/status"
 	const val attendanceDetails = "attendance/details"
 
-	/*Attendance Management*/
-	const val workAssignedAll = "work/all"
-	const val workAccept = "work/accept/{work_id}"
+	/*Work Management*/
+	const val workAssignedAll = "work/site/assigned"
+	const val workAccept = "work/accept/{work_site_id}"
 	const val workStart = "work/start"
 	const val workEnd = "work/end"
 	const val workSelfAssign = "work/self-assign"
 	const val workById = "work/{work_id}"
+	const val workSiteDetails ="work/site/{work_site_id}/types"
 	const val workDetailByDate = "work/details"
 	const val attendanceEmpRemarks = "attendance/emp/remarks/{attendance_id}"
+	const val applyLeave  = "attendance/apply-leave"
 
 	/*Client*/
 	const val clientList = "client/all"
@@ -46,7 +50,8 @@ object NetworkEndPoints {
 	const val siteListByProject = "site/project/{project_id}"
 	const val createSite="site/create"
 	const val workSites = "work/sites/{employee_id}"
-	const val approveWorkSite = "/work/approve"
+	const val workSiteDetailsAdmin ="/work/site/progress/{work_site_id}"
+	const val approveWorkSite = "work/approve"
 
 	/*Sites all by page and limit*/
 	const val siteListAll = "site/all"

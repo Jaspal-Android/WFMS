@@ -226,5 +226,64 @@
     <string name="pending">Pending</string>
     <string name="pm_status">PM Status: </string>
     <string name="pm_remarks">PM Remarks: </string>
+    <string name="apply_leave">Apply Leave</string>
+    <string name="back">Back</string>
+    <string name="leave_start_date_required">Leave Start Date *</string>
+    <string name="leave_end_date_required">Leave End Date *</string>
+    <string name="leave_type_required">Leave Type *</string>
+    <string name="reason_required">Reason *</string>
+    <string name="attachment_optional">Attachment (Optional)</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_end_date">Select end date</string>
+    <string name="select_leave_type">Select Leave Type</string>
+    <string name="enter_reason">Enter reason for leave</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="browse">Browse</string>
+    <string name="upload">Upload</string>
+    <string name="file_hint">Supported: PDF, JPG, PNG (Max 5MB)</string>
+    <string name="submit_leave_request">Submit Leave Request</string>
+    <string name="start_must_be_before_end">Start date must be before end date</string>
+    <string name="end_must_be_after_start">End date must be after start date</string>
+
+    <string-array name="leave_types">
+        <item>Sick Leave</item>
+        <item>Casual Leave</item>
+        <item>Paid Leave</item>
+        <item>Unpaid Leave</item>
+        <item>Emergency Leave</item>
+    </string-array>
+
+    <string name="login_with_otp">Login with OTP</string>
+    <string name="request_login_otp">Request Login OTP</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="please_enter_email">Please enter email</string>
+    <string name="please_enter_otp">Please enter OTP</string>
+    <string name="we_have_sent_otp_email">We have sent an OTP on given Email Address</string>
+    <string name="invalid_otp">Invalid OTP. Please try again.</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="types">Types: </string>
+    <string name="select_all">Select All</string>
+    <string name="accept">Accept</string>
+    <string name="start_site">Start Site</string>
+    <string name="end_work">End Work</string>
+    <string name="site_information">Site Information</string>
+    <string name="enter_status_and_remarks">Enter Status and Remarks</string>
+    <string name="completed">COMPLETED</string>
+    <string name="assigned_work">Assigned Work</string>
+    <string name="site_id">Site ID: </string>
+    <string name="project_colon">Project: </string>
+    <string name="open">Open</string>
+    <string name="accepted">Accepted</string>
+    <string name="revisited">Revisited</string>
+    <string name="removed">Removed</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="approved_by">Approved By</string>
+    <string name="rejected_by">Rejected By</string>
+    <string name="work_site_approval_successful">Work site approval successful</string>
+    <string name="pm">PM</string>
+    <string name="ops">OPS</string>
+    <string name="admin">Admin</string>
+    <string name="started">Started</string>
 
 </resources>

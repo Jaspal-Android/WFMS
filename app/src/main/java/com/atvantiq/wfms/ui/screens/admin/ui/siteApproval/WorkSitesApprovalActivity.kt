@@ -13,7 +13,7 @@ import com.atvantiq.wfms.databinding.ActivityWorkSitesApprovalBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceListAdapter
-import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.sites.WorkSitesActivity
+import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.Utils
 import retrofit2.HttpException

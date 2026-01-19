@@ -19,12 +19,15 @@ import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityLoginBinding
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
+import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.DashboardActivity
 import com.atvantiq.wfms.ui.screens.admin.SharedDashboardActivity
 import com.atvantiq.wfms.ui.screens.forgotPassword.ForgotPasswordActivity
+import com.atvantiq.wfms.ui.screens.forgotPassword.dialog.GetOTPBottomSheetDialog
+import com.atvantiq.wfms.ui.screens.login.withOtp.RequestOtpBottomSheet
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -39,7 +42,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     var lat: Double = 0.0
     var long: Double = 0.0
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    private var getOtpBottomSheet: GetOTPBottomSheetDialog? = null
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_login, LoginVM::class.java)
@@ -57,11 +60,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
 
     override fun subscribeToEvents(vm: LoginVM) {
         binding.vm = vm
-
         vm.clickEvents.observe(this, Observer { handleClickEvents(it, vm) })
         vm.errorHandler.observe(this, Observer { handleErrors(it) })
         vm.loginResponse.observe(this, Observer { handleLoginResponse(it) })
         vm.sendNotificationTokenResponse.observe(this, Observer { handleSendNotificationTokenResponse(it) })
+        vm.requestOtpResponse.observe(this, Observer { handleRequestOtpResponse(it) })
     }
 
     private fun handleClickEvents(event: LoginClickEvents, vm: LoginVM) {
@@ -70,6 +73,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             LoginClickEvents.ON_LOGIN_CLICK -> navigateToDashboard()
             LoginClickEvents.ON_FORGET_PASSWORD_CLICK -> navigateToForgotPassword()
             LoginClickEvents.ON_FETCH_CURRENT_LATITUDE_LONGITUDE_CLICKS -> getCurrentLatitudeLongitudePermissions()
+            LoginClickEvents.ON_LOGIN_WITH_OTP_CLICK -> requestOtp()
         }
     }
 
@@ -124,6 +128,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             if (it.code == 200 && it.success) {
                 PrefMethods.saveUserToken(prefMain, it.data?.accessToken.orEmpty())
                 PrefMethods.saveUserData(prefMain, it.data?.user)
+                getOtpBottomSheet?.dismiss()
+                getOtpBottomSheet = null
                 val user = it.data?.user
                 viewModel.user = user
                 FirebaseMessaging.getInstance().token
@@ -135,6 +141,38 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
                             Log.w("FCM", "Fetching FCM registration token failed", task.exception)
                         }
                     }
+            } else {
+                alertDialogShow(this, getString(R.string.alert), it.message.orEmpty()) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    private fun handleRequestOtpResponse(response: ApiState<RequestOtpResponse>) {
+        when (response.status) {
+            Status.SUCCESS -> {
+                handleRequestOtpSuccess(response)
+            }
+            Status.LOADING -> {showProgress()}
+            Status.ERROR -> {
+                dismissProgress()
+                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+            }
+        }
+    }
+
+    private fun handleRequestOtpSuccess(response: ApiState<RequestOtpResponse>) {
+        dismissProgress()
+        response.response?.let {
+            if (it.code == 200 && it.success) {
+                showToast(this, it.message.orEmpty())
+                getOtpBottomSheet = GetOTPBottomSheetDialog (onSubmitOTP = { otp ->
+                    viewModel.verifyLoginWithOtp(otp)
+                }, onResendOTP = {
+                    viewModel.requestLoginWithOtp()
+                })
+                getOtpBottomSheet?.show(supportFragmentManager, "GetOTPBottomSheetDialog")
             } else {
                 alertDialogShow(this, getString(R.string.alert), it.message.orEmpty()) { dialog, _ ->
                     dialog.dismiss()
@@ -264,4 +302,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         startActivity(intent)
     }
 
+    private fun requestOtp() {
+        var requestOtpBottomSheet = RequestOtpBottomSheet{
+            viewModel.userEmailId.set(it)
+            viewModel.requestLoginWithOtp()
+        }
+        requestOtpBottomSheet.show(supportFragmentManager, "RequestOtpBottomSheet")
+    }
 }

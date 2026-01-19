@@ -105,19 +105,44 @@
                             android:layout_marginVertical="@dimen/margin"
                             android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/tvEmpName"
-                                style="@style/CustomLargeDarkTextView"
-                                wishText="@{userNameString}"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textStyle="bold"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:text="Hello, Jaspal"></TextView>
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_marginEnd="@dimen/margin_small"
+                                    android:layout_weight="1"
+                                    android:id="@+id/tvEmpName"
+                                    style="@style/CustomLargeDarkTextView"
+                                    wishText="@{userNameString}"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    tools:text="Hello, Jaspal"></TextView>
+
+                                <TextView
+                                    android:onClick="@{()->vm.onApplyLeaveClick()}"
+                                    android:id="@+id/applyLeaveBt"
+                                    android:elevation="@dimen/elevation_small"
+                                    style="@style/CustomSmallDarkTextView"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    android:paddingVertical="@dimen/padding_small"
+                                    android:paddingHorizontal="@dimen/padding"
+                                    android:background="@drawable/status_primary_bg"
+                                    android:textStyle="bold"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    android:text="@string/apply_leave"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"></TextView>
+
+                            </LinearLayout>
+
 
                             <LinearLayout
-                                android:layout_marginTop="@dimen/margin_small_extra"
+                                android:layout_marginTop="@dimen/margin_small"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
@@ -131,6 +156,7 @@
                                     tools:text="Email@gmil.com"></TextView>
 
                                 <TextView
+                                    android:gravity="end"
                                     android:layout_weight="1"
                                     android:id="@+id/tvUserRole"
                                     style="@style/CustomMediumDarkTextView"
@@ -176,7 +202,7 @@
                                 android:id="@+id/slideStartDay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin"
+                                android:layout_marginTop="@dimen/margin_small"
                                 app:animation_duration="250"
                                 app:area_margin="5dp"
                                 app:border_radius="@dimen/card_radius"

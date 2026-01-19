@@ -3,166 +3,281 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
-            name="status"
-            type="String" />
+            name="siteStatusInteger"
+            type="Integer" />
+
+        <variable
+            name="isOpenAssignment"
+            type="Boolean" />
+
+        <variable
+            name="isAcceptedAssignment"
+            type="Boolean" />
+
+        <variable
+            name="showEndAssignment"
+            type="Boolean" />
+
+        <variable
+            name="showSelectAll"
+            type="Boolean" />
+
+        <variable
+            name="hideButtons"
+            type="Boolean" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/main"
+        android:background="@color/cardLightBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity">
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="@dimen/padding"
+                android:src="@drawable/arrow_back_ios_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvBack"
+                style="@style/CustomRegularPrimaryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/back"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/btnBack"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintTop_toTopOf="@id/btnBack" />
+
+            <TextView
+                android:id="@+id/tvSiteName"
+                style="@style/CustomLargeDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="Chandigarh site"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+            <TextView
+                android:id="@+id/tvSiteCode"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:text="CHD-345-POWN-234"
+                app:layout_constraintStart_toStartOf="@+id/tvSiteName"
+                app:layout_constraintTop_toBottomOf="@id/tvSiteName" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollContent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toTopOf="@id/layoutActions"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutHeader">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding">
+
+                <!-- SITE INFORMATION CARD -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardSiteInfo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/padding">
+
+                        <TextView
+                            android:id="@+id/tvInfoTitle"
+                            style="@style/CustomRegularPrimaryTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/site_information"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvProjectLabel"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text="@string/project"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvInfoTitle" />
+
+                        <TextView
+                            android:id="@+id/tvProject"
+                            style="@style/CustomMediumDarkTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ERRICSON-TOWER-110"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvProjectLabel" />
+
+                        <TextView
+                            android:id="@+id/tvCircleLabel"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text="@string/circle"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvProject" />
+
+                        <TextView
+                            android:id="@+id/tvCircle"
+                            style="@style/CustomMediumDarkTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Haryana (HR)"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvCircleLabel" />
+
+                        <TextView
+                            assignedSiteStatus="@{siteStatusInteger}"
+                            android:id="@+id/tvStatus"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/status_green_bg"
+                            android:paddingHorizontal="@dimen/padding"
+                            android:paddingVertical="@dimen/padding_x_small"
+                            tools:text="OPEN"
+                            android:textColor="#16A34A"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/tvInfoTitle" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- WORK TYPES -->
+                <TextView
+                    android:id="@+id/tvWorkTitle"
+                    style="@style/CustomRegularDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin"
+                    android:text="WORK TYPES (3)"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cardSiteInfo" />
+
+                <!-- Select All Checkbox -->
+                <CheckBox
+                    android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
+                    android:id="@+id/cbSelectAllWorkTypes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvWorkTitle" />
+
+                <TextView
+                    android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
+                    style="@style/CustomRegularDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_all"
+                    app:layout_constraintBottom_toBottomOf="@+id/cbSelectAllWorkTypes"
+                    app:layout_constraintStart_toEndOf="@+id/cbSelectAllWorkTypes"
+                    app:layout_constraintTop_toTopOf="@+id/cbSelectAllWorkTypes" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvWorkTypes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:nestedScrollingEnabled="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cbSelectAllWorkTypes"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_work_type" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- BOTTOM ACTIONS -->
 
         <LinearLayout
+            android:id="@+id/layoutActions"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="@{hideButtons ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <include
-                android:id="@+id/assignedTaskDetailToolbar"
-                layout="@layout/custom_toolbar"></include>
-
-
-            <ScrollView
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAccept"
+                style="@style/CustomGreenButton"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fillViewport="true">
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin"
+                android:layout_weight="1"
+                android:text="@string/accept"
+                android:visibility="@{isOpenAssignment ? View.VISIBLE : View.GONE}" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnStartWork"
+                style="@style/CustomPrimaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin"
+                android:layout_weight="1"
+                android:text="@string/start_site"
+                android:visibility="@{isAcceptedAssignment ? View.VISIBLE : View.GONE}" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:visibility="@{showEndAssignment ? View.VISIBLE : View.GONE}"
+                android:id="@+id/btnEndWork"
+                style="@style/CustomRedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin"
+                android:layout_weight="1"
+                android:text="@string/end_work" />
 
-                    <TextView
-                        android:id="@+id/tvProjectName"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/margin"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="Project Name" />
-
-                    <TextView
-                        android:id="@+id/tvSignInStatus"
-                        style="@style/CustomSmallTextView"
-                        assignedTaskStatus="@{status}"
-                        android:text="@{status}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin"
-                        android:background="@drawable/status_green_bg"
-                        android:paddingHorizontal="@dimen/padding_small"
-                        android:paddingVertical="@dimen/padding_x_small"
-                        android:textColor="@color/green"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvProjectName"
-                        tools:text="COMPLETED" />
-
-                    <View
-                        android:id="@+id/v1"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/margin"
-                        android:background="@drawable/custom_divider"
-                        app:layout_constraintTop_toBottomOf="@+id/tvProjectName" />
-
-                    <TextView
-                        android:id="@+id/tvCircle"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin"
-                        android:layout_marginTop="@dimen/margin"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/v1"
-                        tools:text="Circle: HR" />
-
-                    <TextView
-                        android:id="@+id/tvDateTime"
-                        style="@style/CustomSmallTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin"
-                        tools:text="11/12/2024 | 09:07:10 AM"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvCircle" />
-
-                    <TextView
-                        android:id="@+id/tvType"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        tools:text="Type: Survey"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@+id/tvSite"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvCircle" />
-
-                    <TextView
-                        android:id="@+id/tvSite"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin"
-                        android:layout_marginEnd="@dimen/margin_small"
-                        tools:text="Visit No: 1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvType" />
-
-
-                    <View
-                        android:id="@+id/v2"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/margin"
-                        android:background="@drawable/custom_divider"
-                        app:layout_constraintTop_toBottomOf="@+id/tvType" />
-
-                    <TextView
-                        android:id="@+id/tvActivities"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/margin"
-                        android:text="Activities"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/v2" />
-
-                    <TextView
-                        android:id="@+id/tvActivity"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin"
-                        android:layout_marginTop="@dimen/margin_small"
-                        android:layout_marginEnd="@dimen/margin"
-                        android:background="@drawable/status_primary_bg"
-                        android:paddingHorizontal="@dimen/padding_small"
-                        android:paddingVertical="@dimen/padding_x_small"
-                        tools:text="Install 20kW solar panels and configure inverter"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvActivities" />
-
-                    <View
-                        android:id="@+id/v3"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="@dimen/margin"
-                        android:background="@drawable/custom_divider"
-                        app:layout_constraintTop_toBottomOf="@+id/tvActivity" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </ScrollView>
         </LinearLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

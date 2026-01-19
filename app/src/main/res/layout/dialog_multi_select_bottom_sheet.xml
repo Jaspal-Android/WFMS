@@ -41,6 +41,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
+            android:padding="@dimen/padding"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
@@ -50,7 +51,7 @@
             style="@style/CustomPrimaryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin"
+            android:layout_margin="@dimen/margin_small"
             android:text="@string/submit" />
     </LinearLayout>
 </layout>

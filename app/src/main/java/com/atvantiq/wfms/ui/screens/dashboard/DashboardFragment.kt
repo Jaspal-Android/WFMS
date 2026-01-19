@@ -12,8 +12,6 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.constants.ValConstants
@@ -24,8 +22,8 @@ import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
-import com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter
 import com.atvantiq.wfms.ui.screens.announcements.AnnouncementsActivity
+import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceCommunicationViewModel
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceStatusFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets.MyTargetsFragment
@@ -80,6 +78,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK -> TODO()
                 DashboardClickEvents.OPEN_PROFILE_CLICK -> TODO()
                 DashboardClickEvents.LOGOUT_CLICK -> TODO()
+                DashboardClickEvents.APPLY_LEAVE_CLICK -> {
+                    Utils.jumpActivity(requireContext(), ApplyLeaveActivity::class.java)
+                }
             }
         }
 
@@ -119,7 +120,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             if (isLifeCycleResumed()){
                 when (response.status) {
                     Status.SUCCESS -> handleCheckInStatusResponse(response.response)
-                    Status.ERROR -> handleCheckInStatusError(response.response?.message)
+                    Status.ERROR -> handleCheckInStatusError(response.response?.message,response.throwable)
                     Status.LOADING -> {
                         showProgress()
                     }
@@ -208,7 +209,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             ValConstants.BAD_REQUEST_CODE -> alertDialogShow(requireContext(), getString(R.string.alert), response.message ?: getString(R.string.something_went_wrong))
-            else -> handleCheckInStatusError(response?.message)
+            else -> handleCheckInStatusError(response?.message, null)
         }
     }
 
@@ -221,16 +222,34 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    private fun handleCheckInStatusError(message: String?) {
+    private fun handleCheckInStatusError(message: String?, throwable: Throwable?) {
         dismissProgress() // Ensure progress is dismissed before showing error dialog
-        alertDialogShow(
-            requireContext(),
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong),
-            getString(R.string.retry),
-            DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
-            false
-        )
+        if (throwable is HttpException) {
+            when (throwable.code()) {
+                ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
+                ValConstants.SERVER_ERROR_CODE -> alertDialogShow(
+                    requireContext(),
+                    throwable.message ?: getString(R.string.something_went_wrong)
+                )
+                else -> alertDialogShow(
+                    requireContext(),
+                    getString(R.string.alert),
+                    message ?: getString(R.string.something_went_wrong),
+                    getString(R.string.retry),
+                    DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
+                    false
+                )
+            }
+        } else {
+            alertDialogShow(
+                requireContext(),
+                getString(R.string.alert),
+                message ?: getString(R.string.something_went_wrong),
+                getString(R.string.retry),
+                DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
+                false
+            )
+        }
     }
 
     private fun handleNoWorkForDay(attendanceId: Long?) {
@@ -281,7 +300,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }*/
         setupTabBar()
         setupSwipeButton()
-        horizontalScrollTextView()
     }
 
     private fun checkInAttendanceStatus() {
@@ -345,6 +363,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     @SuppressLint("MissingPermission")
     private fun manageDayStartEnd() {
         if (isDayStarted) {
+            // Check-out: Do NOT check geofence
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 lat = location?.latitude ?: 0.0
                 long = location?.longitude ?: 0.0
@@ -354,6 +373,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 long = 0.0
             }
         } else {
+            // Check-in: Only here we check geofence
             isWithinGeofence { isWithin ->
                 if (isWithin) {
                     checkPermissionsAndUpdateGeofence()
@@ -382,17 +402,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }.attach()
     }
 
-    private fun horizontalScrollTextView() {
-        val items = listOf(
-            "New year celebrations are coming soon.",
-            "Report files must be submitted before december",
-            "Reimbursement forms are open now."
-        )
-        val adapter = MarqueeAdapter(items)
-        binding.appDashHeader.marqueeRecyclerView.adapter = adapter
-        binding.appDashHeader.marqueeRecyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-    }
 
     private val permissionLauncherCurrentLatLon = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()

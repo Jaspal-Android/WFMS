@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 
 data class WorkSitesResponse(
     @SerializedName("code")
-    val code: Int,
+    val code: Int?,
     @SerializedName("data")
-    val `data`: Data,
+    val `data`: WorkSiteData?,
     @SerializedName("message")
-    val message: String,
+    val message: String?,
     @SerializedName("success")
-    val success: Boolean
+    val success: Boolean?
 )

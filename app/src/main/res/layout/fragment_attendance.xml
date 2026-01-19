@@ -19,6 +19,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/cardLightBackground"
         tools:context=".ui.screens.attendance.AttendanceFragment">
 
         <androidx.core.widget.NestedScrollView
@@ -31,32 +32,52 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/signInText"
-                    style="@style/CustomRegularPrimaryTextView"
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/forward_arrow_right_24"
-                    android:onClick="@{()->vm.onSignInClick()}"
-                    android:paddingHorizontal="@dimen/padding"
-                    android:paddingVertical="@dimen/padding_large"
-                    android:text="Self Work Assign"
-                    android:textAllCaps="true"
-                    android:textStyle="bold" />
+                    android:layout_marginHorizontal="@dimen/margin"
+                    android:layout_marginVertical="@dimen/margin"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small"
+                    app:cardPreventCornerOverlap="true">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@drawable/custom_divider" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/padding">
+
+                        <ImageView
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/round_add_box_24"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"></ImageView>
+
+                        <TextView
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:id="@+id/signInText"
+                            style="@style/CustomRegularPrimaryTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableEnd="@drawable/forward_arrow_right_24"
+                            android:gravity="center_vertical"
+                            android:onClick="@{()->vm.onSignInClick()}"
+                            android:text="Self Work Assign"
+                            android:textAllCaps="true"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
 
                 <TextView
+                    android:layout_marginTop="@dimen/margin_small_extra"
                     android:id="@+id/tvSignInDetails"
                     style="@style/CustomRegularDarkTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin"
                     android:paddingHorizontal="@dimen/padding"
-                    android:text="Assigned Work"
+                    android:text="@string/assigned_work"
                     android:textAllCaps="true"
                     android:textStyle="bold" />
 
@@ -75,16 +96,18 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:clipToPadding="false"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
+                            android:padding="@dimen/padding"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="2"
+                            tools:listitem="@layout/item_assigned_tasks" />
 
                         <LinearLayout
-                            android:layout_centerInParent="true"
-                            android:visibility="@{isEmptyAssignedTasks ? View.VISIBLE : View.GONE}"
-                            tools:visibility="visible"
-                            android:orientation="vertical"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:orientation="vertical"
+                            android:visibility="@{isEmptyAssignedTasks ? View.VISIBLE : View.GONE}"
+                            tools:visibility="visible">
 
                             <com.airbnb.lottie.LottieAnimationView
                                 android:id="@+id/animationView"
@@ -92,16 +115,15 @@
                                 android:layout_height="150dp"
                                 android:layout_gravity="center"
                                 android:backgroundTint="@android:color/transparent"
-                                app:lottie_rawRes="@raw/no_data"
+                                app:lottie_autoPlay="true"
                                 app:lottie_loop="true"
-                                app:lottie_autoPlay="true" />
+                                app:lottie_rawRes="@raw/no_data" />
 
                             <TextView
-                                android:layout_gravity="center"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/no_work_details_found"
-                                />
+                                android:layout_gravity="center"
+                                android:text="@string/no_work_details_found" />
                         </LinearLayout>
 
                     </RelativeLayout>

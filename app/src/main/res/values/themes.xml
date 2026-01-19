@@ -7,7 +7,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="fontFamily">@font/roboto_regular</item>
         <item name="android:windowBackground">@color/white</item>
-
     </style>
 
     <style name="Theme.WFMS" parent="Base.Theme.WFMS" />
@@ -29,12 +28,9 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-
-
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/top_corner_white_bg</item>
     </style>
-
 
     <!--Text View Styles-->
     <style name="CustomRegularTextView" parent="android:Widget.TextView">
@@ -195,9 +191,19 @@
         <item name="android:background">@drawable/primary_bt_bg</item>
     </style>
 
+    <style name="CustomGreenButton" parent="CustomButtonStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/day_background</item>
+    </style>
+
     <style name="CustomSmallPrimaryButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/primary_bt_bg</item>
+    </style>
+
+    <style name="CustomSmallBlueButton" parent="CustomSmallButtonStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/blue_bt_bg</item>
     </style>
 
     <style name="CustomSmallGreenButton" parent="CustomSmallButtonStyle">
@@ -272,12 +278,18 @@
     <!--OTP screen theme-->
     <style name="EditOTPStyle" parent="Widget.AppCompat.EditText">
         <item name="android:cursorVisible">false</item>
-        <item name="android:padding">@dimen/padding</item>
+        <item name="android:padding">@dimen/padding_x_small</item>
         <item name="android:layout_width">@dimen/otp_et_width</item>
         <item name="android:layout_height">@dimen/otp_et_height</item>
         <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:textSize">@dimen/default_extra_big_text</item>
+        <item name="android:textSize">@dimen/default_large_text</item>
         <item name="android:background">@drawable/otp_box_background</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <!--Checkbox Theme-->
+    <style name="CustomCheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:padding">@dimen/padding_x_small</item>
     </style>
 
 </resources>
