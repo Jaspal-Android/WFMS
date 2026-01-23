@@ -1,59 +1,58 @@
 package com.atvantiq.wfms.ui.screens.reimbursement
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.databinding.FragmentReimbursementBinding
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceOptionsAdapter
+import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
+import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
+import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
+import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.myClaims.MyClaimsActivity
 import com.atvantiq.wfms.utils.Utils
 
-class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding,ReimbursementViewModel>() {
+class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, ReimbursementViewModel>() {
 
-    private lateinit var data:List<Pair<String,String>>
-    private lateinit var optionsAdapter: AttendanceOptionsAdapter
 
     override val fragmentBinding: FragmentBinding
-        get() = FragmentBinding(R.layout.fragment_reimbursement,ReimbursementViewModel::class.java)
+        get() = FragmentBinding(R.layout.fragment_reimbursement, ReimbursementViewModel::class.java)
 
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
 
     }
 
     override fun subscribeToEvents(vm: ReimbursementViewModel) {
+        binding.vm = vm
+        vm.clickEvents.observe(viewLifecycleOwner) { event ->
+            if (!isLifeCycleResumed()) return@observe
+            handleClickEvents(event)
 
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        setReimbursmentOptions()
     }
 
-    private fun initOptionsDate(){
-        data = listOf(
-            getString(R.string.create_claim) to getString(R.string.add_new),
-            getString(R.string.my_claims) to getString(R.string.sumitted_approved_claims),
-        )
-    }
-
-    private fun setReimbursmentOptions(){
-        initOptionsDate()
-        optionsAdapter = AttendanceOptionsAdapter(data){
-            when(it){
-                0->{
-                    Utils.jumpActivity(requireContext(),CreateClaimActivity::class.java)
-                }
-                1->{
-                    Utils.jumpActivity(requireContext(),MyClaimsActivity::class.java)
-                }
-                2->{
-                    Utils.jumpActivity(requireContext(),ClaimApprovalsActivity::class.java)
-                }
+    private fun handleClickEvents(event: ReimbursementClickEvents) {
+        when (event) {
+            ReimbursementClickEvents.ON_CLICK_CREATE_CLAIM -> {
+                val intent = Intent(requireContext(), CreateClaimActivity::class.java)
+                createClaimLauncher.launch(intent)
             }
         }
-        binding.optionsList.adapter = optionsAdapter
     }
 
+    private val createClaimLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+
+            }
+        }
 }
