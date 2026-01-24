@@ -17,6 +17,8 @@
 
     <color name="green_pastel">#C5E7B0</color>
     <color name="red_pastel">#FAC0C3</color>
+    <color name="red_pastel_medium">#F89096</color>
+    <color name="red_pastel_dark">#FA4853</color>
     <color name="orange_pastal">#FFB347</color>
     <color name="blue_pastal">#AEC6CF</color>
     <color name="yellow_pastal">#E7DA8B</color>

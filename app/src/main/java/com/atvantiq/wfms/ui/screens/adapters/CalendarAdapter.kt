@@ -45,7 +45,9 @@ class CalendarAdapter(
                     when (day.status) {
                         AttendanceStatus.NO_ACTION -> context.getColor(R.color.primary_dark_pastal)
                         AttendanceStatus.PRESENT -> context.getColor(R.color.green_pastel)
-                        AttendanceStatus.ABSENT -> context.getColor(R.color.red_pastel)
+                        AttendanceStatus.ABSENT -> context.getColor(R.color.red_pastel_dark)
+                        AttendanceStatus.ABSENT_NA -> context.getColor(R.color.red_pastel_medium)
+                        AttendanceStatus.INCOMPLETE -> context.getColor(R.color.red_pastel)
                         AttendanceStatus.LEAVE -> context.getColor(R.color.primary_pastal)
                         AttendanceStatus.IDLE -> context.getColor(R.color.orange_pastal)
                         AttendanceStatus.HOLIDAY -> context.getColor(R.color.yellow_pastal)

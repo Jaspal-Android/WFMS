@@ -285,5 +285,7 @@
     <string name="ops">OPS</string>
     <string name="admin">Admin</string>
     <string name="started">Started</string>
+    <string name="absent_system_generated">Absent (System Generated)</string>
+    <string name="incomplete_attendance">Incomplete</string>
 
 </resources>
