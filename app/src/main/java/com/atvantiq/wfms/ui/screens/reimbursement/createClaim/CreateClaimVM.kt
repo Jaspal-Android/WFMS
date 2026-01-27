@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 import android.app.Application
+import androidx.databinding.ObservableField
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.models.reimbursement.DAExpense
@@ -12,6 +13,8 @@ import com.atvantiq.wfms.models.reimbursement.TravelExpense
 class CreateClaimVM(application: Application) : AndroidViewModel(application) {
 
     var remarks = MutableLiveData<String>().apply { value = "" }
+    var date = ObservableField<String>().apply { set("") }
+    var purpose = ObservableField<String>().apply { set("") }
     var selectedSingleSite = MutableLiveData<String>().apply { value = "" }
     var selectedMultiSiteList = MutableLiveData<List<MultipleSite>>().apply { value = emptyList() }
     var travelingEntriesList = MutableLiveData<List<TravelExpense>>().apply { value = emptyList() }
@@ -24,6 +27,8 @@ class CreateClaimVM(application: Application) : AndroidViewModel(application) {
     private fun postClickEvent(event: CreateClaimClickEvents) {
         clickEvents.value = event
     }
+
+    fun onDateClick() = postClickEvent(CreateClaimClickEvents.ON_DATE_PICKER_CLICK)
 
     fun onSingleSiteClick() = postClickEvent(CreateClaimClickEvents.ON_SINGLE_SITE_CLICK)
 
@@ -46,6 +51,8 @@ class CreateClaimVM(application: Application) : AndroidViewModel(application) {
     fun onAddOthersExpenseClick() = postClickEvent(CreateClaimClickEvents.ON_ADD_OTHERS_EXPENSE_CLICK)
 
     fun onCancelClick() = postClickEvent(CreateClaimClickEvents.ON_CANCEL_CLICK)
+
+    fun onPurposeClick() = postClickEvent(CreateClaimClickEvents.ON_PURPOSE_CLICK)
 
     /*Handling single site*/
     fun  onSingleSiteSelected(siteId:String){

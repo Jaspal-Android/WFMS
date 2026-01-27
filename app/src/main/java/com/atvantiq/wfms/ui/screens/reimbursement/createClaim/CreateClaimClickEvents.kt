@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 enum class CreateClaimClickEvents {
+    ON_DATE_PICKER_CLICK,
     ON_SINGLE_SITE_CLICK,
     ON_MULTI_SITE_CLICK,
     ON_LOCAL_CLAIM_CLICK,
@@ -11,5 +12,6 @@ enum class CreateClaimClickEvents {
     ON_ADD_DAILY_ALLOWANCE_CLICK,
     ON_ADD_HOTEL_EXPENSE_CLICK,
     ON_ADD_OTHERS_EXPENSE_CLICK,
-    ON_CANCEL_CLICK
+    ON_CANCEL_CLICK,
+    ON_PURPOSE_CLICK
 }

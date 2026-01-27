@@ -200,7 +200,7 @@
     <string name="Longitude">Longitude</string>
     <string name="Address">Address</string>
     <string name="sites">Sites</string>
-    <string name="add_site">Add Site</string>
+    <string name="add_site">Add Sites</string>
     <string name="siteNameHint">Enter Site Name</string>
     <string name="siteIdHint">Enter Site ID</string>
     <string name="siteAddressHint">Enter Site Address</string>
@@ -313,5 +313,7 @@
     <string name="add_others_entry">Enter Others Entry</string>
     <string name="enter_valid_amount">Enter valid amount</string>
     <string name="category">Category</string>
+    <string name="purpose">Purpose</string>
+    <string name="select_purpose">Select Purpose</string>
 
 </resources>

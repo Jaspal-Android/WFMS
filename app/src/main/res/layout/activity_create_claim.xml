@@ -6,10 +6,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="dateString"
-            type="String" />
-
-        <variable
             name="isMultiSite"
             type="Boolean" />
 
@@ -90,7 +86,10 @@
                                     android:completionThreshold="1"
                                     android:ellipsize="start"
                                     android:padding="@dimen/padding"
+                                    android:text="@={vm.date}"
+                                    android:onClick="@{()->vm.onDateClick()}"
                                     android:scrollHorizontally="true"
+                                    tools:text="20-01-2026"
                                     android:singleLine="true" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -152,6 +151,7 @@
 
                             <!-- Single Site Selection -->
                             <com.google.android.material.textfield.TextInputLayout
+                                tools:visibility="gone"
                                 android:visibility="@{isMultiSite ? View.GONE : View.VISIBLE}"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -179,7 +179,7 @@
 
                             <!-- Multiple Site Container -->
                             <LinearLayout
-                                tools:visibility="gone"
+                                tools:visibility="visible"
                                 android:id="@+id/multipleSiteContainer"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -189,6 +189,30 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/segmentSiteType">
+
+                                <!-- NEW: Purpose (selectable) -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/purpose"
+                                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                                    android:layout_marginBottom="@dimen/margin"
+                                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                    app:endIconMode="custom">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/purpose_et"
+                                        style="@style/CustomSelectableTextInputEditStyle"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="start"
+                                        android:padding="@dimen/padding"
+                                        android:scrollHorizontally="true"
+                                        android:singleLine="true"
+                                        android:onClick="@{()->vm.onPurposeClick()}"
+                                        android:text="@={vm.purpose}"
+                                        tools:text="Select purpose" />
+                                </com.google.android.material.textfield.TextInputLayout>
 
                                 <androidx.appcompat.widget.AppCompatButton
                                     android:onClick="@{()->vm.onAddMultipleSiteClick()}"
@@ -206,7 +230,7 @@
                                     android:id="@+id/rvSelectedSites"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/margin"
+                                    android:layout_marginTop="@dimen/margin_small"
                                     tools:itemCount="2"
                                     tools:listitem="@layout/item_selected_site" />
                             </LinearLayout>

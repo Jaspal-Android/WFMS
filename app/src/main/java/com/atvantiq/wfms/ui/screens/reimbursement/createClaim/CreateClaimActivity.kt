@@ -3,6 +3,7 @@ package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
@@ -10,8 +11,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.constants.AppListData
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivityCreateClaimBinding
+import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.reimbursement.DAExpense
 import com.atvantiq.wfms.models.reimbursement.HotelExpense
 import com.atvantiq.wfms.models.reimbursement.MultipleSite
@@ -27,6 +30,7 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.Ad
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterDaBottomSheet
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterOthersBottomSheet
 import com.atvantiq.wfms.utils.DateUtils
+import java.util.Locale
 
 class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaimVM>() {
 
@@ -52,7 +56,6 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         setUpSelectedDAEntriesRecycler()
         setUpSelectedHotelEntriesRecycler()
         setUpSelectedOthersEntriesRecycler()
-        setListeners()
     }
 
     private fun setUpToolbar() {
@@ -102,17 +105,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         binding.rvOtherEntries.adapter = selectedOthersEntriesAdapter
     }
 
-    private fun setListeners() {
-        binding.dateEt.setOnClickListener {
-            showDatePicker()
-        }
-
-    }
-
     private fun showDatePicker() {
         DateUtils.onDateClickWithLimit(this, object : DateUtils.DateCallBack {
             override fun onDateSelected(date: String, formatDate: String) {
-                binding.dateString = date
+                viewModel.date.set(date)
             }
         }, false)
     }
@@ -147,6 +143,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun handleClickEvents(event: CreateClaimClickEvents) {
         when (event) {
+            CreateClaimClickEvents.ON_DATE_PICKER_CLICK -> {
+                showDatePicker()
+            }
+
             CreateClaimClickEvents.ON_SINGLE_SITE_CLICK -> {
                 binding.isMultiSite = false
                 viewModel.clearSelectedMultiSites()
@@ -201,6 +201,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
             CreateClaimClickEvents.ON_CANCEL_CLICK -> {
                 finish()
+            }
+
+            CreateClaimClickEvents.ON_PURPOSE_CLICK -> {
+                showPurposeSelectionDialog(AppListData.purposes)
             }
         }
     }
@@ -271,5 +275,27 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             viewModel.addOtherExpense(othersExpense)
         }
         dialog.show(supportFragmentManager, "EnterOtherBottomSheet")
+    }
+
+    private fun showPurposeSelectionDialog(purposeList: List<String>) {
+        showSelectionDialog(
+            items = purposeList,
+            title = getString(R.string.select_purpose),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, purpose ->
+                view.findViewById<TextView>(R.id.text1).text = purpose
+            },
+            onItemSelected = {
+                binding.purposeEt.error = null
+                viewModel.purpose.set(it)
+            },
+            filterCondition = { purpose, query ->
+                purpose.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_data_available),
+            retryAction = {  },
+            tag = "PurposeSelectionDialog"
+        )
     }
 }

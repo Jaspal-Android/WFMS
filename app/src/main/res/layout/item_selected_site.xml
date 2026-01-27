@@ -20,17 +20,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvPurpose"
-            style="@style/CustomMediumTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="Site inspection and maintenance"
-            app:layout_constraintEnd_toStartOf="@id/btnRemove"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvSiteId" />
-
         <ImageButton
             android:id="@+id/btnRemove"
             android:layout_width="24dp"
