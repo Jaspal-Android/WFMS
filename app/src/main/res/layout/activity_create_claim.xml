@@ -171,6 +171,7 @@
                                     android:completionThreshold="1"
                                     android:ellipsize="start"
                                     android:padding="@dimen/padding"
+                                    android:text="@={vm.selectedSingleSite}"
                                     android:scrollHorizontally="true"
                                     android:singleLine="true"
                                    />

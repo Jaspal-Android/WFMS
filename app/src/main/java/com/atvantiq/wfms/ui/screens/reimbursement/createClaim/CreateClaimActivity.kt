@@ -1,8 +1,10 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +22,8 @@ import com.atvantiq.wfms.models.reimbursement.HotelExpense
 import com.atvantiq.wfms.models.reimbursement.MultipleSite
 import com.atvantiq.wfms.models.reimbursement.OtherExpense
 import com.atvantiq.wfms.models.reimbursement.TravelExpense
+import com.atvantiq.wfms.models.type.TypeData
+import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.AddDaExpenseEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedHotelEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedOtherEntriesAdapter
@@ -116,7 +120,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     override fun subscribeToEvents(vm: CreateClaimVM) {
         binding.vm = vm
 
-        vm.selectedMultiSiteList.observe(this) { list ->
+        vm.selectedSitesIdList.observe(this) { list ->
             selectedSitesAdapter.submitList(list)
         }
 
@@ -166,16 +170,18 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             CreateClaimClickEvents.ON_ADD_MULTIPLE_SITE_CLICK -> {
-                addSiteDetailsActivityResultLauncher.launch(
+                /*addSiteDetailsActivityResultLauncher.launch(
                     Intent(
                         this,
                         AddMutilSiteDetailsActivity::class.java
                     )
-                )
+                )*/
+                /*Add code here*/
+                showSitesSelectionDialog(AppListData.sites)
             }
 
             CreateClaimClickEvents.ON_SINGLE_SITE_DROPDOWN_CLICK -> {
-
+                showSingleSiteSelectionDialog(AppListData.sites)
             }
 
             CreateClaimClickEvents.ON_ADD_TRAVELING_EXPENSE_CLICK -> {
@@ -216,7 +222,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             val data: Intent? = result.data
             val siteID = data?.getLongExtra(SharingKeys.SITE_ID, -1) ?: -1
             val purpose = data?.getStringExtra(SharingKeys.SITE_PURPOSE) ?: ""
-            viewModel.addMultipleSite(MultipleSite(siteID, purpose))
+            //viewModel.addMultipleSite(MultipleSite(siteID, purpose))
         }
     }
 
@@ -297,5 +303,71 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             retryAction = {  },
             tag = "PurposeSelectionDialog"
         )
+    }
+
+    private fun showSingleSiteSelectionDialog(siteList: List<String>) {
+        showSelectionDialog(
+            items = siteList,
+            title = getString(R.string.select_site),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, site ->
+                view.findViewById<TextView>(R.id.text1).text = site
+            },
+            onItemSelected = {
+                binding.siteEt.error = null
+                viewModel.onSingleSiteSelected(it)
+            },
+            filterCondition = { site, query ->
+                site.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))
+            },
+            emptyMessage = getString(R.string.no_data_available),
+            retryAction = {  },
+            tag = "SiteSelectionDialog"
+        )
+    }
+
+    private fun showSitesSelectionDialog(sites: List<String>) {
+        if (sites.isEmpty()) {
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.no_types_available),
+                getString(R.string.retry),
+                okLister = DialogInterface.OnClickListener { _, _ ->
+                    //getTypeListByPo(viewModel.selectedPoNumberId ?: 0L)
+                },
+            )
+        }else{
+            val preSelectedSites = viewModel.selectedSitesIdList?.value?.mapNotNull { site ->
+                sites.find { it == site }
+            }?.toSet() ?: emptySet()
+
+            val dialog = MultiSelectBottomSheetDialog(
+                context = this,
+                items = sites,
+                preSelectedItems = preSelectedSites,
+                bind = { view, site, isSelected ->
+                    view.findViewById<TextView>(R.id.textView).text = site
+                    view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
+                },
+                onSelectionChanged = { selectedSites ->
+                    updateSelectedSites(selectedSites)
+                },
+                onSubmit = { selectedSites ->
+                    updateSelectedSites(selectedSites)
+                },
+                filterCondition = { site, query ->
+                    site?.lowercase(Locale.getDefault())
+                        ?.contains(query.lowercase(Locale.getDefault()))?:false
+                },
+                title = getString(R.string.select_site)
+            )
+            dialog.show(supportFragmentManager, "SiteSelectionDialog")
+        }
+    }
+
+    private fun updateSelectedSites(selectedSites: Set<String>) {
+       viewModel.addMultipleSite(selectedSites.toList())
     }
 }

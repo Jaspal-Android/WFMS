@@ -6,4 +6,10 @@ object AppListData {
         "Maintenance",
         "Repair"
     )
+    val  sites = listOf(
+        "Site A",
+        "Site B",
+        "Site C"
+    )
+
 }

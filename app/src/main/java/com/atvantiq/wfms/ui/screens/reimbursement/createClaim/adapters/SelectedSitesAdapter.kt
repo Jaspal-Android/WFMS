@@ -7,12 +7,12 @@ import com.atvantiq.wfms.databinding.ItemSelectedSiteBinding
 import com.atvantiq.wfms.models.reimbursement.MultipleSite
 
 class SelectedSitesAdapter(
-    private val onRemoveClick: (MultipleSite) -> Unit
+    private val onRemoveClick: (String) -> Unit
 ) : RecyclerView.Adapter<SelectedSitesAdapter.SelectedSiteViewHolder>() {
 
-    private val items = mutableListOf<MultipleSite>()
+    private val items = mutableListOf<String>()
 
-    fun submitList(list: List<MultipleSite>) {
+    fun submitList(list: List<String>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -32,10 +32,11 @@ class SelectedSitesAdapter(
 
     class SelectedSiteViewHolder(
         private val binding: ItemSelectedSiteBinding,
-        private val onRemoveClick: (MultipleSite) -> Unit
+        private val onRemoveClick: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: MultipleSite){
+        fun bind(item: String){
+            binding.tvSiteId.text = item
             binding.btnRemove.setOnClickListener {
                 onRemoveClick(item)
             }

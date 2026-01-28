@@ -9,18 +9,20 @@ import com.atvantiq.wfms.models.reimbursement.HotelExpense
 import com.atvantiq.wfms.models.reimbursement.MultipleSite
 import com.atvantiq.wfms.models.reimbursement.OtherExpense
 import com.atvantiq.wfms.models.reimbursement.TravelExpense
+import com.atvantiq.wfms.models.type.TypeData
 
 class CreateClaimVM(application: Application) : AndroidViewModel(application) {
 
     var remarks = MutableLiveData<String>().apply { value = "" }
     var date = ObservableField<String>().apply { set("") }
     var purpose = ObservableField<String>().apply { set("") }
-    var selectedSingleSite = MutableLiveData<String>().apply { value = "" }
-    var selectedMultiSiteList = MutableLiveData<List<MultipleSite>>().apply { value = emptyList() }
+    var selectedSingleSite = ObservableField<String>().apply { set("") }
     var travelingEntriesList = MutableLiveData<List<TravelExpense>>().apply { value = emptyList() }
     var daEntriesList = MutableLiveData<List<DAExpense>>().apply { value = emptyList() }
     var hotelEntriesList = MutableLiveData<List<HotelExpense>>().apply { value = emptyList() }
     var othersEntriesList = MutableLiveData<List<OtherExpense>>().apply { value = emptyList() }
+    var selectedSitesIdList = MutableLiveData<List<String>>().apply { value = emptyList() }
+
 
     var clickEvents = MutableLiveData<CreateClaimClickEvents>()
 
@@ -56,35 +58,36 @@ class CreateClaimVM(application: Application) : AndroidViewModel(application) {
 
     /*Handling single site*/
     fun  onSingleSiteSelected(siteId:String){
-        selectedSingleSite.value = siteId
+        selectedSingleSite.set(siteId)
     }
 
     /*Handling multiple site*/
-    fun addMultipleSite(site: MultipleSite) {
-        val currentList = selectedMultiSiteList.value?.toMutableList() ?: mutableListOf()
-        currentList.add(site)
-        selectedMultiSiteList.value = currentList
+    fun addMultipleSite(sites: List<String>) {
+        val currentList = selectedSitesIdList.value?.toMutableList() ?: mutableListOf()
+        currentList?.clear()
+        currentList.addAll(sites)
+        selectedSitesIdList.value = currentList
     }
     /*Removing item from multiple site*/
-    fun removeMultipleSite(site: MultipleSite) {
-        val currentList = selectedMultiSiteList.value?.toMutableList() ?: mutableListOf()
+    fun removeMultipleSite(site: String) {
+        val currentList = selectedSitesIdList.value?.toMutableList() ?: mutableListOf()
         val iterator = currentList.iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
-            if (item.siteId == site.siteId) {
+            if (item == site) {
                 iterator.remove()
                 break
             }
         }
-        selectedMultiSiteList.value = currentList
+        selectedSitesIdList.value = currentList
     }
 
     fun clearSelectedMultiSites() {
-        selectedMultiSiteList.value = emptyList()
+        selectedSitesIdList.value = emptyList()
     }
 
     fun clearSelectedSingleSite() {
-        selectedSingleSite.value = ""
+        selectedSingleSite.set("")
     }
 
     /* Add Travel Expense*/
