@@ -152,8 +152,13 @@ class AttendanceStatusFragment :
         val records = response.data?.records
         if (!records.isNullOrEmpty()) {
             val attendanceDays = records.map { detail ->
+                val date = if (detail.checkin == null  || detail.checkin?.time.isNullOrEmpty()) {
+                    DateUtils.formatApiDateToYMD(detail.createdAt).toString()
+                } else {
+                    DateUtils.formatApiDateToYMD(detail.checkin?.time).toString()
+                }
                 AttendanceDay(
-                    date = DateUtils.formatApiDateToYMD(detail.checkin?.time).toString(),
+                    date = date,
                     status = mapStatus(detail.status?.code ?: -1),
                     record = detail
                 )
@@ -173,12 +178,16 @@ class AttendanceStatusFragment :
         4 -> AttendanceStatus.IDLE
         5 -> AttendanceStatus.HOLIDAY
         6 -> AttendanceStatus.WORK_OFF
+        7 -> AttendanceStatus.ABSENT_NA
+        8 -> AttendanceStatus.INCOMPLETE
         else -> AttendanceStatus.NO_ACTION
     }
 
     private fun resetAttendanceSummary() = with(binding) {
         binding.presentText.text = "0"
         binding.absentText.text = "0"
+        binding.absentNaText.text = "0"
+        binding.incompleteText.text = "0"
         binding.leaveText.text = "0"
         binding.idleText.text = "0"
         binding.holidayText.text = "0"
@@ -190,6 +199,8 @@ class AttendanceStatusFragment :
     private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) = with(binding) {
         binding.presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
         binding.absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
+        binding.absentNaText.text = statusCounts[AttendanceStatus.ABSENT_NA]?.toString() ?: "0"
+        binding.incompleteText.text = statusCounts[AttendanceStatus.INCOMPLETE]?.toString() ?: "0"
         binding.leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
         binding.idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
         binding.holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"

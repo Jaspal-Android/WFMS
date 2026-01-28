@@ -101,7 +101,7 @@
                             android:gravity="start"
                             android:text="@string/total_days_of_month"
                             app:layout_constraintEnd_toStartOf="@+id/totalDaysText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/summaryLabel" />
 
@@ -139,7 +139,7 @@
                             android:gravity="start"
                             android:text="@string/present"
                             app:layout_constraintEnd_toStartOf="@+id/presentText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/present_box"
                             app:layout_constraintTop_toBottomOf="@+id/totalDaysText" />
 
@@ -161,7 +161,7 @@
                             android:id="@+id/absent_box"
                             android:layout_width="10dp"
                             android:layout_height="10dp"
-                            android:background="@color/red_pastel"
+                            android:background="@color/red_pastel_dark"
                             app:layout_constraintBottom_toBottomOf="@+id/AbsentLabel"
                             app:layout_constraintEnd_toStartOf="@+id/AbsentLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -177,7 +177,7 @@
                             android:gravity="start"
                             android:text="@string/absent"
                             app:layout_constraintEnd_toStartOf="@+id/absentText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/absent_box"
                             app:layout_constraintTop_toBottomOf="@+id/presentText" />
 
@@ -194,6 +194,82 @@
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/AbsentLabel"
                             app:layout_constraintTop_toTopOf="@+id/AbsentLabel" />
+
+                        <View
+                            android:id="@+id/absent_na_box"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:background="@color/red_pastel_medium"
+                            app:layout_constraintBottom_toBottomOf="@+id/AbsentNaLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/AbsentNaLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/AbsentNaLabel" />
+
+                        <TextView
+                            android:id="@+id/AbsentNaLabel"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:gravity="start"
+                            android:text="@string/absent_system_generated"
+                            app:layout_constraintEnd_toStartOf="@+id/absentNaText"
+                            app:layout_constraintHorizontal_weight="2"
+                            app:layout_constraintStart_toEndOf="@+id/absent_na_box"
+                            app:layout_constraintTop_toBottomOf="@+id/absentText" />
+
+                        <TextView
+                            android:id="@+id/absentNaText"
+                            style="@style/CustomMediumDarkTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:gravity="end"
+                            tools:text="5"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintStart_toEndOf="@+id/AbsentNaLabel"
+                            app:layout_constraintTop_toTopOf="@+id/AbsentNaLabel" />
+
+                        <View
+                            android:id="@+id/incomplete_box"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:background="@color/red_pastel"
+                            app:layout_constraintBottom_toBottomOf="@+id/incompleteLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/incompleteLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/incompleteLabel" />
+
+                        <TextView
+                            android:id="@+id/incompleteLabel"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:gravity="start"
+                            android:text="@string/incomplete_attendance"
+                            app:layout_constraintEnd_toStartOf="@+id/incompleteText"
+                            app:layout_constraintHorizontal_weight="2"
+                            app:layout_constraintStart_toEndOf="@+id/incomplete_box"
+                            app:layout_constraintTop_toBottomOf="@+id/AbsentNaLabel" />
+
+                        <TextView
+                            android:id="@+id/incompleteText"
+                            style="@style/CustomMediumDarkTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:gravity="end"
+                            tools:text="8"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintStart_toEndOf="@+id/incompleteLabel"
+                            app:layout_constraintTop_toTopOf="@+id/incompleteLabel" />
 
                         <View
                             android:id="@+id/leave_box"
@@ -215,9 +291,9 @@
                             android:gravity="start"
                             android:text="@string/leave"
                             app:layout_constraintEnd_toStartOf="@+id/leaveText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/leave_box"
-                            app:layout_constraintTop_toBottomOf="@+id/absentText" />
+                            app:layout_constraintTop_toBottomOf="@+id/incompleteText" />
 
                         <TextView
                             android:id="@+id/leaveText"
@@ -253,7 +329,7 @@
                             android:gravity="start"
                             android:text="@string/idle"
                             app:layout_constraintEnd_toStartOf="@+id/idleText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/idle_box"
                             app:layout_constraintTop_toBottomOf="@+id/leaveText" />
 
@@ -291,7 +367,7 @@
                             android:gravity="start"
                             android:text="@string/work_off"
                             app:layout_constraintEnd_toStartOf="@+id/workOffText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/wf_box"
                             app:layout_constraintTop_toBottomOf="@+id/idleText" />
 
@@ -331,7 +407,7 @@
                             android:gravity="start"
                             android:text="@string/holidays"
                             app:layout_constraintEnd_toStartOf="@+id/holidayText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/holiday_box"
                             app:layout_constraintTop_toBottomOf="@+id/workOffText" />
 
@@ -369,7 +445,7 @@
                             android:gravity="start"
                             android:text="@string/attendance_submitted"
                             app:layout_constraintEnd_toStartOf="@+id/noActionText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/no_action_box"
                             app:layout_constraintTop_toBottomOf="@+id/holidayText" />
 
@@ -407,7 +483,7 @@
                             android:gravity="start"
                             android:text="@string/unmarked_days"
                             app:layout_constraintEnd_toStartOf="@+id/naText"
-                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/na_box"
                             app:layout_constraintTop_toBottomOf="@+id/noActionText" />
 

@@ -35,6 +35,12 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             pickMediaHelper.handlePermissionResult(permissions)
         }
+
+    private val photoPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            pickMediaHelper.handlePhotoPickerResult(uri)
+        }
+
     private lateinit var pickMediaHelper: PickMediaHelper
     /*----------------------------------------------------------------------*/
 
@@ -79,6 +85,7 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
                     binding.hasPreviewImage = false
                 }
             })
+        pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
     }
 
     override fun subscribeToEvents(vm: ApplyLeaveVM) {

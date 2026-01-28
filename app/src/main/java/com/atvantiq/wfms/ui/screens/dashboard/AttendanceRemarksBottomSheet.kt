@@ -1,22 +1,13 @@
 package com.atvantiq.wfms.ui.screens.dashboard
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetAttendanceRemarksBinding
-import com.atvantiq.wfms.databinding.BottomSheetEndWorkBinding
-import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.models.StatusOption
-import com.atvantiq.wfms.ui.screens.adapters.StatusAdapter
-import com.atvantiq.wfms.utils.files.PickMediaHelper
-import com.atvantiq.wfms.widgets.DividerItemDecoration
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class AttendanceRemarksBottomSheet(var onSubmitDetails: (remarkds: String) -> Unit
