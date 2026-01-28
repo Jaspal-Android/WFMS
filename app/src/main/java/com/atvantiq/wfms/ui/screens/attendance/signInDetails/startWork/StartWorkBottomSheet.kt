@@ -30,6 +30,11 @@ class StartWorkBottomSheet(var latitude:String,var longitude:String,var onImageS
 		pickMediaHelper.handlePermissionResult(permissions)
 	}
 
+	private val photoPickerLauncher =
+		registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+			pickMediaHelper.handlePhotoPickerResult(uri)
+		}
+
 	private lateinit var pickMediaHelper: PickMediaHelper
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +79,7 @@ class StartWorkBottomSheet(var latitude:String,var longitude:String,var onImageS
 				binding.hasPreviewImage = false
 			}
 		})
+		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
 	}
 
 	private fun initListeners() {
