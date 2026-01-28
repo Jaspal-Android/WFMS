@@ -10,4 +10,7 @@ object SharingKeys {
     const val REFRESH_ASSIGN_TASK = "2001"
     const val ROLE_PERMISSIONS = "ROLE_PERMISSIONS"
     const val UPDATED_STATUS = "UPDATED_STATUS"
+    const val SITE_ID = "SITE_ID"
+    const val SITE_PURPOSE = "SITE_PURPOSE"
+    const val TRAVELING_DETAILS = "TRAVELING_DETAILS"
 }

@@ -182,14 +182,7 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
                 R.id.nav_vendor -> {
                     // Implement your logout logic here
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_reimbursement -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
+                    alertDialogShow(this, getString(R.string.under_development))
                     true
                 }
 

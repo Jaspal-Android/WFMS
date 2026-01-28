@@ -6,12 +6,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="isMultiSite"
-            type="Boolean" />
-
-        <variable
-            name="isOutstationExpense"
-            type="Boolean" />
+            name="dateString"
+            type="String" />
 
         <variable
             name="vm"
@@ -31,7 +27,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+            android:background="@color/cardLightBackground">
 
             <include
                 android:id="@+id/createReimbursementToolbar"
@@ -49,7 +45,6 @@
                 app:layout_constraintTop_toBottomOf="@id/createReimbursementToolbar">
 
                 <LinearLayout
-                    android:background="@color/cardLightBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -60,7 +55,7 @@
                         android:id="@+id/dateCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -86,10 +81,7 @@
                                     android:completionThreshold="1"
                                     android:ellipsize="start"
                                     android:padding="@dimen/padding"
-                                    android:text="@={vm.date}"
-                                    android:onClick="@{()->vm.onDateClick()}"
                                     android:scrollHorizontally="true"
-                                    tools:text="20-01-2026"
                                     android:singleLine="true" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -100,7 +92,7 @@
                         android:id="@+id/siteCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -151,8 +143,6 @@
 
                             <!-- Single Site Selection -->
                             <com.google.android.material.textfield.TextInputLayout
-                                tools:visibility="gone"
-                                android:visibility="@{isMultiSite ? View.GONE : View.VISIBLE}"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin_small"
@@ -163,7 +153,6 @@
                                 app:layout_constraintTop_toBottomOf="@+id/segmentSiteType">
 
                                 <com.google.android.material.textfield.TextInputEditText
-                                    android:onClick="@{()->vm.onSiteDropdownClick()}"
                                     android:id="@+id/site_et"
                                     style="@style/CustomSelectableTextInputEditStyle"
                                     android:layout_width="match_parent"
@@ -173,49 +162,22 @@
                                     android:padding="@dimen/padding"
                                     android:scrollHorizontally="true"
                                     android:singleLine="true"
-                                   />
+                                    android:visibility="gone" />
                             </com.google.android.material.textfield.TextInputLayout>
-
 
                             <!-- Multiple Site Container -->
                             <LinearLayout
-                                tools:visibility="visible"
                                 android:id="@+id/multipleSiteContainer"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
                                 android:orientation="vertical"
-                                android:visibility="@{isMultiSite ? View.VISIBLE : View.GONE}"
+                                android:visibility="visible"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/segmentSiteType">
 
-                                <!-- NEW: Purpose (selectable) -->
-                                <com.google.android.material.textfield.TextInputLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="@string/purpose"
-                                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                                    android:layout_marginBottom="@dimen/margin"
-                                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                                    app:endIconMode="custom">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/purpose_et"
-                                        style="@style/CustomSelectableTextInputEditStyle"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:ellipsize="start"
-                                        android:padding="@dimen/padding"
-                                        android:scrollHorizontally="true"
-                                        android:singleLine="true"
-                                        android:onClick="@{()->vm.onPurposeClick()}"
-                                        android:text="@={vm.purpose}"
-                                        tools:text="Select purpose" />
-                                </com.google.android.material.textfield.TextInputLayout>
-
                                 <androidx.appcompat.widget.AppCompatButton
-                                    android:onClick="@{()->vm.onAddMultipleSiteClick()}"
                                     android:id="@+id/btnAddSite"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -230,7 +192,7 @@
                                     android:id="@+id/rvSelectedSites"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/margin_small"
+                                    android:layout_marginTop="@dimen/margin"
                                     tools:itemCount="2"
                                     tools:listitem="@layout/item_selected_site" />
                             </LinearLayout>
@@ -242,7 +204,7 @@
                         android:id="@+id/projectCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -277,7 +239,7 @@
                         android:id="@+id/expenseTypeCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -313,7 +275,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:onClick="@{()->vm.onLocalClaimClick()}"
-                                    android:text="@string/local" />
+                                    android:text="@string/singleSite" />
 
                                 <RadioButton
                                     android:id="@+id/outstationExpenseBt"
@@ -322,7 +284,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:onClick="@{()->vm.onOutstationClaimClick()}"
-                                    android:text="@string/outstation" />
+                                    android:text="@string/multiSite" />
 
                             </RadioGroup>
                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -333,7 +295,7 @@
                         android:id="@+id/travelingCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/padding"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -353,18 +315,15 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()->vm.onAddTravelingExpenseClick()}"
-                                android:gravity="center_vertical"
-                                android:paddingVertical="@dimen/padding_x_small"
-                                android:paddingHorizontal="@dimen/padding"
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnAddTravel"
                                 style="@style/CustomMediumLightTextView"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
                                 android:background="@drawable/blue_bt_bg"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
+                                app:icon="@drawable/ic_add_white_24"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -399,7 +358,7 @@
                         android:id="@+id/daCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -419,16 +378,13 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()-> vm.onAddDailyAllowanceClick()}"
-                                android:gravity="center_vertical"
-                                android:paddingVertical="@dimen/padding_x_small"
-                                android:paddingHorizontal="@dimen/padding"
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnAddDA"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallLightTextView"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
                                 android:background="@drawable/blue_bt_bg"
+                                android:drawableStart="@drawable/ic_add_white_24"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
                                 android:textColor="@android:color/white"
@@ -465,11 +421,10 @@
 
                     <!-- Hotel Card (Visible only for Outstation) -->
                     <androidx.cardview.widget.CardView
-                        android:visibility="@{isOutstationExpense ? View.VISIBLE : View.GONE}"
                         android:id="@+id/hotelCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -489,16 +444,13 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()-> vm.onAddHotelExpenseClick()}"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="@dimen/padding"
-                                android:paddingVertical="@dimen/padding_x_small"
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnAddHotel"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallLightTextView"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
                                 android:background="@drawable/blue_bt_bg"
+                                android:drawableStart="@drawable/ic_add_white_24"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
                                 app:icon="@drawable/ic_add_white_24"
@@ -536,7 +488,7 @@
                         android:id="@+id/othersCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -556,16 +508,13 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()-> vm.onAddOthersExpenseClick()}"
-                                android:paddingHorizontal="@dimen/padding"
-                                android:paddingVertical="@dimen/padding_x_small"
-                                android:gravity="center_vertical"
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnAddOther"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallLightTextView"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
                                 android:background="@drawable/blue_bt_bg"
+                                android:drawableStart="@drawable/ic_add_white_24"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -603,7 +552,7 @@
                         android:id="@+id/remarksCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
+                        android:layout_marginBottom="@dimen/margin"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -653,7 +602,6 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <androidx.appcompat.widget.AppCompatButton
-
                     android:id="@+id/btnCancel"
                     style="@style/CustomRedButton"
                     android:layout_width="0dp"
