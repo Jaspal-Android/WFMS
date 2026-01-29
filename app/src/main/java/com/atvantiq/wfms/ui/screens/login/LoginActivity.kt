@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -63,7 +64,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         vm.clickEvents.observe(this, Observer { handleClickEvents(it, vm) })
         vm.errorHandler.observe(this, Observer { handleErrors(it) })
         vm.loginResponse.observe(this, Observer { handleLoginResponse(it) })
-        vm.sendNotificationTokenResponse.observe(this, Observer { handleSendNotificationTokenResponse(it) })
+        vm.sendNotificationTokenResponse.observe(
+            this,
+            Observer { handleSendNotificationTokenResponse(it) })
         vm.requestOtpResponse.observe(this, Observer { handleRequestOtpResponse(it) })
     }
 
@@ -72,7 +75,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             LoginClickEvents.ON_PASSWORD_TOGGLE -> handlePasswordToggle(vm)
             LoginClickEvents.ON_LOGIN_CLICK -> navigateToDashboard()
             LoginClickEvents.ON_FORGET_PASSWORD_CLICK -> navigateToForgotPassword()
-            LoginClickEvents.ON_FETCH_CURRENT_LATITUDE_LONGITUDE_CLICKS -> getCurrentLatitudeLongitudePermissions()
+            LoginClickEvents.ON_FETCH_CURRENT_LATITUDE_LONGITUDE_CLICKS -> startLocationPermission()
             LoginClickEvents.ON_LOGIN_WITH_OTP_CLICK -> requestOtp()
         }
     }
@@ -86,6 +89,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
                 }
                 shakeEditText(this, binding.phoneEmailInput)
             }
+
             LoginErrorHandler.EMPTY_PASSWORD -> {
                 binding.passwordEt?.apply {
                     setError(getString(R.string.enter_password))
@@ -102,7 +106,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             Status.LOADING -> showProgress()
             Status.ERROR -> {
                 dismissProgress()
-                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    response.throwable?.message.orEmpty()
+                )
             }
         }
     }
@@ -114,10 +122,18 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
                 showToast(this, getString(R.string.login_success))
                 navigateToDashboard()
             }
-            Status.LOADING -> {showProgress()}
+
+            Status.LOADING -> {
+                showProgress()
+            }
+
             Status.ERROR -> {
                 dismissProgress()
-                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    response.throwable?.message.orEmpty()
+                )
             }
         }
     }
@@ -142,7 +158,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
                         }
                     }
             } else {
-                alertDialogShow(this, getString(R.string.alert), it.message.orEmpty()) { dialog, _ ->
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    it.message.orEmpty()
+                ) { dialog, _ ->
                     dialog.dismiss()
                 }
             }
@@ -154,10 +174,18 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             Status.SUCCESS -> {
                 handleRequestOtpSuccess(response)
             }
-            Status.LOADING -> {showProgress()}
+
+            Status.LOADING -> {
+                showProgress()
+            }
+
             Status.ERROR -> {
                 dismissProgress()
-                alertDialogShow(this, getString(R.string.alert), response.throwable?.message.orEmpty())
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    response.throwable?.message.orEmpty()
+                )
             }
         }
     }
@@ -167,14 +195,18 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         response.response?.let {
             if (it.code == 200 && it.success) {
                 showToast(this, it.message.orEmpty())
-                getOtpBottomSheet = GetOTPBottomSheetDialog (onSubmitOTP = { otp ->
+                getOtpBottomSheet = GetOTPBottomSheetDialog(onSubmitOTP = { otp ->
                     viewModel.verifyLoginWithOtp(otp)
                 }, onResendOTP = {
                     viewModel.requestLoginWithOtp()
                 })
                 getOtpBottomSheet?.show(supportFragmentManager, "GetOTPBottomSheetDialog")
             } else {
-                alertDialogShow(this, getString(R.string.alert), it.message.orEmpty()) { dialog, _ ->
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    it.message.orEmpty()
+                ) { dialog, _ ->
                     dialog.dismiss()
                 }
             }
@@ -196,12 +228,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         val permissions = viewModel?.user?.permissions
 
         if (role.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true)) {
-            Utils.jumpActivityWithData(this, DashboardActivity::class.java,Bundle().apply {
-                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS,permissions as ArrayList)
+            Utils.jumpActivityWithData(this, DashboardActivity::class.java, Bundle().apply {
+                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissions as ArrayList)
             })
         } else {
-            Utils.jumpActivityWithData(this, SharedDashboardActivity::class.java,Bundle().apply {
-                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS,permissions as ArrayList)
+            Utils.jumpActivityWithData(this, SharedDashboardActivity::class.java, Bundle().apply {
+                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissions as ArrayList)
             })
         }
         finish()
@@ -211,51 +243,94 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         Utils.jumpActivity(this, ForgotPasswordActivity::class.java)
     }
 
-    @SuppressLint("MissingPermission")
-    private fun getCurrentLatitudeLongitudePermissions() {
-        val permissions = getLocationRequiredPermissions()
-        when {
-            hasAllPermissions(permissions) -> {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    val latitude = location?.latitude
-                    val longitude = location?.longitude
-                    lat = latitude ?: 0.0
-                    long = longitude ?: 0.0
-                    if (latitude != null && longitude != null) {
-                        Utils.getAddressFromLatLong(this, lat, long) { addressFromLatLon ->
-                            runOnUiThread {
-                                alertDialogShow(
-                                    this,
-                                    getString(R.string.current_location),
-                                    "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${getString(R.string.Address)}: $addressFromLatLon"
-                                )
-                            }
-                        }
-                    } else {
-                        alertDialogShow(
-                           this,
-                            getString(R.string.alert),
-                            getString(R.string.unable_to_fetch_location)
-                        )
-                    }
-                }.addOnFailureListener {
-                    lat = 0.0
-                    long = 0.0
-                    alertDialogShow(this
-                        , getString(R.string.alert), getString(R.string.unable_to_fetch_location))
-                }
-            }
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> permissionLauncherCurrentLatLon.launch(permissions)
+    /**
+     * Foreground (fine/coarse) is requested first. Background is requested only after disclosure
+     * + foreground granted (Android 10+).
+     */
+
+    private fun startLocationPermission() {
+        val continueFlow = { startLocationPermissionFlow() }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Utils.showBackgroundLocationDisclosureDialog(
+                this,
+                getString(R.string.share_current_location),
+                getString(R.string.share_location_msg),
+                onAllowAndContinue = continueFlow
+            )
+        } else {
+            continueFlow()
         }
     }
 
-    private fun getLocationRequiredPermissions(): Array<String> {
-        val list = mutableListOf(
+    private fun startLocationPermissionFlow() {
+        val foreground = getForegroundLocationPermissions()
+        when {
+            hasAllPermissions(foreground) -> {
+                requestBackgroundIfNeededThenFetch(false)
+            }
+            foreground.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
+            else -> permissionLauncherForeground.launch(foreground)
+        }
+    }
+
+    private fun requestBackgroundIfNeededThenFetch(isBackgroundLocationRequired: Boolean) {
+        if (!isBackgroundLocationRequired) {
+            getCurrentLatitudeLongitude()
+            return
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            getCurrentLatitudeLongitude()
+            return
+        }
+        val background = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        when {
+            hasAllPermissions(background) -> getCurrentLatitudeLongitude()
+            background.any { shouldShowRequestPermissionRationale(it) } -> showBackgroundPermissionRationale()
+            else -> permissionLauncherBackground.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+    }
+
+    private fun getForegroundLocationPermissions(): Array<String> =
+        arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
-        return list.toTypedArray()
+
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLatitudeLongitude() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            val latitude = location?.latitude
+            val longitude = location?.longitude
+            lat = latitude ?: 0.0
+            long = longitude ?: 0.0
+            if (latitude != null && longitude != null) {
+                Utils.getAddressFromLatLong(this, lat, long) { addressFromLatLon ->
+                    runOnUiThread {
+                        alertDialogShow(
+                            this,
+                            getString(R.string.current_location),
+                            "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${
+                                getString(R.string.Address)
+                            }: $addressFromLatLon"
+                        )
+                    }
+                }
+            } else {
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    getString(R.string.unable_to_fetch_location)
+                )
+            }
+        }.addOnFailureListener {
+            lat = 0.0
+            long = 0.0
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.unable_to_fetch_location)
+            )
+        }
     }
 
     private fun hasAllPermissions(permissions: Array<String>): Boolean =
@@ -263,16 +338,35 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
         }
 
-    private val permissionLauncherCurrentLatLon = registerForActivityResult(
+    private val permissionLauncherForeground = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
+    ) { result ->
         when {
-            permissions.all { it.value } -> {
-                getCurrentLatitudeLongitudePermissions()
-            }
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
+            result.all { it.value } -> requestBackgroundIfNeededThenFetch(false)
+            !result.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
             else -> showPermissionRationale()
         }
+    }
+
+    private val permissionLauncherBackground = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        when {
+            granted -> getCurrentLatitudeLongitude()
+            !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> showPermissionDeniedPermanently()
+            else -> showBackgroundPermissionRationale()
+        }
+    }
+
+    private fun showBackgroundPermissionRationale() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Background location required")
+            .setMessage(
+                "To enable live location tracking during working hours even when the app is closed, please allow Background location in Settings."
+            )
+            .setPositiveButton(R.string.open_settings) { _, _ -> openApplicationSettings() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun showPermissionRationale() {
@@ -280,7 +374,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             .setTitle(R.string.permission_required)
             .setMessage(R.string.location_permission_rationale)
             .setPositiveButton(R.string.retry) { _, _ ->
-                //permissionLauncherLocationTracking.launch(getRequiredPermissions())
                 openApplicationSettings()
             }
             .setNegativeButton(R.string.cancel, null)
@@ -303,10 +396,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     }
 
     private fun requestOtp() {
-        var requestOtpBottomSheet = RequestOtpBottomSheet{
+        var requestOtpBottomSheet = RequestOtpBottomSheet {
             viewModel.userEmailId.set(it)
             viewModel.requestLoginWithOtp()
         }
         requestOtpBottomSheet.show(supportFragmentManager, "RequestOtpBottomSheet")
     }
+
 }

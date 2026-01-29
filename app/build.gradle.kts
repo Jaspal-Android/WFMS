@@ -24,7 +24,7 @@ android {
         applicationId = "com.atvantiq.wfms"
         minSdk = 24
         targetSdk = 35
-        versionCode = 8
+        versionCode = 9
         versionName = "1.1.3"
 
         manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")

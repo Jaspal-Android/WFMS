@@ -200,7 +200,7 @@
     <string name="Longitude">Longitude</string>
     <string name="Address">Address</string>
     <string name="sites">Sites</string>
-    <string name="add_site">Add Sites</string>
+    <string name="add_site">Add Site</string>
     <string name="siteNameHint">Enter Site Name</string>
     <string name="siteIdHint">Enter Site ID</string>
     <string name="siteAddressHint">Enter Site Address</string>
@@ -287,6 +287,35 @@
     <string name="started">Started</string>
     <string name="absent_system_generated">Absent (System Generated)</string>
     <string name="incomplete_attendance">Incomplete</string>
+    <string name="background_location_usage">Location Access for Attendance &amp; Travel Tracking</string>
+    <string name="background_location_usage_msg">This app collects location data, including background location, to support:\n\n
+        • Live location tracking during work hours for daily attendance\n
+        • Verifying start and end site locations to ensure site visits\n
+        • Calculating travel distance for reimbursement claims\n
+        • Allowing employees to share their current location with the office\n
+        • Enforcing attendance only when you are within 500 meters of the office\n\n
+        Location tracking may continue even when the app is closed or not in use during active work sessions.\n
+        Location data is used only for official work purposes and is not shared with third parties.</string>
+    <string name="allow_and_continue">Allow &amp; Continue</string>
+    <string name="location_permission_needed">Location Permission Needed</string>
+    <string name="start_end_work_location_permission_msg">We use your location to record Start Work and End Work activities.\n
+        • Your location is captured only when you tap Start or End Work to:\n\n
+        • Verify that you have reached the assigned work site\n
+        • Record accurate attendance time\n
+        • Calculate travel distance for reimbursement\n
+        • Your location is not tracked continuously and is not collected when the app is closed.</string>
+    <string name="share_current_location">Share Current Location</string>
+    <string name="share_location_msg">
+        We use your current location to help your organization set the office location during account creation.\n
+        This location will be shared with your organization to:\n\n
+        • Save the official office address\n
+        • Enable attendance marking within a 500-meter range of the office.\n
+        • Your location is captured only when you tap “Get Current Location”.\n
+        • We do not track your location continuously and do not collect it in the background.\n
+        • Ensure your safety while on field assignments\n
+        </string>
+
+    <string name="select_type_to_end_work">Select type to end the work</string>
     <string name="no_claims_found">No claims found</string>
     <string name="submitted_claims">Submitted Claims</string>
     <string name="date">Date</string>
