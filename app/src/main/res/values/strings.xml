@@ -316,5 +316,35 @@
         </string>
 
     <string name="select_type_to_end_work">Select type to end the work</string>
+    <string name="no_claims_found">No claims found</string>
+    <string name="submitted_claims">Submitted Claims</string>
+    <string name="date">Date</string>
+    <string name="singleSite">Single Site</string>
+    <string name="multiSite">Multiple Site</string>
+    <string name="expesnse_type">Expense Type</string>
+    <string name="traveling">Traveling</string>
+    <string name="add">Add</string>
+    <string name="no_entries_added">No entries added</string>
+    <string name="da">DA (Daily Allowance)</string>
+    <string name="hotel">Hotel</string>
+    <string name="others">Others</string>
+    <string name="enter_purpose">Enter Purpose</string>
+    <string name="add_site_details">Add Site Details</string>
+    <string name="local">Local</string>
+    <string name="outstation">Outstation</string>
+    <string name="add_travel_entry">Add Travel Entry</string>
+    <string name="mode">Mode</string>
+    <string name="amount">Amount</string>
+    <string name="travelingWith">Traveling With</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="attach_receipt">Attach Receipt</string>
+    <string name="add_da_entery">Add DA Entry</string>
+    <string name="add_hotel_entry">Add Hotel Entry</string>
+    <string name="add_others_entry">Enter Others Entry</string>
+    <string name="enter_valid_amount">Enter valid amount</string>
+    <string name="category">Category</string>
+    <string name="purpose">Purpose</string>
+    <string name="select_purpose">Select Purpose</string>
 
 </resources>
