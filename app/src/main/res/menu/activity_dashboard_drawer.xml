@@ -12,11 +12,11 @@
             android:id="@+id/nav_attendance"
             android:icon="@drawable/ic_attendance_24"
             android:title="@string/menu_work_management" />
-        <!--<item
+        <item
             android:id="@+id/nav_reimbursement"
             android:icon="@drawable/ic_reimbursement_24"
             android:title="@string/menu_reimbursement" />
-        <item
+        <!--<item
             android:id="@+id/nav_vendor"
             android:icon="@drawable/ic_vendro_24"
             android:title="@string/menu_vendor" />

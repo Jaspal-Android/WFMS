@@ -1,6 +1,9 @@
 package com.atvantiq.wfms.constants
 
 object SharingKeys {
+    const val EXTRA_DEFAULT_FROM = "EXTRA_DEFAULT_FROM"
+    const val EXTRA_CIRCLE_CODE = "EXTRA_CIRCLE_ID"
+    const val IS_OUTSTATION_CLAIM = "IS_OUTSTATION_CLAIM"
     const val EMPLOYEE_ID = "EMPLOYEE_ID"
     const val DATE = "DATE"
     const val WORK_DATE = "workDate"

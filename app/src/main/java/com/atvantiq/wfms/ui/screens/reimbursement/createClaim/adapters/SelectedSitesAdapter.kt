@@ -5,14 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.databinding.ItemSelectedSiteBinding
 import com.atvantiq.wfms.models.reimbursement.MultipleSite
+import com.atvantiq.wfms.models.site.SiteData
 
 class SelectedSitesAdapter(
-    private val onRemoveClick: (String) -> Unit
+    private val onRemoveClick: (SiteData) -> Unit
 ) : RecyclerView.Adapter<SelectedSitesAdapter.SelectedSiteViewHolder>() {
 
-    private val items = mutableListOf<String>()
+    private val items = mutableListOf<SiteData>()
 
-    fun submitList(list: List<String>) {
+    fun submitList(list: List<SiteData>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -32,11 +33,11 @@ class SelectedSitesAdapter(
 
     class SelectedSiteViewHolder(
         private val binding: ItemSelectedSiteBinding,
-        private val onRemoveClick: (String) -> Unit
+        private val onRemoveClick: (SiteData) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: String){
-            binding.tvSiteId.text = item
+        fun bind(item: SiteData){
+            binding.tvSiteId.text = item.name
             binding.btnRemove.setOnClickListener {
                 onRemoveClick(item)
             }

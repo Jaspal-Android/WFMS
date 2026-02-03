@@ -38,7 +38,7 @@ class SelectedOtherEntriesAdapter(
         fun bind(item: OtherExpense, position: Int) {
             binding.tvCategory.text = item.category
             binding.tvAmount.text = "₹${item.amount}"
-            binding.hasAttachments = !item.receiptAttachment.isNullOrEmpty()
+            binding.hasAttachments = !item.receiptAttachments.isNullOrEmpty()
             binding.btnRemove.setOnClickListener { onRemoveClick(position) }
         }
     }

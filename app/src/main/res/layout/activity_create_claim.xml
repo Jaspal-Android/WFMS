@@ -10,10 +10,6 @@
             type="Boolean" />
 
         <variable
-            name="isOutstationExpense"
-            type="Boolean" />
-
-        <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimVM" />
 
@@ -171,7 +167,6 @@
                                     android:completionThreshold="1"
                                     android:ellipsize="start"
                                     android:padding="@dimen/padding"
-                                    android:text="@={vm.selectedSingleSite}"
                                     android:scrollHorizontally="true"
                                     android:singleLine="true"
                                    />
@@ -190,6 +185,8 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/segmentSiteType">
+
+
 
                                 <!-- NEW: Purpose (selectable) -->
                                 <com.google.android.material.textfield.TextInputLayout
@@ -213,6 +210,29 @@
                                         android:onClick="@{()->vm.onPurposeClick()}"
                                         android:text="@={vm.purpose}"
                                         tools:text="Select purpose" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Project (selectable) -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/project"
+                                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                                    android:layout_marginBottom="@dimen/margin"
+                                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                    app:endIconMode="custom">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/project_select_et"
+                                        style="@style/CustomSelectableTextInputEditStyle"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="start"
+                                        android:padding="@dimen/padding"
+                                        android:scrollHorizontally="true"
+                                        android:singleLine="true"
+                                        android:onClick="@{()->vm.onProjectDropdownClick()}"
+                                        tools:text="Select Project" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
                                 <androidx.appcompat.widget.AppCompatButton
@@ -247,16 +267,21 @@
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <LinearLayout
+                            android:orientation="vertical"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:padding="@dimen/padding">
 
                             <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/projectInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/select_project"
                                 android:minHeight="@dimen/text_input_edit_text_min_height"
+                                android:layout_marginBottom="@dimen/margin"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent">
 
                                 <com.google.android.material.textfield.TextInputEditText
@@ -270,7 +295,30 @@
                                     android:scrollHorizontally="true"
                                     android:singleLine="true" />
                             </com.google.android.material.textfield.TextInputLayout>
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                app:layout_constraintTop_toBottomOf="@+id/projectInputLayout"
+                                android:id="@+id/circleInputLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/circle"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                app:endIconMode="custom">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/circle_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="start"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    tools:text="Select Circle" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
                     <!-- Expense Type Card -->
@@ -466,7 +514,7 @@
 
                     <!-- Hotel Card (Visible only for Outstation) -->
                     <androidx.cardview.widget.CardView
-                        android:visibility="@{isOutstationExpense ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{vm.isOutstationExpense ? View.VISIBLE : View.GONE}"
                         android:id="@+id/hotelCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -654,7 +702,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <androidx.appcompat.widget.AppCompatButton
-
+                    android:onClick="@{()->vm.onCancelClick()}"
                     android:id="@+id/btnCancel"
                     style="@style/CustomRedButton"
                     android:layout_width="0dp"
@@ -666,6 +714,7 @@
                     android:textStyle="bold" />
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:onClick="@{()->vm.onSubmitClaim()}"
                     android:id="@+id/btnSubmit"
                     style="@style/CustomPrimaryButton"
                     android:layout_width="0dp"

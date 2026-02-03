@@ -34,9 +34,14 @@ class SelectedTravelingEntriesAdapter(
         private val binding: ItemTravelEntryBinding,
         private val onRemoveClick: (position: Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-
         fun bind(item: TravelExpense, position: Int){
-            binding.hasAttachments = !item.receiptAttachment.isNullOrEmpty()
+            binding.tvEntryNumber.text = "Entry ${position + 1}"
+            binding.tvMode.text = item.mode?.label?: "-"
+            binding.tvRoute .text = "${item.from}  →  ${item.to}"
+            binding.tvAmount.text = item.amount
+            binding.isTravelingWith= item.travelingWith!=null
+            binding.tvWith.text = item.travelingWith?.joinToString(", ") { it.name.toString() } ?: "-"
+            binding.hasAttachments = !item.receiptAttachments.isNullOrEmpty()
             binding.btnRemove.setOnClickListener {
                 onRemoveClick(position)
             }

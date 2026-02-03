@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
     <data>
+        <import type="android.view.View"/>
+        <variable
+            name="hasPreviewImage"
+            type="boolean" />
+
+        <variable
+            name="showImageError"
+            type="Boolean" />
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelDetailViewModel" />
@@ -49,7 +57,8 @@
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
-                        android:text="@={vm.travelMode}" />
+                        android:text="@={vm.selectedTravelModeValue}"
+                        />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -98,8 +107,7 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="@={vm.travelingWith}" />
+                        android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -171,6 +179,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/attach_receipt"
+                        android:visibility="@{hasPreviewImage?View.GONE:View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -191,6 +200,46 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <RelativeLayout
+                        android:id="@+id/imagePreviewView"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                        app:layout_constraintDimensionRatio="1:1.1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent=".20"
+                        tools:visibility="visible">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cardCornerRadius="@dimen/card_radius"
+                            app:cardElevation="@dimen/elevation_small"
+                            app:cardPreventCornerOverlap="true"
+                            app:cardUseCompatPadding="true">
+
+                            <ImageView
+                                android:id="@+id/capturedImagePreview"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop" />
+                        </androidx.cardview.widget.CardView>
+                    </RelativeLayout>
+
+                    <TextView
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnUploadReceipt"
+                        style="@style/CustomMediumTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:text="@string/no_image_selected"
+                        android:textColor="@color/red"
+                        android:textStyle="bold"
+                        android:visibility="@{showImageError?View.VISIBLE:View.GONE}" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <!-- Cancel Button -->

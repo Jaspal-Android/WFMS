@@ -32,6 +32,11 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 		pickMediaHelper.handlePermissionResult(permissions)
 	}
 
+	private val photoPickerLauncher =
+		registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+			pickMediaHelper.handlePhotoPickerResult(uri)
+		}
+
 	private lateinit var pickMediaHelper: PickMediaHelper
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +75,7 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 				binding.hasPreviewImage = false
 			}
 		})
+		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
 	}
 
 	private fun initListeners() {

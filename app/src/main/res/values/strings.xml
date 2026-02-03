@@ -346,5 +346,9 @@
     <string name="category">Category</string>
     <string name="purpose">Purpose</string>
     <string name="select_purpose">Select Purpose</string>
+    <string name="select_travel_mode">Select Travel Mode</string>
+    <string name="circle_id_not_found">Circle not found</string>
+    <string name="success">Success</string>
+    <string name="claim_submitted_successfully">Claim submitted successfully</string>
 
 </resources>

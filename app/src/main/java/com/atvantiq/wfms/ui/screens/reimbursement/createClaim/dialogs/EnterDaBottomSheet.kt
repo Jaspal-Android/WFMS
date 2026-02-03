@@ -18,7 +18,6 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 	lateinit var binding: BottomSheetEnterDaBinding
 	private var imagePath: String? = null
 
-	// Image Picker Code
 	private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
 		pickMediaHelper.handleCameraResult(success)
 	}
@@ -30,6 +29,11 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 	private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
 		pickMediaHelper.handlePermissionResult(permissions)
 	}
+
+	private val photoPickerLauncher =
+		registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+			pickMediaHelper.handlePhotoPickerResult(uri)
+		}
 
 	private lateinit var pickMediaHelper: PickMediaHelper
 	
@@ -70,6 +74,8 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 				binding.hasPreviewImage = false
 			}
 		})
+		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
+
 	}
 
 	private fun initListeners() {

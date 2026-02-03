@@ -16,26 +16,34 @@ import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.AppListData
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivityCreateClaimBinding
-import com.atvantiq.wfms.models.client.Client
+import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
+import com.atvantiq.wfms.models.allProjects.Project
 import com.atvantiq.wfms.models.reimbursement.DAExpense
 import com.atvantiq.wfms.models.reimbursement.HotelExpense
-import com.atvantiq.wfms.models.reimbursement.MultipleSite
 import com.atvantiq.wfms.models.reimbursement.OtherExpense
 import com.atvantiq.wfms.models.reimbursement.TravelExpense
-import com.atvantiq.wfms.models.type.TypeData
+import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.site.SiteData
+import com.atvantiq.wfms.models.site.SiteListByProjectResponse
+import com.atvantiq.wfms.models.workSiteByDate.Site
+import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
+import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.AddDaExpenseEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedHotelEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedOtherEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedSitesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedTravelingEntriesAdapter
-import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addSiteDetail.AddMutilSiteDetailsActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelingDetailActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterDaBottomSheet
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterOthersBottomSheet
 import com.atvantiq.wfms.utils.DateUtils
+import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.HttpException
 import java.util.Locale
 
+@AndroidEntryPoint
 class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaimVM>() {
 
     override val bindingActivity: ActivityBinding
@@ -113,6 +121,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         DateUtils.onDateClickWithLimit(this, object : DateUtils.DateCallBack {
             override fun onDateSelected(date: String, formatDate: String) {
                 viewModel.date.set(date)
+                viewModel.getWorkSitesByDate(date)
             }
         }, false)
     }
@@ -143,6 +152,116 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         vm.clickEvents.observe(this) { event ->
             handleClickEvents(event)
         }
+
+        vm.workSiteByDateResponse.observe(this) { response ->
+            handleWorkBySiteResponse(response)
+        }
+
+        vm.allProjectsResponse.observe(this) { response ->
+            handleAllProjectsResponse(response)
+        }
+
+        vm.siteListByProjectResponse.observe(this) { response ->
+            handleSiteByProjectResponse(response)
+        }
+        vm.createClaimResponse.observe(this) { response ->
+            handleCreateClaimResponse(response)
+        }
+    }
+
+    private fun handleWorkBySiteResponse(response: ApiState<WorkSiteByDateResponse>) {
+        when (response.status) {
+            Status.LOADING -> showProgress()
+            Status.SUCCESS -> {
+                dismissProgress()
+                when (response.response?.code) {
+                    200 -> {
+                        val sites = response.response?.data?.sites ?: emptyList()
+                        viewModel.singleSites = sites
+                    }
+                    else -> {
+                        handleErrorResponse(response.response?.code ?: 0, response.response?.message)
+                    }
+                }
+            }
+            Status.ERROR -> {
+                dismissProgress()
+                handleError(response.throwable)
+            }
+        }
+    }
+
+
+    private fun handleAllProjectsResponse(response: ApiState<AllProjectsResponse>) {
+        when (response.status) {
+            Status.LOADING -> showProgress()
+            Status.SUCCESS -> {
+                dismissProgress()
+                when (response.response?.code) {
+                    200 -> {
+                        val projects = response.response?.data?.projects ?: emptyList()
+                        showAllProjectsSelectionDialog(projects)
+                    }
+                    else -> {
+                        handleErrorResponse(response.response?.code ?: 0, response.response?.message)
+                    }
+                }
+            }
+            Status.ERROR -> {
+                dismissProgress()
+                handleError(response.throwable)
+            }
+        }
+    }
+
+    private fun handleSiteByProjectResponse(response: ApiState<SiteListByProjectResponse>) {
+        when (response.status) {
+            Status.LOADING -> showProgress()
+            Status.SUCCESS -> {
+                dismissProgress()
+                when (response.response?.code) {
+                    200 -> {
+                        val sites = response.response?.data ?: emptyList()
+                        viewModel.multiSites = sites
+                    }
+                    else -> {
+                        handleErrorResponse(response.response?.code ?: 0, response.response?.message)
+                    }
+                }
+            }
+            Status.ERROR -> {
+                dismissProgress()
+                handleError(response.throwable)
+            }
+        }
+    }
+
+    private fun handleCreateClaimResponse(response: ApiState<CreateClaimResponse>) {
+        when (response.status) {
+            Status.LOADING -> showProgress()
+            Status.SUCCESS -> {
+                dismissProgress()
+                when (response.response?.code) {
+                    200 -> {
+                       alertDialogShow(
+                           this,
+                           getString(R.string.success),
+                           response.response?.message ?: getString(R.string.claim_submitted_successfully),
+                           okLister = DialogInterface.OnClickListener { _, _ ->
+                               finish()
+                           }
+                       )
+                    }
+                    else -> {
+                        handleErrorResponse(response.response?.code ?: 0, response.response?.message)
+                    }
+                }
+            }
+            Status.ERROR -> {
+                dismissProgress()
+                handleError(response.throwable)
+            }
+        }
     }
 
     private fun handleClickEvents(event: CreateClaimClickEvents) {
@@ -162,34 +281,40 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             CreateClaimClickEvents.ON_LOCAL_CLAIM_CLICK -> {
-                binding.isOutstationExpense = false
+                viewModel.isOutstationExpense.set(false)
+                viewModel.clearTravelingEntries()
+                viewModel.clearHotelEntries()
             }
 
             CreateClaimClickEvents.ON_OUTSTATION_CLAIM_CLICK -> {
-                binding.isOutstationExpense = true
+                viewModel.isOutstationExpense.set(true)
+                viewModel.clearTravelingEntries()
             }
 
             CreateClaimClickEvents.ON_ADD_MULTIPLE_SITE_CLICK -> {
-                /*addSiteDetailsActivityResultLauncher.launch(
-                    Intent(
-                        this,
-                        AddMutilSiteDetailsActivity::class.java
-                    )
-                )*/
-                /*Add code here*/
-                showSitesSelectionDialog(AppListData.sites)
+                showSitesSelectionDialog(viewModel.multiSites)
             }
 
             CreateClaimClickEvents.ON_SINGLE_SITE_DROPDOWN_CLICK -> {
-                showSingleSiteSelectionDialog(AppListData.sites)
+                if(viewModel.singleSites.isEmpty()){
+                    alertDialogShow(
+                        this,
+                        getString(R.string.alert),
+                        getString(R.string.no_sites_available),
+                    )
+                }else{
+                    showSingleSiteSelectionDialog(viewModel.singleSites)
+                }
             }
 
             CreateClaimClickEvents.ON_ADD_TRAVELING_EXPENSE_CLICK -> {
+                val lastEntry = viewModel.travelingEntriesList.value?.lastOrNull()
                 addTravelingDetailsActivityResultLauncher.launch(
-                    Intent(
-                        this,
-                        AddTravelingDetailActivity::class.java
-                    )
+                    Intent(this, AddTravelingDetailActivity::class.java).apply {
+                        putExtra(SharingKeys.IS_OUTSTATION_CLAIM, viewModel.isOutstationExpense.get())
+                        putExtra(SharingKeys.EXTRA_CIRCLE_CODE, viewModel.selectedCircleCode)
+                        putExtra(SharingKeys.EXTRA_DEFAULT_FROM, lastEntry?.to)
+                    }
                 )
             }
 
@@ -212,6 +337,31 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             CreateClaimClickEvents.ON_PURPOSE_CLICK -> {
                 showPurposeSelectionDialog(AppListData.purposes)
             }
+
+            CreateClaimClickEvents.ON_PROJECT_DROPDOWN_CLICK ->{
+                if(viewModel.projects.isEmpty()){
+                    viewModel.getAllProjects()
+                }else {
+                    showAllProjectsSelectionDialog(viewModel.projects)
+                }
+            }
+            else -> { /* ...existing code... */ }
+        }
+    }
+
+    private fun handleErrorResponse(code: Int, message: String?) {
+        if (code == 401) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+    }
+
+    private fun handleError(throwable: Throwable?) {
+        if (throwable is HttpException) {
+            if (throwable.code() == 401) {
+                tokenExpiresAlert()
+            }else{
+                showToast(this, throwable.message())
+            }
+        } else {
+            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
         }
     }
 
@@ -251,7 +401,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             var daExpense = DAExpense(
                 selectedDaEntriesAdapter?.itemCount?.plus(1).toString(),
                 amount = amount,
-                receiptAttachment = path
+                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
             )
             viewModel.addDAExpense(daExpense)
         }
@@ -276,7 +426,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 selectedOthersEntriesAdapter?.itemCount?.plus(1).toString(),
                 category = category,
                 amount = amount,
-                receiptAttachment = path
+                receiptAttachments =  if (path.isNullOrEmpty()) emptyList() else listOf(path)
             )
             viewModel.addOtherExpense(othersExpense)
         }
@@ -305,21 +455,25 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         )
     }
 
-    private fun showSingleSiteSelectionDialog(siteList: List<String>) {
+    private fun showSingleSiteSelectionDialog(siteList: List<Site>) {
         showSelectionDialog(
             items = siteList,
             title = getString(R.string.select_site),
             layoutResId = R.layout.item_generic_adapter,
             bind = { view, site ->
-                view.findViewById<TextView>(R.id.text1).text = site
+                view.findViewById<TextView>(R.id.text1).text = site.siteName
             },
             onItemSelected = {
                 binding.siteEt.error = null
                 viewModel.onSingleSiteSelected(it)
+                binding.siteEt.setText(it.siteName)
+                binding.projectEt.setText(it.projectName)
+                binding.circleEt.setText(it.circleName)
+
             },
             filterCondition = { site, query ->
-                site.lowercase(Locale.getDefault())
-                    .contains(query.lowercase(Locale.getDefault()))
+                site.siteName?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault()))
+                    ?: false
             },
             emptyMessage = getString(R.string.no_data_available),
             retryAction = {  },
@@ -327,7 +481,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         )
     }
 
-    private fun showSitesSelectionDialog(sites: List<String>) {
+    private fun showSitesSelectionDialog(sites: List<SiteData>) {
         if (sites.isEmpty()) {
             alertDialogShow(
                 this,
@@ -335,7 +489,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 getString(R.string.no_types_available),
                 getString(R.string.retry),
                 okLister = DialogInterface.OnClickListener { _, _ ->
-                    //getTypeListByPo(viewModel.selectedPoNumberId ?: 0L)
+                    viewModel.getSiteListByProject(viewModel.selectedProjectId ?: 0L)
                 },
             )
         }else{
@@ -348,7 +502,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 items = sites,
                 preSelectedItems = preSelectedSites,
                 bind = { view, site, isSelected ->
-                    view.findViewById<TextView>(R.id.textView).text = site
+                    view.findViewById<TextView>(R.id.textView).text = site.name
                     view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
                 onSelectionChanged = { selectedSites ->
@@ -358,7 +512,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                     updateSelectedSites(selectedSites)
                 },
                 filterCondition = { site, query ->
-                    site?.lowercase(Locale.getDefault())
+                    site?.name?.lowercase(Locale.getDefault())
                         ?.contains(query.lowercase(Locale.getDefault()))?:false
                 },
                 title = getString(R.string.select_site)
@@ -367,7 +521,31 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         }
     }
 
-    private fun updateSelectedSites(selectedSites: Set<String>) {
+    private fun showAllProjectsSelectionDialog(projectList: List<Project>) {
+        showSelectionDialog(
+            items = projectList,
+            title = getString(R.string.select_project),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, project ->
+                view.findViewById<TextView>(R.id.text1).text = project.name
+            },
+            onItemSelected = {
+                binding.siteEt.error = null
+                binding.projectSelectEt.setText(it.name)
+                viewModel.onProjectSelected(it)
+                viewModel.getSiteListByProject(it.id ?: 0L)
+            },
+            filterCondition = { project, query ->
+                project.name?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault()))
+                    ?: false
+            },
+            emptyMessage = getString(R.string.no_data_available),
+            retryAction = {  },
+            tag = "ProjectSelectionDialog"
+        )
+    }
+
+    private fun updateSelectedSites(selectedSites: Set<SiteData>) {
        viewModel.addMultipleSite(selectedSites.toList())
     }
 }
