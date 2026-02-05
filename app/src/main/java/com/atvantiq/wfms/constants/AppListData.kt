@@ -4,14 +4,9 @@ import com.atvantiq.wfms.models.reimbursement.TravelModeOption
 
 object AppListData {
     val purposes = listOf(
-        "Installation",
-        "Maintenance",
-        "Repair"
-    )
-    val  sites = listOf(
-        "Site A",
-        "Site B",
-        "Site C"
+        "MRN",
+        "MIN",
+        "Billing"
     )
 
     val localTravelModes: List<TravelModeOption> = listOf(

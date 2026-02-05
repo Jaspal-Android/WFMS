@@ -17,6 +17,7 @@ import com.atvantiq.wfms.constants.AppListData
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivityCreateClaimBinding
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
+import com.atvantiq.wfms.models.allProjects.Circle
 import com.atvantiq.wfms.models.allProjects.Project
 import com.atvantiq.wfms.models.reimbursement.DAExpense
 import com.atvantiq.wfms.models.reimbursement.HotelExpense
@@ -120,6 +121,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     private fun showDatePicker() {
         DateUtils.onDateClickWithLimit(this, object : DateUtils.DateCallBack {
             override fun onDateSelected(date: String, formatDate: String) {
+                binding.dateEt.error = null
                 viewModel.date.set(date)
                 viewModel.getWorkSitesByDate(date)
             }
@@ -151,6 +153,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
         vm.clickEvents.observe(this) { event ->
             handleClickEvents(event)
+        }
+
+        vm.errorEvents.observe(this) { event ->
+            errorHandler(event)
         }
 
         vm.workSiteByDateResponse.observe(this) { response ->
@@ -200,6 +206,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 when (response.response?.code) {
                     200 -> {
                         val projects = response.response?.data?.projects ?: emptyList()
+                        viewModel.projects = projects
                         showAllProjectsSelectionDialog(projects)
                     }
                     else -> {
@@ -264,6 +271,34 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         }
     }
 
+    private fun errorHandler(event:CreateClaimErrorHandler)
+    {
+        when(event){
+            CreateClaimErrorHandler.EMPTY_DATE -> {
+                binding.dateEt.error = getString(R.string.please_select_date)
+                showToast(this,getString(R.string.please_select_date))
+            }
+            CreateClaimErrorHandler.EMPTY_SELECTED_SITE -> {
+                binding.siteEt.error = getString(R.string.please_select_site)
+                showToast(this,getString(R.string.please_select_site))
+            }
+            CreateClaimErrorHandler.EMPTY_PROJECT -> {
+                binding.projectSelectEt.error = getString(R.string.please_select_project)
+                showToast(this,getString(R.string.please_select_project))
+            }
+            CreateClaimErrorHandler.EMPTY_CIRCLE -> {
+                binding.circleEt.error = getString(R.string.please_select_circle)
+                showToast(this,getString(R.string.please_select_circle))
+            }
+            CreateClaimErrorHandler.EMPTY_EXPENSES -> showToast(this,getString(R.string.please_add_at_least_one_expense_entry))
+            CreateClaimErrorHandler.EMPTY_PURPOSE -> {
+                binding.purposeEt.error = getString(R.string.please_select_purpose)
+                showToast(this,getString(R.string.please_select_purpose))
+            }
+            CreateClaimErrorHandler.EMPTY_MUTLI_SITES -> showToast(this,getString(R.string.please_select_at_least_one_site))
+        }
+    }
+
     private fun handleClickEvents(event: CreateClaimClickEvents) {
         when (event) {
             CreateClaimClickEvents.ON_DATE_PICKER_CLICK -> {
@@ -271,13 +306,18 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             CreateClaimClickEvents.ON_SINGLE_SITE_CLICK -> {
-                binding.isMultiSite = false
+                viewModel.isMultiSite.set(false)
                 viewModel.clearSelectedMultiSites()
+                binding.projectSelectEt.setText("")
+                binding.circleEt.setText("")
             }
 
             CreateClaimClickEvents.ON_MULTI_SITE_CLICK -> {
-                binding.isMultiSite = true
+                viewModel.isMultiSite.set(true)
                 viewModel.clearSelectedSingleSite()
+                binding.siteEt.setText("")
+                binding.projectEt.setText("")
+                binding.circleEt.setText("")
             }
 
             CreateClaimClickEvents.ON_LOCAL_CLAIM_CLICK -> {
@@ -344,6 +384,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 }else {
                     showAllProjectsSelectionDialog(viewModel.projects)
                 }
+            }
+            CreateClaimClickEvents.ON_CIRCLE_DROPDOWN_CLICK ->{
+                showProjectCirclesSelectionDialog(viewModel.circles)
             }
             else -> { /* ...existing code... */ }
         }
@@ -413,7 +456,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             var hotelExpense = HotelExpense(
                 selectedHotelEntriesAdapter?.itemCount?.plus(1).toString(),
                 amount = amount,
-                receiptAttachment = path
+                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
             )
             viewModel.addHotelExpense(hotelExpense)
         }
@@ -530,7 +573,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 view.findViewById<TextView>(R.id.text1).text = project.name
             },
             onItemSelected = {
-                binding.siteEt.error = null
+                binding.projectSelectEt.error = null
                 binding.projectSelectEt.setText(it.name)
                 viewModel.onProjectSelected(it)
                 viewModel.getSiteListByProject(it.id ?: 0L)
@@ -542,6 +585,29 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             emptyMessage = getString(R.string.no_data_available),
             retryAction = {  },
             tag = "ProjectSelectionDialog"
+        )
+    }
+
+    private fun showProjectCirclesSelectionDialog(circleList: List<Circle>) {
+        showSelectionDialog(
+            items = circleList,
+            title = getString(R.string.select_circle),
+            layoutResId = R.layout.item_generic_adapter,
+            bind = { view, circle ->
+                view.findViewById<TextView>(R.id.text1).text = circle.name
+            },
+            onItemSelected = {
+                binding.circleEt.error = null
+                binding.circleEt.setText(it.name)
+                viewModel.onCircleSelected(it)
+            },
+            filterCondition = { circle, query ->
+                circle.name?.lowercase(Locale.getDefault())?.contains(query.lowercase(Locale.getDefault()))
+                    ?: false
+            },
+            emptyMessage = getString(R.string.no_data_available),
+            retryAction = {  },
+            tag = "CircleSelectionDialog"
         )
     }
 

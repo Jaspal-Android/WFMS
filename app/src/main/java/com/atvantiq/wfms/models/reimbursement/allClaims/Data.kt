@@ -9,7 +9,7 @@ data class Data(
     @SerializedName("page_size")
     val pageSize: Int?,
     @SerializedName("records")
-    val records: List<Record?>?,
+    val records: List<Record>?,
     @SerializedName("total_count")
     val totalCount: Int?,
     @SerializedName("total_pages")

@@ -88,6 +88,10 @@ class AddTravelingDetailActivity :
             handleClickEvents(event)
         }
 
+        vm.errorHandler.observe(this){ event->
+            handleErrors(event)
+        }
+
         viewModel.employeeByCircleResponse.observe(this) { response ->
             handleEmployeeByCircleResponse(response)
         }
@@ -119,6 +123,23 @@ class AddTravelingDetailActivity :
 
             AddTravelingClickEvents.ON_CANCEL_CLICK -> {
                 finish()
+            }
+        }
+    }
+
+    private fun handleErrors(error: AddTravelDetailsErrorHandler) {
+        when(error){
+            AddTravelDetailsErrorHandler.ON_EMPTY_TRAVEL_MODE -> {
+                binding.travelModeEt.error = getString(R.string.select_travel_mode)
+            }
+            AddTravelDetailsErrorHandler.ON_EMPTY_FROM_LOCATION -> {
+                binding.fromEt.error = getString(R.string.please_enter_from_location)
+            }
+            AddTravelDetailsErrorHandler.ON_EMPTY_TO_LOCATION -> {
+                binding.toEt.error = getString(R.string.please_enter_to_location)
+            }
+            AddTravelDetailsErrorHandler.ON_EMPTY_TRAVEL_AMOUNT -> {
+                binding.amountEt.error = getString(R.string.please_enter_travel_amount)
             }
         }
     }
@@ -217,12 +238,14 @@ class AddTravelingDetailActivity :
     }
 
     private fun handleOnDoneClick() {
-        val travelExpense = viewModel.createTravelDetail()
-        val intent = Intent().apply {
-            putExtra(SharingKeys.TRAVELING_DETAILS, travelExpense)
+        if(viewModel.validateTravelDetailOrPostError()){
+            val travelExpense = viewModel.createTravelDetail()
+            val intent = Intent().apply {
+                putExtra(SharingKeys.TRAVELING_DETAILS, travelExpense)
+            }
+            setResult(RESULT_OK, intent)
+            finish()
         }
-        setResult(RESULT_OK, intent)
-        finish()
     }
 
     private fun setImagePicker() {

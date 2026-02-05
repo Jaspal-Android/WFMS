@@ -5,6 +5,7 @@ import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiService
 import com.ssas.jibli.data.prefs.PrefKeys
@@ -39,5 +40,10 @@ class ClaimRepo @Inject constructor(private val apiService: ApiService, private 
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         page = page,
         pageSize = pageSize
+    )
+
+    override suspend fun claimById(claimId: Long): ClaimDetailResponse = apiService.claimById(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+        claimId = claimId
     )
 }

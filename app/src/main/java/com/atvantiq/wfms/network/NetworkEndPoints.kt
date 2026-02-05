@@ -78,4 +78,7 @@ object NetworkEndPoints {
 
 	/*All claims*/
 	const val allClaims = "claim/all/mobile"
+
+	/*Claim by ID*/
+	const val claimById = "claim/{claim_id}"
 }

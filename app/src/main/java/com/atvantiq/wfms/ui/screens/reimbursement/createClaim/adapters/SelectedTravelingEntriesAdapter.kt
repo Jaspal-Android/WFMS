@@ -39,7 +39,7 @@ class SelectedTravelingEntriesAdapter(
             binding.tvMode.text = item.mode?.label?: "-"
             binding.tvRoute .text = "${item.from}  →  ${item.to}"
             binding.tvAmount.text = item.amount
-            binding.isTravelingWith= item.travelingWith!=null
+            binding.isTravelingWith= !item.travelingWith.isNullOrEmpty()
             binding.tvWith.text = item.travelingWith?.joinToString(", ") { it.name.toString() } ?: "-"
             binding.hasAttachments = !item.receiptAttachments.isNullOrEmpty()
             binding.btnRemove.setOnClickListener {

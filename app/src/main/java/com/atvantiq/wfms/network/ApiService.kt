@@ -19,6 +19,7 @@ import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
 import com.atvantiq.wfms.models.site.create.CreateSiteResponse
@@ -184,4 +185,6 @@ interface ApiService {
 	@GET(NetworkEndPoints.allClaims)
 	suspend fun allClaims(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") pageSize:Int ): AllClaimsResponse
 
+	@GET(NetworkEndPoints.claimById)
+	suspend fun claimById(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): ClaimDetailResponse
 }

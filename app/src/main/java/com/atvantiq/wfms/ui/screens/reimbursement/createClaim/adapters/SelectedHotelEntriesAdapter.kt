@@ -37,7 +37,7 @@ class SelectedHotelEntriesAdapter(
 
         fun bind(item: HotelExpense, position: Int) {
             binding.tvAmount.text = "₹${item.amount}"
-            binding.hasAttachments = !item.receiptAttachment.isNullOrEmpty()
+            binding.hasAttachments = !item.receiptAttachments.isNullOrEmpty()
             binding.btnRemove.setOnClickListener { onRemoveClick(position) }
         }
     }

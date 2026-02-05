@@ -350,5 +350,35 @@
     <string name="circle_id_not_found">Circle not found</string>
     <string name="success">Success</string>
     <string name="claim_submitted_successfully">Claim submitted successfully</string>
-
+    <string name="expenses">Expenses</string>
+    <string name="single_site">Single Site</string>
+    <string name="multiple_site">Multiple Site</string>
+    <string name="claim_amount">Claim Amount</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="total_claim_amount">Total Claim Amount</string>
+    <string name="rupee_format" translatable="false">₹ %1$.2f</string>
+    <string name="remarks">Remarks</string>
+    <string name="claim_details">Claim Details</string>
+    <string name="sites_expenses">Sites &amp; Expenses</string>
+    <string name="sites_count_calculation">%1$d Sites</string>
+    <plurals name="expense_count">
+        <item quantity="one">%d expense(s)</item>
+        <item quantity="other">%d expense(s)</item>
+    </plurals>
+    <string name="of_format" translatable="false">of ₹ %1$.2f</string>
+    <string name="locations">Locations</string>
+    <string name="items">Items</string>
+    <string name="please_enter_from_location">Please enter from location</string>
+    <string name="please_enter_to_location">Please enter to location</string>
+    <string name="please_enter_travel_mode">Please enter travel mode</string>
+    <string name="please_enter_travel_amount">Please enter travel amount</string>
+    <string name="please_enter_travel_purpose">Please enter travel purpose</string>
+    <string name="please_select_date">Please select date</string>
+    <string name="please_select_site">Please select site</string>
+    <string name="please_select_project">Please select project</string>
+    <string name="please_select_circle">Please select circle</string>
+    <string name="please_add_at_least_one_expense_entry">Please add at least one expense entry</string>
+    <string name="please_select_purpose">Please select purpose</string>
+    <string name="please_select_at_least_one_site">Please select at least one site</string>
+    
 </resources>

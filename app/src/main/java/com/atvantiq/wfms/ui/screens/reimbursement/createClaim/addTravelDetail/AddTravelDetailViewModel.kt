@@ -2,22 +2,14 @@ package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail
 
 import android.app.Application
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
-import com.atvantiq.wfms.data.repository.creation.CreationRepo
-import com.atvantiq.wfms.models.allProjects.Project
 import com.atvantiq.wfms.models.empoyeeByCircle.Data
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.reimbursement.TravelExpense
 import com.atvantiq.wfms.models.reimbursement.TravelModeOption
-import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
-import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimClickEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -39,6 +31,7 @@ class AddTravelDetailViewModel @Inject constructor(
     var employeesByCircle: List<Data> = ArrayList()
 
     val clickEvents = MutableLiveData<AddTravelingClickEvents>()
+    val errorHandler = MutableLiveData<AddTravelDetailsErrorHandler>()
 
     private fun postClickEvent(event: AddTravelingClickEvents) {
         clickEvents.value = event
@@ -72,6 +65,32 @@ class AddTravelDetailViewModel @Inject constructor(
             liveData = employeeByCircleResponse,
         )
     }
+
+    fun validateTravelDetailOrPostError(): Boolean {
+        val mode = selectedTravelMode.get()
+        val amount = travelAmount.get().orEmpty().trim()
+        val from = fromLocation.get().orEmpty().trim()
+        val to = toLocation.get().orEmpty().trim()
+
+        if (mode == null) {
+            errorHandler.value = AddTravelDetailsErrorHandler.ON_EMPTY_TRAVEL_MODE
+            return false
+        }
+        if (amount.isEmpty()) {
+            errorHandler.value = AddTravelDetailsErrorHandler.ON_EMPTY_TRAVEL_AMOUNT
+            return false
+        }
+        if (from.isEmpty()) {
+            errorHandler.value = AddTravelDetailsErrorHandler.ON_EMPTY_FROM_LOCATION
+            return false
+        }
+        if (to.isEmpty()) {
+            errorHandler.value = AddTravelDetailsErrorHandler.ON_EMPTY_TO_LOCATION
+            return false
+        }
+        return true
+    }
+
 
     fun createTravelDetail(): TravelExpense {
         return TravelExpense(

@@ -1,7 +1,7 @@
-<layout xmlns:tools="http://schemas.android.com/tools">
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
-
         <import type="android.view.View" />
 
         <variable
@@ -9,8 +9,7 @@
             type="com.atvantiq.wfms.models.reimbursement.allClaims.Record" />
     </data>
 
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_small"
@@ -22,10 +21,11 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="@dimen/padding">
 
             <!-- Claim Number -->
             <TextView
+                android:text="@{claimItem.claimNumber}"
                 android:id="@+id/tvClaimNumber"
                 style="@style/CustomRegularDarkTextView"
                 android:layout_width="0dp"
@@ -33,43 +33,44 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/ivCategoryIcon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="CLM-2026-00021" />
 
-            <!-- Category Icon (Emoji as ImageView or TextView) -->
+            <!-- Category Icon (ASCII-safe text) -->
             <TextView
                 android:id="@+id/ivCategoryIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_width="@dimen/padding_16dp"
+                android:layout_height="@dimen/margin_16dp"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:gravity="center"
-                android:textSize="20sp"
+                android:layout_marginStart="@dimen/margin_small"
                 app:layout_constraintBottom_toBottomOf="@id/tvClaimNumber"
-                app:layout_constraintEnd_toStartOf="@id/ivChevron"
+                app:layout_constraintStart_toEndOf="@id/tvClaimNumber"
                 app:layout_constraintTop_toTopOf="@id/tvClaimNumber"
-                tools:text="📍" />
+                tools:text="(icon)" />
 
             <!-- Chevron Icon -->
             <ImageView
                 android:id="@+id/ivChevron"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:src="@drawable/forward_arrow_right_24"
+                app:layout_constraintBottom_toBottomOf="@id/tvClaimNumber"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvClaimNumber" />
 
             <TextView
+                android:text="@{claimItem.status.code}"
                 android:id="@+id/chipStatus"
                 style="@style/CustomSmallTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:background="@drawable/status_green_bg"
+                android:background="@drawable/status_primary_bg"
                 android:paddingHorizontal="@dimen/padding_small"
                 android:paddingVertical="@dimen/padding_x_small"
-                android:textColor="@color/green"
+                android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvClaimNumber"
@@ -78,39 +79,64 @@
 
             <!-- Date Text -->
             <TextView
+                app:layout_constraintStart_toEndOf="@+id/chipStatus"
+                formatApiDateToMonthDayYear="@{claimItem.createdAt}"
                 android:id="@+id/tvDate"
                 style="@style/CustomMediumTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:drawableStart="@drawable/ic_calendar_today"
+                android:layout_marginStart="@dimen/margin"
+                android:drawableStart="@drawable/ic_calender_small"
                 android:drawablePadding="@dimen/padding_x_small"
                 android:drawableTint="@color/darkGray"
                 android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="@id/chipStatus"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/chipStatus"
                 tools:text="Jan 22, 2026" />
 
-            <!-- Amount -->
-            <TextView
-                android:id="@+id/tvAmount"
-                style="@style/CustomLargeDarkTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chipStatus"
-                tools:text="350.00" />
-
-            <!-- Divider -->
             <View
                 android:id="@+id/divider"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_marginTop="@dimen/margin"
-                android:background="@color/darkGray"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@color/cardLightBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/chipStatus" />
+
+
+            <!-- Amount -->
+
+            <TextView
+                android:textAllCaps="true"
+                android:layout_marginTop="@dimen/margin_small"
+                style="@style/CustomSmallTextView"
+                android:text="@string/claim_amount"
+                android:id="@+id/claimAmountLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginTop="@dimen/margin_2dp"
+                android:text="@{@string/rupee_format(claimItem.totalAmount)}"
+                android:id="@+id/tvAmount"
+                style="@style/CustomLargeDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/claimAmountLabel"
+                tools:text="350.00" />
+
+            <!-- divider2 -->
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@color/cardLightBackground"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvAmount" />
@@ -119,16 +145,18 @@
             <TextView
                 android:id="@+id/tvSitesLabel"
                 style="@style/CustomSmallTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/sites"
+                app:layout_constraintEnd_toStartOf="@+id/tvExpensesLabel"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider" />
+                app:layout_constraintTop_toBottomOf="@id/divider2" />
 
             <TextView
+                android:text="@{String.valueOf(claimItem.siteCount)}"
                 android:id="@+id/tvSitesCount"
-                style="@style/CustomMediumDarkTextView"
+                style="@style/CustomRegularDarkTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -137,34 +165,57 @@
                 app:layout_constraintTop_toBottomOf="@id/tvSitesLabel"
                 tools:text="2" />
 
+            <TextView
+                android:textAllCaps="false"
+                style="@style/CustomSmallTextView"
+                android:layout_marginStart="@dimen/margin_2dp"
+                android:text="@string/locations"
+                app:layout_constraintStart_toEndOf="@+id/tvSitesCount"
+                app:layout_constraintBottom_toBottomOf="@+id/tvSitesCount"
+                app:layout_constraintTop_toTopOf="@+id/tvSitesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/tvExpensesLabel"
                 style="@style/CustomSmallTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin"
                 android:text="@string/expenses"
-                app:layout_constraintEnd_toStartOf="@+id/tvTypeLabel"
                 app:layout_constraintStart_toEndOf="@id/tvSitesLabel"
+                app:layout_constraintEnd_toStartOf="@id/tvTypeLabel"
                 app:layout_constraintTop_toTopOf="@id/tvSitesLabel" />
 
             <TextView
+                android:text="@{String.valueOf(claimItem.expenseCount)}"
                 android:id="@+id/tvExpensesCount"
-                style="@style/CustomMediumDarkTextView"
+                style="@style/CustomRegularDarkTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/tvExpensesLabel"
                 app:layout_constraintStart_toStartOf="@id/tvExpensesLabel"
                 app:layout_constraintTop_toBottomOf="@id/tvExpensesLabel"
                 tools:text="3" />
 
+            <TextView
+                android:textAllCaps="false"
+                style="@style/CustomSmallTextView"
+                android:text="@string/items"
+                android:layout_marginStart="@dimen/margin_2dp"
+                app:layout_constraintStart_toEndOf="@+id/tvExpensesCount"
+                app:layout_constraintTop_toTopOf="@+id/tvExpensesCount"
+                app:layout_constraintBottom_toBottomOf="@+id/tvExpensesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
             <TextView
+                app:layout_constraintStart_toEndOf="@+id/tvExpensesLabel"
                 android:id="@+id/tvTypeLabel"
                 style="@style/CustomSmallTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/type"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -177,7 +228,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@id/tvTypeLabel"
+                app:layout_constraintStart_toStartOf="@id/tvTypeLabel"
                 app:layout_constraintTop_toBottomOf="@id/tvTypeLabel"
                 tools:text="Multiple" />
 

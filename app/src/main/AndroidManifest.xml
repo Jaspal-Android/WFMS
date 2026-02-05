@@ -29,6 +29,9 @@
         android:theme="@style/Theme.WFMS"
         tools:targetApi="31">
         <activity
+            android:name=".ui.screens.reimbursement.claimDetails.ClaimDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelingDetailActivity"
             android:exported="false" />
         <activity

@@ -48,6 +48,7 @@
     <dimen name="margin_small_extra">4dp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin">16dp</dimen>
+    <dimen name="margin_medium">12dp</dimen>
     <dimen name="margin_large">18dp</dimen>
     <dimen name="margin_big">24dp</dimen>
     <dimen name="margin_x_large">32dp</dimen>
@@ -56,6 +57,7 @@
     <dimen name="margin_16dp">16dp</dimen>
     <dimen name="margin_20dp">20dp</dimen>
     <dimen name="margin_huge">42dp</dimen>
+    <dimen name="margin_2dp">2dp</dimen>
 
     <!--flag dialog-->
     <dimen name="flag_icon_width">32dp</dimen>

@@ -8,6 +8,7 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,12 +29,21 @@ class ReimbursementViewModel @Inject constructor(
     fun onCreateClaimClick() = postClickEvent(ReimbursementClickEvents.ON_CLICK_CREATE_CLAIM)
 
 
-   /*Get all claims*/
+    /*Get all claims*/
     var allClaimsResponse = MutableLiveData<ApiState<AllClaimsResponse>>()
     fun getAllClaims(page: Int, pageSize: Int) {
         executeApiCall(
             apiCall = { claimRepo.allClaims(page, pageSize) },
             liveData = allClaimsResponse
+        )
+    }
+
+    /*Get Claim by ID */
+    var claimByIdResponse = MutableLiveData<ApiState<ClaimDetailResponse>>()
+    fun getClaimById(claimId: Long) {
+        executeApiCall(
+            apiCall = { claimRepo.claimById(claimId) },
+            liveData = claimByIdResponse
         )
     }
 }

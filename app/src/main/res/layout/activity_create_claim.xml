@@ -2,12 +2,7 @@
 <layout>
 
     <data>
-
         <import type="android.view.View" />
-
-        <variable
-            name="isMultiSite"
-            type="Boolean" />
 
         <variable
             name="vm"
@@ -148,7 +143,7 @@
                             <!-- Single Site Selection -->
                             <com.google.android.material.textfield.TextInputLayout
                                 tools:visibility="gone"
-                                android:visibility="@{isMultiSite ? View.GONE : View.VISIBLE}"
+                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin_small"
@@ -181,7 +176,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
                                 android:orientation="vertical"
-                                android:visibility="@{isMultiSite ? View.VISIBLE : View.GONE}"
+                                android:visibility="@{vm.isMultiSite ? View.VISIBLE : View.GONE}"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/segmentSiteType">
@@ -274,6 +269,7 @@
                             android:padding="@dimen/padding">
 
                             <com.google.android.material.textfield.TextInputLayout
+                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
                                 android:id="@+id/projectInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -307,6 +303,8 @@
                                 app:endIconMode="custom">
 
                                 <com.google.android.material.textfield.TextInputEditText
+                                    android:clickable="@{vm.isMultiSite ? true : false}"
+                                    android:onClick="@{()->vm.onCircleDropdownClick()}"
                                     android:id="@+id/circle_et"
                                     style="@style/CustomSelectableTextInputEditStyle"
                                     android:layout_width="match_parent"
