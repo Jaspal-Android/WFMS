@@ -286,7 +286,7 @@ class CreateClaimVM @Inject constructor(
             if (selectedProjectId == null) return postValidationError(CreateClaimErrorHandler.EMPTY_PROJECT)
             if (selectedCircleId == null) return postValidationError(CreateClaimErrorHandler.EMPTY_CIRCLE)
 
-            if (!hasAnyExpenseEntry(includeHotel = false)) {
+            if (!hasAnyExpenseEntry(includeHotel = isOutstationExpense.get() == true)) {
                 return postValidationError(CreateClaimErrorHandler.EMPTY_EXPENSES)
             }
             return true
@@ -301,7 +301,7 @@ class CreateClaimVM @Inject constructor(
         }
         if (selectedCircleId == null) return postValidationError(CreateClaimErrorHandler.EMPTY_CIRCLE)
 
-        if (!hasAnyExpenseEntry(includeHotel = true)) {
+        if (!hasAnyExpenseEntry(includeHotel = isOutstationExpense.get() == true)) {
             return postValidationError(CreateClaimErrorHandler.EMPTY_EXPENSES)
         }
 

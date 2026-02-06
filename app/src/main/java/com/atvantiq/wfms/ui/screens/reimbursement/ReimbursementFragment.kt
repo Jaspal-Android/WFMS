@@ -237,7 +237,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     private val createClaimLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-
+               startRefreshingData()
             }
         }
 }
