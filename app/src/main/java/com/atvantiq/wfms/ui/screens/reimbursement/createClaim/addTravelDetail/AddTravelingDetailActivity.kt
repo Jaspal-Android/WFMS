@@ -70,7 +70,6 @@ class AddTravelingDetailActivity :
         val defaultFrom = intent.getStringExtra(SharingKeys.EXTRA_DEFAULT_FROM)
         if (!defaultFrom.isNullOrBlank()) {
             viewModel.fromLocation.set(defaultFrom)
-            binding.fromEt.isEnabled = false
         }
     }
 

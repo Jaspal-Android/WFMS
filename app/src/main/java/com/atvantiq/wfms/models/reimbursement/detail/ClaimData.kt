@@ -22,6 +22,8 @@ data class ClaimData(
     val status: String?,
     @SerializedName("total_amount")
     val totalAmount: Double?,
+    @SerializedName("latest_approved_amount")
+    val latestApprovedAmount: Double?,
     @SerializedName("travelling_from")
     val travellingFrom: String?,
     @SerializedName("travelling_to")

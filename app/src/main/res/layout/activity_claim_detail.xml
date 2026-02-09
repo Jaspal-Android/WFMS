@@ -53,29 +53,7 @@
                     android:padding="@dimen/padding">
 
                     <TextView
-                        style="@style/CustomMediumTextView"
-                        android:id="@+id/tvTotalLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/total_claim_amount"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/tvTotalAmount"
-                        style="@style/CustomBigTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_2dp"
-                        android:text="@{@string/rupee_format(claim.totalAmount)}"
-                        android:textColor="@color/colorPrimaryDark"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvTotalLabel"
-                        tools:text="₹90.00" />
-
-                    <TextView
+                        app:layout_constraintTop_toTopOf="parent"
                         android:id="@+id/tvStatus"
                         style="@style/CustomSmallTextView"
                         android:layout_width="wrap_content"
@@ -87,8 +65,81 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/tvTotalLabel"
                         tools:text="Submitted" />
+
+                    <!-- Amount -->
+                    <LinearLayout
+                        app:layout_constraintTop_toBottomOf="@+id/tvStatus"
+                        android:layout_marginTop="@dimen/margin_medium"
+                        android:id="@+id/amountContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <!-- Claim Amount Box -->
+                        <LinearLayout
+                            android:paddingVertical="@dimen/padding_small"
+                            android:paddingHorizontal="@dimen/padding_medium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:background="@drawable/bg_approval_pending"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:textStyle="bold"
+                                android:textAllCaps="true"
+                                style="@style/CustomSmallTextView"
+                                android:text="@string/claim_amount"
+                                android:id="@+id/claimAmountLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:textColor="@color/colorPrimaryDark"
+                                android:layout_marginTop="@dimen/margin_2dp"
+                                android:text="@{@string/rupee_format(claim.totalAmount != null ? claim.totalAmount : 0.0)}"
+                                android:id="@+id/tvAmount"
+                                style="@style/CustomLargeDarkTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="bold"
+                                tools:text="350.00" />
+                        </LinearLayout>
+
+                        <!-- Approved Amount Box -->
+                        <LinearLayout
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:paddingVertical="@dimen/padding_small"
+                            android:paddingHorizontal="@dimen/padding_medium"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_approval_approved"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="APPROVED AMOUNT"
+                                android:textColor="#2E7D32"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                style="@style/CustomLargeDarkTextView"
+                                android:layout_marginTop="@dimen/margin_2dp"
+                                android:id="@+id/approvedAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="₹ 1050.00"
+                                android:text="@{@string/rupee_format(claim.latestApprovedAmount != null ? claim.latestApprovedAmount : 0.0)}"
+                                android:textColor="@color/green"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

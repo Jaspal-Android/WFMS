@@ -25,5 +25,7 @@ data class Record(
     @SerializedName("type")
     val type: String?,
     @SerializedName("updated_at")
-    val updatedAt: String?
+    val updatedAt: String?,
+    @SerializedName("latest_approved_amount")
+    val latestApprovedAmount: Double?
 )

@@ -94,52 +94,78 @@
                 app:layout_constraintTop_toTopOf="@id/chipStatus"
                 tools:text="Jan 22, 2026" />
 
-            <View
-                android:id="@+id/divider"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/margin_small"
-                android:background="@color/cardLightBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chipStatus" />
-
-
             <!-- Amount -->
-
-            <TextView
-                android:textAllCaps="true"
-                android:layout_marginTop="@dimen/margin_small"
-                style="@style/CustomSmallTextView"
-                android:text="@string/claim_amount"
-                android:id="@+id/claimAmountLabel"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:layout_marginTop="@dimen/margin_2dp"
-                android:text="@{@string/rupee_format(claimItem.totalAmount)}"
-                android:id="@+id/tvAmount"
-                style="@style/CustomLargeDarkTextView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_marginTop="@dimen/margin_medium"
+                android:id="@+id/amountContainer"
+                app:layout_constraintTop_toBottomOf="@id/chipStatus"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/claimAmountLabel"
-                tools:text="350.00" />
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-            <!-- divider2 -->
-            <View
-                android:id="@+id/divider2"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/margin_small"
-                android:background="@color/cardLightBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAmount" />
+                <!-- Claim Amount Box -->
+                <LinearLayout
+                    android:paddingVertical="@dimen/padding_small"
+                    android:paddingHorizontal="@dimen/padding_medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:background="@drawable/bg_approval_pending"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        style="@style/CustomSmallTextView"
+                        android:text="@string/claim_amount"
+                        android:id="@+id/claimAmountLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:layout_marginTop="@dimen/margin_2dp"
+                        android:text="@{@string/rupee_format(claimItem.totalAmount != null ? claimItem.totalAmount : 0.0)}"
+                        android:id="@+id/tvAmount"
+                        style="@style/CustomLargeDarkTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        tools:text="350.00" />
+                </LinearLayout>
+
+                <!-- Approved Amount Box -->
+                <LinearLayout
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:paddingVertical="@dimen/padding_small"
+                    android:paddingHorizontal="@dimen/padding_medium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_approval_approved"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="APPROVED AMOUNT"
+                        android:textColor="#2E7D32"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        style="@style/CustomLargeDarkTextView"
+                        android:layout_marginTop="@dimen/margin_2dp"
+                        android:id="@+id/approvedAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="₹ 1050.00"
+                        android:text="@{@string/rupee_format(claimItem.latestApprovedAmount != null ? claimItem.latestApprovedAmount : 0.0)}"
+                        android:textColor="@color/green"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
 
 
             <TextView
@@ -147,11 +173,11 @@
                 style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_medium"
                 android:text="@string/sites"
                 app:layout_constraintEnd_toStartOf="@+id/tvExpensesLabel"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider2" />
+                app:layout_constraintTop_toBottomOf="@id/amountContainer" />
 
             <TextView
                 android:text="@{String.valueOf(claimItem.siteCount)}"
