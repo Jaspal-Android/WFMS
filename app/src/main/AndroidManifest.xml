@@ -89,7 +89,7 @@
             android:name=".ui.screens.login.LoginActivity"
             android:exported="false"
             android:screenOrientation="userPortrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity
             android:name=".ui.screens.vendor.loginDetails.VendorLoginDetailsActivity"
             android:exported="false"
