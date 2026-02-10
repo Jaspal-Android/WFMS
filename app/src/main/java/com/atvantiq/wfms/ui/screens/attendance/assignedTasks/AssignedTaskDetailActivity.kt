@@ -28,6 +28,7 @@ import com.atvantiq.wfms.ui.screens.adapters.WorkTypeAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
+import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -79,9 +80,14 @@ class AssignedTaskDetailActivity :
             checkAttendanceStatus(workSiteId ?: -1, position = itemPosition)
         }
         binding.btnEndWork.setOnClickListener {
+            val selectedTypes = itemTypeAdapter?.getSelectedTypes().orEmpty()
+            if (selectedTypes.isEmpty()) {
+                showToast(this, getString(R.string.select_type_to_end_work))
+                return@setOnClickListener
+            }
             endWorkWithLocationPermissions(
                 workSiteId ?: -1,
-                itemTypeAdapter?.getSelectedTypes() ?: emptyList(),
+                selectedTypes,
                 itemPosition
             )
         }
@@ -411,7 +417,11 @@ class AssignedTaskDetailActivity :
         when {
             hasAllPermissions(permissions) -> onPermissionsGranted()
             permissions.any { shouldShowRequestPermissionRationale(it) } -> onPermissionsDenied()
-            else -> permissionLauncher.launch(permissions)
+            else ->{
+                Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.location_permission_needed),getString(R.string.start_end_work_location_permission_msg)){
+                    permissionLauncher.launch(permissions)
+                }
+            }
         }
     }
 

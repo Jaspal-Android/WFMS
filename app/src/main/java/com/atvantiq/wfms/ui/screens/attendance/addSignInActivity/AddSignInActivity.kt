@@ -27,7 +27,6 @@ import java.util.Locale
 
 
 @AndroidEntryPoint
-
 class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() {
 
     override val bindingActivity: ActivityBinding

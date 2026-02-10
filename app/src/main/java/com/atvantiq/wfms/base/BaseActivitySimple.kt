@@ -249,4 +249,27 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         }
     }
 
+    fun showDisclosureDialog(
+        title: String,
+        message: String,
+        positiveButtonText: String = getString(R.string.ok),
+        negativeButtonText: String = getString(R.string.cancel),
+        cancelable: Boolean = false,
+        onPositive: (() -> Unit)? = null,
+        onNegative: (() -> Unit)? = null,
+    ) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText) { dialog, _ ->
+                dialog.dismiss()
+                onPositive?.invoke()
+            }
+            .setNegativeButton(negativeButtonText) { dialog, _ ->
+                dialog.dismiss()
+                onNegative?.invoke()
+            }
+            .setCancelable(cancelable)
+            .show()
+    }
 }

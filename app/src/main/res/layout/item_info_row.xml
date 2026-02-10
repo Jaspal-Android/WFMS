@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="icon"
+            type="Integer" />
+
+        <variable
+            name="label"
+            type="String" />
+
+        <variable
+            name="value"
+            type="String" />
+
+        <variable
+            name="subValue"
+            type="String" />
+
+        <variable
+            name="visibleIf"
+            type="Boolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="@{visibleIf != null ? (visibleIf ? android.view.View.VISIBLE : android.view.View.GONE) : android.view.View.VISIBLE}">
+
+
+        <TextView
+            style="@style/CustomMediumTextView"
+            android:id="@+id/tvLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{label}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Employee" />
+
+        <TextView
+            style="@style/CustomMediumDarkTextView"
+            android:id="@+id/tvValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_2dp"
+            android:text="@{value}"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLabel"
+            tools:text="Tashu Goyal" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
