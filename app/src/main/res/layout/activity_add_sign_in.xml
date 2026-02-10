@@ -210,7 +210,7 @@
                         android:ellipsize="start"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
+                        android:singleLine="false"
                         android:enabled="@{!vm.isTypeLoading}" />
 
                     <ProgressBar

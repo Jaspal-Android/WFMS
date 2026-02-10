@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="expense"
+            type="com.atvantiq.wfms.models.reimbursement.detail.Expense" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_small_extra"
+        android:background="@drawable/bg_expense_item"
+        android:padding="@dimen/padding_small">
+
+
+        <TextView
+            style="@style/CustomMediumDarkTextView"
+            android:id="@+id/tvExpenseType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginStart="@dimen/margin_small"
+            android:text="@{expense.expenseType}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tvAmountPerSite"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Travel" />
+
+
+        <TextView
+            style="@style/CustomRegularDarkTextView"
+            android:id="@+id/tvAmountPerSite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/rupee_format(expense.amountPerSite)}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="₹30.00" />
+
+        <TextView
+            style="@style/CustomMediumTextView"
+            android:id="@+id/tvClaimedAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{@string/of_format(expense.claimedAmount)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAmountPerSite"
+            tools:text="of ₹90.00" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

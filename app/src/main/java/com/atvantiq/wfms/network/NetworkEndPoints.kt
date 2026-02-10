@@ -1,11 +1,6 @@
 package com.atvantiq.wfms.network
 
 object NetworkEndPoints {
-	
-	/* Login Page */
-	//const val  BASE_URL = "http://69.62.85.16:8000/"
-	//const val  BASE_URL = "http://69.62.85.16:8000/"
-	const val  BASE_URL = "http://69.62.85.16:8000/"
 
 	/*Login*/
 	const val loginRequest = "login"
@@ -69,5 +64,21 @@ object NetworkEndPoints {
 	/*Notification*/
 	const val notificationToken="notifications/notification-token"
 
+	/*Claims*/
+	const val workSiteByDate = "claim/sites/date"
 
+	/*All Projects*/
+	const val allProjects = "project/all?is_all=true&is_active=1"
+
+	/*Get circle employes*/
+	const val circleEmployees = "circle/employee"
+
+	/*Create claim*/
+	const val createClaim = "claim/create-claim"
+
+	/*All claims*/
+	const val allClaims = "claim/all/mobile"
+
+	/*Claim by ID*/
+	const val claimById = "claim/{claim_id}"
 }

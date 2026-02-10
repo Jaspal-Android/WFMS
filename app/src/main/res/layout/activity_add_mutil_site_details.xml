@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context=".ui.screens.reimbursement.createClaim.addSiteDetail.AddMutilSiteDetailsActivity">
+
+        <include
+            android:id="@+id/addSiteToolbar"
+            layout="@layout/custom_toolbar" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/siteIdInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:hint="@string/select_site"
+                android:minHeight="@dimen/text_input_edit_text_min_height"
+                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                app:endIconMode="custom"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/site_et"
+                    style="@style/CustomSelectableTextInputEditStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="1"
+                    android:ellipsize="start"
+                    android:padding="@dimen/padding"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvTitle"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Site"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Purpose EditText -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etPurposeInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:hint="@string/enter_purpose"
+                android:minHeight="@dimen/text_input_edit_text_min_height"
+                app:layout_constraintTop_toBottomOf="@+id/siteIdInput">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPurpose"
+                    style="@style/CustomEditInputTextRegularStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="1"
+                    android:ellipsize="start"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapCharacters"
+                    android:padding="@dimen/padding"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+            <!-- Cancel Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                style="@style/CustomRedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:layout_marginTop="@dimen/margin_large"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_done"
+                app:layout_constraintTop_toBottomOf="@id/etPurposeInput" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_done"
+                style="@style/CustomPrimaryButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/submit"
+                android:layout_marginStart="@dimen/margin"
+                app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btn_cancel"
+                app:layout_constraintTop_toBottomOf="@id/etPurposeInput" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>
