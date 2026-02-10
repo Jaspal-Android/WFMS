@@ -63,6 +63,11 @@ class VendorStartActivity : BaseActivity<ActivityVendorStartBinding,VendorStartA
         pickMediaHelper.handlePermissionResult(permissions)
     }
 
+    private val photoPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            pickMediaHelper.handlePhotoPickerResult(uri)
+        }
+
     private lateinit var pickMediaHelper: PickMediaHelper
     //---------------------------------------------------------//
 
@@ -119,6 +124,7 @@ class VendorStartActivity : BaseActivity<ActivityVendorStartBinding,VendorStartA
                 binding.hasPreviewImage = false
             }
         })
+        pickMediaHelper.setPhotoPickerLauncher(photoPickerLauncher)
     }
 
     private fun initListeners() {

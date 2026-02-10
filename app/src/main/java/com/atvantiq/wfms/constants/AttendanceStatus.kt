@@ -9,6 +9,9 @@ object AttendanceStatus {
     const val HOLIDAY = "H"
     const val WORK_OFF = "WO"
     const val UNKNOWN = "UNKNOWN"
+    const val ABSENT_NA = "ABSENT_NA"
+    const val INCOMPLETE = "INCOMPLETE"
+
 }
 
 
@@ -41,5 +44,12 @@ object AttendanceStatus {
 {
     "code": 6,
     "name": "WO"
+},
+{
+    "code": 7,
+    "name": "ABSENT_NA"
+},{
+    "code": 8,
+    "name": "INCOMPLETE"
 }
 ],*/

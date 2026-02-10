@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="claim"
+            type="com.atvantiq.wfms.models.reimbursement.detail.ClaimData" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding">
+
+            <ImageView
+                android:id="@+id/ivFileIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_file_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/tvBasicInfoTitle"
+                style="@style/CustomRegularDarkTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@string/basic_information"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/ivFileIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivFileIcon"
+                app:layout_constraintTop_toTopOf="@id/ivFileIcon" />
+
+            <!-- Date Info -->
+            <include
+                android:id="@+id/dateInfo"
+                layout="@layout/item_info_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                app:label="@{@string/date}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/categoryInfo"
+                app:layout_constraintTop_toBottomOf="@id/tvBasicInfoTitle"
+                app:value="@{claim.date}" />
+
+            <!-- Category Info -->
+            <include
+                android:layout_marginStart="@dimen/margin_small"
+                android:id="@+id/categoryInfo"
+                layout="@layout/item_info_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:label="@{@string/category}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/dateInfo"
+                app:layout_constraintTop_toTopOf="@id/dateInfo"
+                app:value="@{claim.claimCategory}" />
+
+            <!-- Purpose Info -->
+            <include
+                android:id="@+id/purposeInfo"
+                layout="@layout/item_info_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                app:label="@{@string/purpose}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/remarksInfo"
+                app:layout_constraintTop_toBottomOf="@id/categoryInfo"
+                app:value="@{claim.claimPurpose}" />
+
+            <!-- Remarks Info (Conditional) -->
+            <include
+                android:layout_marginStart="@dimen/margin_small"
+                android:id="@+id/remarksInfo"
+                layout="@layout/item_info_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:label="@{@string/remarks}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/purposeInfo"
+                app:layout_constraintTop_toTopOf="@id/purposeInfo"
+                app:value="@{claim.remarks}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</layout>

@@ -24,8 +24,8 @@ android {
         applicationId = "com.atvantiq.wfms"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.1.2"
+        versionCode = 10
+        versionName = "1.1.4"
 
         manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
         buildConfigField("String","GOOGLE_MAPS_API_KEY","\"" + secrets.getProperty("GOOGLE_MAPS_API_KEY") + "\"")
@@ -61,7 +61,7 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".beta"
             versionNameSuffix = "-beta"
-            buildConfigField("String", "BASE_URL", "\"http://157.173.220.189:8000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://betaapi.onaqt.com/\"")
         }
         create("prod") {
             dimension = "environment"

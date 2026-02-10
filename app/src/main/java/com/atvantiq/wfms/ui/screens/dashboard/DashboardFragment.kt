@@ -71,7 +71,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.onAnnouncementsClicks -> Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
 
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
-                    getCurrentLatitudeLongitudePermissions()
+                    startCurrentLocationPermissionFlow()
                 }
                 DashboardClickEvents.OPEN_SITES_CLICK -> TODO()
                 DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK -> TODO()
@@ -349,11 +349,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                         hasAllPermissions(permissions) -> manageDayStartEnd()
                         permissions.any { shouldShowRequestPermissionRationale(it) } -> {
                             binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            showPermissionDeniedPermanently()
+                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+                                permissionLauncher.launch(permissions)
+                            }
                         }
                         else -> {
                             binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            permissionLauncher.launch(permissions)
+                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+                                permissionLauncher.launch(permissions)
+                            }
                         }
                     }
                 }
@@ -363,7 +367,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     @SuppressLint("MissingPermission")
     private fun manageDayStartEnd() {
         if (isDayStarted) {
-            // Check-out: Do NOT check geofence
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 lat = location?.latitude ?: 0.0
                 long = location?.longitude ?: 0.0
@@ -373,7 +376,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 long = 0.0
             }
         } else {
-            // Check-in: Only here we check geofence
             isWithinGeofence { isWithin ->
                 if (isWithin) {
                     checkPermissionsAndUpdateGeofence()
@@ -403,12 +405,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
 
-    private val permissionLauncherCurrentLatLon = registerForActivityResult(
+    private val permissionLauncherCurrentLocation = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
             permissions.all { it.value } -> {
-                getCurrentLatitudeLongitudePermissions()
+                getCurrentLatitudeLongitude()
             }
             !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
             else -> showPermissionRationale()
@@ -459,7 +461,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    private fun getLocationRequiredPermissions(): Array<String> {
+
+
+    private fun getForegroundRequiredPermissions(): Array<String> {
         val list = mutableListOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -468,10 +472,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun getRequiredPermissions(): Array<String> {
-        val list = mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
+        val list = getForegroundRequiredPermissions().toMutableList()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             list.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
@@ -517,41 +519,49 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun getCurrentLatitudeLongitudePermissions() {
-        val permissions = getLocationRequiredPermissions()
+    private fun startCurrentLocationPermissionFlow() {
+        val foreground = getForegroundRequiredPermissions()
         when {
-            hasAllPermissions(permissions) -> {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    val latitude = location?.latitude
-                    val longitude = location?.longitude
-                    lat = latitude ?: 0.0
-                    long = longitude ?: 0.0
-                    if (latitude != null && longitude != null) {
-                        Utils.getAddressFromLatLong(requireContext(), lat, long) { addressFromLatLon ->
-                            requireActivity().runOnUiThread {
-                                alertDialogShow(
-                                    requireContext(),
-                                    getString(R.string.current_location),
-                                    "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${getString(R.string.Address)}: $addressFromLatLon"
-                                )
-                            }
-                        }
-                    } else {
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.alert),
-                            getString(R.string.unable_to_fetch_location)
-                        )
-                    }
-                }.addOnFailureListener {
-                    lat = 0.0
-                    long = 0.0
-                    alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.unable_to_fetch_location))
+            hasAllPermissions(foreground) -> {
+                getCurrentLatitudeLongitude()
+            }
+            foreground.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
+            else -> {
+                Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
+                    permissionLauncherCurrentLocation.launch(foreground)
                 }
             }
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> permissionLauncherCurrentLatLon.launch(permissions)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLatitudeLongitude() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            val latitude = location?.latitude
+            val longitude = location?.longitude
+            lat = latitude ?: 0.0
+            long = longitude ?: 0.0
+            if (latitude != null && longitude != null) {
+                Utils.getAddressFromLatLong(requireContext(), lat, long) { addressFromLatLon ->
+                    requireActivity().runOnUiThread {
+                        alertDialogShow(
+                            requireContext(),
+                            getString(R.string.current_location),
+                            "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${getString(R.string.Address)}: $addressFromLatLon"
+                        )
+                    }
+                }
+            } else {
+                alertDialogShow(
+                    requireContext(),
+                    getString(R.string.alert),
+                    getString(R.string.unable_to_fetch_location)
+                )
+            }
+        }.addOnFailureListener {
+            lat = 0.0
+            long = 0.0
+            alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.unable_to_fetch_location))
         }
     }
 }

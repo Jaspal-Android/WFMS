@@ -292,4 +292,15 @@
         <item name="android:padding">@dimen/padding_x_small</item>
     </style>
 
+    <style name="SwitchButtonStyle">
+        <item name="android:paddingTop">@dimen/padding_x_small</item>
+        <item name="android:paddingBottom">@dimen/padding_x_small</item>
+        <item name="android:paddingLeft">@dimen/padding_medium</item>
+        <item name="android:paddingRight">@dimen/padding_medium</item>
+        <item name="android:textSize">@dimen/default_small_text</item>
+        <item name="android:background">@drawable/switch_toggle_blue_bg</item>
+        <item name="android:textColor">@drawable/switch_text_selector</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>
