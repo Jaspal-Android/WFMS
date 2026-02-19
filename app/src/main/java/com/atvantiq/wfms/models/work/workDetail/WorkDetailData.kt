@@ -21,5 +21,7 @@ data class WorkDetailData(
     @SerializedName("type")
     val type: List<Type>?,
     @SerializedName("work_site_id")
-    val workSiteId: Long?
+    val workSiteId: Long?,
+    @SerializedName("can_restart")
+    var canRestart: Boolean?
 )
