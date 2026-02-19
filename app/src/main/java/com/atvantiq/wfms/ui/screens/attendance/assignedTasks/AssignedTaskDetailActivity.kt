@@ -132,6 +132,7 @@ class AssignedTaskDetailActivity :
         binding.tvCircle.text = record?.circle?.name ?: getString(R.string.not_available)
         binding.tvSiteName.text = record?.name ?: getString(R.string.not_available)
         binding.tvSiteCode.text = record?.siteId ?: getString(R.string.not_available)
+        val canRestart = record?.canRestart ?: false
 
         when (record?.status?.code) {
             StatusCodes.OPEN -> {
@@ -148,7 +149,8 @@ class AssignedTaskDetailActivity :
 
             StatusCodes.WIP -> {
                 binding.isOpenAssignment = false
-                binding.isAcceptedAssignment = false
+                binding.isAcceptedAssignment = canRestart
+                if (canRestart) binding.showEndAssignment = false
             }
 
             StatusCodes.COMPLETED -> {
@@ -160,16 +162,12 @@ class AssignedTaskDetailActivity :
             else -> {
                 binding.isOpenAssignment = false
                 binding.isAcceptedAssignment = false
+                binding.showEndAssignment = false
             }
 
         }
 
-        /*val hasEligibleToEnd = record?.status?.code !in listOf(
-            StatusCodes.OPEN,
-            StatusCodes.ACCEPTED,
-            StatusCodes.COMPLETED
-        )*/
-        val hasEligibleToEnd = record?.status?.code in listOf(StatusCodes.WIP)
+        val hasEligibleToEnd = record?.status?.code in listOf(StatusCodes.WIP) && record?.canRestart == false
 
         if (record?.type?.isNullOrEmpty() == true) {
             binding.showSelectAll = false
@@ -254,7 +252,7 @@ class AssignedTaskDetailActivity :
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(this, it.message ?: getString(successMessage))
-                        handleStatusUpdateResponse(it.data)
+                        handleStatusUpdateResponse(it.data, true)
                     } else {
                         handleErrorResponse(it.code, it.message)
                     }
@@ -276,6 +274,7 @@ class AssignedTaskDetailActivity :
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(this, it.message ?: getString(successMessage))
+                        it?.data?.canRestart = false
                         handleStatusUpdateResponse(it.data)
                     } else {
                         handleErrorResponse(it.code, it.message)
