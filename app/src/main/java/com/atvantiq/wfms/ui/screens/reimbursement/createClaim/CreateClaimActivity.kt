@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,7 @@ import com.atvantiq.wfms.databinding.ActivityCreateClaimBinding
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.allProjects.Circle
 import com.atvantiq.wfms.models.allProjects.Project
+import com.atvantiq.wfms.models.attendance.attendanceDetails.Logs
 import com.atvantiq.wfms.models.reimbursement.DAExpense
 import com.atvantiq.wfms.models.reimbursement.HotelExpense
 import com.atvantiq.wfms.models.reimbursement.OtherExpense
@@ -582,7 +584,22 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 },
             )
         } else {
-            val preSelectedSites = viewModel.selectedSitesIdList?.value?.mapNotNull { site ->
+
+            val preSelected = viewModel.selectedSitesIdList.value
+                ?.mapNotNull { saved -> sites.find { it.id == saved.id } }
+                ?.toSet() ?: emptySet()
+
+            val dialog = SiteSelectionBottomSheetDialog(
+                context = this,
+                sites = sites,                    // List<SiteModel> from API
+                preSelectedSites = preSelected,
+                onSubmit = { selectedSites ->
+                    updateSelectedSites(selectedSites.toSet())
+                }
+            )
+            dialog.show(supportFragmentManager, "SiteSelectionDialog")
+
+           /* val preSelectedSites = viewModel.selectedSitesIdList?.value?.mapNotNull { site ->
                 sites.find { it == site }
             }?.toSet() ?: emptySet()
 
@@ -606,7 +623,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 },
                 title = getString(R.string.select_site)
             )
-            dialog.show(supportFragmentManager, "SiteSelectionDialog")
+            dialog.show(supportFragmentManager, "SiteSelectionDialog")*/
         }
     }
 
@@ -661,5 +678,8 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun updateSelectedSites(selectedSites: Set<SiteData>) {
         viewModel.addMultipleSite(selectedSites.toList())
+        selectedSites.forEach {
+            Log.e("PO Selection", "Selected Site: ${it.name}, Selected PO: ${it.selectedPo?.poNumber}")
+        }
     }
 }
