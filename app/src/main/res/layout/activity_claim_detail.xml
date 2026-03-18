@@ -15,8 +15,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/cardLightBackground">
+        android:layout_height="match_parent">
 
         <!-- Header Section -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +61,7 @@
                         android:paddingHorizontal="@dimen/padding_small"
                         android:paddingVertical="@dimen/padding_x_small"
                         android:text="@{claim.status}"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorPrimaryDark"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         tools:text="Submitted" />
@@ -98,7 +97,7 @@
                                 android:layout_height="wrap_content"/>
 
                             <TextView
-                                android:textColor="@color/colorPrimaryDark"
+                                android:textColor="?attr/colorPrimaryDark"
                                 android:layout_marginTop="@dimen/margin_2dp"
                                 android:text="@{@string/rupee_format(claim.totalAmount != null ? claim.totalAmount : 0.0)}"
                                 android:id="@+id/tvAmount"
@@ -199,7 +198,7 @@
                             android:src="@drawable/ic_marker_on_24"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="@color/colorPrimaryDark" />
+                            app:tint="?attr/colorPrimaryDark" />
 
                         <TextView
                             android:id="@+id/tvSitesTitle"

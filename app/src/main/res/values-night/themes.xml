@@ -1,7 +1,200 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.WFMS" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<resources>
+
+    <!--
+        values-night/themes.xml
+        ══════════════════════════════════════════════════════════════
+        Dark mode overrides for all 6 WFMS theme overlays.
+        Android automatically picks this folder when the system is in
+        dark mode (UiModeManager.MODE_NIGHT_YES or system setting).
+
+        Each overlay keeps its unique primary/CTA accent color but
+        replaces ALL background/surface/text colors with the shared
+        dark palette from colors.xml (dark_* colors).
+    ══════════════════════════════════════════════════════════════ -->
+
+    <!-- ── FOREST GREEN — Dark ── -->
+    <style name="ThemeOverlay.WFMS.Forest" parent="Theme.WFMS">
+        <!-- Keep brand accent -->
+        <item name="wfmsColorPrimary">@color/forest_primary_light</item>
+        <item name="wfmsColorPrimaryDark">@color/forest_primary</item>
+        <item name="wfmsColorPrimaryLight">@color/forest_primary_dark</item>
+        <item name="wfmsColorCta">@color/forest_cta</item>
+        <!-- Dark surfaces -->
+        <item name="wfmsColorBackground">@color/dark_bg</item>
+        <item name="wfmsColorSurface">@color/dark_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/dark_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/dark_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/dark_outline</item>
+        <!-- Status colors (slightly brightened for dark bg) -->
+        <item name="wfmsColorSuccess">@color/forest_success</item>
+        <item name="wfmsColorSuccessLight">@color/dark_surface_2</item>
+        <item name="wfmsColorWarning">@color/forest_warning</item>
+        <item name="wfmsColorWarningLight">@color/dark_surface_2</item>
+        <item name="wfmsColorError">@color/forest_error</item>
+        <item name="wfmsColorErrorLight">@color/dark_surface_2</item>
+        <!-- Card colors stay vivid -->
+        <item name="wfmsCard1Color">@color/forest_card1_color</item>
+        <item name="wfmsCard2Color">@color/forest_card2_color</item>
+        <item name="wfmsCard3Color">@color/forest_card3_color</item>
+        <item name="wfmsCard4Color">@color/forest_card4_color</item>
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/forest_primary_light</item>
+        <item name="colorSecondary">@color/forest_cta</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorError">@color/forest_error</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
     </style>
+
+    <!-- ── OCEAN BLUE — Dark ── -->
+    <style name="ThemeOverlay.WFMS.Ocean" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/ocean_primary_light</item>
+        <item name="wfmsColorPrimaryDark">@color/ocean_primary</item>
+        <item name="wfmsColorPrimaryLight">@color/ocean_primary_dark</item>
+        <item name="wfmsColorCta">@color/ocean_cta</item>
+        <item name="wfmsColorBackground">@color/dark_bg</item>
+        <item name="wfmsColorSurface">@color/dark_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/dark_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/dark_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/dark_outline</item>
+        <item name="wfmsColorSuccess">@color/ocean_success</item>
+        <item name="wfmsColorSuccessLight">@color/dark_surface_2</item>
+        <item name="wfmsColorWarning">@color/ocean_warning</item>
+        <item name="wfmsColorWarningLight">@color/dark_surface_2</item>
+        <item name="wfmsColorError">@color/ocean_error</item>
+        <item name="wfmsColorErrorLight">@color/dark_surface_2</item>
+        <item name="wfmsCard1Color">@color/ocean_card1_color</item>
+        <item name="wfmsCard2Color">@color/ocean_card2_color</item>
+        <item name="wfmsCard3Color">@color/ocean_card3_color</item>
+        <item name="wfmsCard4Color">@color/ocean_card4_color</item>
+        <item name="colorPrimary">@color/ocean_primary_light</item>
+        <item name="colorSecondary">@color/ocean_cta</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorError">@color/ocean_error</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+    </style>
+
+    <!-- ── DUSTY ROSE — Dark ── -->
+    <style name="ThemeOverlay.WFMS.Rose" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/rose_primary_light</item>
+        <item name="wfmsColorPrimaryDark">@color/rose_primary</item>
+        <item name="wfmsColorPrimaryLight">@color/rose_primary_dark</item>
+        <item name="wfmsColorCta">@color/rose_cta</item>
+        <item name="wfmsColorBackground">@color/dark_bg</item>
+        <item name="wfmsColorSurface">@color/dark_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/dark_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/dark_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/dark_outline</item>
+        <item name="wfmsColorSuccess">@color/rose_success</item>
+        <item name="wfmsColorSuccessLight">@color/dark_surface_2</item>
+        <item name="wfmsColorWarning">@color/rose_warning</item>
+        <item name="wfmsColorWarningLight">@color/dark_surface_2</item>
+        <item name="wfmsColorError">@color/rose_error</item>
+        <item name="wfmsColorErrorLight">@color/dark_surface_2</item>
+        <item name="wfmsCard1Color">@color/rose_card1_color</item>
+        <item name="wfmsCard2Color">@color/rose_card2_color</item>
+        <item name="wfmsCard3Color">@color/rose_card3_color</item>
+        <item name="wfmsCard4Color">@color/rose_card4_color</item>
+        <item name="colorPrimary">@color/rose_primary_light</item>
+        <item name="colorSecondary">@color/rose_cta</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorError">@color/rose_error</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+    </style>
+
+    <!-- ── SLATE INDIGO — Dark ── -->
+    <style name="ThemeOverlay.WFMS.Indigo" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/indigo_primary_light</item>
+        <item name="wfmsColorPrimaryDark">@color/indigo_primary</item>
+        <item name="wfmsColorPrimaryLight">@color/indigo_primary_dark</item>
+        <item name="wfmsColorCta">@color/indigo_cta</item>
+        <item name="wfmsColorBackground">@color/dark_bg</item>
+        <item name="wfmsColorSurface">@color/dark_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/dark_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/dark_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/dark_outline</item>
+        <item name="wfmsColorSuccess">@color/indigo_success</item>
+        <item name="wfmsColorSuccessLight">@color/dark_surface_2</item>
+        <item name="wfmsColorWarning">@color/indigo_warning</item>
+        <item name="wfmsColorWarningLight">@color/dark_surface_2</item>
+        <item name="wfmsColorError">@color/indigo_error</item>
+        <item name="wfmsColorErrorLight">@color/dark_surface_2</item>
+        <item name="wfmsCard1Color">@color/indigo_card1_color</item>
+        <item name="wfmsCard2Color">@color/indigo_card2_color</item>
+        <item name="wfmsCard3Color">@color/indigo_card3_color</item>
+        <item name="wfmsCard4Color">@color/indigo_card4_color</item>
+        <item name="colorPrimary">@color/indigo_primary_light</item>
+        <item name="colorSecondary">@color/indigo_cta</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorError">@color/indigo_error</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+    </style>
+
+    <!-- ── WARM AMBER — Dark ── -->
+    <style name="ThemeOverlay.WFMS.Amber" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/amber_primary_light</item>
+        <item name="wfmsColorPrimaryDark">@color/amber_primary</item>
+        <item name="wfmsColorPrimaryLight">@color/amber_primary_dark</item>
+        <item name="wfmsColorCta">@color/amber_cta</item>
+        <item name="wfmsColorBackground">@color/dark_bg</item>
+        <item name="wfmsColorSurface">@color/dark_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/dark_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/dark_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/dark_outline</item>
+        <item name="wfmsColorSuccess">@color/amber_success</item>
+        <item name="wfmsColorSuccessLight">@color/dark_surface_2</item>
+        <item name="wfmsColorWarning">@color/amber_warning</item>
+        <item name="wfmsColorWarningLight">@color/dark_surface_2</item>
+        <item name="wfmsColorError">@color/amber_error</item>
+        <item name="wfmsColorErrorLight">@color/dark_surface_2</item>
+        <item name="wfmsCard1Color">@color/amber_card1_color</item>
+        <item name="wfmsCard2Color">@color/amber_card2_color</item>
+        <item name="wfmsCard3Color">@color/amber_card3_color</item>
+        <item name="wfmsCard4Color">@color/amber_card4_color</item>
+        <item name="colorPrimary">@color/amber_primary_light</item>
+        <item name="colorSecondary">@color/amber_cta</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorError">@color/amber_error</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+    </style>
+
+    <!-- ── COOL SLATE — Dark ── -->
+    <style name="ThemeOverlay.WFMS.Slate" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/slate_primary_light</item>
+        <item name="wfmsColorPrimaryDark">@color/slate_primary</item>
+        <item name="wfmsColorPrimaryLight">@color/slate_primary_dark</item>
+        <item name="wfmsColorCta">@color/slate_cta</item>
+        <item name="wfmsColorBackground">@color/dark_bg</item>
+        <item name="wfmsColorSurface">@color/dark_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/dark_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/dark_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/dark_outline</item>
+        <item name="wfmsColorSuccess">@color/slate_success</item>
+        <item name="wfmsColorSuccessLight">@color/dark_surface_2</item>
+        <item name="wfmsColorWarning">@color/slate_warning</item>
+        <item name="wfmsColorWarningLight">@color/dark_surface_2</item>
+        <item name="wfmsColorError">@color/slate_error</item>
+        <item name="wfmsColorErrorLight">@color/dark_surface_2</item>
+        <item name="wfmsCard1Color">@color/slate_card1_color</item>
+        <item name="wfmsCard2Color">@color/slate_card2_color</item>
+        <item name="wfmsCard3Color">@color/slate_card3_color</item>
+        <item name="wfmsCard4Color">@color/slate_card4_color</item>
+        <item name="colorPrimary">@color/slate_primary_light</item>
+        <item name="colorSecondary">@color/slate_cta</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorError">@color/slate_error</item>
+        <item name="android:colorBackground">@color/dark_bg</item>
+        <item name="android:windowBackground">@color/dark_bg</item>
+    </style>
+
 </resources>

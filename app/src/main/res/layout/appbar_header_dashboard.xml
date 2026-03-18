@@ -105,7 +105,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/locationMarkerView"
-                app:outer_color="@color/colorPrimaryDark"
+                app:outer_color="?attr/colorPrimary"
                 app:slider_height="50dp"
                 app:text="@string/start_day"
                 app:text_color="@color/white"

@@ -26,8 +26,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/cardLightBackground">
+            android:layout_height="match_parent">
 
             <include
                 android:id="@+id/createReimbursementToolbar"
@@ -185,7 +184,7 @@
                                     android:gravity="center"
                                     android:text="@string/add_site"
                                     android:textAllCaps="false"
-                                    android:textColor="@color/colorPrimary"
+                                    android:textColor="?attr/colorPrimary"
                                     android:textStyle="bold" />
 
                                 <androidx.recyclerview.widget.RecyclerView

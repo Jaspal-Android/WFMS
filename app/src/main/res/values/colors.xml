@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ══════════════════════════════════════════
+         STATIC / UTILITY COLORS (unchanged)
+    ══════════════════════════════════════════ -->
     <color name="black">#1D1C1A</color>
     <color name="white">#FFFFFFFF</color>
     <color name="lightGray">#D3D3D3</color>
@@ -7,14 +11,14 @@
     <color name="darkGray">#808080</color>
     <color name="slateGray">#708090</color>
     <color name="darker_gray">#7A7A7A</color>
-    <color name="colorPrimary">#0AC3F2</color>
-    <color name="colorPrimaryDark">#2B5DE6</color>
-    <color name="colorPrimaryDarkLight">#89A4EF</color>
-    <color name="colorAccent">#000000</color>
-    <color name="green">#059669</color>
-    <color name="cardLightBackground">#EEF2F6</color>
-    <color name="cardLightBlueBackground">#E1F5FD</color>
-    <color name="cardLightStroke">#D8E0EB</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#008000</color>
+    <color name="red_light">#FEF2F2</color>
+    <color name="orange">#ffa500</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="purple">#9C27B0</color>
+    <color name="flatCalendar">#7AF4F4F4</color>
+    <color name="background_light">#F3F4F6</color>
 
     <color name="green_pastel">#C5E7B0</color>
     <color name="red_pastel">#FAC0C3</color>
@@ -24,24 +28,188 @@
     <color name="blue_pastal">#AEC6CF</color>
     <color name="yellow_pastal">#E7DA8B</color>
     <color name="purple_pastal">#EBB3EB</color>
-    <color name="primary_pastal">#A3DAF0</color>
-    <color name="primary_dark_pastal">#7AC1E4</color>
+    <color name="primary_dark_pastal">#7A4F1A</color>
+    <color name="primary_pastal">#7A4F1A</color>
 
-    <color name="red">#FF0000</color>
-    <color name="red_light">#FEF2F2</color>
-    <color name="orange">#ffa500</color>
-    <color name="yellow">#FFEB3B</color>
-    <color name="purple">#9C27B0</color>
-    <color name="flatCalendar">#7AF4F4F4</color>
-
-    <color name="background_light">#F3F4F6</color>
-
-    <!-- Check In Colors -->
+    <!-- Check In / Out Colors -->
     <color name="checkin_bg">#D1FAE5</color>
     <color name="checkin_dark">#047857</color>
-
-    <!-- Check Out Colors -->
     <color name="checkout_bg">#FEE2E2</color>
     <color name="checkout_dark">#B91C1C</color>
+
+    <!-- ══════════════════════════════════════════
+         THEME 1 — FOREST GREEN (default)
+         Primary: #2D4A35 | BG: #EDE9E2
+    ══════════════════════════════════════════ -->
+    <color name="forest_primary">#2D4A35</color>
+    <color name="forest_primary_dark">#1e3326</color>
+    <color name="forest_primary_light">#e6f0e8</color>
+    <color name="forest_cta">#C8837A</color>
+    <color name="forest_bg">#EDE9E2</color>
+    <color name="forest_surface">#FDFCFA</color>
+    <color name="forest_surface_variant">#F5F2EC</color>
+    <color name="forest_on_surface">#3E3A35</color>
+    <color name="forest_on_surface_variant">#7A7268</color>
+    <color name="forest_outline">#C5C0B5</color>
+    <color name="forest_success">#4a7c59</color>
+    <color name="forest_success_light">#eaf2ec</color>
+    <color name="forest_warning">#b8893a</color>
+    <color name="forest_warning_light">#fdf4e7</color>
+    <color name="forest_error">#b85c52</color>
+    <color name="forest_error_light">#faeeed</color>
+
+    <!-- Card accent colors — Forest -->
+    <color name="forest_card1_color">#b85c52</color>
+    <color name="forest_card2_color">#3d7a52</color>
+    <color name="forest_card3_color">#9a7020</color>
+    <color name="forest_card4_color">#6050a8</color>
+
+    <!-- ══════════════════════════════════════════
+         THEME 2 — OCEAN BLUE
+         Primary: #1E4A72 | BG: #E8EFF5
+    ══════════════════════════════════════════ -->
+    <color name="ocean_primary">#1E4A72</color>
+    <color name="ocean_primary_dark">#163858</color>
+    <color name="ocean_primary_light">#e3eef8</color>
+    <color name="ocean_cta">#E07B54</color>
+    <color name="ocean_bg">#E8EFF5</color>
+    <color name="ocean_surface">#FAFCFE</color>
+    <color name="ocean_surface_variant">#F2F6FA</color>
+    <color name="ocean_on_surface">#1a2a3a</color>
+    <color name="ocean_on_surface_variant">#627288</color>
+    <color name="ocean_outline">#B8C4D5</color>
+    <color name="ocean_success">#1a9070</color>
+    <color name="ocean_success_light">#d8f5ee</color>
+    <color name="ocean_warning">#b86820</color>
+    <color name="ocean_warning_light">#fff0e0</color>
+    <color name="ocean_error">#b84040</color>
+    <color name="ocean_error_light">#fce8e8</color>
+
+    <!-- Card accent colors — Ocean -->
+    <color name="ocean_card1_color">#b84040</color>
+    <color name="ocean_card2_color">#1a9070</color>
+    <color name="ocean_card3_color">#b86820</color>
+    <color name="ocean_card4_color">#5060b8</color>
+
+    <!-- ══════════════════════════════════════════
+         THEME 3 — DUSTY ROSE
+         Primary: #8B3A52 | BG: #F0E8E6
+    ══════════════════════════════════════════ -->
+    <color name="rose_primary">#8B3A52</color>
+    <color name="rose_primary_dark">#6b2a3e</color>
+    <color name="rose_primary_light">#f5e0e6</color>
+    <color name="rose_cta">#D4845A</color>
+    <color name="rose_bg">#F0E8E6</color>
+    <color name="rose_surface">#FDF9F8</color>
+    <color name="rose_surface_variant">#F5EBE8</color>
+    <color name="rose_on_surface">#3a2028</color>
+    <color name="rose_on_surface_variant">#886070</color>
+    <color name="rose_outline">#D4B8C0</color>
+    <color name="rose_success">#5a7a48</color>
+    <color name="rose_success_light">#eaf2e4</color>
+    <color name="rose_warning">#b87838</color>
+    <color name="rose_warning_light">#fdf0e0</color>
+    <color name="rose_error">#b84040</color>
+    <color name="rose_error_light">#fce8e8</color>
+
+    <!-- Card accent colors — Rose -->
+    <color name="rose_card1_color">#b84060</color>
+    <color name="rose_card2_color">#5a7a48</color>
+    <color name="rose_card3_color">#9a7020</color>
+    <color name="rose_card4_color">#6850a8</color>
+
+    <!-- ══════════════════════════════════════════
+         THEME 4 — SLATE INDIGO
+         Primary: #3B3F8C | BG: #EAEBF2
+    ══════════════════════════════════════════ -->
+    <color name="indigo_primary">#3B3F8C</color>
+    <color name="indigo_primary_dark">#2a2e6e</color>
+    <color name="indigo_primary_light">#e8e9f5</color>
+    <color name="indigo_cta">#E07A5F</color>
+    <color name="indigo_bg">#EAEBF2</color>
+    <color name="indigo_surface">#FAFAFD</color>
+    <color name="indigo_surface_variant">#F0F0F8</color>
+    <color name="indigo_on_surface">#20203a</color>
+    <color name="indigo_on_surface_variant">#606080</color>
+    <color name="indigo_outline">#B8BAD5</color>
+    <color name="indigo_success">#3a7a58</color>
+    <color name="indigo_success_light">#e4f2ec</color>
+    <color name="indigo_warning">#a87030</color>
+    <color name="indigo_warning_light">#fdf0e0</color>
+    <color name="indigo_error">#b84040</color>
+    <color name="indigo_error_light">#fce8e8</color>
+
+    <!-- Card accent colors — Indigo -->
+    <color name="indigo_card1_color">#b84060</color>
+    <color name="indigo_card2_color">#3a7a58</color>
+    <color name="indigo_card3_color">#a87030</color>
+    <color name="indigo_card4_color">#5040b0</color>
+
+    <!-- ══════════════════════════════════════════
+         THEME 5 — WARM AMBER
+         Primary: #7A4F1A | BG: #F0EAE0
+    ══════════════════════════════════════════ -->
+    <color name="amber_primary">#7A4F1A</color>
+    <color name="amber_primary_dark">#5c3a10</color>
+    <color name="amber_primary_light">#f5ead8</color>
+    <color name="amber_cta">#C8635A</color>
+    <color name="amber_bg">#F0EAE0</color>
+    <color name="amber_surface">#FDFAF5</color>
+    <color name="amber_surface_variant">#F5EEE4</color>
+    <color name="amber_on_surface">#3a2a10</color>
+    <color name="amber_on_surface_variant">#886840</color>
+    <color name="amber_outline">#D4C4A8</color>
+    <color name="amber_success">#4a7840</color>
+    <color name="amber_success_light">#e8f2e4</color>
+    <color name="amber_warning">#c07020</color>
+    <color name="amber_warning_light">#fdf0d8</color>
+    <color name="amber_error">#b84040</color>
+    <color name="amber_error_light">#fce8e8</color>
+
+    <!-- Card accent colors — Amber -->
+    <color name="amber_card1_color">#b84040</color>
+    <color name="amber_card2_color">#4a7840</color>
+    <color name="amber_card3_color">#c07020</color>
+    <color name="amber_card4_color">#6050a0</color>
+
+    <!-- ══════════════════════════════════════════
+         THEME 6 — COOL SLATE
+         Primary: #2C4A5A | BG: #E6EBF0
+    ══════════════════════════════════════════ -->
+    <color name="slate_primary">#2C4A5A</color>
+    <color name="slate_primary_dark">#1e3848</color>
+    <color name="slate_primary_light">#e0e8f0</color>
+    <color name="slate_cta">#D4785A</color>
+    <color name="slate_bg">#E6EBF0</color>
+    <color name="slate_surface">#F8FAFB</color>
+    <color name="slate_surface_variant">#EDF0F4</color>
+    <color name="slate_on_surface">#182830</color>
+    <color name="slate_on_surface_variant">#507080</color>
+    <color name="slate_outline">#B0BEC8</color>
+    <color name="slate_success">#2a7860</color>
+    <color name="slate_success_light">#d8f2ec</color>
+    <color name="slate_warning">#a07020</color>
+    <color name="slate_warning_light">#fdf0d8</color>
+    <color name="slate_error">#b84040</color>
+    <color name="slate_error_light">#fce8e8</color>
+
+    <!-- Card accent colors — Slate -->
+    <color name="slate_card1_color">#b84040</color>
+    <color name="slate_card2_color">#2a7860</color>
+    <color name="slate_card3_color">#a07020</color>
+    <color name="slate_card4_color">#5060a8</color>
+
+    <!-- ══════════════════════════════════════════
+         DARK MODE SURFACE COLORS (shared)
+    ══════════════════════════════════════════ -->
+    <color name="dark_bg">#0f1117</color>
+    <color name="dark_surface">#1a1d27</color>
+    <color name="dark_surface_variant">#1e2130</color>
+    <color name="dark_surface_2">#252836</color>
+    <color name="dark_surface_3">#2d3145</color>
+    <color name="dark_surface_4">#363b52</color>
+    <color name="dark_on_surface">#f3f4f6</color>
+    <color name="dark_on_surface_variant">#9ca3af</color>
+    <color name="dark_outline">#4a5068</color>
 
 </resources>

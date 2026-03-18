@@ -148,7 +148,7 @@
                     android:layout_marginTop="@dimen/margin_small"
                     android:onClick="@{()->vm.onForgetPasswordClick()}"
                     android:text="@string/forgotYourPassword"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorPrimaryDark"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/passwordView" />
 

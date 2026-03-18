@@ -9,6 +9,7 @@ import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.utils.Utils
+import com.google.android.material.color.MaterialColors
 
 object UtilStatusBindings {
 
@@ -17,7 +18,7 @@ object UtilStatusBindings {
     fun assignedTaskStatus(textView: TextView, status: String?) {
         when (status) {
             ValConstants.OPEN -> {
-                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
+                textView.setTextColor(MaterialColors.getColor(textView, R.attr.wfmsColorPrimary))
                 textView.setBackgroundResource(R.drawable.status_primary_bg)
             }
 
@@ -75,12 +76,12 @@ object UtilStatusBindings {
             }
             5 -> {
                 textView.text = textView.context.getString(R.string.holidays)
-                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
+                textView.setTextColor(MaterialColors.getColor(textView, R.attr.wfmsColorPrimary))
                 textView.setBackgroundResource(R.drawable.status_primary_bg)
             }
             6 -> {
                 textView.text = textView.context.getString(R.string.work_off)
-                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
+                textView.setTextColor(MaterialColors.getColor(textView, R.attr.wfmsColorPrimary))
                 textView.setBackgroundResource(R.drawable.status_primary_bg)
             }
 
@@ -98,7 +99,7 @@ object UtilStatusBindings {
         when (status) {
             StatusCodes.OPEN -> { // OPEN
                 textView.text = textView.context.getString(R.string.open)
-                textView.setTextColor(ActivityCompat.getColor(textView.context, R.color.colorPrimary))
+                textView.setTextColor(MaterialColors.getColor(textView, R.attr.wfmsColorPrimary))
                 textView.setBackgroundResource(R.drawable.status_primary_bg)
             }
             StatusCodes.ACCEPTED -> { // ACCEPTED

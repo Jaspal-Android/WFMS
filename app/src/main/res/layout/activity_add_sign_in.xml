@@ -96,7 +96,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/colorPrimaryDark"
                         android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -126,7 +126,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/colorPrimaryDark"
                         android:visibility="@{vm.isPoLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -156,7 +156,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/colorPrimaryDark"
                         android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -186,7 +186,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/colorPrimaryDark"
                         android:visibility="@{vm.isSiteLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -218,7 +218,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/colorPrimaryDark"
                         android:visibility="@{vm.isTypeLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -249,7 +249,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/colorPrimaryDark"
                         android:visibility="@{vm.isActivityLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 

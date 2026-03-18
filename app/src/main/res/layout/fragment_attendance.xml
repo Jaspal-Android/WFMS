@@ -19,7 +19,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/cardLightBackground"
         tools:context=".ui.screens.attendance.AttendanceFragment">
 
         <androidx.core.widget.NestedScrollView
@@ -49,7 +48,8 @@
                         android:padding="@dimen/padding">
 
                         <ImageView
-                            app:tint="@color/colorPrimary"
+                            app:tint="?attr/wfmsColorPrimary
+"
                             android:src="@drawable/round_add_box_24"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"></ImageView>

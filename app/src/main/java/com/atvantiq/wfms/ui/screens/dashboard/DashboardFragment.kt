@@ -31,6 +31,7 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashb
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ncorti.slidetoact.SlideToActView
@@ -281,7 +282,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             slideStartDay.isReversed = true
         } else {
             slideStartDay.text = getString(R.string.start_day)
-            slideStartDay.outerColor = ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
+            slideStartDay.outerColor = MaterialColors.getColor(slideStartDay, R.attr.wfmsColorPrimary)
             slideStartDay.isReversed = false
         }
     }

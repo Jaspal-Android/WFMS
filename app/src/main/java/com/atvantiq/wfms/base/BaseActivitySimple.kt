@@ -19,6 +19,7 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +38,7 @@ abstract class BaseActivitySimple : AppCompatActivity() {
     private var progressDialog: ProgressDialog? = null
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+        ThemeManager.applyTheme(this)  // always first
         super.onCreate(savedInstanceState)
         getBundle()
     }

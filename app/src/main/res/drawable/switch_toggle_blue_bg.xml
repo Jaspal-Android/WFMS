@@ -3,5 +3,5 @@
     <item android:drawable="@android:color/transparent" android:state_checked="true" android:state_enabled="false" />
     <item android:drawable="@drawable/white_switch_bg" android:state_checked="true" />
     <item android:drawable="@drawable/white_switch_bg" android:state_pressed="true" />
-    <item android:drawable="@color/cardLightBackground" />
+    <item android:drawable="@color/background_light" />
 </selector>

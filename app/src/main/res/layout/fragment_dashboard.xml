@@ -31,9 +31,9 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/tab_layout_desc"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/colorPrimaryDark"
+                app:tabIndicatorColor="?attr/colorPrimaryDark"
                 app:tabMode="fixed"
-                app:tabSelectedTextColor="@color/colorPrimaryDark"
+                app:tabSelectedTextColor="?attr/colorPrimaryDark"
                 app:tabTextColor="@color/darkGray" />
 
         </com.google.android.material.appbar.AppBarLayout>

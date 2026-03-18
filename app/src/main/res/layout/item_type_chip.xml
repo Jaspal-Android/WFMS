@@ -9,7 +9,7 @@
         android:paddingHorizontal="@dimen/padding_medium"
         android:paddingVertical="@dimen/padding_x_small"
         android:gravity="center_vertical"
-        android:textColor="@color/colorPrimary"
+        android:textColor="?attr/colorPrimaryDark"
         style="@style/CustomMediumTextView"
         android:background="@drawable/bg_type_item"/>
 </layout>

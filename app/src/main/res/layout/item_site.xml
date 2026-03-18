@@ -30,7 +30,6 @@
             app:cardCornerRadius="@dimen/card_radius"
             app:cardElevation="0dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/cardLightBackground"
             app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +41,7 @@
                     android:id="@+id/siteHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/cardLightStroke"
+                    android:background="@color/background_light"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground"

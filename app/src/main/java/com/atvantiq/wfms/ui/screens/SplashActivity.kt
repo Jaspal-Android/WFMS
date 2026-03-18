@@ -13,6 +13,7 @@ import com.atvantiq.wfms.data.prefs.PrefMain
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.screens.admin.SharedDashboardActivity
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ class SplashActivity : AppCompatActivity() {
     lateinit var prefMain: SecurePrefMain
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ThemeManager.applyTheme(this)   // ← MUST be before super.onCreate()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_splash)

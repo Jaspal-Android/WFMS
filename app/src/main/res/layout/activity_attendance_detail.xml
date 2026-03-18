@@ -13,7 +13,7 @@
     </data>
 
     <LinearLayout
-        android:background="@color/cardLightBackground"
+        android:background="@color/cardview_light_background"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

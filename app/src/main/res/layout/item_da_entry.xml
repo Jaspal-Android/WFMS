@@ -43,7 +43,7 @@
         android:id="@+id/ivAttachment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tint="@color/colorPrimaryDark"
+        app:tint="?attr/colorPrimaryDark"
         android:src="@drawable/baseline_attach_file_24"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginEnd="@dimen/margin_small"
