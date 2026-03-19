@@ -27,6 +27,7 @@ import com.atvantiq.wfms.base.BaseBindingActivity
 import com.atvantiq.wfms.databinding.ActivityDashboardBinding
 import com.atvantiq.wfms.databinding.NavHeaderDashboardBinding
 import com.atvantiq.wfms.models.loginResponse.User
+import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
@@ -135,6 +136,12 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.changeTheme -> {
+                    // Implement your change theme logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
+                    true
+                }
                 R.id.logout -> {
                     // Implement your logout logic here
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
