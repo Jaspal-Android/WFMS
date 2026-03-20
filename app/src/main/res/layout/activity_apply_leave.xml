@@ -242,7 +242,7 @@
                     </com.google.android.material.card.MaterialCardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.appcompat.widget.AppCompatButton
+                <com.atvantiq.wfms.widgets.GradientButton
                     style="@style/CustomPrimaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -250,7 +250,7 @@
                     android:onClick="@{()->vm.onClickSubmitLeave()}"
                     android:text="@string/submit_leave_request">
 
-                </androidx.appcompat.widget.AppCompatButton>
+                </com.atvantiq.wfms.widgets.GradientButton>
 
             </LinearLayout>
         </ScrollView>
