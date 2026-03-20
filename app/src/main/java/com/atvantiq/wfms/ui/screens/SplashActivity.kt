@@ -2,10 +2,12 @@ package com.atvantiq.wfms.ui.screens
 
 import android.os.Bundle
 import android.os.Handler
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
@@ -35,26 +37,41 @@ class SplashActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        checkAppVersion()
         splashTimer()
     }
 
+    private fun checkAppVersion() {
+        val appVersion = BuildConfig.VERSION_NAME
+        findViewById<TextView>(R.id.versionText).text = "V$appVersion"
+    }
+
     private fun splashTimer() {
-        var token:String? = PrefMethods.getUserToken(prefMain)
+        var token: String? = PrefMethods.getUserToken(prefMain)
         Handler(mainLooper).postDelayed({
-            if(token.isNullOrEmpty() || token.isNullOrBlank()){
+            if (token.isNullOrEmpty() || token.isNullOrBlank()) {
                 Utils.jumpActivity(this, LoginActivity::class.java)
-            }else{
+            } else {
                 var user = PrefMethods.getUserData(prefMain)
                 val role = user?.role ?: ""
                 val permissions = user?.permissions
                 if (role.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true)) {
-                    Utils.jumpActivityWithData(this, DashboardActivity::class.java,Bundle().apply {
-                        putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS,permissions as ArrayList)
+                    Utils.jumpActivityWithData(this, DashboardActivity::class.java, Bundle().apply {
+                        putParcelableArrayList(
+                            SharingKeys.ROLE_PERMISSIONS,
+                            permissions as ArrayList
+                        )
                     })
                 } else {
-                    Utils.jumpActivityWithData(this, SharedDashboardActivity::class.java,Bundle().apply {
-                        putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS,permissions as ArrayList)
-                    })
+                    Utils.jumpActivityWithData(
+                        this,
+                        SharedDashboardActivity::class.java,
+                        Bundle().apply {
+                            putParcelableArrayList(
+                                SharingKeys.ROLE_PERMISSIONS,
+                                permissions as ArrayList
+                            )
+                        })
                 }
             }
             finish()
