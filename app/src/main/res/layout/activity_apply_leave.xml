@@ -243,7 +243,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <com.atvantiq.wfms.widgets.GradientButton
-                    style="@style/CustomPrimaryButton"
+                    style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_large"

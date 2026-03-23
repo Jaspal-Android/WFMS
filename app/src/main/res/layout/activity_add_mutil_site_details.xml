@@ -95,9 +95,9 @@
                 app:layout_constraintEnd_toStartOf="@+id/btn_done"
                 app:layout_constraintTop_toBottomOf="@id/etPurposeInput" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <com.atvantiq.wfms.widgets.GradientButton
                 android:id="@+id/btn_done"
-                style="@style/CustomPrimaryButton"
+                style="@style/CustomButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/submit"

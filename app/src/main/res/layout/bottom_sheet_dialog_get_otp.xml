@@ -128,8 +128,8 @@
             tools:visibility="visible"
             />
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/CustomPrimaryButton"
+        <com.atvantiq.wfms.widgets.GradientButton
+            style="@style/CustomButtonStyle"
             tools:visibility="visible"
             android:visibility="invisible"
             android:theme="@style/Theme.WFMS"

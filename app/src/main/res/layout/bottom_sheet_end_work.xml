@@ -123,9 +123,9 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Submit Button -->
-        <androidx.appcompat.widget.AppCompatButton
+        <com.atvantiq.wfms.widgets.GradientButton
             android:id="@+id/btn_done"
-            style="@style/CustomPrimaryButton"
+            style="@style/CustomButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"

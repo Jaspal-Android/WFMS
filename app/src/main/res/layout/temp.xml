@@ -611,9 +611,9 @@
                     android:textAllCaps="false"
                     android:textStyle="bold" />
 
-                <androidx.appcompat.widget.AppCompatButton
+                <com.atvantiq.wfms.widgets.GradientButton
                     android:id="@+id/btnSubmit"
-                    style="@style/CustomPrimaryButton"
+                    style="@style/CustomButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

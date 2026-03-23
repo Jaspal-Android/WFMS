@@ -8,6 +8,29 @@
         <item name="fontFamily">@font/roboto_regular</item>
         <item name="android:windowBackground">?attr/wfmsColorBackground</item>
 
+        <!-- Provide default values for WFMS custom attributes (Forest palette) -->
+        <item name="wfmsColorPrimary">@color/forest_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorCta">@color/forest_cta</item>
+        <item name="wfmsColorBackground">@color/forest_bg</item>
+        <item name="wfmsColorSurface">@color/forest_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/forest_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/forest_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/forest_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/forest_outline</item>
+        <item name="wfmsColorSuccess">@color/forest_success</item>
+        <item name="wfmsColorSuccessLight">@color/forest_success_light</item>
+        <item name="wfmsColorWarning">@color/forest_warning</item>
+        <item name="wfmsColorWarningLight">@color/forest_warning_light</item>
+        <item name="wfmsColorError">@color/forest_error</item>
+        <item name="wfmsColorErrorLight">@color/forest_error_light</item>
+        <item name="wfmsCard1Color">@color/forest_card1_color</item>
+        <item name="wfmsCard2Color">@color/forest_card2_color</item>
+        <item name="wfmsCard3Color">@color/forest_card3_color</item>
+        <item name="wfmsCard4Color">@color/forest_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/forest_gradient_end</item>
+
         <!-- Wire Material3 color roles to our custom attributes -->
         <item name="colorPrimary">?attr/wfmsColorPrimary</item>
         <item name="colorPrimaryVariant">?attr/wfmsColorPrimaryDark</item>
@@ -55,6 +78,7 @@
         <item name="wfmsCard2Color">@color/forest_card2_color</item>
         <item name="wfmsCard3Color">@color/forest_card3_color</item>
         <item name="wfmsCard4Color">@color/forest_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/forest_gradient_end</item>
         <!-- Material3 roles -->
         <item name="colorPrimary">@color/forest_primary</item>
         <item name="colorSecondary">@color/forest_cta</item>
@@ -89,6 +113,7 @@
         <item name="wfmsCard2Color">@color/ocean_card2_color</item>
         <item name="wfmsCard3Color">@color/ocean_card3_color</item>
         <item name="wfmsCard4Color">@color/ocean_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/ocean_gradient_end</item>
         <!-- Material3 roles -->
         <item name="colorPrimary">@color/ocean_primary</item>
         <item name="colorSecondary">@color/ocean_cta</item>
@@ -123,6 +148,7 @@
         <item name="wfmsCard2Color">@color/rose_card2_color</item>
         <item name="wfmsCard3Color">@color/rose_card3_color</item>
         <item name="wfmsCard4Color">@color/rose_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/rose_gradient_end</item>
         <!-- Material3 roles -->
         <item name="colorPrimary">@color/rose_primary</item>
         <item name="colorSecondary">@color/rose_cta</item>
@@ -157,6 +183,7 @@
         <item name="wfmsCard2Color">@color/indigo_card2_color</item>
         <item name="wfmsCard3Color">@color/indigo_card3_color</item>
         <item name="wfmsCard4Color">@color/indigo_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/indigo_gradient_end</item>
         <!-- Material3 roles -->
         <item name="colorPrimary">@color/indigo_primary</item>
         <item name="colorSecondary">@color/indigo_cta</item>
@@ -191,6 +218,8 @@
         <item name="wfmsCard2Color">@color/amber_card2_color</item>
         <item name="wfmsCard3Color">@color/amber_card3_color</item>
         <item name="wfmsCard4Color">@color/amber_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/amber_gradient_end</item>
+
         <!-- Material3 roles -->
         <item name="colorPrimary">@color/amber_primary</item>
         <item name="colorSecondary">@color/amber_cta</item>
@@ -225,6 +254,7 @@
         <item name="wfmsCard2Color">@color/slate_card2_color</item>
         <item name="wfmsCard3Color">@color/slate_card3_color</item>
         <item name="wfmsCard4Color">@color/slate_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/slate_gradient_end</item>
         <!-- Material3 roles -->
         <item name="colorPrimary">@color/slate_primary</item>
         <item name="colorSecondary">@color/slate_cta</item>
@@ -279,7 +309,7 @@
     </style>
 
     <style name="CustomMediumTextView" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/slateGray</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
         <item name="android:textSize">@dimen/default_medium_small_text</item>
     </style>
     <style name="CustomMediumLightTextView" parent="CustomMediumTextView">
@@ -370,6 +400,10 @@
         <item name="android:textSize">@dimen/default_text</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:gravity">center</item>
+
+        <!-- Ensure AppCompat/preview always has a ColorStateList for text and hint. -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
     </style>
     <style name="CustomSmallButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:paddingStart">@dimen/padding_small</item>

@@ -40,4 +40,6 @@
     <attr name="wfmsCard3Color"         format="color" />
     <attr name="wfmsCard4Color"         format="color" />
 
+    <attr name="wfmsColorGradientEnd" format="color" /> <!-- button gradient end color -->
+
 </resources>

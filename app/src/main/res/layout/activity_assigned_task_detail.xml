@@ -257,9 +257,9 @@
                 android:text="@string/accept"
                 android:visibility="@{isOpenAssignment ? View.VISIBLE : View.GONE}" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <com.atvantiq.wfms.widgets.GradientButton
                 android:id="@+id/btnStartWork"
-                style="@style/CustomPrimaryButton"
+                style="@style/CustomButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin"

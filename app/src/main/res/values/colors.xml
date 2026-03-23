@@ -31,6 +31,14 @@
     <color name="primary_dark_pastal">#7A4F1A</color>
     <color name="primary_pastal">#7A4F1A</color>
 
+
+    <color name="forest_gradient_end">#4a8c62</color>  <!-- lighter green, same hue -->
+    <color name="ocean_gradient_end">#2e7ab8</color>   <!-- lighter blue, same hue -->
+    <color name="rose_gradient_end">#c4607a</color>    <!-- lighter rose, same hue -->
+    <color name="indigo_gradient_end">#6468c8</color>  <!-- lighter indigo, same hue -->
+    <color name="amber_gradient_end">#c07828</color>   <!-- lighter amber, same hue -->
+    <color name="slate_gradient_end">#3a8878</color>   <!-- lighter teal-slate, same hue -->
+
     <!-- Check In / Out Colors -->
     <color name="checkin_bg">#D1FAE5</color>
     <color name="checkin_dark">#047857</color>
@@ -211,5 +219,7 @@
     <color name="dark_on_surface">#f3f4f6</color>
     <color name="dark_on_surface_variant">#9ca3af</color>
     <color name="dark_outline">#4a5068</color>
+
+    <color name="your_primary_dark_color">#3700B3</color>
 
 </resources>

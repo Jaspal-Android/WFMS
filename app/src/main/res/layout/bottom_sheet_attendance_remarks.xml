@@ -57,9 +57,9 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatButton
+            <com.atvantiq.wfms.widgets.GradientButton
                 android:id="@+id/btn_done"
-                style="@style/CustomPrimaryButton"
+                style="@style/CustomButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
