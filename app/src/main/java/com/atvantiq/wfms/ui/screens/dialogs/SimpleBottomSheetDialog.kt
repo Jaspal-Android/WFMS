@@ -1,12 +1,12 @@
 package com.atvantiq.wfms.ui.screens.dialogs
 
+
 import RecyclerViewGenericAdapter
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.DialogGenericBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog

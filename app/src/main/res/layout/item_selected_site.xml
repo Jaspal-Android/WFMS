@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,6 +19,32 @@
             app:layout_constraintEnd_toStartOf="@id/btnRemove"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/margin_small_extra"
+            app:layout_constraintTop_toBottomOf="@+id/tvSiteId"
+            android:id="@+id/poDetailView"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                tools:text="PO:"
+                android:text="@{@string/concatText(@string/selected_po, @string/colon)}"
+                style="@style/CustomMediumTextView"
+                android:id="@+id/poLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
+
+            <TextView
+                android:layout_marginStart="@dimen/margin_small_extra"
+                android:id="@+id/poNumberTv"
+                tools:text="1244545"
+                android:textStyle="bold"
+                style="@style/CustomMediumDarkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/btnRemove"

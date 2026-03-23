@@ -19,5 +19,7 @@ data class Site(
     @SerializedName("site_id")
     val siteId: Long?,
     @SerializedName("site_name")
-    val siteName: String?
+    val siteName: String?,
+    @SerializedName("work_site_id")
+    val workSiteId: Long?
 )
