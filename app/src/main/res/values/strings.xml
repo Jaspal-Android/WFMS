@@ -194,7 +194,7 @@
     <string name="location_tracking_active">Location Tracking Active</string>
     <string name="your_location_tracked">Your location is being tracked for attendance</string>
     <string name="current_location">Current Location</string>
-    <string name="unable_to_fetch_location">Unable to fetch location. Please try again.</string>
+    <string name="unable_to_fetch_location">Unable to fetch location. May be your location is turned off. Please enable location services to use this feature.</string>
     <string name="get_current_latitude_longitude">Get my current latitude and longitude</string>
     <string name="Latitude">Latitude</string>
     <string name="Longitude">Longitude</string>
@@ -380,5 +380,6 @@
     <string name="please_add_at_least_one_expense_entry">Please add at least one expense entry</string>
     <string name="please_select_purpose">Please select purpose</string>
     <string name="please_select_at_least_one_site">Please select at least one site</string>
+    <string name="selected_po">Selected PO</string>
     
 </resources>

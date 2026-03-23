@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.databinding.ItemSelectedSiteBinding
-import com.atvantiq.wfms.models.reimbursement.MultipleSite
 import com.atvantiq.wfms.models.site.SiteData
 
 class SelectedSitesAdapter(
@@ -38,6 +37,7 @@ class SelectedSitesAdapter(
 
         fun bind(item: SiteData){
             binding.tvSiteId.text = item.name
+            binding.poNumberTv.text = item.selectedPo?.poNumber ?: "No PO selected"
             binding.btnRemove.setOnClickListener {
                 onRemoveClick(item)
             }

@@ -11,6 +11,7 @@ import com.atvantiq.wfms.utils.Utils
 import kotlinx.coroutines.launch
 
 open class BaseViewModel(application: Application) : AndroidViewModel(application) {
+
     open fun <T> executeApiCall(
         apiCall: suspend () -> T,
         liveData: MutableLiveData<ApiState<T>>,

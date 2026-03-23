@@ -319,18 +319,29 @@ class CreateClaimVM @Inject constructor(
         val projectId = selectedProjectId
         val circleId = selectedCircleId
 
-        // Determine type + site_ids
-        val isMultipleSite = !selectedSitesIdList.value.isNullOrEmpty()
+        val isMultipleSite = isMultiSite.get() == true
 
         val type = if (isMultipleSite) "multiple_site" else "single_site"
 
         val siteIdsJson = JSONArray().apply {
             if (isMultipleSite) {
                 selectedSitesIdList.value.orEmpty().forEach { s ->
-                    put(JSONObject().put("id", s.id))
+                    val poIds = JSONArray().apply {
+                        s.selectedPo?.id?.let { put(it) }
+                    }
+                    put(JSONObject()
+                            .put("id", s.id)
+                            .put("purchase_order_ids", poIds)
+                    )
                 }
             } else {
-                selectedSingleSite?.siteId?.let { put(JSONObject().put("id", it)) }
+                selectedSingleSite?.siteId?.let { id ->
+                    put(
+                        JSONObject()
+                            .put("id", id)
+                            .put("work_site_id", selectedSingleSite?.workSiteId)
+                    )
+                }
             }
         }
 
@@ -380,7 +391,6 @@ class CreateClaimVM @Inject constructor(
         val daJson = JSONArray().apply {
             daEntriesList.value.orEmpty().forEachIndexed { i, d ->
                 val attachmentKeys = mutableListOf<String>()
-                // TODO: adjust `d.attachments` mapping to your actual model
                 d.receiptAttachments.orEmpty().forEachIndexed { j, path ->
                     val key = "${nextKey("d${i + 1}_", j + 1)}" // file_d1_1, ...
                     attachmentKeys += key
@@ -414,7 +424,6 @@ class CreateClaimVM @Inject constructor(
         val otherJson = JSONArray().apply {
             othersEntriesList.value.orEmpty().forEachIndexed { i, o ->
                 val attachmentKeys = mutableListOf<String>()
-                // TODO: adjust `o.attachments` mapping to your actual model
                 o.receiptAttachments.orEmpty().forEachIndexed { j, path ->
                     val key = "${
                         nextKey(
