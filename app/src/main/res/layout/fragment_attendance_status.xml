@@ -15,6 +15,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -28,6 +29,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
+                <!-- ── Calendar card ── -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -35,8 +37,8 @@
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_marginEnd="@dimen/margin_small"
                     app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="@dimen/card_radius"
-                    app:cardElevation="@dimen/elevation"
+                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardElevation="@dimen/elevation_small"
                     app:cardUseCompatPadding="true">
 
                     <RelativeLayout
@@ -44,27 +46,28 @@
                         android:layout_height="wrap_content">
 
                         <com.atvantiq.wfms.widgets.CalendarView
+                            android:paddingVertical="@dimen/padding_small"
                             android:id="@+id/customCalender"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@color/white" />
 
                         <com.airbnb.lottie.LottieAnimationView
-                            android:visibility="@{showCalendarProgressBar ? View.VISIBLE : View.GONE}"
-                            android:layout_centerInParent="true"
                             android:id="@+id/animationView"
                             android:layout_width="100dp"
                             android:layout_height="100dp"
+                            android:layout_centerInParent="true"
                             android:layout_gravity="center"
                             android:backgroundTint="@android:color/transparent"
-                            app:lottie_rawRes="@raw/loading"
+                            android:visibility="@{showCalendarProgressBar ? View.VISIBLE : View.GONE}"
+                            app:lottie_autoPlay="true"
                             app:lottie_loop="true"
-                            app:lottie_autoPlay="true" />
+                            app:lottie_rawRes="@raw/loading" />
 
                     </RelativeLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- ── Summary card ── -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -72,8 +75,8 @@
                     android:layout_marginEnd="@dimen/margin_small_extra"
                     android:layout_marginBottom="@dimen/margin_small"
                     app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="@dimen/card_radius"
-                    app:cardElevation="@dimen/elevation"
+                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardElevation="@dimen/elevation_small"
                     app:cardUseCompatPadding="true">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -81,29 +84,46 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/padding">
 
+                        <!-- Title -->
                         <TextView
-                            android:textStyle="bold"
                             android:id="@+id/summaryLabel"
-                            style="@style/CustomLargeDarkTextView"
+                            style="@style/CustomLargeTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/summary"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
+                        <!-- Divider below title -->
+                        <View
+                            android:id="@+id/divider_title"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.15"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/summaryLabel" />
+
+                        <!-- Total Days -->
                         <TextView
                             android:id="@+id/totalDaysLabel"
-                            style="@style/CustomRegularDarkTextView"
+                            style="@style/CustomRegularTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin"
+                            android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/total_days_of_month"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textStyle="bold"
                             app:layout_constraintEnd_toStartOf="@+id/totalDaysText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/summaryLabel" />
+                            app:layout_constraintTop_toBottomOf="@+id/divider_title" />
 
                         <TextView
                             android:id="@+id/totalDaysText"
@@ -112,18 +132,31 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="31"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/totalDaysLabel"
-                            app:layout_constraintTop_toTopOf="@+id/totalDaysLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/totalDaysLabel"
+                            tools:text="31" />
 
                         <View
+                            android:id="@+id/div0"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/totalDaysLabel" />
+
+                        <!-- Present -->
+                        <View
                             android:id="@+id/present_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/green_pastel"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_present_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/presentLabel"
                             app:layout_constraintEnd_toStartOf="@+id/presentLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -138,37 +171,51 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/present"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/presentText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/present_box"
-                            app:layout_constraintTop_toBottomOf="@+id/totalDaysText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div0" />
 
                         <TextView
                             android:id="@+id/presentText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="24"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/presentLabel"
-                            app:layout_constraintTop_toTopOf="@+id/presentLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/presentLabel"
+                            tools:text="1" />
 
                         <View
-                            android:id="@+id/absent_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/red_pastel_dark"
-                            app:layout_constraintBottom_toBottomOf="@+id/AbsentLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/AbsentLabel"
+                            android:id="@+id/div1"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/AbsentLabel" />
+                            app:layout_constraintTop_toBottomOf="@+id/presentLabel" />
+
+                        <!-- Absent -->
+                        <View
+                            android:id="@+id/absent_box"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_absent_bg"
+                            app:layout_constraintBottom_toBottomOf="@+id/absentLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/absentLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/absentLabel" />
 
                         <TextView
-                            android:id="@+id/AbsentLabel"
+                            android:id="@+id/absentLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -176,37 +223,51 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/absent"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/absentText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/absent_box"
-                            app:layout_constraintTop_toBottomOf="@+id/presentText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div1" />
 
                         <TextView
                             android:id="@+id/absentText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="2"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
-                            app:layout_constraintStart_toEndOf="@+id/AbsentLabel"
-                            app:layout_constraintTop_toTopOf="@+id/AbsentLabel" />
+                            app:layout_constraintStart_toEndOf="@+id/absentLabel"
+                            app:layout_constraintTop_toTopOf="@+id/absentLabel"
+                            tools:text="0" />
 
                         <View
-                            android:id="@+id/absent_na_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/red_pastel_medium"
-                            app:layout_constraintBottom_toBottomOf="@+id/AbsentNaLabel"
-                            app:layout_constraintEnd_toStartOf="@+id/AbsentNaLabel"
+                            android:id="@+id/div2"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/AbsentNaLabel" />
+                            app:layout_constraintTop_toBottomOf="@+id/absentLabel" />
+
+                        <!-- Absent System Generated -->
+                        <View
+                            android:id="@+id/absent_system_box"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_absent_na_bg"
+                            app:layout_constraintBottom_toBottomOf="@+id/absentSystemLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/absentSystemLabel"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/absentSystemLabel" />
 
                         <TextView
-                            android:id="@+id/AbsentNaLabel"
+                            android:id="@+id/absentSystemLabel"
                             style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -214,30 +275,44 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/absent_system_generated"
-                            app:layout_constraintEnd_toStartOf="@+id/absentNaText"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toStartOf="@+id/absentSystemText"
                             app:layout_constraintHorizontal_weight="2"
-                            app:layout_constraintStart_toEndOf="@+id/absent_na_box"
-                            app:layout_constraintTop_toBottomOf="@+id/absentText" />
+                            app:layout_constraintStart_toEndOf="@+id/absent_system_box"
+                            app:layout_constraintTop_toBottomOf="@+id/div2" />
 
                         <TextView
-                            android:id="@+id/absentNaText"
-                            style="@style/CustomMediumDarkTextView"
+                            android:id="@+id/absentSystemText"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="5"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
-                            app:layout_constraintStart_toEndOf="@+id/AbsentNaLabel"
-                            app:layout_constraintTop_toTopOf="@+id/AbsentNaLabel" />
+                            app:layout_constraintStart_toEndOf="@+id/absentSystemLabel"
+                            app:layout_constraintTop_toTopOf="@+id/absentSystemLabel"
+                            tools:text="7" />
 
                         <View
+                            android:id="@+id/div3"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/absentSystemLabel" />
+
+                        <!-- Incomplete -->
+                        <View
                             android:id="@+id/incomplete_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/red_pastel"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_incomplete_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/incompleteLabel"
                             app:layout_constraintEnd_toStartOf="@+id/incompleteLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -251,31 +326,45 @@
                             android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
-                            android:text="@string/incomplete_attendance"
+                            android:text="@string/incomplete"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/incompleteText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/incomplete_box"
-                            app:layout_constraintTop_toBottomOf="@+id/AbsentNaLabel" />
+                            app:layout_constraintTop_toBottomOf="@+id/div3" />
 
                         <TextView
                             android:id="@+id/incompleteText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="8"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/incompleteLabel"
-                            app:layout_constraintTop_toTopOf="@+id/incompleteLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/incompleteLabel"
+                            tools:text="0" />
 
                         <View
+                            android:id="@+id/div4"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/incompleteLabel" />
+
+                        <!-- Leave -->
+                        <View
                             android:id="@+id/leave_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/blue_pastal"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_leave_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/leaveLabel"
                             app:layout_constraintEnd_toStartOf="@+id/leaveLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -290,30 +379,44 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/leave"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/leaveText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/leave_box"
-                            app:layout_constraintTop_toBottomOf="@+id/incompleteText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div4" />
 
                         <TextView
                             android:id="@+id/leaveText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/leaveLabel"
-                            app:layout_constraintTop_toTopOf="@+id/leaveLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/leaveLabel"
+                            tools:text="0" />
 
                         <View
+                            android:id="@+id/div5"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/leaveLabel" />
+
+                        <!-- Idle -->
+                        <View
                             android:id="@+id/idle_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/orange_pastal"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_idle_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/idleLabel"
                             app:layout_constraintEnd_toStartOf="@+id/idleLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -328,30 +431,44 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/idle"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/idleText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/idle_box"
-                            app:layout_constraintTop_toBottomOf="@+id/leaveText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div5" />
 
                         <TextView
                             android:id="@+id/idleText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/idleLabel"
-                            app:layout_constraintTop_toTopOf="@+id/idleLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/idleLabel"
+                            tools:text="1" />
 
                         <View
-                            android:id="@+id/wf_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/purple_pastal"
+                            android:id="@+id/div6"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/idleLabel" />
+
+                        <!-- Work Off -->
+                        <View
+                            android:id="@+id/work_off_box"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_work_off_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/workOffLabel"
                             app:layout_constraintEnd_toStartOf="@+id/workOffLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -366,32 +483,44 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/work_off"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/workOffText"
                             app:layout_constraintHorizontal_weight="2"
-                            app:layout_constraintStart_toEndOf="@+id/wf_box"
-                            app:layout_constraintTop_toBottomOf="@+id/idleText" />
+                            app:layout_constraintStart_toEndOf="@+id/work_off_box"
+                            app:layout_constraintTop_toBottomOf="@+id/div6" />
 
                         <TextView
                             android:id="@+id/workOffText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="2"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/workOffLabel"
-                            app:layout_constraintTop_toTopOf="@+id/workOffLabel" />
-
-
+                            app:layout_constraintTop_toTopOf="@+id/workOffLabel"
+                            tools:text="0" />
 
                         <View
+                            android:id="@+id/div7"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/workOffLabel" />
+
+                        <!-- Holidays -->
+                        <View
                             android:id="@+id/holiday_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/yellow_pastal"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_holiday_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/holidayLabel"
                             app:layout_constraintEnd_toStartOf="@+id/holidayLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -406,30 +535,44 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/holidays"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/holidayText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/holiday_box"
-                            app:layout_constraintTop_toBottomOf="@+id/workOffText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div7" />
 
                         <TextView
                             android:id="@+id/holidayText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/holidayLabel"
-                            app:layout_constraintTop_toTopOf="@+id/holidayLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/holidayLabel"
+                            tools:text="0" />
 
                         <View
+                            android:id="@+id/div8"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/holidayLabel" />
+
+                        <!-- Submitted -->
+                        <View
                             android:id="@+id/no_action_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="?attr/colorPrimary"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_submitted_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/noActionLabel"
                             app:layout_constraintEnd_toStartOf="@+id/noActionLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -444,30 +587,44 @@
                             android:layout_marginTop="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/attendance_submitted"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/noActionText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/no_action_box"
-                            app:layout_constraintTop_toBottomOf="@+id/holidayText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div8" />
 
                         <TextView
                             android:id="@+id/noActionText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/noActionLabel"
-                            app:layout_constraintTop_toTopOf="@+id/noActionLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/noActionLabel"
+                            tools:text="2" />
 
                         <View
+                            android:id="@+id/div9"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:alpha="0.08"
+                            android:background="?attr/wfmsColorOnSurface"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/noActionLabel" />
+
+                        <!-- Unmarked — last row, no divider after -->
+                        <View
                             android:id="@+id/na_box"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:background="@color/lightGray"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:background="@color/status_unmarked_bg"
                             app:layout_constraintBottom_toBottomOf="@+id/naLabel"
                             app:layout_constraintEnd_toStartOf="@+id/naLabel"
                             app:layout_constraintStart_toStartOf="parent"
@@ -480,26 +637,29 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:layout_marginTop="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small"
                             android:gravity="start"
                             android:text="@string/unmarked_days"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             app:layout_constraintEnd_toStartOf="@+id/naText"
                             app:layout_constraintHorizontal_weight="2"
                             app:layout_constraintStart_toEndOf="@+id/na_box"
-                            app:layout_constraintTop_toBottomOf="@+id/noActionText" />
+                            app:layout_constraintTop_toBottomOf="@+id/div9" />
 
                         <TextView
                             android:id="@+id/naText"
-                            style="@style/CustomMediumDarkTextView"
+                            style="@style/CustomMediumTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/margin_small"
                             android:gravity="end"
-                            tools:text="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@+id/naLabel"
-                            app:layout_constraintTop_toTopOf="@+id/naLabel" />
+                            app:layout_constraintTop_toTopOf="@+id/naLabel"
+                            tools:text="21" />
 
                         <com.airbnb.lottie.LottieAnimationView
                             app:layout_constraintTop_toTopOf="parent"
@@ -520,6 +680,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>

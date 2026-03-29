@@ -5,147 +5,200 @@
 
     <data>
         <import type="android.view.View" />
-
-        <variable
-            name="locationString"
-            type="String" />
+        <variable name="locationString" type="String" />
     </data>
 
+    <!--
+        FIX: Root background → wfmsColorSurface (bottom sheet)
+             Rounded top corners handled by BaseBottomSheet programmatically
+    -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/wfmsColorSurface"
         android:padding="@dimen/padding">
 
-        <!-- Pull Indicator -->
+        <!-- ── Handle bar ── -->
         <ImageView
             android:id="@+id/ivPull"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin_small"
             android:background="@drawable/ic_pull"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Title -->
+        <!-- ── Title — FIX: CustomLargeDarkTextView + wrong string ── -->
         <TextView
             android:id="@+id/tvTitle"
-            style="@style/CustomLargeDarkTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/enter_status_and_remarks"
-            android:textStyle="bold"
-            android:layout_marginTop="@dimen/margin"
-            app:layout_constraintTop_toBottomOf="@id/ivPull"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Work Location Label -->
-        <TextView
-            android:id="@+id/tvWorkLocationLabel"
-            style="@style/CustomMediumTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin"
-            android:text="@string/work_location"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Work Location Value -->
-        <TextView
-            android:id="@+id/tvWorkLocation"
-            style="@style/CustomRegularDarkTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small_extra"
-            android:text="@{locationString}"
-            tools:text="Sector 45, Gurgaon"
-            app:layout_constraintTop_toBottomOf="@id/tvWorkLocationLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Remarks Label -->
-        <TextView
-            android:id="@+id/tvRemarksLabel"
-            style="@style/CustomMediumTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin"
-            android:text="@string/enter_remarks"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/tvWorkLocation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Remarks Input -->
-        <EditText
-            android:id="@+id/remarksEditText"
-            style="@style/CustomEditRegularStyle"
+            style="@style/CustomLargeTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:gravity="top|start"
-            android:hint="@string/enter_remarks"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            android:maxLines="3"
-            android:minLines="1"
-            android:scrollbars="vertical"
-            app:layout_constraintTop_toBottomOf="@id/tvRemarksLabel"
+            android:text="@string/end_work"
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/ivPull" />
 
-        <!-- Status Label -->
+        <!-- ── Divider below title ── -->
+        <View
+            android:id="@+id/dividerTitle"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:alpha="0.1"
+            android:background="?attr/wfmsColorOnSurface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+        <!-- ── Work Location — FIX: plain text → info_chip_bg container ── -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/locationContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:background="@drawable/info_chip_bg"
+            android:padding="@dimen/padding_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dividerTitle">
+
+            <ImageView
+                android:id="@+id/ivLocationPin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_marker_on_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/wfmsColorPrimary" />
+
+            <TextView
+                android:id="@+id/tvWorkLocationLabel"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@string/work_location"
+                android:textAllCaps="true"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivLocationPin"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvWorkLocation"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginTop="@dimen/margin_2dp"
+                android:text="@{locationString}"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivLocationPin"
+                app:layout_constraintTop_toBottomOf="@id/tvWorkLocationLabel"
+                tools:text="Sector 45, Gurgaon" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ── Remarks — FIX: raw EditText → TextInputLayout OutlinedBox ── -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/remarksInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:hint="@string/enter_remarks"
+            android:minHeight="@dimen/text_input_edit_text_min_height"
+            app:boxStrokeColor="?attr/wfmsColorOutline"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/locationContainer">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/remarksEditText"
+                style="@style/CustomEditInputTextRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                android:maxLines="3"
+                android:minLines="2"
+                android:padding="@dimen/padding"
+                android:scrollbars="vertical" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ── Status label ── -->
         <TextView
             android:id="@+id/tvStatusLabel"
-            style="@style/CustomRegularDarkTextView"
+            style="@style/CustomSmallTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin"
             android:text="@string/select_status"
+            android:textAllCaps="true"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/remarksEditText"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/remarksInputLayout" />
 
-        <!-- Status List -->
+        <!-- ── Status RecyclerView ── -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/statusRecyclerView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_status"
-            app:layout_constraintTop_toBottomOf="@id/tvStatusLabel"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tvStatusLabel"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_status" />
 
-        <!-- Submit Button -->
+        <!-- ── Action buttons ── -->
+
+        <!-- FIX: CustomRedButton → error outline, moved to start -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_cancel"
+            style="@style/CustomButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:background="@drawable/error_bg_outline"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="?attr/wfmsColorError"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_done"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusRecyclerView" />
+
+        <!-- FIX: added textColor + textStyle, primary action on right -->
         <com.atvantiq.wfms.widgets.GradientButton
             android:id="@+id/btn_done"
             style="@style/CustomButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginStart="@dimen/margin_small"
             android:text="@string/submit"
-            app:layout_constraintTop_toBottomOf="@id/statusRecyclerView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_cancel" />
-
-        <!-- Cancel Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:layout_marginStart="@dimen/margin"
-            android:id="@+id/btn_cancel"
-            style="@style/CustomRedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            app:layout_constraintTop_toTopOf="@+id/btn_done"
-            app:layout_constraintStart_toEndOf="@+id/btn_done"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+            app:layout_constraintTop_toTopOf="@+id/btn_cancel" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

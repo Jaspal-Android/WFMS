@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
-        <variable
-            name="vm"
-            type="com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveVM" />
-
-        <variable
-            name="hasPreviewImage"
-            type="boolean" />
+        <variable name="vm" type="com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveVM" />
+        <variable name="hasPreviewImage" type="boolean" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
         tools:context=".ui.screens.attendance.applyLeave.ApplyLeaveActivity">
 
+        <!-- Toolbar — gradient applied in code -->
         <include
             android:id="@+id/applyLeaveToolbar"
             layout="@layout/custom_toolbar" />
 
-        <!-- Scrollable Content -->
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:fillViewport="true"
-            android:isScrollContainer="true"
             android:overScrollMode="always"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -44,16 +37,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="@dimen/padding">
+                android:padding="@dimen/padding">
 
+                <!-- ── Start Date ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/leave_start_date_required"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_calendar_today"
                     app:endIconMode="custom"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/start_date_et"
@@ -69,15 +67,20 @@
                         android:text="@={vm.leaveStartDate}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── End Date ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/leave_end_date_required"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_calendar_today"
                     app:endIconMode="custom"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/end_date_et"
@@ -93,15 +96,20 @@
                         android:text="@={vm.leaveEndDate}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Leave Type ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/leave_type_required"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/leave_type_et"
@@ -117,12 +125,17 @@
                         android:text="@={vm.leaveType}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Reason (multiline) ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/reason_required"
-                    android:minHeight="@dimen/text_input_edit_text_min_height">
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/leave_reason_et"
@@ -140,25 +153,32 @@
                         android:text="@={vm.leaveReason}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Attachment label — FIX: CustomMediumDarkTextView → theme ── -->
                 <TextView
-                    style="@style/CustomMediumDarkTextView"
+                    style="@style/CustomSmallTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin"
-                    android:text="@string/attachment_optional" />
+                    android:text="@string/attachment_optional"
+                    android:textAllCaps="true"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    android:textStyle="bold" />
 
+                <!-- ── Attachment container — FIX: added info_chip_bg background ── -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/attachmentContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:background="@drawable/info_chip_bg"
                     android:clickable="true"
                     android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     android:onClick="@{() -> vm.onClickAttachment()}"
                     android:paddingVertical="@dimen/padding"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    android:paddingHorizontal="@dimen/padding_small">
 
+                    <!-- FIX: added wfmsColorPrimary tint -->
                     <ImageView
                         android:id="@+id/ivUpload"
                         android:layout_width="wrap_content"
@@ -167,11 +187,13 @@
                         android:src="@drawable/baseline_attach_file_24"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/wfmsColorPrimary" />
 
+                    <!-- FIX: CustomRegularDarkTextView → theme color -->
                     <TextView
                         android:id="@+id/tvFileName"
-                        style="@style/CustomRegularDarkTextView"
+                        style="@style/CustomSmallTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_small"
@@ -179,36 +201,39 @@
                         android:ellipsize="middle"
                         android:maxLines="1"
                         android:text="@string/no_file_selected"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
                         app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/ivUpload"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <!-- ── File hint ── -->
                 <TextView
                     android:id="@+id/tvFileHint"
-                    style="@style/CustomMediumTextView"
+                    style="@style/CustomSmallTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small_extra"
                     android:text="@string/file_hint"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/attachmentContainer" />
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant" />
 
+                <!-- ── Image preview (conditional) ── -->
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small">
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:visibility="@{hasPreviewImage ? View.VISIBLE : View.GONE}">
 
-                    <com.google.android.material.card.MaterialCardView
+                    <!-- FIX: MaterialCardView → CardView + wfmsColorSurface -->
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/imagePreviewView"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small"
-                        app:cardPreventCornerOverlap="true"
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -226,6 +251,7 @@
                                 android:layout_height="match_parent"
                                 android:scaleType="centerCrop" />
 
+                            <!-- FIX: @color/red → ?attr/wfmsColorError -->
                             <ImageView
                                 android:id="@+id/cancelImageBt"
                                 android:layout_width="wrap_content"
@@ -236,21 +262,21 @@
                                 android:paddingStart="@dimen/padding_small"
                                 android:paddingBottom="@dimen/padding_small"
                                 android:src="@drawable/baseline_cancel_24"
-                                app:tint="@color/red" />
+                                app:tint="?attr/wfmsColorError" />
                         </RelativeLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
+                    </androidx.cardview.widget.CardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <!-- ── Submit button — FIX: added textColor + textStyle ── -->
                 <com.atvantiq.wfms.widgets.GradientButton
                     style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_large"
                     android:onClick="@{()->vm.onClickSubmitLeave()}"
-                    android:text="@string/submit_leave_request">
-
-                </com.atvantiq.wfms.widgets.GradientButton>
+                    android:text="@string/submit_leave_request"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </ScrollView>

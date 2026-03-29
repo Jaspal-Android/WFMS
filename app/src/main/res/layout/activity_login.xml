@@ -31,20 +31,44 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
+                android:layout_height="match_parent">
 
-                <!-- ── Logo ── -->
-                <ImageView
-                    android:id="@+id/logo"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
+                <com.atvantiq.wfms.widgets.GradientLogoView
+                    android:id="@+id/logoView"
+                    android:layout_width="@dimen/item_category_small"
+                    android:layout_height="@dimen/item_category_small"
                     android:layout_marginTop="@dimen/margin_huge"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/ic_logo"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- App name -->
+                <TextView
+                    android:id="@+id/appNameText"
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@string/app_name"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/logoView" />
+
+                <!-- App subtitle -->
+                <TextView
+                    android:id="@+id/appSubtitleText"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="@string/wfms_dtails"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/appNameText" />
+
 
 
                 <!-- ══════════════════════════════════════
@@ -61,7 +85,7 @@
                     app:cardElevation="@dimen/elevation_small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/logo">
+                    app:layout_constraintTop_toBottomOf="@id/appSubtitleText">
 
 
                     <androidx.constraintlayout.widget.ConstraintLayout

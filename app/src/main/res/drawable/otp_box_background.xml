@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Focused state — primary color border, light fill -->
     <item android:state_focused="true">
         <shape android:shape="rectangle">
-            <stroke android:color="?attr/colorPrimary" android:width="2dp"></stroke>
-            <corners android:radius="@dimen/card_radius_small" />
+            <solid android:color="?attr/wfmsColorPrimaryLight" />
+            <stroke
+                android:width="2dp"
+                android:color="?attr/wfmsColorPrimary" />
+            <corners android:radius="@dimen/card_radius" />
         </shape>
     </item>
 
+    <!-- Filled state (has text) — subtle primary tint -->
+    <item android:state_enabled="true">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/wfmsColorSurfaceVariant" />
+            <stroke
+                android:width="@dimen/border_width_1dp"
+                android:color="?attr/wfmsColorOutline" />
+            <corners android:radius="@dimen/card_radius" />
+        </shape>
+    </item>
+
+    <!-- Default state -->
     <item>
         <shape android:shape="rectangle">
-            <stroke android:color="@color/slateGray" android:width="2dp" />
-            <corners android:radius="@dimen/card_radius_small" />
+            <solid android:color="?attr/wfmsColorSurfaceVariant" />
+            <stroke
+                android:width="@dimen/border_width_1dp"
+                android:color="?attr/wfmsColorOutline" />
+            <corners android:radius="@dimen/card_radius" />
         </shape>
     </item>
 

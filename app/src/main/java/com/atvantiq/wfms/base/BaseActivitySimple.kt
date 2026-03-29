@@ -21,6 +21,7 @@ import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
+import com.facebook.stetho.common.Util
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
@@ -41,6 +42,7 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         ThemeManager.applyTheme(this)  // always first
         super.onCreate(savedInstanceState)
         getBundle()
+        ThemeManager.applyStatusBarColor(window = window)
     }
 
     open fun getBundle() {

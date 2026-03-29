@@ -20,6 +20,38 @@
     <color name="flatCalendar">#7AF4F4F4</color>
     <color name="background_light">#F3F4F6</color>
 
+    <!--Calendar Colors-->
+    <color name="status_present_bg">#DCFCE7</color>
+    <color name="status_present_text">#166534</color>
+
+    <color name="status_absent_bg">#DC2626</color>
+    <color name="status_absent_text">#FFFFFF</color>
+
+    <color name="status_absent_na_bg">#FCA5A5</color>
+    <color name="status_absent_na_text">#7F1D1D</color>
+
+    <color name="status_incomplete_bg">#FB923C</color>
+    <color name="status_incomplete_text">#FFFFFF</color>
+
+    <color name="status_leave_bg">#BFDBFE</color>
+    <color name="status_leave_text">#1E3A8A</color>
+
+    <color name="status_idle_bg">#FBCFE8</color>
+    <color name="status_idle_text">#831843</color>
+
+    <color name="status_work_off_bg">#DDD6FE</color>
+    <color name="status_work_off_text">#4C1D95</color>
+
+    <color name="status_holiday_bg">#FDE68A</color>
+    <color name="status_holiday_text">#92400E</color>
+
+    <color name="status_submitted_bg">#1E3A5F</color>
+    <color name="status_submitted_text">#FFFFFF</color>
+
+    <color name="status_unmarked_bg">#E5E7EB</color>
+    <color name="status_unmarked_text">#6B7280</color>
+
+
     <color name="green_pastel">#C5E7B0</color>
     <color name="red_pastel">#FAC0C3</color>
     <color name="red_pastel_medium">#F89096</color>

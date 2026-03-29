@@ -2,10 +2,15 @@ package com.atvantiq.wfms.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.view.Window
+import android.view.WindowManager
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.atvantiq.wfms.R
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
 
 
 object ThemeManager {
@@ -165,4 +170,29 @@ object ThemeManager {
         typedArray.recycle()
         return color
     }
+
+    fun apply(vararg cards: MaterialCardView) {
+        cards.forEach { card ->
+            card.post {
+                val color = MaterialColors.getColor(
+                    card,
+                    R.attr.wfmsColorSurface
+                )
+                card.setCardBackgroundColor(color)
+            }
+        }
+    }
+
+    fun applyStatusBarColor(window: Window) {
+        val typedArray = window.context.theme.obtainStyledAttributes(
+            intArrayOf(R.attr.wfmsColorPrimaryDark)
+        )
+        val primaryDarkColor = typedArray.getColor(0, Color.BLACK)
+        typedArray.recycle()
+
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = primaryDarkColor
+    }
+
 }

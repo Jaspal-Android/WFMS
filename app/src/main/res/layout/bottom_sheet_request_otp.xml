@@ -1,71 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="locationString"
             type="String" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/padding">
 
+        <!-- ── Pull handle ── -->
         <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_pull"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></ImageView>
+            app:tint="?attr/wfmsColorOutline" />
 
+        <!-- ── Title ── -->
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
             android:gravity="start"
-            android:textStyle="bold"
             android:text="@string/request_login_otp"
-            style="@style/CustomLargeDarkTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"></TextView>
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            style="@style/CustomLargeTextView" />
 
+        <!-- ── Divider ── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/border_width_1dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:alpha="0.3"
+            android:background="?attr/wfmsColorOutline" />
+
+        <!-- ── Email label ── -->
         <TextView
-            style="@style/CustomMediumDarkTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin"
             android:text="@string/enter_email"
-            android:textStyle="bold" />
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            android:textStyle="bold"
+            style="@style/CustomSmallTextView"
+            android:textAllCaps="true" />
 
+        <!-- ── Email field ── -->
         <EditText
             android:id="@+id/emailEditText"
             style="@style/CustomEditRegularStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small_extra"
             android:hint="@string/enter_email"
             android:imeOptions="actionDone"
             android:inputType="textEmailAddress"
             android:maxLines="1" />
 
+        <!-- ── Send OTP gradient button ── -->
         <com.atvantiq.wfms.widgets.GradientButton
             android:id="@+id/btn_done"
             style="@style/CustomButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/send_otp" />
+            android:text="@string/send_otp"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
+        <!-- ── Cancel — outline style, not red ── -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
-            style="@style/CustomRedButton"
+            style="@style/CustomPrimaryWireButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/cancel" />
+            android:layout_marginBottom="@dimen/margin_small"
+            android:text="@string/cancel"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </layout>

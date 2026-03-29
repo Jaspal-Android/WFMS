@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <data>
-        <import type="android.view.View"/>
-        <variable
-            name="hasPreviewImage"
-            type="boolean" />
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-        <variable
-            name="showImageError"
-            type="Boolean" />
+    <data>
+        <import type="android.view.View" />
+        <variable name="hasPreviewImage" type="boolean" />
+        <variable name="showImageError" type="Boolean" />
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelDetailViewModel" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
         android:orientation="vertical"
         tools:context=".ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelingDetailActivity">
 
+        <!-- Toolbar — gradient applied in code -->
         <include
-            android:id="@+id/addTrevelingToolbar"
+            android:id="@+id/addTravelingToolbar"
             layout="@layout/custom_toolbar" />
 
         <androidx.core.widget.NestedScrollView
@@ -36,38 +34,52 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/padding">
 
+                <!-- ── Travel Mode ── -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/travelModeInputLayout"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/mode"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:onClick="@{()-> vm.onTravelModeClick()}"
                         android:id="@+id/travel_mode_et"
                         style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:onClick="@{()-> vm.onTravelModeClick()}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
-                        android:text="@={vm.selectedTravelModeValue}"
-                        />
+                        android:text="@={vm.selectedTravelModeValue}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Amount ── -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/amountInputLayout"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/amount"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/travelModeInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -85,39 +97,52 @@
                         android:text="@={vm.travelAmount}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-
+                <!-- ── Traveling With ── -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/travelingWithInputLayout"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/travelingWith"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/amountInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:onClick="@{()-> vm.onTravelingWithClick()}"
                         android:id="@+id/traveling_with_et"
                         style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:onClick="@{()-> vm.onTravelingWithClick()}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-
+                <!-- ── From ── -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/fromInputLayout"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/from"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/travelingWithInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -135,14 +160,20 @@
                         android:text="@={vm.fromLocation}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-
+                <!-- ── To ── -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/toInputLayout"
-                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/to"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/fromInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -160,64 +191,86 @@
                         android:text="@={vm.toLocation}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-
-                <!-- Receipt Upload -->
+                <!-- ── Receipt upload row ── -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/receiptContainer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin"
-                    android:background="@drawable/et_bg"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:background="@drawable/info_chip_bg"
                     android:padding="@dimen/padding"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/toInputLayout">
 
-                    <TextView
-                        android:id="@+id/tvReceiptLabel"
-                        style="@style/CustomMediumTextView"
+                    <!-- Label + subtitle -->
+                    <LinearLayout
+                        android:id="@+id/receiptLabelGroup"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{hasPreviewImage ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/btnUploadReceipt"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvReceiptLabel"
+                            style="@style/CustomSmallTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/attach_receipt"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            style="@style/CustomSmallTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_2dp"
+                            android:text="@string/upload_receipt_subtitle"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+                    </LinearLayout>
+
+                    <!-- FIX: GradientButton replaces hardcoded AppCompatButton -->
+                    <com.atvantiq.wfms.widgets.GradientButton
+                        android:id="@+id/btnUploadReceipt"
+                        style="@style/CustomSmallButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/attach_receipt"
-                        android:visibility="@{hasPreviewImage?View.GONE:View.VISIBLE}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:onClick="@{()-> vm.onAttachmentClick()}"
-                        android:id="@+id/btnUploadReceipt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/small_button_height"
-                        android:background="@drawable/bg_button_upload"
                         android:drawableStart="@drawable/baseline_upload_file_24"
-                        android:drawableTint="?attr/colorPrimaryDark"
-                        android:paddingHorizontal="@dimen/padding_small"
+                        android:drawableTint="@color/white"
+                        android:minHeight="0dp"
+                        android:onClick="@{()-> vm.onAttachmentClick()}"
+                        android:paddingHorizontal="@dimen/padding"
+                        android:paddingVertical="@dimen/padding_x_small"
                         android:text="@string/upload"
                         android:textAllCaps="false"
-                        android:textColor="?attr/colorPrimaryDark"
-                        android:textSize="@dimen/default_medium_small_text"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <!-- Image preview thumbnail -->
                     <RelativeLayout
                         android:id="@+id/imagePreviewView"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                        android:visibility="@{hasPreviewImage ? View.VISIBLE : View.GONE}"
                         app:layout_constraintDimensionRatio="1:1.1"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintWidth_percent=".20"
-                        tools:visibility="visible">
+                        tools:visibility="gone">
 
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            app:cardBackgroundColor="?attr/wfmsColorSurface"
                             app:cardCornerRadius="@dimen/card_radius"
                             app:cardElevation="@dimen/elevation_small"
-                            app:cardPreventCornerOverlap="true"
                             app:cardUseCompatPadding="true">
 
                             <ImageView
@@ -228,42 +281,51 @@
                         </androidx.cardview.widget.CardView>
                     </RelativeLayout>
 
+                    <!-- FIX: @color/red → ?attr/wfmsColorError -->
                     <TextView
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/btnUploadReceipt"
-                        style="@style/CustomMediumTextView"
+                        style="@style/CustomSmallTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_marginTop="@dimen/margin_small"
                         android:text="@string/no_image_selected"
-                        android:textColor="@color/red"
+                        android:textColor="?attr/wfmsColorError"
                         android:textStyle="bold"
-                        android:visibility="@{showImageError?View.VISIBLE:View.GONE}" />
+                        android:visibility="@{showImageError ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnUploadReceipt" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <!-- Cancel Button -->
+                <!-- ── Cancel — FIX: CustomRedButton → error outline ── -->
                 <androidx.appcompat.widget.AppCompatButton
-                    android:onClick="@{()-> vm.onCancelClick()}"
                     android:id="@+id/btn_cancel"
-                    style="@style/CustomRedButton"
+                    style="@style/CustomButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
+                    android:layout_marginTop="@dimen/margin"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:background="@drawable/error_bg_outline"
+                    android:onClick="@{()-> vm.onCancelClick()}"
                     android:text="@string/cancel"
+                    android:textAllCaps="false"
+                    android:textColor="?attr/wfmsColorError"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btn_done"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/receiptContainer" />
 
+                <!-- FIX: added textColor + textStyle -->
                 <com.atvantiq.wfms.widgets.GradientButton
-                    android:onClick="@{()-> vm.onDoneClick()}"
                     android:id="@+id/btn_done"
                     style="@style/CustomButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:onClick="@{()-> vm.onDoneClick()}"
                     android:text="@string/submit"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/btn_cancel"
                     app:layout_constraintTop_toTopOf="@+id/btn_cancel" />

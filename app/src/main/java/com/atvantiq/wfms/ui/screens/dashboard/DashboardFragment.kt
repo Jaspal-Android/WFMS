@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -58,6 +59,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val startColor = MaterialColors.getColor(view, R.attr.wfmsColorPrimaryDark)
+        val endColor   = MaterialColors.getColor(view, R.attr.wfmsColorGradientEnd)
+        binding.appDashHeader.root.background = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT,
+            intArrayOf(startColor, endColor)
+        )
         PrefMethods.getEmpDetailResponse(prefMain)?.let {
             setupUserData(it)
         } ?: viewModel.getEmpDetails()

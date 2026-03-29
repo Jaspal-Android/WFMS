@@ -1,132 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.reimbursement.ReimbursementViewModel" />
-
         <variable
             name="isEmptyReimbursements"
             type="Boolean" />
     </data>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.screens.reimbursement.ReimbursementFragment">
 
-    <androidx.core.widget.NestedScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:background="?attr/wfmsColorBackground"
+        tools:context=".ui.screens.reimbursement.ReimbursementFragment">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:fillViewport="true">
 
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin"
-                android:layout_marginVertical="@dimen/margin"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="@dimen/card_radius"
-                app:cardElevation="@dimen/elevation_small"
-                app:cardPreventCornerOverlap="true">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
 
+                <!-- ══════════════════════════════════════
+                     CREATE CLAIM CARD
+                ══════════════════════════════════════ -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="@{()->vm.onCreateClaimClick()}"
+                        android:padding="@dimen/padding">
+
+                        <!-- Icon box -->
+                        <ImageView
+                            android:id="@+id/iconCreateClaim"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_box_bg"
+                            android:padding="@dimen/padding_small"
+                            android:src="@drawable/round_add_box_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="?attr/wfmsColorPrimary" />
+
+                        <!-- Title -->
+                        <TextView
+                            android:id="@+id/tvCreateClaim"
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:text="@string/create_claim"
+                            android:textAllCaps="true"
+                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toStartOf="@+id/arrowCreateClaim"
+                            app:layout_constraintStart_toEndOf="@+id/iconCreateClaim"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Subtitle -->
+                        <TextView
+                            style="@style/CustomSmallTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_marginTop="@dimen/margin_small_extra"
+                            android:text="@string/submit_new_reimbursement_claim"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            app:layout_constraintEnd_toStartOf="@+id/arrowCreateClaim"
+                            app:layout_constraintStart_toEndOf="@+id/iconCreateClaim"
+                            app:layout_constraintTop_toBottomOf="@+id/tvCreateClaim" />
+
+                        <!-- Forward arrow -->
+                        <ImageView
+                            android:id="@+id/arrowCreateClaim"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/forward_arrow_right_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- ══════════════════════════════════════
+                     SUBMITTED CLAIMS HEADER
+                ══════════════════════════════════════ -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        app:tint="?attr/colorPrimary"
-                        android:src="@drawable/round_add_box_24"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"></ImageView>
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:id="@+id/signInText"
-                        style="@style/CustomRegularPrimaryTextView"
-                        android:layout_width="match_parent"
+                        android:id="@+id/tvSignInDetails"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:drawableEnd="@drawable/forward_arrow_right_24"
-                        android:gravity="center_vertical"
-                        android:onClick="@{()->vm.onCreateClaimClick()}"
-                        android:text="@string/create_claim"
+                        android:layout_weight="1"
+                        android:text="@string/submitted_claims"
                         android:textAllCaps="true"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
                         android:textStyle="bold" />
+
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-
-            <TextView
-                android:layout_marginTop="@dimen/margin_small_extra"
-                android:id="@+id/tvSignInDetails"
-                style="@style/CustomRegularDarkTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/padding"
-                android:text="@string/submitted_claims"
-                android:textAllCaps="true"
-                android:textStyle="bold" />
-
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/swipeRefreshLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-                <RelativeLayout
+                <!-- ══════════════════════════════════════
+                     CLAIMS LIST + EMPTY STATE
+                ══════════════════════════════════════ -->
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/swipeRefreshLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvReimbursements"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        android:padding="@dimen/padding"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:itemCount="2"
-                        tools:listitem="@layout/item_claims" />
+                        android:layout_height="match_parent">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:orientation="vertical"
-                        android:visibility="@{isEmptyReimbursements ? View.VISIBLE : View.GONE}"
-                        tools:visibility="visible">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvReimbursements"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clipToPadding="false"
+                            android:visibility="@{isEmptyReimbursements ? View.GONE : View.VISIBLE}"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:itemCount="2"
+                            tools:listitem="@layout/item_claims" />
 
-                        <com.airbnb.lottie.LottieAnimationView
-                            android:id="@+id/animationView"
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:layout_gravity="center"
-                            android:backgroundTint="@android:color/transparent"
-                            app:lottie_autoPlay="true"
-                            app:lottie_loop="true"
-                            app:lottie_rawRes="@raw/no_data" />
-
-                        <TextView
+                        <!-- Empty state -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="@string/no_claims_found" />
-                    </LinearLayout>
+                            android:layout_centerInParent="true"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="@{isEmptyReimbursements ? View.VISIBLE : View.GONE}"
+                            tools:visibility="gone">
 
-                </RelativeLayout>
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:id="@+id/animationView"
+                                android:layout_width="150dp"
+                                android:layout_height="150dp"
+                                android:layout_gravity="center"
+                                android:backgroundTint="@android:color/transparent"
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                app:lottie_rawRes="@raw/no_data" />
 
-        </LinearLayout>
+                            <TextView
+                                style="@style/CustomMediumTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="@string/no_claims_found"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant" />
 
-    </androidx.core.widget.NestedScrollView>
-</FrameLayout>
+                        </LinearLayout>
+                    </RelativeLayout>
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </FrameLayout>
 </layout>

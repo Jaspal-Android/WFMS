@@ -40,6 +40,8 @@
         <item name="android:colorBackground">?attr/wfmsColorBackground</item>
         <item name="android:textColorPrimary">?attr/wfmsColorOnSurface</item>
         <item name="android:textColorSecondary">?attr/wfmsColorOnSurfaceVariant</item>
+        <item name="android:statusBarColor">@color/forest_primary_dark</item>
+
     </style>
 
     <style name="Theme.WFMS" parent="Base.Theme.WFMS" />
@@ -86,6 +88,8 @@
         <item name="colorError">@color/forest_error</item>
         <item name="android:colorBackground">@color/forest_bg</item>
         <item name="android:windowBackground">@color/forest_bg</item>
+        <item name="android:statusBarColor">@color/forest_primary_dark</item>
+
     </style>
 
 

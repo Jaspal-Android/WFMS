@@ -12,9 +12,10 @@ import com.atvantiq.wfms.databinding.BottomSheetEnterDaBinding
 import com.atvantiq.wfms.databinding.BottomSheetEnterOthersBinding
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String, path:String)->Unit) : BottomSheetDialogFragment() {
+class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String, path:String)->Unit) : BaseBottomSheet() {
 	
 	lateinit var binding: BottomSheetEnterOthersBinding
 	private var imagePath: String? = null

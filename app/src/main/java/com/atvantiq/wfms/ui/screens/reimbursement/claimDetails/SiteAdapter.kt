@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.databinding.ItemSiteBinding
 import com.atvantiq.wfms.models.reimbursement.detail.Site
+import com.atvantiq.wfms.utils.Utils
 
 class SiteAdapter : ListAdapter<Site, SiteAdapter.SiteAdapterViewHolder>(DIFF) {
 
@@ -47,6 +48,7 @@ class SiteAdapter : ListAdapter<Site, SiteAdapter.SiteAdapterViewHolder>(DIFF) {
         ) {
             binding.site = site
             binding.position = position
+            Utils.applyCircularGradient(binding.tvPosition)
             binding.isExpanded = isExpanded
             binding.siteHeader.setOnClickListener { onHeaderClick() }
             expenseAdapter.submitList(site.expenses)
