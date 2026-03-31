@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.base.BaseActivitySimple
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.PrefMain
@@ -22,13 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SplashActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var prefMain: SecurePrefMain
+class SplashActivity : BaseActivitySimple() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        ThemeManager.applyTheme(this)   // ← MUST be before super.onCreate()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_splash)

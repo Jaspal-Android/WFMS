@@ -470,21 +470,28 @@
     </style>
 
     <style name="AppTheme.DatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
+        <!-- colorAccent drives selected day circle + OK/Cancel button text -->
+        <item name="colorAccent">?attr/wfmsColorPrimary</item>
         <item name="android:colorAccent">?attr/wfmsColorPrimary</item>
-        <item name="android:colorControlActivated">?attr/wfmsColorPrimaryDark</item>
+        <item name="android:colorControlActivated">?attr/wfmsColorPrimary</item>
+        <!-- Button text -->
         <item name="android:buttonBarPositiveButtonStyle">@style/AppTheme.Alert.Button.Positive</item>
         <item name="android:buttonBarNegativeButtonStyle">@style/AppTheme.Alert.Button.Negative</item>
         <item name="android:buttonBarNeutralButtonStyle">@style/AppTheme.Alert.Button.Neutral</item>
     </style>
+
     <style name="AppTheme.Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
     </style>
+
     <style name="AppTheme.Alert.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/red</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
+
     <style name="AppTheme.Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/darkGray</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
+
 
     <!--alert dialog-->
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">

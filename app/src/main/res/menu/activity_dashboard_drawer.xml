@@ -38,7 +38,7 @@
             android:title="@string/menu_feedback" />-->
         <item
             android:id="@+id/changeTheme"
-            android:icon="@drawable/ic_colors"
+            android:icon="@drawable/ic_palette"
             android:title="Theme"
             ></item>
         <item

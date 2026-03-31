@@ -27,175 +27,177 @@ class ThemePickerBottomSheet : BottomSheetDialogFragment() {
 
         fun Int.dp() = (this * dp).toInt()
 
-        // ── Root scroll container ──────────────────────────────────
+        // Centralize resolved theme colors in one place.
+        val cOnSurface = ThemeManager.resolveColor(ctx, R.attr.wfmsColorOnSurface)
+        val cOnSurfaceVariant = ThemeManager.resolveColor(ctx, R.attr.wfmsColorOnSurfaceVariant)
+        val cPrimary = ThemeManager.resolveColor(ctx, R.attr.wfmsColorPrimary)
+        val cOutline = ThemeManager.resolveColor(ctx, R.attr.wfmsColorOutline)
+        val cSurfaceVariant = ThemeManager.resolveColor(ctx, R.attr.wfmsColorSurfaceVariant)
+
+        fun buildRoundedBackground(color: Int): GradientDrawable =
+            GradientDrawable().apply {
+                setColor(color)
+                cornerRadius = 12.dp().toFloat()
+            }
+
+        fun buildDivider(marginTopDp: Int, marginBottomDp: Int, alpha: Float = 1f): View =
+            View(ctx).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1
+                ).apply { setMargins(0, marginTopDp.dp(), 0, marginBottomDp.dp()) }
+                setBackgroundColor(cOutline)
+                this.alpha = alpha
+            }
+
+        fun title(text: String): TextView = TextView(ctx).apply {
+            this.text = text
+            textSize = 16f
+            setTextColor(cOnSurface)
+            setPadding(4.dp(), 0, 0, 12.dp())
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        fun sectionTitle(text: String): TextView = TextView(ctx).apply {
+            this.text = text
+            textSize = 11f
+            setTextColor(cOnSurfaceVariant)
+            setPadding(4.dp(), 8.dp(), 0, 4.dp())
+            isAllCaps = true
+            letterSpacing = 0.08f
+        }
+
+        fun checkmark(isActive: Boolean): TextView = TextView(ctx).apply {
+            text = "✓"
+            textSize = 16f
+            setTextColor(cPrimary)
+            isVisible = isActive
+        }
+
+        fun baseRow(isActive: Boolean): LinearLayout = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(12.dp(), 12.dp(), 12.dp(), 12.dp())
+            background = if (isActive) buildRoundedBackground(cSurfaceVariant) else null
+            isClickable = true
+            isFocusable = true
+        }
+
+        fun buildThemeSwatch(theme: ThemeManager.WfmsTheme): View {
+            val size = 32.dp()
+            val radius = 8.dp().toFloat()
+
+            val container = LinearLayout(ctx).apply {
+                layoutParams = LinearLayout.LayoutParams(size, size)
+                background = GradientDrawable().apply {
+                    cornerRadius = radius
+                    setColor(Color.parseColor(theme.bgHex))
+                }
+                clipToOutline = true
+            }
+
+            val left = View(ctx).apply {
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor(theme.primaryHex))
+                    // Round only the left corners
+                    cornerRadii = floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius)
+                }
+            }
+
+            val right = View(ctx).apply {
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor(theme.bgHex))
+                    // Round only the right corners
+                    cornerRadii = floatArrayOf(0f, 0f, radius, radius, radius, radius, 0f, 0f)
+                }
+            }
+
+            container.addView(left)
+            container.addView(right)
+            return container
+        }
+
+        fun labelText(text: String): TextView = TextView(ctx).apply {
+            this.text = text
+            textSize = 14f
+            setTextColor(cOnSurface)
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                marginStart = 12.dp()
+                gravity = Gravity.CENTER_VERTICAL
+            }
+        }
+
+        fun emojiIcon(emoji: String): TextView = TextView(ctx).apply {
+            text = emoji
+            textSize = 18f
+            layoutParams = LinearLayout.LayoutParams(32.dp(), 32.dp()).apply {
+                gravity = Gravity.CENTER_VERTICAL
+            }
+        }
+
+        // ── Root container ─────────────────────────────────────────
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20.dp(), 16.dp(), 20.dp(), 32.dp())
         }
 
-        // ── Title ──────────────────────────────────────────────────
-        root.addView(TextView(ctx).apply {
-            text = "Color Theme"
-            textSize = 16f
-            setTextColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorOnSurface))
-            setPadding(4.dp(), 0, 0, 12.dp())
-            typeface = Typeface.DEFAULT_BOLD
-        })
+        // ── Theme section ──────────────────────────────────────────
+        root.addView(title("Color Theme"))
 
-        // ── Theme options ──────────────────────────────────────────
         val currentTheme = ThemeManager.getCurrentTheme(ctx)
-
-        ThemeManager.WfmsTheme.entries.forEach { theme ->
+        ThemeManager.WfmsTheme.entries.forEachIndexed { index, theme ->
             val isActive = theme == currentTheme
 
-            val row = LinearLayout(ctx).apply {
-                orientation  = LinearLayout.HORIZONTAL
-                setPadding(12.dp(), 12.dp(), 12.dp(), 12.dp())
-                background   = if (isActive) {
-                    GradientDrawable().apply {
-                        setColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorSurfaceVariant))
-                        cornerRadius = 12.dp().toFloat()
-                    }
-                } else null
-                isClickable  = true
-                isFocusable  = true
-            }
+            val row = baseRow(isActive).apply {
+                addView(buildThemeSwatch(theme))
+                addView(labelText(theme.displayName))
+                addView(checkmark(isActive))
 
-            // Color swatch (two halves: primary + bg)
-            val swatch = LinearLayout(ctx).apply {
-                val size = 32.dp()
-                layoutParams = LinearLayout.LayoutParams(size, size)
-                background = GradientDrawable().apply {
-                    cornerRadius = 8.dp().toFloat()
-                    setColor(Color.parseColor(theme.bgHex))
+                setOnClickListener {
+                    ThemeManager.setTheme(ctx, theme)
+                    dismiss()
                 }
-                clipToOutline = true
-            }
-            val swatchLeft = View(ctx).apply {
-                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
-                background = GradientDrawable().apply {
-                    setColor(Color.parseColor(theme.primaryHex))
-                    // Only round the left corners
-                    cornerRadii = floatArrayOf(8.dp().toFloat(), 8.dp().toFloat(), 0f, 0f, 0f, 0f, 8.dp().toFloat(), 8.dp().toFloat())
-                }
-            }
-            val swatchRight = View(ctx).apply {
-                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
-                background = GradientDrawable().apply {
-                    setColor(Color.parseColor(theme.bgHex))
-                    cornerRadii = floatArrayOf(0f, 0f, 8.dp().toFloat(), 8.dp().toFloat(), 8.dp().toFloat(), 8.dp().toFloat(), 0f, 0f)
-                }
-            }
-            swatch.addView(swatchLeft)
-            swatch.addView(swatchRight)
-
-            // Theme name label
-            val label = TextView(ctx).apply {
-                text = theme.displayName
-                textSize = 14f
-                setTextColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorOnSurface))
-                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                    marginStart = 12.dp()
-                    gravity = Gravity.CENTER_VERTICAL
-                }
-            }
-
-            // Active checkmark
-            val check = TextView(ctx).apply {
-                text = "✓"
-                textSize = 16f
-                setTextColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorPrimary))
-                isVisible = isActive
-            }
-
-            row.addView(swatch)
-            row.addView(label)
-            row.addView(check)
-
-            row.setOnClickListener {
-                ThemeManager.setTheme(ctx, theme)
-                dismiss()
             }
 
             root.addView(row)
-            root.addView(View(ctx).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 1
-                ).apply { setMargins(0, 2.dp(), 0, 2.dp()) }
-                setBackgroundColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorOutline))
-                alpha = 0.3f
-            })
+
+            // Inter-item divider (skip after last item)
+            if (index != ThemeManager.WfmsTheme.entries.lastIndex) {
+                root.addView(buildDivider(marginTopDp = 2, marginBottomDp = 2, alpha = 0.3f))
+            }
         }
 
-        // ── Divider ────────────────────────────────────────────────
-        root.addView(View(ctx).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 1
-            ).apply { setMargins(0, 8.dp(), 0, 8.dp()) }
-            setBackgroundColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorOutline))
-        })
+        // ── Divider between sections ───────────────────────────────
+        root.addView(buildDivider(marginTopDp = 8, marginBottomDp = 8, alpha = 1f))
 
-        // ── Dark mode section title ────────────────────────────────
-        root.addView(TextView(ctx).apply {
-            text = "Appearance"
-            textSize = 11f
-            setTextColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorOnSurfaceVariant))
-            setPadding(4.dp(), 8.dp(), 0, 4.dp())
-            isAllCaps = true
-            letterSpacing = 0.08f
-        })
+        // ── Appearance section ─────────────────────────────────────
+        root.addView(sectionTitle("Appearance"))
 
-        // ── Dark mode rows ─────────────────────────────────────────
         val currentDark = ThemeManager.getDarkMode(ctx)
+        val modes = listOf(
+            Triple(ThemeManager.DarkMode.LIGHT, "Light", "☀️"),
+            Triple(ThemeManager.DarkMode.DARK, "Dark", "🌙"),
+            Triple(ThemeManager.DarkMode.SYSTEM, "System default", "⚙️")
+        )
 
-        listOf(
-            Triple(ThemeManager.DarkMode.LIGHT,  "Light",        "☀️"),
-            Triple(ThemeManager.DarkMode.DARK,   "Dark",         "🌙"),
-            Triple(ThemeManager.DarkMode.SYSTEM, "System default","⚙️")
-        ).forEach { (mode, label, emoji) ->
-
+        modes.forEach { (mode, label, emoji) ->
             val isActive = mode == currentDark
-            val row = LinearLayout(ctx).apply {
-                orientation = LinearLayout.HORIZONTAL
+
+            val row = baseRow(isActive).apply {
+                // Slightly tighter padding for the appearance rows.
                 setPadding(12.dp(), 10.dp(), 12.dp(), 10.dp())
-                background = if (isActive) {
-                    GradientDrawable().apply {
-                        setColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorSurfaceVariant))
-                        cornerRadius = 12.dp().toFloat()
-                    }
-                } else null
-                isClickable = true
-                isFocusable = true
-            }
 
-            row.addView(TextView(ctx).apply {
-                text = emoji
-                textSize = 18f
-                layoutParams = LinearLayout.LayoutParams(32.dp(), 32.dp()).apply {
-                    gravity = Gravity.CENTER_VERTICAL
-                }
-            })
-            row.addView(TextView(ctx).apply {
-                text = label
-                textSize = 14f
-                setTextColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorOnSurface))
-                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                    marginStart = 12.dp()
-                    gravity = Gravity.CENTER_VERTICAL
-                }
-            })
-            row.addView(TextView(ctx).apply {
-                text = "✓"
-                textSize = 16f
-                setTextColor(ThemeManager.resolveColor(ctx, R.attr.wfmsColorPrimary))
-                isVisible = isActive
-            })
+                addView(emojiIcon(emoji))
+                addView(labelText(label))
+                addView(checkmark(isActive))
 
-            row.setOnClickListener {
-                ThemeManager.setDarkMode(ctx, mode)
-                dismiss()
-                // Recreate parent activity to apply the night mode change
-                activity?.recreate()
+                setOnClickListener {
+                    ThemeManager.setDarkMode(ctx, mode)
+                    dismiss()
+                    // Recreate parent activity to apply the night mode change
+                    activity?.recreate()
+                }
             }
 
             root.addView(row)

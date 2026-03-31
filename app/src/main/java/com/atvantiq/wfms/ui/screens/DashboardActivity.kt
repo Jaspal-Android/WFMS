@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,7 +45,7 @@ import com.google.android.play.core.install.model.InstallStatus
 
 
 @AndroidEntryPoint
-class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
+class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val navController: androidx.navigation.NavController
@@ -69,6 +71,22 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
         batterOptimizationCheck()
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.dashboard_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_palette -> {
+                ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun batterOptimizationCheck() {

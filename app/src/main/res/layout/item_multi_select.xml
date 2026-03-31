@@ -19,6 +19,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?attr/wfmsColorOnSurface"
             android:layout_marginStart="@dimen/margin_small_extra"
             />
     </LinearLayout>

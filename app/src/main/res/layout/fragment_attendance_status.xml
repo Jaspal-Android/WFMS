@@ -30,13 +30,13 @@
                 android:orientation="vertical">
 
                 <!-- ── Calendar card ── -->
-                <com.google.android.material.card.MaterialCardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_marginEnd="@dimen/margin_small"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
                     app:cardCornerRadius="@dimen/card_radius_max"
                     app:cardElevation="@dimen/elevation_small"
                     app:cardUseCompatPadding="true">
@@ -50,31 +50,31 @@
                             android:id="@+id/customCalender"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@color/white" />
+                            android:background="?attr/wfmsColorSurface" />
 
-                        <com.airbnb.lottie.LottieAnimationView
+                        <ProgressBar
                             android:id="@+id/animationView"
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
                             android:layout_centerInParent="true"
                             android:layout_gravity="center"
+                            style="?android:attr/progressBarStyleLarge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
                             android:backgroundTint="@android:color/transparent"
                             android:visibility="@{showCalendarProgressBar ? View.VISIBLE : View.GONE}"
-                            app:lottie_autoPlay="true"
-                            app:lottie_loop="true"
-                            app:lottie_rawRes="@raw/loading" />
+                            android:indeterminateTint="?attr/wfmsColorPrimary" />
 
                     </RelativeLayout>
-                </com.google.android.material.card.MaterialCardView>
+                </androidx.cardview.widget.CardView>
 
                 <!-- ── Summary card ── -->
-                <com.google.android.material.card.MaterialCardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small_extra"
                     android:layout_marginEnd="@dimen/margin_small_extra"
                     android:layout_marginBottom="@dimen/margin_small"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
                     app:cardCornerRadius="@dimen/card_radius_max"
                     app:cardElevation="@dimen/elevation_small"
                     app:cardUseCompatPadding="true">
@@ -661,7 +661,9 @@
                             app:layout_constraintTop_toTopOf="@+id/naLabel"
                             tools:text="21" />
 
-                        <com.airbnb.lottie.LottieAnimationView
+                        <ProgressBar
+                            android:indeterminate="true"
+                            android:indeterminateTint="?attr/wfmsColorPrimary"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -669,17 +671,14 @@
                             android:visibility="@{showCalendarProgressBar ? View.VISIBLE : View.GONE}"
                             android:layout_centerInParent="true"
                             android:id="@+id/animationView2"
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:backgroundTint="@android:color/transparent"
-                            app:lottie_rawRes="@raw/loading"
-                            app:lottie_loop="true"
-                            app:lottie_autoPlay="true" />
+                            android:backgroundTint="@android:color/transparent" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </com.google.android.material.card.MaterialCardView>
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
         </FrameLayout>

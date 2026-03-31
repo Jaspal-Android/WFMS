@@ -42,7 +42,6 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         ThemeManager.applyTheme(this)  // always first
         super.onCreate(savedInstanceState)
         getBundle()
-        ThemeManager.applyStatusBarColor(window = window)
     }
 
     open fun getBundle() {

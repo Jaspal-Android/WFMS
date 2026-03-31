@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
@@ -11,14 +12,15 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminateTint="?attr/colorPrimaryDark" />
+        android:indeterminate="true"
+        android:indeterminateTint="?attr/wfmsColorPrimary" />
 
     <TextView
-        style="@style/CustomMediumDarkTextView"
+        style="@style/CustomMediumTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
-        android:text="@string/please_wait" />
+        android:text="@string/please_wait"
+        android:textColor="?attr/wfmsColorOnSurface" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -35,10 +35,10 @@
                 android:id="@+id/btnPreviousMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_box_bg"
+                android:background="@drawable/primary_bt_oval_bg"
                 android:padding="@dimen/padding_small"
                 android:src="@drawable/arrow_back_ios_24"
-                app:tint="?attr/wfmsColorPrimary" />
+                app:tint="?attr/wfmsColorPrimaryLight" />
 
             <!-- FIX: CustomRegularDarkTextView → theme-aware color -->
             <TextView
@@ -57,11 +57,11 @@
                 android:id="@+id/btnNextMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_box_bg"
+                android:background="@drawable/primary_bt_oval_bg"
                 android:padding="@dimen/padding_small"
                 android:src="@drawable/arrow_forward_ios_24"
                 android:visibility="@{hideNextBt ? View.INVISIBLE : View.VISIBLE}"
-                app:tint="?attr/wfmsColorPrimary" />
+                app:tint="?attr/wfmsColorPrimaryLight" />
 
         </LinearLayout>
 

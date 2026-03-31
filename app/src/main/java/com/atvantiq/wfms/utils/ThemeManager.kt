@@ -9,13 +9,12 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 
 
 object ThemeManager {
-
-    // ── Theme enum ─────────────────────────────────────────────────
     enum class WfmsTheme(
         val key: String,
         val displayName: String,
@@ -72,7 +71,6 @@ object ThemeManager {
         }
     }
 
-    // ── Dark mode enum ─────────────────────────────────────────────
     enum class DarkMode(val key: String) {
         LIGHT("light"),
         DARK("dark"),
@@ -84,54 +82,35 @@ object ThemeManager {
         }
     }
 
-    // ── SharedPreferences keys ─────────────────────────────────────
-    private const val PREFS_NAME  = "wfms_theme_prefs"
-    private const val KEY_THEME   = "selected_theme"
-    private const val KEY_DARK    = "dark_mode"
-
     private fun prefs(context: Context): SharedPreferences =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-    // ── Read current state ─────────────────────────────────────────
+        context.getSharedPreferences(PrefKeys.WFMS_PREF, Context.MODE_PRIVATE)
 
     fun getCurrentTheme(context: Context): WfmsTheme =
-        WfmsTheme.fromKey(prefs(context).getString(KEY_THEME, WfmsTheme.FOREST.key))
+        WfmsTheme.fromKey(prefs(context).getString(PrefKeys.KEY_THEME, WfmsTheme.FOREST.key))
 
     fun getDarkMode(context: Context): DarkMode =
-        DarkMode.fromKey(prefs(context).getString(KEY_DARK, DarkMode.SYSTEM.key))
+        DarkMode.fromKey(prefs(context).getString(PrefKeys.KEY_DARK, DarkMode.SYSTEM.key))
 
     fun isDarkMode(context: Context): Boolean =
         getDarkMode(context) == DarkMode.DARK
 
-    // ── Apply theme to an Activity ─────────────────────────────────
-    /**
-     * Call this at the TOP of every Activity.onCreate(), before super.onCreate().
-     * It applies the saved theme overlay so the correct colors load.
-     */
     fun applyTheme(context: Context) {
         val theme = getCurrentTheme(context)
         context.setTheme(theme.styleRes)
         applyDarkMode(context)
     }
 
-    // ── Change theme ───────────────────────────────────────────────
-    /**
-     * Saves the theme and recreates the calling Activity so changes
-     * take effect immediately.
-     */
     fun setTheme(context: Context, theme: WfmsTheme) {
         prefs(context).edit()
-            .putString(KEY_THEME, theme.key)
+            .putString(PrefKeys.KEY_THEME, theme.key)
             .apply()
         // Recreate to apply new theme
         (context as? AppCompatActivity)?.recreate()
     }
 
-    // ── Dark mode controls ─────────────────────────────────────────
-
     fun setDarkMode(context: Context, mode: DarkMode) {
         prefs(context).edit()
-            .putString(KEY_DARK, mode.key)
+            .putString(PrefKeys.KEY_DARK, mode.key)
             .apply()
         applyDarkMode(context)
     }
@@ -155,15 +134,6 @@ object ThemeManager {
         AppCompatDelegate.setDefaultNightMode(nightMode)
     }
 
-    // ── Helper: resolve a theme attr to a color at runtime ─────────
-    /**
-     * Resolve a theme attribute to a color value.
-     * Useful for dynamically tinting views in code.
-     *
-     * Example:
-     *   val primary = ThemeManager.resolveColor(this, R.attr.wfmsColorPrimary)
-     *   myView.setBackgroundColor(primary)
-     */
     fun resolveColor(context: Context, attrRes: Int): Int {
         val typedArray = context.obtainStyledAttributes(intArrayOf(attrRes))
         val color = typedArray.getColor(0, 0)
@@ -182,17 +152,4 @@ object ThemeManager {
             }
         }
     }
-
-    fun applyStatusBarColor(window: Window) {
-        val typedArray = window.context.theme.obtainStyledAttributes(
-            intArrayOf(R.attr.wfmsColorPrimaryDark)
-        )
-        val primaryDarkColor = typedArray.getColor(0, Color.BLACK)
-        typedArray.recycle()
-
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.statusBarColor = primaryDarkColor
-    }
-
 }
