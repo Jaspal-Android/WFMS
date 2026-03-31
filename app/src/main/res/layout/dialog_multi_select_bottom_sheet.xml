@@ -1,57 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- ── Handle bar ── -->
         <ImageView
             android:id="@+id/icPullView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin"
-            android:src="@drawable/ic_pull"></ImageView>
+            android:background="@drawable/ic_pull" />
 
-        <TextView
-            android:id="@+id/titleTextView"
-            android:textStyle="bold"
-            style="@style/CustomRegularDarkTextView"
-            android:layout_marginTop="@dimen/margin_small"
-            android:layout_marginHorizontal="@dimen/margin"
-            tools:text="Title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"></TextView>
-
-        <EditText
-            android:layout_marginTop="@dimen/margin"
-            android:layout_marginHorizontal="@dimen/margin"
-            android:id="@+id/searchBar"
-            style="@style/CustomEditRegularStyle"
+        <!-- ── Title row + selected count badge ── -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/search_bar_background"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="@dimen/padding_small"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginHorizontal="@dimen/margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- FIX: CustomRegularDarkTextView → theme color -->
+            <TextView
+                android:id="@+id/titleTextView"
+                style="@style/CustomRegularTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                tools:text="Select Work Types" />
+
+
+        </LinearLayout>
+
+        <!-- ── Divider below title ── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:alpha="0.1"
+            android:background="?attr/wfmsColorOnSurface" />
+
+        <!-- ── Search bar — FIX: raw EditText → TextInputLayout OutlinedBox ── -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
             android:hint="@string/search"
-            android:inputType="text"
-            android:padding="@dimen/padding_medium" />
+            app:boxStrokeColor="?attr/wfmsColorOutline"
+            app:boxStrokeWidthFocused="2dp"
+            app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+            app:startIconTint="?attr/wfmsColorOnSurfaceVariant">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:drawableStart="@drawable/ic_search"
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:padding="@dimen/padding_medium" />
+        </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- ── Multi-select RecyclerView ── -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:padding="@dimen/padding"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:maxHeight="300dp"
+            android:padding="@dimen/padding_small"
+            android:scrollbars="vertical" />
 
+        <!-- ── Divider above button ── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:alpha="0.1"
+            android:background="?attr/wfmsColorOnSurface" />
+
+        <!-- ── Submit button — FIX: added textColor + textStyle ── -->
         <com.atvantiq.wfms.widgets.GradientButton
             android:id="@+id/submitButton"
             style="@style/CustomButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_small"
-            android:text="@string/submit" />
+            android:layout_marginHorizontal="@dimen/margin"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:text="@string/submit"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
     </LinearLayout>
 </layout>

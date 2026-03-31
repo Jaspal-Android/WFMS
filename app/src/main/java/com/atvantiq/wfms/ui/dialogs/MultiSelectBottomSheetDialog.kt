@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.DialogMultiSelectBottomSheetBinding
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -27,15 +28,11 @@ class MultiSelectBottomSheetDialog<T>(
     private val onSubmit: (Set<T>) -> Unit,
     private val filterCondition: (T, String) -> Boolean ,
     private val title: String? = null// Filter condition for search
-) : BottomSheetDialogFragment() {
+) : BaseBottomSheet() {
 
     private lateinit var binding: DialogMultiSelectBottomSheetBinding
     private val selectedItems = mutableSetOf<T>().apply { addAll(preSelectedItems) } // Initialize with pre-selected items
     private var filteredItems = items.toMutableList() // List to hold filtered items
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BottomSheetDialog(context, R.style.AppBottomSheetDialogTheme)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

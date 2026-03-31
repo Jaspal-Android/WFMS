@@ -395,5 +395,6 @@
     <string name="with">with</string>
     <string name="location">Location</string>
     <string name="tap_to_take_photo">Tap to take photo</string>
+    <string name="select_month_year">Select Month and Year</string>
     
 </resources>
