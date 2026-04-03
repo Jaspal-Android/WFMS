@@ -380,6 +380,7 @@
     <string name="please_add_at_least_one_expense_entry">Please add at least one expense entry</string>
     <string name="please_select_purpose">Please select purpose</string>
     <string name="please_select_at_least_one_site">Please select at least one site</string>
+₹     <string name="selected_po">Selected PO</string>
     <string name="login_to_continue">Login to continue</string>
     <string name="welcome_back">Welcome back</string>
     <string name="incomplete">Incomplete</string>
