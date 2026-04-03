@@ -1,80 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
-        <variable
-            name="hasPreviewImage"
-            type="boolean" />
-
-        <variable
-            name="locationString"
-            type="String" />
-
-        <variable
-            name="showImageError"
-            type="Boolean" />
+        <variable name="hasPreviewImage" type="boolean" />
+        <variable name="locationString" type="String" />
+        <variable name="showImageError" type="Boolean" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/wfmsColorSurface"
         android:orientation="vertical"
         android:padding="@dimen/padding">
 
+        <!-- ── Handle bar ── -->
         <ImageView
-            android:layout_gravity="center"
-            android:src="@drawable/ic_pull"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></ImageView>
-
-        <TextView
-            android:gravity="center"
-            android:layout_gravity="center"
-            style="@style/CustomLargeDarkTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin"
-            android:text="@string/start_work_with_photo_lat_long"
-            android:textColor="@android:color/black"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:background="@drawable/ic_pull" />
+
+        <!-- ── Title — FIX: verbose string + hardcoded black ── -->
+        <TextView
+            style="@style/CustomLargeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="@string/start_work"
+            android:textColor="?attr/wfmsColorOnSurface"
             android:textStyle="bold" />
+
+        <!-- ── Divider below title ── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:alpha="0.1"
+            android:background="?attr/wfmsColorOnSurface" />
+
 
         <ImageButton
             android:id="@+id/btn_photo"
-            android:layout_width="140dp"
-            android:layout_height="150dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin"
-            android:background="@android:drawable/btn_default"
-            android:contentDescription="Add photo"
+            android:background="@drawable/primary_bt_oval_bg"
             android:padding="@dimen/padding"
             android:src="@drawable/ic_menu_camera"
-            android:visibility="@{hasPreviewImage?View.GONE:View.VISIBLE}" />
+            android:visibility="@{hasPreviewImage ? View.GONE : View.VISIBLE}"
+            app:tint="@color/white" />
 
+        <!-- Tap to photo hint -->
         <TextView
-            style="@style/CustomMediumTextView"
+            style="@style/CustomSmallTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_small_extra"
+            android:text="@string/tap_to_take_photo"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            android:visibility="@{hasPreviewImage ? View.GONE : View.VISIBLE}" />
+
+        <!-- ── Image error text — FIX: @color/red → wfmsColorError ── -->
+        <TextView
+            style="@style/CustomSmallTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_small"
             android:text="@string/no_image_selected"
-            android:textColor="@color/red"
+            android:textColor="?attr/wfmsColorError"
             android:textStyle="bold"
-            android:visibility="@{showImageError?View.VISIBLE:View.GONE}" />
+            android:visibility="@{showImageError ? View.VISIBLE : View.GONE}" />
 
+        <!-- ── Image preview + location — shown after photo taken ── -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small">
+            android:layout_marginTop="@dimen/margin_small"
+            android:visibility="@{hasPreviewImage ? View.VISIBLE : View.GONE}"
+            tools:visibility="visible">
 
-            <RelativeLayout
+            <!-- Image preview card — FIX: added cardBackgroundColor -->
+            <androidx.cardview.widget.CardView
                 android:id="@+id/imagePreviewView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                app:cardBackgroundColor="?attr/wfmsColorSurface"
+                app:cardCornerRadius="@dimen/card_radius"
+                app:cardElevation="@dimen/elevation_small"
+                app:cardUseCompatPadding="true"
                 app:layout_constraintDimensionRatio="1:1.1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -82,51 +105,100 @@
                 app:layout_constraintWidth_percent=".45"
                 tools:visibility="visible">
 
-                <androidx.cardview.widget.CardView
+                <ImageView
+                    android:id="@+id/capturedImagePreview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:cardUseCompatPadding="true"
-                    app:cardCornerRadius="@dimen/card_radius"
-                    app:cardPreventCornerOverlap="true"
-                    app:cardElevation="@dimen/elevation_small">
+                    android:scaleType="centerCrop" />
+            </androidx.cardview.widget.CardView>
 
-                    <ImageView
-                        android:scaleType="centerCrop"
-                        android:id="@+id/capturedImagePreview"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
-                </androidx.cardview.widget.CardView>
-
-            </RelativeLayout>
-
-            <TextView
-                style="@style/CustomMediumDarkTextView"
-                android:layout_width="wrap_content"
+            <!-- Location row — FIX: bare text → info_chip_bg container ── -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/locationContainer"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@{locationString}"
-                android:visibility="@{hasPreviewImage?View.VISIBLE:View.GONE}"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/info_chip_bg"
+                android:padding="@dimen/padding_small"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imagePreviewView"
-                tools:text="30.7333° N, 76.7794° E" />
+                app:layout_constraintTop_toBottomOf="@+id/imagePreviewView">
+
+                <ImageView
+                    android:id="@+id/ivPin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_marker_on_24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/wfmsColorPrimary" />
+
+                <TextView
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="@string/location"
+                    android:textAllCaps="true"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ivPin"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- FIX: CustomMediumDarkTextView → theme color -->
+                <TextView
+                    android:id="@+id/tvLocation"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_2dp"
+                    android:text="@{locationString}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ivPin"
+                    app:layout_constraintTop_toBottomOf="@id/ivPin"
+                    tools:text="30.7333° N, 76.7794° E" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_done"
-            style="@style/CustomPrimaryButton"
+        <!-- ── Action buttons — side by side ── -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_large"
-            android:text="@string/done" />
+            android:layout_marginTop="@dimen/margin"
+            android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_cancel"
-            style="@style/CustomRedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/cancel" />
+            <!-- FIX: CustomRedButton full width → error outline half width -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                style="@style/CustomButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_weight="1"
+                android:background="@drawable/error_bg_outline"
+                android:text="@string/cancel"
+                android:textAllCaps="false"
+                android:textColor="?attr/wfmsColorError"
+                android:textStyle="bold" />
+
+            <!-- FIX: added textColor + textStyle -->
+            <com.atvantiq.wfms.widgets.GradientButton
+                android:id="@+id/btn_done"
+                style="@style/CustomButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_weight="1"
+                android:text="@string/start_work"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </layout>

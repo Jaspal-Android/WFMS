@@ -95,7 +95,7 @@
                         android:layout_height="12dp"
                         android:contentDescription="Date"
                         android:src="@drawable/ic_calendar_today"
-                        app:tint="@color/colorPrimaryDark" />
+                        app:tint="?attr/colorPrimaryDark" />
 
                     <TextView
                         android:id="@+id/tvDate"
@@ -105,7 +105,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_small"
                         android:text="Oct 31, 2025"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorPrimaryDark"
                         android:textStyle="bold"
                         tools:ignore="HardcodedText" />
 

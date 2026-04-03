@@ -49,9 +49,9 @@ class AllClaimsAdapter(
             holder.binding.claimItem = claim
 
             if (claim?.expenseCategory.equals(ReimbursementData.CLAIM_TYPE_LOCAL,ignoreCase = true)){
-                holder.binding.ivCategoryIcon.text = "📍"
+                holder.binding.chipExpenseType.text = holder.binding.root.context.getString(R.string.local)
             }else{
-                holder.binding.ivCategoryIcon.text = "✈️"
+                holder.binding.chipExpenseType.text = holder.binding.root.context.getString(R.string.outstation)
             }
 
             if (claim?.type.equals(ReimbursementData.CLAIM_SINGLE_SITE,ignoreCase = true)) {

@@ -6,7 +6,7 @@
     <item>
         <shape android:shape="rectangle">
             <corners android:radius="4dp" />
-            <solid android:color="@color/cardLightBlueBackground" />
+            <solid android:color="?attr/cardBackgroundColor" />
         </shape>
     </item>
 
@@ -14,7 +14,7 @@
     <item android:gravity="start">
         <shape android:shape="rectangle">
             <size android:width="2dp" />
-            <solid android:color="@color/colorPrimary" />
+            <solid android:color="?attr/colorPrimary" />
         </shape>
     </item>
 

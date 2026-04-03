@@ -12,10 +12,12 @@
             type="com.atvantiq.wfms.ui.screens.login.LoginVM" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="?attr/wfmsColorBackground"
         tools:context=".ui.features.login.LoginActivity">
 
         <androidx.core.widget.NestedScrollView
@@ -28,191 +30,242 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:padding="@dimen/padding"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/animationView"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintHeight_percent=".30"
-                    android:layout_gravity="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:backgroundTint="@android:color/transparent"
-                    app:lottie_rawRes="@raw/login"
-                    app:lottie_loop="false"
-                    app:lottie_renderMode="automatic"
-                    app:lottie_autoPlay="true" />
-
-
-                <!-- Logo at the top -->
-                <ImageView
-                    android:id="@+id/logo"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
-                    android:src="@drawable/ic_logo"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.5"
+                <com.atvantiq.wfms.widgets.GradientLogoView
+                    android:id="@+id/logoView"
+                    android:layout_width="@dimen/item_category_small"
+                    android:layout_height="@dimen/item_category_small"
                     android:layout_marginTop="@dimen/margin_huge"
-                    app:layout_constraintVertical_chainStyle="packed" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Welcome back text -->
+                <!-- App name -->
                 <TextView
-                    android:id="@+id/welcome_text"
-                    style="@style/CustomLargeDarkTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Welcome Back"
-                    android:textStyle="bold"
-                    android:layout_marginTop="@dimen/margin_large"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/logo"
-                    app:layout_constraintVertical_chainStyle="packed" />
-
-                <!-- Login to continue text -->
-                <TextView
-                    android:id="@+id/login_instructions"
-                    style="@style/CustomMediumDarkTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Login to continue"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/welcome_text" />
-
-                <!-- Enter Phone/Email -->
-                <EditText
-                    android:id="@+id/phone_email_input"
-                    style="@style/CustomEditRegularStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_x_large"
-                    android:hint="@string/enter_username"
-                    android:imeOptions="actionDone"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:text="@={vm.userName}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/login_instructions" />
-
-                <!-- Enter Password -->
-
-                <LinearLayout
-                    android:id="@+id/passwordView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin"
-                    android:background="@drawable/et_bg"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/phone_email_input">
-
-                    <EditText
-                        android:id="@+id/passwordEt"
-                        style="@style/EditRegularNoBgStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:hint="@string/enter_password"
-                        android:imeOptions="actionDone"
-                        android:inputType="textPassword"
-                        android:maxLines="1"
-                        android:text="@={vm.password}" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/password_toggle_bt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin"
-                        android:layout_marginEnd="@dimen/margin"
-                        android:onClick="@{()->vm.onPasswordToggleClick()}"
-                        android:src="@{isToggle ? @drawable/baseline_visibility_off_24 : @drawable/baseline_visibility_24}" />
-
-                </LinearLayout>
-
-                <!-- Forget your password text -->
-                <TextView
-                    android:id="@+id/forgot_password"
+                    android:id="@+id/appNameText"
+                    style="@style/CustomLargeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:onClick="@{()->vm.onForgetPasswordClick()}"
-                    android:text="@string/forgotYourPassword"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:text="@string/app_name"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/passwordView" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/logoView" />
 
-                <!-- Login Button -->
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/ButtonStateSelector"
-                    android:id="@+id/login_button"
+                <!-- App subtitle -->
+                <TextView
+                    android:id="@+id/appSubtitleText"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="@string/wfms_dtails"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/appNameText" />
+
+
+
+                <!-- ══════════════════════════════════════
+                     WHITE FORM CARD
+                ══════════════════════════════════════ -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/formCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/margin"
                     android:layout_marginTop="@dimen/margin_big"
-                    android:onClick="@{()->vm.onSubmitLoginClick()}"
-                    android:text="@string/login"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardElevation="@dimen/elevation_small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/forgot_password" />
+                    app:layout_constraintTop_toBottomOf="@id/appSubtitleText">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:textStyle="bold"
-                    style="@style/CustomPrimaryWireButton"
-                    android:id="@+id/login_otp_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin"
-                    android:onClick="@{()->vm.onLoginWithOtpClick()}"
-                    android:text="@string/login_with_otp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/login_button" />
 
-                <LinearLayout
-                    android:onClick="@{()-> vm.onFetchCurrentLatitudeLongitudeClicks()}"
-                    android:paddingVertical="@dimen/padding_x_small"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/login_otp_button"
-                    android:id="@+id/locationMarkerView"
-                    android:gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/icLocationPic"
-                        android:padding="2dp"
-                        android:src="@drawable/rounded_location_on_24"
-                        app:layout_constraintTop_toBottomOf="@+id/tvEmpName"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:background="@drawable/ic_circular_bg"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        app:layout_constraintBottom_toBottomOf="@+id/tvEmpName"
-                        app:layout_constraintStart_toEndOf="@+id/icLocationPic"
-                        android:text="@string/get_current_latitude_longitude" />
-                </LinearLayout>
+                        android:padding="@dimen/padding">
 
+                        <!-- ── Welcome heading ── -->
+                        <TextView
+                            android:id="@+id/welcome_text"
+                            style="@style/CustomLargeTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_large"
+                            android:text="@string/welcome_back"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- ── Subtitle ── -->
+                        <TextView
+                            android:id="@+id/login_instructions"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/login_to_continue"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/welcome_text" />
+
+
+                        <!-- Username field -->
+                        <EditText
+                            android:id="@+id/phone_email_input"
+                            style="@style/CustomEditRegularStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/enter_username"
+                            android:imeOptions="actionNext"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1"
+                            android:text="@={vm.userName}"
+                            android:layout_marginTop="@dimen/margin_x_large"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/login_instructions" />
+
+                        <!-- Password row -->
+                        <LinearLayout
+                            android:id="@+id/passwordView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin"
+                            android:background="@drawable/et_bg"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/phone_email_input">
+
+                            <EditText
+                                android:id="@+id/passwordEt"
+                                style="@style/EditRegularNoBgStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="@string/enter_password"
+                                android:imeOptions="actionDone"
+                                android:inputType="textPassword"
+                                android:maxLines="1"
+                                android:text="@={vm.password}" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/password_toggle_bt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin"
+                                android:layout_marginEnd="@dimen/margin"
+                                android:onClick="@{()->vm.onPasswordToggleClick()}"
+                                app:tint="?attr/wfmsColorOnSurfaceVariant"
+                                android:src="@{isToggle ? @drawable/baseline_visibility_off_24 : @drawable/baseline_visibility_24}" />
+
+                        </LinearLayout>
+
+                        <!-- Forgot password -->
+                        <TextView
+                            android:id="@+id/forgot_password"
+                            style="@style/CustomSmallTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:onClick="@{()->vm.onForgetPasswordClick()}"
+                            android:text="@string/forgotYourPassword"
+                            android:textColor="?attr/wfmsColorPrimaryDark"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/passwordView" />
+
+                        <!-- Login gradient button -->
+                        <com.atvantiq.wfms.widgets.GradientButton
+                            android:id="@+id/login_button"
+                            style="@style/CustomButtonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_big"
+                            android:onClick="@{()->vm.onSubmitLoginClick()}"
+                            android:text="@string/login"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/forgot_password" />
+
+                        <!-- Login with OTP outline button -->
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/login_otp_button"
+                            style="@style/CustomPrimaryWireButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin"
+                            android:onClick="@{()->vm.onLoginWithOtpClick()}"
+                            android:text="@string/login_with_otp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/login_button" />
+
+                        <!-- Divider -->
+                        <View
+                            android:id="@+id/divider"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/border_width_1dp"
+                            android:layout_marginTop="@dimen/margin"
+                            android:alpha="0.3"
+                            android:background="?attr/wfmsColorOutline"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/login_otp_button" />
+
+                        <!-- Location row -->
+                        <LinearLayout
+                            android:id="@+id/locationMarkerView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small"
+                            android:gravity="center_vertical"
+                            android:onClick="@{()-> vm.onFetchCurrentLatitudeLongitudeClicks()}"
+                            android:orientation="horizontal"
+                            android:paddingTop="@dimen/padding_x_small"
+                            android:paddingBottom="@dimen/padding_x_small"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/divider">
+
+                            <ImageView
+                                android:id="@+id/icLocationPic"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/ic_circular_bg"
+                                android:padding="@dimen/padding_x_small"
+                                android:src="@drawable/rounded_location_on_24"
+                                app:tint="@color/white" />
+
+                            <TextView
+                                style="@style/CustomMediumTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small"
+                                android:text="@string/get_current_latitude_longitude"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 </layout>

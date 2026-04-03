@@ -6,7 +6,7 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailLis
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
-import com.ssas.jibli.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

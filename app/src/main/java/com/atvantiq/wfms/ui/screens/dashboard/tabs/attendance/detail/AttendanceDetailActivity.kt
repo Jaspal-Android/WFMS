@@ -26,7 +26,9 @@ import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceStatusVM
 import com.atvantiq.wfms.utils.DateUtils
+import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 

@@ -1,4 +1,4 @@
-package  com.ssas.jibli.data.prefs
+package com.atvantiq.wfms.data.prefs
 
 object PrefKeys {
 	const val WFMS_SECURE_PREF= "wfms_secure_prefs"
@@ -6,4 +6,6 @@ object PrefKeys {
 	const val LOGIN_TOKEN ="LOGIN_TOKEN"
 	const val USER_DATA = "USER_DATA"
 	const val EMP_DATA = "EMP_DATA"
+    const val KEY_THEME="selected_theme"
+    const val KEY_DARK="dark_mode"
 }

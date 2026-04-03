@@ -11,7 +11,7 @@ import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.ssas.jibli.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject

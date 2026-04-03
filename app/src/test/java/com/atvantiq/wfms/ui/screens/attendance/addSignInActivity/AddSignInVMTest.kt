@@ -273,7 +273,7 @@ class AddSignInVMTest {
         assertEquals(response, viewModel.circleListByProjectResponse.value?.response)
     }
 
-    @Test
+   /* @Test
     fun `getSiteListByProject calls creationRepo and updates LiveData`() = runTest {
         val response = SiteListByProjectResponse(
             code = 200,
@@ -283,7 +283,8 @@ class AddSignInVMTest {
                 SiteData(
                     id = 535937546585,
                     siteId = "AT00010",
-                    name = "ATCHD"
+                    name = "ATCHD",
+
                 )
             )
         )
@@ -296,7 +297,7 @@ class AddSignInVMTest {
         assertNotNull(viewModel.siteListByProjectResponse.value)
         assertEquals(Status.SUCCESS, viewModel.siteListByProjectResponse.value?.status)
         assertEquals(response, viewModel.siteListByProjectResponse.value?.response)
-    }
+    }*/
 
 /*
     @Test

@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:orientation="vertical">
 
     <TextView
-        style="@style/CustomMediumDarkTextView"
-        android:padding="@dimen/padding"
         android:id="@+id/text1"
+        style="@style/CustomMediumTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        />
+        android:padding="@dimen/padding"
+        android:textColor="?attr/wfmsColorOnSurface"
+        tools:text="Item 1" />
 
 </LinearLayout>

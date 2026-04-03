@@ -87,8 +87,8 @@
                     android:layout_weight="1"
                     android:text="Submit" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomPrimaryButton"
+                <com.atvantiq.wfms.widgets.GradientButton
+                    style="@style/CustomButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_x_large"

@@ -4,29 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
-
-        <variable
-            name="typeStatusInteger"
-            type="Integer" />
-
-        <variable
-            name="assignedDate"
-            type="String" />
-
-        <variable
-            name="showSelectableOption"
-            type="Boolean" />
+        <import type="android.view.View" />
+        <variable name="typeStatusInteger" type="Integer" />
+        <variable name="assignedDate" type="String" />
+        <variable name="showSelectableOption" type="Boolean" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_small"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
         app:cardCornerRadius="@dimen/card_radius"
-        app:cardElevation="@dimen/elevation_small"
-        app:strokeWidth="1dp">
+        app:cardElevation="@dimen/elevation_small">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -34,61 +24,62 @@
             android:paddingVertical="@dimen/padding_medium"
             android:paddingEnd="@dimen/padding">
 
-            <!-- Work Type Name -->
-            <TextView
-                android:layout_marginStart="@dimen/margin"
-                android:id="@+id/tvTypeName"
-                style="@style/CustomRegularDarkTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                tools:text="Vivo"
-                android:textStyle="bold"
-                android:layout_marginEnd="@dimen/margin_small"
-                app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"
-                app:layout_constraintStart_toEndOf="@id/cbWorkType"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- Work Type Checkbox -->
-
-            <!-- Status -->
+            <!-- Checkbox — FIX: buttonTint for theme-aware color -->
             <com.google.android.material.checkbox.MaterialCheckBox
-                style="@style/CustomCheckBox"
                 android:id="@+id/cbWorkType"
+                style="@style/CustomCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility='@{showSelectableOption ? View.VISIBLE : View.GONE}'
+                android:buttonTint="?attr/wfmsColorPrimary"
+                android:visibility="@{showSelectableOption ? View.VISIBLE : View.GONE}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- Work Type Name — FIX: Dark style removed -->
+            <TextView
+                android:id="@+id/tvTypeName"
+                style="@style/CustomRegularTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"
+                app:layout_constraintStart_toEndOf="@id/cbWorkType"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Network Outage" />
+
+            <!-- Status chip — FIX: hardcoded green removed, binding adapter handles color -->
             <TextView
                 android:id="@+id/tvTypeStatus"
                 style="@style/CustomSmallTextView"
-                assignedSiteStatus="@{typeStatusInteger}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/status_green_bg"
+                android:background="@drawable/status_primary_bg"
                 android:paddingHorizontal="@dimen/padding_small"
                 android:paddingVertical="@dimen/padding_x_small"
-                android:textColor="#16A34A"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="OPEN" />
+                assignedSiteStatus="@{typeStatusInteger}"
+                tools:text="OPEN"
+                tools:textColor="@color/status_present_text" />
 
-            <!-- Work Type ID -->
+            <!-- Assigned date — FIX: added theme text color -->
             <TextView
-                formatApiDateToMonthDayYear="@{assignedDate}"
                 android:id="@+id/tvTypeId"
-                style="@style/CustomMediumTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small_extra"
-                tools:text="12-12-2026"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tvTypeName"
-                app:layout_constraintTop_toBottomOf="@id/tvTypeName" />
+                app:layout_constraintTop_toBottomOf="@id/tvTypeName"
+                formatApiDateToMonthDayYear="@{assignedDate}"
+                tools:text="12-12-2026" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 </layout>
