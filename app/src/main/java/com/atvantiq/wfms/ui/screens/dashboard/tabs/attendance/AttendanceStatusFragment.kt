@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,7 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail.AttendanceD
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.CalendarView
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Calendar
@@ -46,6 +48,9 @@ class AttendanceStatusFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.customCalender.background = ColorDrawable(
+            MaterialColors.getColor(requireView(), R.attr.wfmsColorSurface)
+        )
         communicationViewModel.refreshCalendar.observe(viewLifecycleOwner) {
             refreshCalendar()
         }
@@ -186,7 +191,7 @@ class AttendanceStatusFragment :
     private fun resetAttendanceSummary() = with(binding) {
         binding.presentText.text = "0"
         binding.absentText.text = "0"
-        binding.absentNaText.text = "0"
+        binding.absentSystemText.text = "0"
         binding.incompleteText.text = "0"
         binding.leaveText.text = "0"
         binding.idleText.text = "0"
@@ -199,7 +204,7 @@ class AttendanceStatusFragment :
     private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) = with(binding) {
         binding.presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
         binding.absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
-        binding.absentNaText.text = statusCounts[AttendanceStatus.ABSENT_NA]?.toString() ?: "0"
+        binding.absentSystemText.text = statusCounts[AttendanceStatus.ABSENT_NA]?.toString() ?: "0"
         binding.incompleteText.text = statusCounts[AttendanceStatus.INCOMPLETE]?.toString() ?: "0"
         binding.leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
         binding.idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"

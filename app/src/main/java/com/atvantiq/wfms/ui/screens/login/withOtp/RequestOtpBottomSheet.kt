@@ -8,16 +8,12 @@ import androidx.databinding.DataBindingUtil
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetRequestOtpBinding
 import com.atvantiq.wfms.utils.ValidatorUtils
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class RequestOtpBottomSheet(var onSubmitEmail:(email:String)->Unit) : BottomSheetDialogFragment() {
+class RequestOtpBottomSheet(var onSubmitEmail:(email:String)->Unit) : BaseBottomSheet() {
 
     lateinit var binding: BottomSheetRequestOtpBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

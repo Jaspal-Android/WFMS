@@ -74,8 +74,8 @@ class AddTravelingDetailActivity :
     }
 
     private fun handleToolbar() {
-        binding.addTrevelingToolbar.toolbarTitle.text = getString(R.string.add_travel_entry)
-        binding.addTrevelingToolbar.toolbarBackButton.setOnClickListener {
+        binding.addTravelingToolbar.toolbarTitle.text = getString(R.string.add_travel_entry)
+        binding.addTravelingToolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
     }

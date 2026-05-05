@@ -1,65 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
-        <import type="android.view.View"></import>
-        <variable
-            name="hasAttachments"
-            type="Boolean" />
+        <import type="android.view.View" />
+        <variable name="hasAttachments" type="Boolean" />
     </data>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:background="@drawable/bg_item_selected"
-    android:padding="12dp">
-
-    <TextView
-        android:id="@+id/tvAmountLabel"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Amount:"
-        style="@style/CustomMediumTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="@dimen/margin_small"
+        android:background="@drawable/bg_item_selected"
+        android:padding="@dimen/padding_small">
 
-    <TextView
-        android:id="@+id/tvAmount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="₹3500"
-        style="@style/CustomMediumDarkTextView"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/ivAttachment"
-        app:layout_constraintStart_toEndOf="@id/tvAmountLabel"
-        app:layout_constraintTop_toTopOf="parent" />
+        <!-- Remove button — anchored first -->
+        <ImageButton
+            android:id="@+id/btnRemove"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/ic_circular_bg"
+            android:src="@drawable/ic_close_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/wfmsColorPrimaryLight" />
 
-    <ImageView
-        android:paddingEnd="@dimen/padding_x_small"
-        android:paddingStart="@dimen/padding"
-        android:visibility="@{hasAttachments? View.VISIBLE : View.GONE}"
-        android:id="@+id/ivAttachment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:tint="@color/colorPrimaryDark"
-        android:src="@drawable/baseline_attach_file_24"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="@dimen/margin_small"
-        app:layout_constraintStart_toEndOf="@+id/tvAmount"
-        app:layout_constraintEnd_toStartOf="@+id/btnRemove"
-        />
+        <!-- Attachment icon -->
+        <ImageView
+            android:id="@+id/ivAttachment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_small_extra"
+            android:paddingHorizontal="@dimen/padding_x_small"
+            android:src="@drawable/baseline_attach_file_24"
+            android:visibility="@{hasAttachments ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@+id/btnRemove"
+            app:layout_constraintEnd_toStartOf="@+id/btnRemove"
+            app:layout_constraintTop_toTopOf="@+id/btnRemove"
+            app:tint="?attr/wfmsColorPrimary" />
 
-    <ImageButton
-        android:id="@+id/btnRemove"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_close_16"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <!-- Amount label -->
+        <TextView
+            android:id="@+id/tvAmountLabel"
+            style="@style/CustomSmallTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/amount"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            app:layout_constraintBottom_toBottomOf="@+id/btnRemove"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Amount value -->
+        <TextView
+            android:id="@+id/tvAmount"
+            style="@style/CustomSmallTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small_extra"
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvAmountLabel"
+            app:layout_constraintEnd_toStartOf="@+id/ivAttachment"
+            app:layout_constraintStart_toEndOf="@+id/tvAmountLabel"
+            tools:text="₹3500" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

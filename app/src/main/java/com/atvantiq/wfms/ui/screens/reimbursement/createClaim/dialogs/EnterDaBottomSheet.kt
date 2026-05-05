@@ -11,9 +11,10 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetEnterDaBinding
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,path:String)->Unit) : BottomSheetDialogFragment() {
+class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,path:String)->Unit) : BaseBottomSheet() {
 	
 	lateinit var binding: BottomSheetEnterDaBinding
 	private var imagePath: String? = null
@@ -36,11 +37,7 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 		}
 
 	private lateinit var pickMediaHelper: PickMediaHelper
-	
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
-	}
+
 	
 	override fun onCreateView(
 		inflater: LayoutInflater,

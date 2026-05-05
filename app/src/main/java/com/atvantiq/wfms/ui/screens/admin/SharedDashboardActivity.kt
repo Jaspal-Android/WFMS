@@ -32,6 +32,7 @@ import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -269,7 +270,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             binding.slideStartDay.isReversed = true
         } else {
             binding.slideStartDay.text = getString(R.string.start_day)
-            binding.slideStartDay.outerColor = ContextCompat.getColor(this, R.color.colorPrimaryDark)
+            binding.slideStartDay.outerColor = MaterialColors.getColor(binding.slideStartDay, R.attr.wfmsColorPrimary)
             binding.slideStartDay.isReversed = false
         }
     }

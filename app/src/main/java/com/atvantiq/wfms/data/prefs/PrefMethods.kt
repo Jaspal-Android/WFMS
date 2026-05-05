@@ -1,7 +1,6 @@
 package com.ssas.jibli.data.prefs
 
-import androidx.security.crypto.EncryptedSharedPreferences
-import com.atvantiq.wfms.data.prefs.PrefMain
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.loginResponse.User

@@ -3,6 +3,7 @@ package com.atvantiq.wfms.utils
 import android.app.Activity
 import android.content.*
 import android.graphics.*
+import android.graphics.drawable.GradientDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
@@ -19,6 +20,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.atvantiq.wfms.R
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import java.math.RoundingMode
@@ -392,6 +394,32 @@ object Utils {
             }
             .show()
     }
+
+    fun applyGradient(view: View) {
+        val priD = MaterialColors.getColor(view, R.attr.wfmsColorPrimaryDark)
+        val pri  = MaterialColors.getColor(view, R.attr.wfmsColorPrimary)
+        val gE   = MaterialColors.getColor(view, R.attr.wfmsColorGradientEnd)
+
+        val gradient = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(priD, pri, gE)
+        )
+        view.background = gradient
+    }
+    fun applyCircularGradient(view: View) {
+        val priD = MaterialColors.getColor(view, R.attr.wfmsColorPrimaryDark)
+        val pri  = MaterialColors.getColor(view, R.attr.wfmsColorPrimary)
+        val gE   = MaterialColors.getColor(view, R.attr.wfmsColorGradientEnd)
+
+        val gd = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(priD, pri, gE)
+        ).apply {
+            shape = GradientDrawable.OVAL
+        }
+        view.background = gd
+    }
+
 
 }
 

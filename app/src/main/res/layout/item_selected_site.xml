@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_item_selected"
-        android:padding="12dp">
+        android:layout_marginBottom="@dimen/margin_small"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small">
 
-        <TextView
-            android:id="@+id/tvSiteId"
-            style="@style/CustomMediumDarkTextView"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SITE001"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/btnRemove"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:paddingHorizontal="@dimen/padding"
+            android:paddingVertical="@dimen/padding_small">
 
         <LinearLayout
             android:layout_marginTop="@dimen/margin_small_extra"
@@ -54,6 +52,32 @@
             android:src="@drawable/ic_close_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+            <!-- Site ID — FIX: CustomMediumDarkTextView → theme color -->
+            <TextView
+                android:id="@+id/tvSiteId"
+                style="@style/CustomMediumTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btnRemove"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="SITE001" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Remove button — FIX: surfaceVariant bg + onSurfaceVariant tint -->
+            <ImageButton
+                android:id="@+id/btnRemove"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/ic_circular_bg"
+                android:src="@drawable/ic_close_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/wfmsColorPrimaryLight" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </layout>

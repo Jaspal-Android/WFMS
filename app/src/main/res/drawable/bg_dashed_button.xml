@@ -4,7 +4,7 @@
     <solid android:color="@android:color/transparent" />
     <stroke
         android:width="2dp"
-        android:color="@color/colorPrimary"
+        android:tint="?attr/wfmsColorPrimary"
         android:dashWidth="8dp"
         android:dashGap="4dp" />
     <corners android:radius="@dimen/card_radius" />

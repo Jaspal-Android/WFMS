@@ -21,7 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/cardLightBackground"
         tools:context=".ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity">
 
         <include
@@ -46,10 +45,10 @@
                     android:layout_height="16dp"
                     android:contentDescription="Calendar"
                     android:src="@drawable/ic_calendar_today"
-                    app:tint="@color/colorPrimaryDark" />
+                    app:tint="?attr/colorPrimaryDark" />
 
                 <TextView
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="?attr/colorPrimaryDark"
                     android:id="@+id/tvSelectedDate"
                     style="@style/CustomSmallLightTextView"
                     android:layout_width="wrap_content"
@@ -63,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:contentDescription="Expand"
                     android:src="@drawable/ic_arrow_down_24"
-                    app:tint="@color/colorPrimaryDark" />
+                    app:tint="?attr/colorPrimaryDark" />
             </LinearLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

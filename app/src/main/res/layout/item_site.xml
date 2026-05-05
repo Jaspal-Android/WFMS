@@ -4,140 +4,140 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="site"
-            type="com.atvantiq.wfms.models.reimbursement.detail.Site" />
-
-        <variable
-            name="position"
-            type="Integer" />
-
-        <variable
-            name="isExpanded"
-            type="Boolean" />
-
+        <variable name="site" type="com.atvantiq.wfms.models.reimbursement.detail.Site" />
+        <variable name="position" type="Integer" />
+        <variable name="isExpanded" type="Boolean" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_small">
+        android:layout_marginBottom="@dimen/margin_small"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp">
 
-        <androidx.cardview.widget.CardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="@dimen/card_radius"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/cardLightBackground"
-            app:strokeWidth="1dp">
+            android:layout_height="wrap_content">
 
+            <!-- ── Site Header — clickable row ── -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/siteHeader"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="?attr/wfmsColorSurfaceVariant"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingHorizontal="@dimen/padding"
+                android:paddingVertical="@dimen/padding_medium"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <!-- Site Header (Clickable) -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/siteHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/cardLightStroke"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:paddingHorizontal="@dimen/padding"
-                    android:paddingVertical="@dimen/padding_medium"
-                    app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:id="@+id/tvPosition"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/ic_circular_bg"
+                    android:gravity="center"
+                    android:text="@{String.valueOf(position + 1)}"
+                    android:textColor="?attr/wfmsColorPrimaryLight"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="1" />
 
-                    <!-- Position Badge -->
-                    <TextView
-                        android:id="@+id/tvPosition"
-                        style="@style/CustomMediumLightTextView"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_position_badge"
-                        android:gravity="center"
-                        android:text="@{String.valueOf(position + 1)}"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="1" />
-
-                    <!-- Site Name -->
-                    <TextView
-                        android:id="@+id/tvSiteName"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="@dimen/margin"
-                        android:text="@{site.siteName}"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/tvSiteAmount"
-                        app:layout_constraintStart_toEndOf="@id/tvPosition"
-                        app:layout_constraintTop_toTopOf="@id/tvPosition"
-                        tools:text="TestA" />
-
-
-                    <!-- Site Amount -->
-                    <TextView
-                        android:id="@+id/tvSiteAmount"
-                        style="@style/CustomMediumDarkTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin"
-                        android:text="@{@string/rupee_format(site.amountSite)}"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toStartOf="@id/ivExpand"
-                        app:layout_constraintTop_toTopOf="@id/tvSiteName"
-                        tools:text="₹30.00" />
-
-                    <!-- Expense Count -->
-                    <TextView
-                        android:id="@+id/tvExpenseCount"
-                        style="@style/CustomSmallTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_2dp"
-                        android:text="@{@plurals/expense_count(site.expenses.size(), site.expenses.size())}"
-                        app:layout_constraintEnd_toEndOf="@id/tvSiteAmount"
-                        app:layout_constraintTop_toBottomOf="@id/tvSiteAmount"
-                        tools:text="1 expense(s)" />
-
-                    <!-- Expand/Collapse Icon -->
-                    <ImageView
-                        android:id="@+id/ivExpand"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:rotation="@{isExpanded ? 180f : 0f}"
-                        android:src="@drawable/ic_arrow_down_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="@color/mediumGray" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <!-- Expenses RecyclerView (Expandable) -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewExpenses"
+                <!-- Site Name -->
+                <TextView
+                    android:id="@+id/tvSiteName"
+                    style="@style/CustomMediumTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/white"
-                    android:nestedScrollingEnabled="false"
-                    android:paddingVertical="@dimen/padding_small"
-                    android:paddingStart="@dimen/padding"
-                    android:visibility="@{isExpanded ? android.view.View.VISIBLE : android.view.View.GONE}"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/siteHeader"
-                    tools:itemCount="1"
-                    tools:listitem="@layout/item_expense"
-                    tools:visibility="visible" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:text="@{site.siteName}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/tvSiteAmount"
+                    app:layout_constraintStart_toEndOf="@id/tvPosition"
+                    app:layout_constraintTop_toTopOf="@id/tvPosition"
+                    tools:text="TestA" />
 
+                <!-- Expense count below site name -->
+                <TextView
+                    android:id="@+id/tvExpenseCount"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin_2dp"
+                    android:text="@{@plurals/expense_count(site.expenses.size(), site.expenses.size())}"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintEnd_toStartOf="@id/tvSiteAmount"
+                    app:layout_constraintStart_toEndOf="@id/tvPosition"
+                    app:layout_constraintTop_toBottomOf="@id/tvSiteName"
+                    tools:text="2 expense(s)" />
+
+                <!-- Site Amount -->
+                <TextView
+                    android:id="@+id/tvSiteAmount"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:text="@{@string/rupee_format(site.amountSite)}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/ivExpand"
+                    app:layout_constraintTop_toTopOf="@id/tvSiteName"
+                    tools:text="₹30.00" />
+
+                <!-- Expand icon — FIX: @color/mediumGray → wfmsColorOnSurfaceVariant -->
+                <ImageView
+                    android:id="@+id/ivExpand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:rotation="@{isExpanded ? 180f : 0f}"
+                    android:src="@drawable/ic_arrow_down_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Divider between header and expenses -->
+            <View
+                android:id="@+id/dividerExpenses"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:alpha="0.1"
+                android:background="?attr/wfmsColorOnSurface"
+                android:visibility="@{isExpanded ? android.view.View.VISIBLE : android.view.View.GONE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/siteHeader" />
+
+            <!-- Expenses RecyclerView — FIX: @android:color/white → transparent -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewExpenses"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:nestedScrollingEnabled="false"
+                android:paddingVertical="@dimen/padding_small"
+                android:paddingStart="@dimen/padding_small"
+                android:paddingEnd="@dimen/padding_small"
+                android:visibility="@{isExpanded ? android.view.View.VISIBLE : android.view.View.GONE}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dividerExpenses"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_expense"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </layout>
