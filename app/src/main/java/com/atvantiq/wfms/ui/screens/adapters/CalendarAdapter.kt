@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -10,7 +11,6 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.databinding.ItemCalendarDayBinding
 import com.atvantiq.wfms.models.calendar.AttendanceDay
-import com.atvantiq.wfms.network.Status
 
 class CalendarAdapter(
     private val context: Context,
@@ -31,27 +31,30 @@ class CalendarAdapter(
             parent,
             false
         )
+        binding.root.setBackgroundColor(Color.TRANSPARENT)
         return DayViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
         val day = days[position]
         with(holder.binding) {
+
             if (day.date.isEmpty()) {
                 tvDay.text = ""
-                tvDay.setBackgroundColor(context.getColor(R.color.white))
+                tvDay.setBackgroundColor(Color.TRANSPARENT)
+                tvDay.setTextColor(Color.TRANSPARENT)
                 root.setOnClickListener(null)
             } else {
                 tvDay.text = day.date.substringAfterLast("-")
-                val (bgColor, textColor) = getStatusColor(day.status, context)
-                holder.binding.root.setBackgroundColor(ContextCompat.getColor(context, bgColor))
-                holder.binding.tvDay.setTextColor(ContextCompat.getColor(context, textColor))
+                val (bgColor, textColor) = getStatusColor(day.status)
+                tvDay.setBackgroundColor(ContextCompat.getColor(context, bgColor))
+                tvDay.setTextColor(ContextCompat.getColor(context, textColor))
                 root.setOnClickListener { onDateSelected(position, day) }
             }
         }
     }
 
-    fun getStatusColor(status: String, context: Context): Pair<Int, Int> {
+    fun getStatusColor(status: String): Pair<Int, Int> {
         return when (status) {
             AttendanceStatus.PRESENT    -> Pair(R.color.status_present_bg,    R.color.status_present_text)
             AttendanceStatus.ABSENT     -> Pair(R.color.status_absent_bg,     R.color.status_absent_text)
@@ -67,7 +70,6 @@ class CalendarAdapter(
     }
 
     override fun getItemCount(): Int = days.size
-
     inner class DayViewHolder(val binding: ItemCalendarDayBinding) :
         RecyclerView.ViewHolder(binding.root)
 }

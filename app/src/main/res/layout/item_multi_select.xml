@@ -10,7 +10,7 @@
 
         <CheckBox
             android:id="@+id/checkBox"
-            android:drawableTint="?attr/colorPrimaryDark"
+            android:drawableTint="?attr/wfmsColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -8,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_small"
-        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardBackgroundColor="?attr/wfmsColorSurfaceVariant"
         app:cardCornerRadius="@dimen/card_radius"
         app:cardElevation="@dimen/elevation_small">
 
@@ -18,41 +17,32 @@
             android:paddingHorizontal="@dimen/padding"
             android:paddingVertical="@dimen/padding_small">
 
-        <LinearLayout
-            android:layout_marginTop="@dimen/margin_small_extra"
-            app:layout_constraintTop_toBottomOf="@+id/tvSiteId"
-            android:id="@+id/poDetailView"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/poDetailView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/tvSiteId">
 
-            <TextView
-                tools:text="PO:"
-                android:text="@{@string/concatText(@string/selected_po, @string/colon)}"
-                style="@style/CustomMediumTextView"
-                android:id="@+id/poLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:id="@+id/poLabel"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/concatText(@string/selected_po, @string/colon)}"
+                    tools:text="PO:"></TextView>
 
-            <TextView
-                android:layout_marginStart="@dimen/margin_small_extra"
-                android:id="@+id/poNumberTv"
-                tools:text="1244545"
-                android:textStyle="bold"
-                style="@style/CustomMediumDarkTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></TextView>
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/poNumberTv"
+                    style="@style/CustomMediumDarkTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small_extra"
+                    android:textStyle="bold"
+                    tools:text="1244545"></TextView>
+            </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnRemove"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_close_16"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-            <!-- Site ID — FIX: CustomMediumDarkTextView → theme color -->
             <TextView
                 android:id="@+id/tvSiteId"
                 style="@style/CustomMediumTextView"
@@ -66,7 +56,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="SITE001" />
 
-            <!-- Remove button — FIX: surfaceVariant bg + onSurfaceVariant tint -->
             <ImageButton
                 android:id="@+id/btnRemove"
                 android:layout_width="24dp"
