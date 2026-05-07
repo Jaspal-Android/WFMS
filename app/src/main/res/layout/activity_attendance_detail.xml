@@ -161,7 +161,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="@dimen/margin"
-                                android:layout_marginTop="@dimen/margin_small"
                                 android:contentDescription="@string/check_out_time"
                                 android:gravity="end"
                                 android:text="@string/check_out_time"
@@ -221,9 +220,10 @@
                                 android:contentDescription="@string/check_in_address"
                                 android:text="@{checkInAddressString}"
                                 android:textColor="?attr/wfmsColorOnSurface"
-                                app:layout_constraintEnd_toStartOf="@+id/checkOutAddressLabel"
+                                app:layout_constraintEnd_toStartOf="@+id/checkOutAddress"
                                 app:layout_constraintStart_toStartOf="@+id/checkInAddressLabel"
                                 app:layout_constraintTop_toBottomOf="@+id/checkInAddressLabel"
+                                app:layout_constraintBottom_toTopOf="@+id/addressBarrier"
                                 tools:text="123 Main St, Sector 44, Gurugram" />
 
                             <!-- ── Check Out Address label ── -->
@@ -233,7 +233,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="@dimen/margin"
-                                android:layout_marginTop="@dimen/margin_small"
                                 android:contentDescription="@string/check_out_address"
                                 android:gravity="end"
                                 android:text="@string/check_out_address"
@@ -243,6 +242,7 @@
 
                             <!-- ── Check Out Address value ── -->
                             <TextView
+                                android:layout_marginStart="@dimen/margin_small"
                                 android:id="@+id/checkOutAddress"
                                 style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
@@ -253,7 +253,8 @@
                                 android:text="@{checkOutAddressString}"
                                 android:textColor="?attr/wfmsColorOnSurface"
                                 app:layout_constraintEnd_toEndOf="@+id/checkOutAddressLabel"
-                                app:layout_constraintStart_toStartOf="@+id/checkOutAddressLabel"
+                                app:layout_constraintStart_toEndOf="@+id/checkInAddress"
+                                app:layout_constraintBottom_toTopOf="@+id/addressBarrier"
                                 app:layout_constraintTop_toBottomOf="@+id/checkOutAddressLabel"
                                 tools:text="456 Elm St, Sector 62, Noida" />
 
