@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Custom theme attributes for WFMS multi-theme system.
+        Use these in layouts/drawables instead of hardcoded colors
+        so every theme + dark mode works automatically.
+
+        Usage in XML:   android:background="?attr/wfmsColorBackground"
+        Usage in code:  val color = MaterialColors.getColor(view, R.attr.wfmsColorPrimary)
+    -->
+
+    <!-- Core brand colors -->
+    <attr name="wfmsColorPrimary"        format="color" />
+    <attr name="wfmsColorPrimaryDark"    format="color" />
+    <attr name="wfmsColorPrimaryLight"   format="color" />
+    <attr name="wfmsColorCta"            format="color" />   <!-- accent/CTA button color -->
+
+    <!-- Backgrounds & surfaces -->
+    <attr name="wfmsColorBackground"     format="color" />   <!-- screen/page background -->
+    <attr name="wfmsColorSurface"        format="color" />   <!-- card/sheet surface -->
+    <attr name="wfmsColorSurfaceVariant" format="color" />   <!-- subtle surface, table rows -->
+
+    <!-- Content colors -->
+    <attr name="wfmsColorOnSurface"        format="color" /> <!-- primary text -->
+    <attr name="wfmsColorOnSurfaceVariant" format="color" /> <!-- secondary/hint text -->
+    <attr name="wfmsColorOutline"          format="color" /> <!-- borders, dividers -->
+
+    <!-- Status colors -->
+    <attr name="wfmsColorSuccess"       format="color" />
+    <attr name="wfmsColorSuccessLight"  format="color" />
+    <attr name="wfmsColorWarning"       format="color" />
+    <attr name="wfmsColorWarningLight"  format="color" />
+    <attr name="wfmsColorError"         format="color" />
+    <attr name="wfmsColorErrorLight"    format="color" />
+
+    <!-- Dashboard card accent colors -->
+    <attr name="wfmsCard1Color"         format="color" />
+    <attr name="wfmsCard2Color"         format="color" />
+    <attr name="wfmsCard3Color"         format="color" />
+    <attr name="wfmsCard4Color"         format="color" />
+
+    <attr name="wfmsColorGradientEnd" format="color" /> <!-- button gradient end color -->
+
+</resources>

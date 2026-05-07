@@ -1,12 +1,47 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- ══════════════════════════════════════════════════════════════
+         BASE APPLICATION THEME
+         Parent: Material3 DayNight (handles system dark mode too)
+    ══════════════════════════════════════════════════════════════ -->
     <style name="Base.Theme.WFMS" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
         <item name="fontFamily">@font/roboto_regular</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">?attr/wfmsColorBackground</item>
+
+        <!-- Provide default values for WFMS custom attributes (Forest palette) -->
+        <item name="wfmsColorPrimary">@color/forest_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorCta">@color/forest_cta</item>
+        <item name="wfmsColorBackground">@color/forest_bg</item>
+        <item name="wfmsColorSurface">@color/forest_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/forest_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/forest_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/forest_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/forest_outline</item>
+        <item name="wfmsColorSuccess">@color/forest_success</item>
+        <item name="wfmsColorSuccessLight">@color/forest_success_light</item>
+        <item name="wfmsColorWarning">@color/forest_warning</item>
+        <item name="wfmsColorWarningLight">@color/forest_warning_light</item>
+        <item name="wfmsColorError">@color/forest_error</item>
+        <item name="wfmsColorErrorLight">@color/forest_error_light</item>
+        <item name="wfmsCard1Color">@color/forest_card1_color</item>
+        <item name="wfmsCard2Color">@color/forest_card2_color</item>
+        <item name="wfmsCard3Color">@color/forest_card3_color</item>
+        <item name="wfmsCard4Color">@color/forest_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/forest_gradient_end</item>
+
+        <!-- Wire Material3 color roles to our custom attributes -->
+        <item name="colorPrimary">?attr/wfmsColorPrimary</item>
+        <item name="colorPrimaryVariant">?attr/wfmsColorPrimaryDark</item>
+        <item name="colorSecondary">?attr/wfmsColorCta</item>
+        <item name="colorSurface">?attr/wfmsColorSurface</item>
+        <item name="colorError">?attr/wfmsColorError</item>
+        <item name="android:colorBackground">?attr/wfmsColorBackground</item>
+        <item name="android:textColorPrimary">?attr/wfmsColorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/wfmsColorOnSurfaceVariant</item>
+        <item name="android:statusBarColor">@color/forest_primary_dark</item>
+
     </style>
 
     <style name="Theme.WFMS" parent="Base.Theme.WFMS" />
@@ -17,8 +52,226 @@
     </style>
 
     <style name="Theme.WFMS.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.WFMS.PopupOverlay"  parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="Theme.WFMS.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- ══════════════════════════════════════════════════════════════
+         THEME OVERLAY — FOREST GREEN (default / fallback)
+         Apply via: setTheme(R.style.ThemeOverlay_WFMS_Forest)
+    ══════════════════════════════════════════════════════════════ -->
+    <style name="ThemeOverlay.WFMS.Forest" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/forest_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorCta">@color/forest_cta</item>
+        <item name="wfmsColorBackground">@color/forest_bg</item>
+        <item name="wfmsColorSurface">@color/forest_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/forest_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/forest_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/forest_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/forest_outline</item>
+        <item name="wfmsColorSuccess">@color/forest_success</item>
+        <item name="wfmsColorSuccessLight">@color/forest_success_light</item>
+        <item name="wfmsColorWarning">@color/forest_warning</item>
+        <item name="wfmsColorWarningLight">@color/forest_warning_light</item>
+        <item name="wfmsColorError">@color/forest_error</item>
+        <item name="wfmsColorErrorLight">@color/forest_error_light</item>
+        <item name="wfmsCard1Color">@color/forest_card1_color</item>
+        <item name="wfmsCard2Color">@color/forest_card2_color</item>
+        <item name="wfmsCard3Color">@color/forest_card3_color</item>
+        <item name="wfmsCard4Color">@color/forest_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/forest_gradient_end</item>
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/forest_primary</item>
+        <item name="colorSecondary">@color/forest_cta</item>
+        <item name="colorSurface">@color/forest_surface</item>
+        <item name="colorError">@color/forest_error</item>
+        <item name="android:colorBackground">@color/forest_bg</item>
+        <item name="android:windowBackground">@color/forest_bg</item>
+        <item name="android:statusBarColor">@color/forest_primary_dark</item>
+
+    </style>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         THEME OVERLAY — OCEAN BLUE
+    ══════════════════════════════════════════════════════════════ -->
+    <style name="ThemeOverlay.WFMS.Ocean" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/ocean_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/ocean_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/ocean_primary_light</item>
+        <item name="wfmsColorCta">@color/ocean_cta</item>
+        <item name="wfmsColorBackground">@color/ocean_bg</item>
+        <item name="wfmsColorSurface">@color/ocean_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/ocean_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/ocean_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/ocean_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/ocean_outline</item>
+        <item name="wfmsColorSuccess">@color/ocean_success</item>
+        <item name="wfmsColorSuccessLight">@color/ocean_success_light</item>
+        <item name="wfmsColorWarning">@color/ocean_warning</item>
+        <item name="wfmsColorWarningLight">@color/ocean_warning_light</item>
+        <item name="wfmsColorError">@color/ocean_error</item>
+        <item name="wfmsColorErrorLight">@color/ocean_error_light</item>
+        <item name="wfmsCard1Color">@color/ocean_card1_color</item>
+        <item name="wfmsCard2Color">@color/ocean_card2_color</item>
+        <item name="wfmsCard3Color">@color/ocean_card3_color</item>
+        <item name="wfmsCard4Color">@color/ocean_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/ocean_gradient_end</item>
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/ocean_primary</item>
+        <item name="colorSecondary">@color/ocean_cta</item>
+        <item name="colorSurface">@color/ocean_surface</item>
+        <item name="colorError">@color/ocean_error</item>
+        <item name="android:colorBackground">@color/ocean_bg</item>
+        <item name="android:windowBackground">@color/ocean_bg</item>
+    </style>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         THEME OVERLAY — DUSTY ROSE
+    ══════════════════════════════════════════════════════════════ -->
+    <style name="ThemeOverlay.WFMS.Rose" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/rose_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/rose_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/rose_primary_light</item>
+        <item name="wfmsColorCta">@color/rose_cta</item>
+        <item name="wfmsColorBackground">@color/rose_bg</item>
+        <item name="wfmsColorSurface">@color/rose_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/rose_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/rose_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/rose_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/rose_outline</item>
+        <item name="wfmsColorSuccess">@color/rose_success</item>
+        <item name="wfmsColorSuccessLight">@color/rose_success_light</item>
+        <item name="wfmsColorWarning">@color/rose_warning</item>
+        <item name="wfmsColorWarningLight">@color/rose_warning_light</item>
+        <item name="wfmsColorError">@color/rose_error</item>
+        <item name="wfmsColorErrorLight">@color/rose_error_light</item>
+        <item name="wfmsCard1Color">@color/rose_card1_color</item>
+        <item name="wfmsCard2Color">@color/rose_card2_color</item>
+        <item name="wfmsCard3Color">@color/rose_card3_color</item>
+        <item name="wfmsCard4Color">@color/rose_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/rose_gradient_end</item>
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/rose_primary</item>
+        <item name="colorSecondary">@color/rose_cta</item>
+        <item name="colorSurface">@color/rose_surface</item>
+        <item name="colorError">@color/rose_error</item>
+        <item name="android:colorBackground">@color/rose_bg</item>
+        <item name="android:windowBackground">@color/rose_bg</item>
+    </style>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         THEME OVERLAY — SLATE INDIGO
+    ══════════════════════════════════════════════════════════════ -->
+    <style name="ThemeOverlay.WFMS.Indigo" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/indigo_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/indigo_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/indigo_primary_light</item>
+        <item name="wfmsColorCta">@color/indigo_cta</item>
+        <item name="wfmsColorBackground">@color/indigo_bg</item>
+        <item name="wfmsColorSurface">@color/indigo_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/indigo_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/indigo_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/indigo_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/indigo_outline</item>
+        <item name="wfmsColorSuccess">@color/indigo_success</item>
+        <item name="wfmsColorSuccessLight">@color/indigo_success_light</item>
+        <item name="wfmsColorWarning">@color/indigo_warning</item>
+        <item name="wfmsColorWarningLight">@color/indigo_warning_light</item>
+        <item name="wfmsColorError">@color/indigo_error</item>
+        <item name="wfmsColorErrorLight">@color/indigo_error_light</item>
+        <item name="wfmsCard1Color">@color/indigo_card1_color</item>
+        <item name="wfmsCard2Color">@color/indigo_card2_color</item>
+        <item name="wfmsCard3Color">@color/indigo_card3_color</item>
+        <item name="wfmsCard4Color">@color/indigo_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/indigo_gradient_end</item>
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/indigo_primary</item>
+        <item name="colorSecondary">@color/indigo_cta</item>
+        <item name="colorSurface">@color/indigo_surface</item>
+        <item name="colorError">@color/indigo_error</item>
+        <item name="android:colorBackground">@color/indigo_bg</item>
+        <item name="android:windowBackground">@color/indigo_bg</item>
+    </style>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         THEME OVERLAY — WARM AMBER
+    ══════════════════════════════════════════════════════════════ -->
+    <style name="ThemeOverlay.WFMS.Amber" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/amber_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/amber_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/amber_primary_light</item>
+        <item name="wfmsColorCta">@color/amber_cta</item>
+        <item name="wfmsColorBackground">@color/amber_bg</item>
+        <item name="wfmsColorSurface">@color/amber_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/amber_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/amber_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/amber_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/amber_outline</item>
+        <item name="wfmsColorSuccess">@color/amber_success</item>
+        <item name="wfmsColorSuccessLight">@color/amber_success_light</item>
+        <item name="wfmsColorWarning">@color/amber_warning</item>
+        <item name="wfmsColorWarningLight">@color/amber_warning_light</item>
+        <item name="wfmsColorError">@color/amber_error</item>
+        <item name="wfmsColorErrorLight">@color/amber_error_light</item>
+        <item name="wfmsCard1Color">@color/amber_card1_color</item>
+        <item name="wfmsCard2Color">@color/amber_card2_color</item>
+        <item name="wfmsCard3Color">@color/amber_card3_color</item>
+        <item name="wfmsCard4Color">@color/amber_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/amber_gradient_end</item>
+
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/amber_primary</item>
+        <item name="colorSecondary">@color/amber_cta</item>
+        <item name="colorSurface">@color/amber_surface</item>
+        <item name="colorError">@color/amber_error</item>
+        <item name="android:colorBackground">@color/amber_bg</item>
+        <item name="android:windowBackground">@color/amber_bg</item>
+    </style>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         THEME OVERLAY — COOL SLATE
+    ══════════════════════════════════════════════════════════════ -->
+    <style name="ThemeOverlay.WFMS.Slate" parent="Theme.WFMS">
+        <item name="wfmsColorPrimary">@color/slate_primary</item>
+        <item name="wfmsColorPrimaryDark">@color/slate_primary_dark</item>
+        <item name="wfmsColorPrimaryLight">@color/slate_primary_light</item>
+        <item name="wfmsColorCta">@color/slate_cta</item>
+        <item name="wfmsColorBackground">@color/slate_bg</item>
+        <item name="wfmsColorSurface">@color/slate_surface</item>
+        <item name="wfmsColorSurfaceVariant">@color/slate_surface_variant</item>
+        <item name="wfmsColorOnSurface">@color/slate_on_surface</item>
+        <item name="wfmsColorOnSurfaceVariant">@color/slate_on_surface_variant</item>
+        <item name="wfmsColorOutline">@color/slate_outline</item>
+        <item name="wfmsColorSuccess">@color/slate_success</item>
+        <item name="wfmsColorSuccessLight">@color/slate_success_light</item>
+        <item name="wfmsColorWarning">@color/slate_warning</item>
+        <item name="wfmsColorWarningLight">@color/slate_warning_light</item>
+        <item name="wfmsColorError">@color/slate_error</item>
+        <item name="wfmsColorErrorLight">@color/slate_error_light</item>
+        <item name="wfmsCard1Color">@color/slate_card1_color</item>
+        <item name="wfmsCard2Color">@color/slate_card2_color</item>
+        <item name="wfmsCard3Color">@color/slate_card3_color</item>
+        <item name="wfmsCard4Color">@color/slate_card4_color</item>
+        <item name="wfmsColorGradientEnd">@color/slate_gradient_end</item>
+        <!-- Material3 roles -->
+        <item name="colorPrimary">@color/slate_primary</item>
+        <item name="colorSecondary">@color/slate_cta</item>
+        <item name="colorSurface">@color/slate_surface</item>
+        <item name="colorError">@color/slate_error</item>
+        <item name="android:colorBackground">@color/slate_bg</item>
+        <item name="android:windowBackground">@color/slate_bg</item>
+    </style>
+
+
+    <!-- ══════════════════════════════════════════════════════════════
+         EXISTING STYLES — preserved exactly as-is
+    ══════════════════════════════════════════════════════════════ -->
 
     <!--Bottom sheet/dialog style-->
     <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
@@ -36,54 +289,42 @@
     <style name="CustomRegularTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_text</item>
     </style>
-
     <style name="CustomRegularDarkTextView" parent="CustomRegularTextView">
         <item name="android:textColor">@color/black</item>
     </style>
-
     <style name="CustomRegularLightTextView" parent="CustomRegularTextView">
         <item name="android:textColor">@color/white</item>
     </style>
-
     <style name="CustomRegularPrimaryTextView" parent="CustomRegularTextView">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
     </style>
 
     <style name="CustomSmallTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_small_text</item>
     </style>
-
     <style name="CustomSmallDarkTextView" parent="CustomSmallTextView">
         <item name="android:textColor">@color/black</item>
     </style>
-
     <style name="CustomSmallLightTextView" parent="CustomSmallTextView">
         <item name="android:textColor">@color/white</item>
     </style>
-
     <style name="CustomSmallDarkPrimaryTextView" parent="CustomSmallTextView">
-        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textColor">?attr/wfmsColorPrimaryDark</item>
     </style>
 
     <style name="CustomMediumTextView" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/slateGray</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
         <item name="android:textSize">@dimen/default_medium_small_text</item>
     </style>
-
     <style name="CustomMediumLightTextView" parent="CustomMediumTextView">
         <item name="android:textColor">@color/white</item>
     </style>
-
     <style name="CustomMediumDarkTextView" parent="CustomMediumTextView">
         <item name="android:textColor">@color/black</item>
     </style>
-
     <style name="CustomMediumPrimaryTextView" parent="CustomMediumTextView">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
     </style>
-
-
-
     <style name="CustomMediumBoldTextView" parent="CustomMediumTextView">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/black</item>
@@ -92,15 +333,12 @@
     <style name="CustomLargeTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_large_text</item>
     </style>
-
     <style name="CustomLargeDarkTextView" parent="CustomLargeTextView">
         <item name="android:textColor">@color/black</item>
     </style>
-
     <style name="CustomLargePrimaryTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
     </style>
-
     <style name="CustomLargeLightTextView" parent="CustomLargeTextView">
         <item name="android:textColor">@color/white</item>
     </style>
@@ -112,7 +350,6 @@
     </style>
 
     <!--Edittext view styles-->
-
     <style name="CustomEditRegularStyle" parent="Widget.AppCompat.EditText">
         <item name="android:textSize">14sp</item>
         <item name="android:background">@drawable/et_bg</item>
@@ -122,7 +359,6 @@
         <item name="android:paddingBottom">@dimen/padding_medium</item>
         <item name="android:minHeight">48dp</item>
     </style>
-
     <style name="CustomEditWireStyle" parent="@android:style/Widget.EditText">
         <item name="android:textSize">14sp</item>
         <item name="android:background">@drawable/et_trans_bg</item>
@@ -132,8 +368,6 @@
         <item name="android:paddingBottom">@dimen/padding_medium</item>
         <item name="android:minHeight">48dp</item>
     </style>
-
-
     <style name="EditRegularNoBgStyle" parent="@android:style/Widget.EditText">
         <item name="android:textSize">@dimen/default_medium_small_text</item>
         <item name="android:background">@android:color/transparent</item>
@@ -143,7 +377,6 @@
         <item name="android:paddingBottom">@dimen/padding_medium</item>
         <item name="android:minHeight">48dp</item>
     </style>
-
     <style name="CustomEditInputTextRegularStyle" parent="ThemeOverlay.Material3.TextInputEditText">
         <item name="android:textSize">@dimen/default_text</item>
         <item name="android:paddingStart">@dimen/padding</item>
@@ -152,8 +385,6 @@
         <item name="android:paddingBottom">@dimen/padding_medium</item>
         <item name="android:minHeight">48dp</item>
     </style>
-
-
     <style name="CustomSelectableTextInputEditStyle" parent="ThemeOverlay.Material3.TextInputEditText">
         <item name="android:cursorVisible">false</item>
         <item name="android:inputMethod">@null</item>
@@ -173,8 +404,11 @@
         <item name="android:textSize">@dimen/default_text</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:gravity">center</item>
-    </style>
 
+        <!-- Ensure AppCompat/preview always has a ColorStateList for text and hint. -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
     <style name="CustomSmallButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:paddingStart">@dimen/padding_small</item>
         <item name="android:paddingEnd">@dimen/padding_small</item>
@@ -184,53 +418,42 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:gravity">center</item>
     </style>
-
-
     <style name="CustomPrimaryButton" parent="CustomButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/primary_bt_bg</item>
     </style>
-
     <style name="CustomGreenButton" parent="CustomButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/day_background</item>
     </style>
-
     <style name="CustomSmallPrimaryButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/primary_bt_bg</item>
     </style>
-
     <style name="CustomSmallBlueButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/blue_bt_bg</item>
     </style>
-
     <style name="CustomSmallGreenButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/day_background</item>
     </style>
-
     <style name="CustomRedButton" parent="CustomButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/cancel_bt_bg</item>
     </style>
-
     <style name="CustomSmallRedButton" parent="CustomSmallButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/cancel_bt_bg</item>
     </style>
-
     <style name="CustomPrimaryWireButton" parent="CustomButtonStyle">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
         <item name="android:background">@drawable/primary_wire_bg</item>
     </style>
-
     <style name="ButtonStateSelector" parent="CustomButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/button_state_selector</item>
     </style>
-
     <style name="CustomSelectableEditStyle" parent="CustomEditRegularStyle">
         <item name="android:cursorVisible">false</item>
         <item name="android:inputMethod">@null</item>
@@ -240,7 +463,6 @@
         <item name="android:drawableEnd">@drawable/ic_arrow_down_24</item>
     </style>
 
-
     <!--Dialog Animation-->
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/from_left</item>
@@ -248,26 +470,28 @@
     </style>
 
     <style name="AppTheme.DatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
-        <item name="android:colorAccent">@color/colorPrimary</item>
-        <item name="android:colorControlActivated">@color/colorPrimaryDark</item>
-        <item name="android:buttonBarPositiveButtonStyle">@style/AppTheme.Alert.Button.Positive
-        </item>
-        <item name="android:buttonBarNegativeButtonStyle">@style/AppTheme.Alert.Button.Negative
-        </item>
+        <!-- colorAccent drives selected day circle + OK/Cancel button text -->
+        <item name="colorAccent">?attr/wfmsColorPrimary</item>
+        <item name="android:colorAccent">?attr/wfmsColorPrimary</item>
+        <item name="android:colorControlActivated">?attr/wfmsColorPrimary</item>
+        <!-- Button text -->
+        <item name="android:buttonBarPositiveButtonStyle">@style/AppTheme.Alert.Button.Positive</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/AppTheme.Alert.Button.Negative</item>
         <item name="android:buttonBarNeutralButtonStyle">@style/AppTheme.Alert.Button.Neutral</item>
     </style>
 
     <style name="AppTheme.Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
     </style>
 
     <style name="AppTheme.Alert.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/red</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
 
     <style name="AppTheme.Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/darkGray</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
+
 
     <!--alert dialog-->
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -281,7 +505,7 @@
         <item name="android:padding">@dimen/padding_x_small</item>
         <item name="android:layout_width">@dimen/otp_et_width</item>
         <item name="android:layout_height">@dimen/otp_et_height</item>
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorPrimary</item>
         <item name="android:textSize">@dimen/default_large_text</item>
         <item name="android:background">@drawable/otp_box_background</item>
         <item name="android:textIsSelectable">false</item>
@@ -303,4 +527,5 @@
         <item name="android:button">@null</item>
         <item name="android:gravity">center</item>
     </style>
+
 </resources>

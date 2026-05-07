@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -31,6 +32,7 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashb
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import com.ncorti.slidetoact.SlideToActView
@@ -55,6 +57,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val startColor = MaterialColors.getColor(view, R.attr.wfmsColorPrimaryDark)
+        val endColor   = MaterialColors.getColor(view, R.attr.wfmsColorGradientEnd)
+        binding.appDashHeader.root.background = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT,
+            intArrayOf(startColor, endColor)
+        )
         PrefMethods.getEmpDetailResponse(prefMain)?.let {
             setupUserData(it)
         } ?: viewModel.getEmpDetails()
@@ -279,7 +287,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             slideStartDay.isReversed = true
         } else {
             slideStartDay.text = getString(R.string.start_day)
-            slideStartDay.outerColor = ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
+            slideStartDay.outerColor = MaterialColors.getColor(slideStartDay, R.attr.wfmsColorPrimary)
             slideStartDay.isReversed = false
         }
     }

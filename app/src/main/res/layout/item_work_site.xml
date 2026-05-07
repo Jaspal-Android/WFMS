@@ -51,7 +51,7 @@
                 android:src="@drawable/rounded_location_on_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/colorPrimaryDark" />
+                app:tint="?attr/colorPrimaryDark" />
 
             <TextView
                 android:id="@+id/tvSiteName"

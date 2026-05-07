@@ -58,6 +58,7 @@
     <dimen name="margin_20dp">20dp</dimen>
     <dimen name="margin_huge">42dp</dimen>
     <dimen name="margin_2dp">2dp</dimen>
+    <dimen name="margin_minus">-16</dimen>
 
     <!--flag dialog-->
     <dimen name="flag_icon_width">32dp</dimen>

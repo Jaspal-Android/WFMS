@@ -9,7 +9,7 @@ import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
-import com.ssas.jibli.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

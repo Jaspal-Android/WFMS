@@ -2,140 +2,161 @@
 <layout>
 
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="hideNextBt"
             type="Boolean" />
     </data>
 
-    <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Month and Year Navigation -->
+        <!-- ── Month / Year Navigation ── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/padding"
+            android:paddingEnd="@dimen/padding"
+            android:paddingTop="@dimen/padding_small"
+            android:paddingBottom="@dimen/padding_small">
 
+            <!--
+                FIX: Added ic_circular_bg (primaryLight oval) + tint for arrow
+                     Matches projected design nav button style
+            -->
             <ImageView
-                android:paddingBottom="@dimen/padding_medium"
-                android:paddingTop="@dimen/padding_medium"
-                android:src="@drawable/arrow_back_ios_24"
                 android:id="@+id/btnPreviousMonth"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:background="@drawable/primary_bt_oval_bg"
+                android:padding="@dimen/padding_small"
+                android:src="@drawable/arrow_back_ios_24"
+                app:tint="?attr/wfmsColorPrimaryLight" />
 
+            <!-- FIX: CustomRegularDarkTextView → theme-aware color -->
             <TextView
-                android:textStyle="bold"
                 android:id="@+id/tvMonthYear"
-                style="@style/CustomRegularDarkTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:text="Month, Year" />
-
-            <ImageView
-                android:paddingBottom="@dimen/padding_small"
-                android:paddingTop="@dimen/padding_small"
-                android:src="@drawable/arrow_forward_ios_24"
-                android:id="@+id/btnNextMonth"
+                style="@style/CustomRegularTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:text="Month, Year"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold" />
+
+            <!-- FIX: same as prev button, consistent padding -->
+            <ImageView
+                android:id="@+id/btnNextMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/primary_bt_oval_bg"
+                android:padding="@dimen/padding_small"
+                android:src="@drawable/arrow_forward_ios_24"
+                android:visibility="@{hideNextBt ? View.INVISIBLE : View.VISIBLE}"
+                app:tint="?attr/wfmsColorPrimaryLight" />
+
         </LinearLayout>
 
+        <!-- ── Day headers S M T W T F S ── -->
         <LinearLayout
             android:id="@+id/calendar_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/padding_small"
-            android:paddingBottom="@dimen/padding_small">
+            android:paddingStart="@dimen/margin_small"
+            android:paddingEnd="@dimen/margin_small"
+            android:paddingTop="@dimen/padding_x_small"
+            android:paddingBottom="@dimen/padding_x_small">
 
+            <!-- FIX: CustomMediumPrimaryTextView → explicit wfmsColorPrimary -->
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="S"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="M"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="T"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="W"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="T"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="F"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
             <TextView
-                style="@style/CustomMediumPrimaryTextView"
+                style="@style/CustomSmallTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:text="S"
+                android:textColor="?attr/wfmsColorPrimary"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
-
-        <!-- Calendar Grid -->
+        <!-- ── Calendar Grid ── -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/calendarGrid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
             android:layout_marginStart="@dimen/margin_small"
+            android:layout_marginTop="@dimen/margin_small"
             android:layout_marginEnd="@dimen/margin_small"
             android:layout_marginBottom="@dimen/margin_small"
             android:layout_weight="1"

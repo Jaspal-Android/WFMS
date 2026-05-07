@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.DialogGenericBottomSheetBinding
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Locale
@@ -20,15 +21,11 @@ class GenericBottomSheetDialog<T>(
     private val onItemSelected: (T) -> Unit,
     private val filterCondition: (T, String) -> Boolean,
     private val title: String? = null // Added title parameter
-) : BottomSheetDialogFragment() {
+) : BaseBottomSheet() {
 
     private lateinit var binding: DialogGenericBottomSheetBinding
     private lateinit var adapter: RecyclerViewGenericAdapter<T>
     private var filteredItems: MutableList<T> = items.toMutableList()
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BottomSheetDialog(context, R.style.AppBottomSheetDialogTheme)
-    }
 
     override fun onCreateView(
         inflater: android.view.LayoutInflater,

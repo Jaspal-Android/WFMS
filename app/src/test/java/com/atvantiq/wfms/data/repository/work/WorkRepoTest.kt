@@ -7,7 +7,7 @@ import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
-import com.ssas.jibli.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

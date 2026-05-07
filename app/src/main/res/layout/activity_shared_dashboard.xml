@@ -212,7 +212,7 @@
                                 app:layout_constraintHorizontal_bias="1.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/locationMarkerView"
-                                app:outer_color="@color/colorPrimaryDark"
+                                app:outer_color="?attr/colorPrimaryDark"
                                 app:slider_height="50dp"
                                 app:text="@string/start_day"
                                 app:text_color="@color/white"
@@ -267,10 +267,10 @@
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground"
                         android:onClick="@{()->vm.onSitesClick()}"
-                        app:cardBackgroundColor="@color/cardLightBackground"
+                        android:background="@color/background_light"
+                        app:cardBackgroundColor="@color/cardview_light_background"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="0dp"
-                        app:strokeColor="@color/cardLightStroke"
                         app:strokeWidth="@dimen/border_width_1dp">
 
                         <LinearLayout
@@ -316,10 +316,10 @@
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground"
                         android:onClick="@{()-> vm.onSitesApprovalsClick()}"
-                        app:cardBackgroundColor="@color/cardLightBackground"
+                        android:background="@color/background_light"
+                        app:cardBackgroundColor="@color/cardview_light_background"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="0dp"
-                        app:strokeColor="@color/cardLightStroke"
                         app:strokeWidth="@dimen/border_width_1dp">
 
                         <LinearLayout
@@ -364,10 +364,10 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground"
-                        app:cardBackgroundColor="@color/cardLightBackground"
+                        android:background="@color/background_light"
+                        app:cardBackgroundColor="@color/cardview_light_background"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="0dp"
-                        app:strokeColor="@color/cardLightStroke"
                         app:strokeWidth="@dimen/border_width_1dp">
 
                         <LinearLayout

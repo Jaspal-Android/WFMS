@@ -12,7 +12,7 @@ import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
-import com.ssas.jibli.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import javax.inject.Inject
 import javax.inject.Singleton
 

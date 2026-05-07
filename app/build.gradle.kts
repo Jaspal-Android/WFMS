@@ -24,7 +24,7 @@ android {
         applicationId = "com.atvantiq.wfms"
         minSdk = 24
         targetSdk = 35
-        versionCode = 13
+        versionCode = 14
         versionName = "1.1.4"
 
         manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
@@ -166,6 +166,7 @@ dependencies {
     //Flexbox Layout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
+    implementation("androidx.gridlayout:gridlayout:1.0.0")
 }
 
 kapt {

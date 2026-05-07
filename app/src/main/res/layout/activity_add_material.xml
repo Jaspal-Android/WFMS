@@ -155,8 +155,8 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
 
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomPrimaryButton"
+                <com.atvantiq.wfms.widgets.GradientButton
+                    style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_large"

@@ -95,7 +95,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
                         if (it?.data?.records == null) {
                             handleAllClaimsSuccess(emptyList())
                         }else{
-                            handleAllClaimsSuccess(it.data?.records)
+                            it.data?.records?.let { records -> handleAllClaimsSuccess(records) }
                         }
                     } else {
                         handleErrorResponse(it.code, it.message)

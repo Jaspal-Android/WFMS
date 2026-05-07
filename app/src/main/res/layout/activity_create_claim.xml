@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <import type="android.view.View" />
-
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimVM" />
-
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
         android:orientation="vertical"
         tools:context=".ui.screens.reimbursement.createClaim.CreateClaimActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
+            <!-- Toolbar — gradient applied in code -->
             <include
                 android:id="@+id/createReimbursementToolbar"
-                layout="@layout/custom_toolbar" />
+                layout="@layout/custom_toolbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Scrollable Content -->
+            <!-- ── Scrollable Content ── -->
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/scrollView"
                 android:layout_width="0dp"
@@ -40,34 +44,53 @@
                 app:layout_constraintTop_toBottomOf="@id/createReimbursementToolbar">
 
                 <LinearLayout
-                    android:background="@color/cardLightBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="@dimen/padding">
 
-                    <!-- Date Selection Card -->
+                    <!-- ══════════════════════════════════════
+                         1. DATE CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/dateCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:orientation="vertical"
                             android:padding="@dimen/padding">
 
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:drawableStart="@drawable/ic_calender_small"
+                                android:drawablePadding="@dimen/padding_x_small"
+                                android:drawableTint="?attr/wfmsColorPrimary"
+                                android:text="@string/date"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
                             <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/date"
                                 android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
                                 app:endIconDrawable="@drawable/ic_calendar_today"
                                 app:endIconMode="custom"
-                                app:layout_constraintTop_toTopOf="parent">
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/date_et"
@@ -76,22 +99,25 @@
                                     android:layout_height="wrap_content"
                                     android:completionThreshold="1"
                                     android:ellipsize="start"
-                                    android:padding="@dimen/padding"
-                                    android:text="@={vm.date}"
                                     android:onClick="@{()->vm.onDateClick()}"
+                                    android:padding="@dimen/padding"
                                     android:scrollHorizontally="true"
-                                    tools:text="20-01-2026"
-                                    android:singleLine="true" />
+                                    android:singleLine="true"
+                                    android:text="@={vm.date}"
+                                    tools:text="20-01-2026" />
                             </com.google.android.material.textfield.TextInputLayout>
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Site Selection Card -->
+                    <!-- ══════════════════════════════════════
+                         2. SITE SELECTION CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/siteCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -100,15 +126,21 @@
                             android:layout_height="wrap_content"
                             android:padding="@dimen/padding">
 
+                            <!-- Section label -->
                             <TextView
                                 android:id="@+id/tvSiteLabel"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
                                 android:text="@string/select_site"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
+                            <!-- Single / Multi toggle -->
                             <RadioGroup
                                 android:id="@+id/segmentSiteType"
                                 android:layout_width="match_parent"
@@ -137,61 +169,64 @@
                                     android:layout_weight="1"
                                     android:onClick="@{()->vm.onMultiSiteClick()}"
                                     android:text="@string/multiSite" />
-
                             </RadioGroup>
 
-                            <!-- Single Site Selection -->
+                            <!-- Single Site dropdown -->
                             <com.google.android.material.textfield.TextInputLayout
-                                tools:visibility="gone"
-                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin_small"
                                 android:hint="@string/select_site"
                                 android:minHeight="@dimen/text_input_edit_text_min_height"
+                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
                                 app:endIconDrawable="@drawable/ic_arrow_down_24"
                                 app:endIconMode="custom"
-                                app:layout_constraintTop_toBottomOf="@+id/segmentSiteType">
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                                app:layout_constraintTop_toBottomOf="@+id/segmentSiteType"
+                                tools:visibility="visible">
 
                                 <com.google.android.material.textfield.TextInputEditText
-                                    android:onClick="@{()->vm.onSiteDropdownClick()}"
                                     android:id="@+id/site_et"
                                     style="@style/CustomSelectableTextInputEditStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:completionThreshold="1"
                                     android:ellipsize="start"
+                                    android:onClick="@{()->vm.onSiteDropdownClick()}"
                                     android:padding="@dimen/padding"
                                     android:scrollHorizontally="true"
-                                    android:singleLine="true"
-                                   />
+                                    android:singleLine="true" />
                             </com.google.android.material.textfield.TextInputLayout>
 
-
-                            <!-- Multiple Site Container -->
+                            <!-- Multi-Site container -->
                             <LinearLayout
-                                tools:visibility="visible"
                                 android:id="@+id/multipleSiteContainer"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="@dimen/margin"
                                 android:orientation="vertical"
                                 android:visibility="@{vm.isMultiSite ? View.VISIBLE : View.GONE}"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@id/segmentSiteType">
+                                app:layout_constraintTop_toBottomOf="@id/segmentSiteType"
+                                tools:visibility="gone">
 
-
-
-                                <!-- NEW: Purpose (selectable) -->
+                                <!-- Purpose -->
                                 <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginBottom="@dimen/margin_small"
                                     android:hint="@string/purpose"
                                     android:minHeight="@dimen/text_input_edit_text_min_height"
-                                    android:layout_marginBottom="@dimen/margin"
+                                    app:boxStrokeColor="?attr/wfmsColorOutline"
                                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                                    app:endIconMode="custom">
+                                    app:endIconMode="custom"
+                                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                                     <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/purpose_et"
@@ -199,23 +234,27 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="start"
+                                        android:onClick="@{()->vm.onPurposeClick()}"
                                         android:padding="@dimen/padding"
                                         android:scrollHorizontally="true"
                                         android:singleLine="true"
-                                        android:onClick="@{()->vm.onPurposeClick()}"
                                         android:text="@={vm.purpose}"
                                         tools:text="Select purpose" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
-                                <!-- Project (selectable) -->
+                                <!-- Project -->
                                 <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginBottom="@dimen/margin_small"
                                     android:hint="@string/project"
                                     android:minHeight="@dimen/text_input_edit_text_min_height"
-                                    android:layout_marginBottom="@dimen/margin"
+                                    app:boxStrokeColor="?attr/wfmsColorOutline"
                                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                                    app:endIconMode="custom">
+                                    app:endIconMode="custom"
+                                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                                     <com.google.android.material.textfield.TextInputEditText
                                         android:id="@+id/project_select_et"
@@ -223,23 +262,24 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:ellipsize="start"
+                                        android:onClick="@{()->vm.onProjectDropdownClick()}"
                                         android:padding="@dimen/padding"
                                         android:scrollHorizontally="true"
                                         android:singleLine="true"
-                                        android:onClick="@{()->vm.onProjectDropdownClick()}"
                                         tools:text="Select Project" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
+                                <!-- Add Site dashed button -->
                                 <androidx.appcompat.widget.AppCompatButton
-                                    android:onClick="@{()->vm.onAddMultipleSiteClick()}"
                                     android:id="@+id/btnAddSite"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:background="@drawable/bg_dashed_button"
                                     android:gravity="center"
+                                    android:onClick="@{()->vm.onAddMultipleSiteClick()}"
                                     android:text="@string/add_site"
                                     android:textAllCaps="false"
-                                    android:textColor="@color/colorPrimary"
+                                    android:textColor="?attr/wfmsColorPrimary"
                                     android:textStyle="bold" />
 
                                 <androidx.recyclerview.widget.RecyclerView
@@ -250,35 +290,53 @@
                                     tools:itemCount="2"
                                     tools:listitem="@layout/item_selected_site" />
                             </LinearLayout>
+
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Project Card -->
+                    <!-- ══════════════════════════════════════
+                         3. PROJECT & CIRCLE CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/projectCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
                         <LinearLayout
-                            android:orientation="vertical"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:orientation="vertical"
                             android:padding="@dimen/padding">
 
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:text="@string/project"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <!-- Project (single site only) -->
                             <com.google.android.material.textfield.TextInputLayout
-                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
                                 android:id="@+id/projectInputLayout"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
                                 android:hint="@string/select_project"
                                 android:minHeight="@dimen/text_input_edit_text_min_height"
-                                android:layout_marginBottom="@dimen/margin"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent">
+                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                app:endIconMode="custom"
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/project_et"
@@ -292,24 +350,28 @@
                                     android:singleLine="true" />
                             </com.google.android.material.textfield.TextInputLayout>
 
+                            <!-- Circle -->
                             <com.google.android.material.textfield.TextInputLayout
-                                app:layout_constraintTop_toBottomOf="@+id/projectInputLayout"
                                 android:id="@+id/circleInputLayout"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/circle"
                                 android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
                                 app:endIconDrawable="@drawable/ic_arrow_down_24"
-                                app:endIconMode="custom">
+                                app:endIconMode="custom"
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                                 <com.google.android.material.textfield.TextInputEditText
-                                    android:clickable="@{vm.isMultiSite ? true : false}"
-                                    android:onClick="@{()->vm.onCircleDropdownClick()}"
                                     android:id="@+id/circle_et"
                                     style="@style/CustomSelectableTextInputEditStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:clickable="@{vm.isMultiSite ? true : false}"
                                     android:ellipsize="start"
+                                    android:onClick="@{()->vm.onCircleDropdownClick()}"
                                     android:padding="@dimen/padding"
                                     android:scrollHorizontally="true"
                                     android:singleLine="true"
@@ -319,39 +381,44 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Expense Type Card -->
+                    <!-- ══════════════════════════════════════
+                         4. EXPENSE TYPE CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/expenseTypeCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:orientation="vertical"
                             android:padding="@dimen/padding">
 
+                            <!-- FIX: "expesnse_type" typo corrected -->
                             <TextView
                                 android:id="@+id/tvExpenseTypeLabel"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
                                 android:text="@string/expesnse_type"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
 
                             <RadioGroup
                                 android:id="@+id/segmentExpenseType"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/switch_button_height"
-                                android:layout_marginTop="@dimen/margin_small"
                                 android:background="@drawable/bg_segment_container"
                                 android:checkedButton="@+id/localExpenseBt"
                                 android:orientation="horizontal"
-                                android:padding="@dimen/padding_x_small"
-                                app:layout_constraintTop_toBottomOf="@+id/tvExpenseTypeLabel">
+                                android:padding="@dimen/padding_x_small">
 
                                 <RadioButton
                                     android:id="@+id/localExpenseBt"
@@ -370,17 +437,19 @@
                                     android:layout_weight="1"
                                     android:onClick="@{()->vm.onOutstationClaimClick()}"
                                     android:text="@string/outstation" />
-
                             </RadioGroup>
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Traveling Card -->
+                    <!-- ══════════════════════════════════════
+                         5. TRAVELING CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/travelingCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -391,38 +460,43 @@
 
                             <TextView
                                 android:id="@+id/tvTravelingLabel"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/traveling"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddTravel"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()->vm.onAddTravelingExpenseClick()}"
-                                android:gravity="center_vertical"
-                                android:paddingVertical="@dimen/padding_x_small"
-                                android:paddingHorizontal="@dimen/padding"
+                            <!-- FIX: blue_bt_bg → GradientButton -->
+                            <com.atvantiq.wfms.widgets.GradientButton
                                 android:id="@+id/btnAddTravel"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/blue_bt_bg"
+                                android:onClick="@{()->vm.onAddTravelingExpenseClick()}"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/tvNoTravelEntries"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin"
                                 android:gravity="center"
                                 android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                                 android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -441,12 +515,15 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- DA Card -->
+                    <!-- ══════════════════════════════════════
+                         6. DAILY ALLOWANCE CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/daCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -457,41 +534,42 @@
 
                             <TextView
                                 android:id="@+id/tvDALabel"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/da"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddDA"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()-> vm.onAddDailyAllowanceClick()}"
-                                android:gravity="center_vertical"
-                                android:paddingVertical="@dimen/padding_x_small"
-                                android:paddingHorizontal="@dimen/padding"
+                            <com.atvantiq.wfms.widgets.GradientButton
                                 android:id="@+id/btnAddDA"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/blue_bt_bg"
+                                android:onClick="@{()-> vm.onAddDailyAllowanceClick()}"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
-                                android:textColor="@android:color/white"
-                                app:cornerRadius="@dimen/card_radius_small"
-                                app:icon="@drawable/ic_add_white_24"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/tvNoDAEntries"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin"
                                 android:gravity="center"
                                 android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                                 android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -510,13 +588,16 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Hotel Card (Visible only for Outstation) -->
+                    <!-- ══════════════════════════════════════
+                         7. HOTEL CARD (Outstation only)
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
-                        android:visibility="@{vm.isOutstationExpense ? View.VISIBLE : View.GONE}"
                         android:id="@+id/hotelCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        android:visibility="@{vm.isOutstationExpense ? View.VISIBLE : View.GONE}"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -527,39 +608,42 @@
 
                             <TextView
                                 android:id="@+id/tvHotelLabel"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/hotel"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddHotel"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()-> vm.onAddHotelExpenseClick()}"
-                                android:gravity="center_vertical"
-                                android:paddingHorizontal="@dimen/padding"
-                                android:paddingVertical="@dimen/padding_x_small"
+                            <com.atvantiq.wfms.widgets.GradientButton
                                 android:id="@+id/btnAddHotel"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/blue_bt_bg"
+                                android:onClick="@{()-> vm.onAddHotelExpenseClick()}"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
-                                app:icon="@drawable/ic_add_white_24"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/tvNoHotelEntries"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin"
                                 android:gravity="center"
                                 android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                                 android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -578,12 +662,15 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Others Card -->
+                    <!-- ══════════════════════════════════════
+                         8. OTHERS CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/othersCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
@@ -594,38 +681,42 @@
 
                             <TextView
                                 android:id="@+id/tvOthersLabel"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/others"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddOther"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
-                            <TextView
-                                android:onClick="@{()-> vm.onAddOthersExpenseClick()}"
-                                android:paddingHorizontal="@dimen/padding"
-                                android:paddingVertical="@dimen/padding_x_small"
-                                android:gravity="center_vertical"
+                            <com.atvantiq.wfms.widgets.GradientButton
                                 android:id="@+id/btnAddOther"
-                                style="@style/CustomMediumLightTextView"
+                                style="@style/CustomSmallButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/blue_bt_bg"
+                                android:onClick="@{()-> vm.onAddOthersExpenseClick()}"
                                 android:text="@string/add"
                                 android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <TextView
                                 android:id="@+id/tvNoOtherEntries"
-                                style="@style/CustomMediumDarkTextView"
+                                style="@style/CustomSmallTextView"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin"
                                 android:gravity="center"
                                 android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                                 android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -645,26 +736,42 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Remarks Card -->
+                    <!-- ══════════════════════════════════════
+                         9. REMARKS CARD
+                    ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/remarksCard"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
                         app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:orientation="vertical"
                             android:padding="@dimen/padding">
 
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:text="@string/remarks"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
                             <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/enter_remarks"
                                 android:minHeight="@dimen/text_input_edit_text_min_height"
-                                app:layout_constraintTop_toTopOf="parent">
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/remarks_et"
@@ -680,18 +787,20 @@
                                     android:singleLine="true"
                                     android:text="@={vm.remarks}" />
                             </com.google.android.material.textfield.TextInputLayout>
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
-            <!-- Bottom Buttons -->
+            <!-- ══════════════════════════════════════
+                 BOTTOM ACTION BAR
+            ══════════════════════════════════════ -->
             <LinearLayout
                 android:id="@+id/bottomButtonsLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="?attr/wfmsColorSurface"
                 android:elevation="@dimen/elevation"
                 android:orientation="horizontal"
                 android:padding="@dimen/padding"
@@ -699,31 +808,36 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
+                <!-- FIX: CustomRedButton → outline error style -->
                 <androidx.appcompat.widget.AppCompatButton
-                    android:onClick="@{()->vm.onCancelClick()}"
                     android:id="@+id/btnCancel"
-                    style="@style/CustomRedButton"
+                    style="@style/CustomButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin"
+                    android:layout_marginEnd="@dimen/margin_small"
                     android:layout_weight="1"
+                    android:background="@drawable/error_bg_outline"
+                    android:onClick="@{()->vm.onCancelClick()}"
                     android:text="@string/cancel"
                     android:textAllCaps="false"
+                    android:textColor="?attr/wfmsColorError"
                     android:textStyle="bold" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:onClick="@{()->vm.onSubmitClaim()}"
+                <!-- FIX: added textColor + textStyle -->
+                <com.atvantiq.wfms.widgets.GradientButton
                     android:id="@+id/btnSubmit"
-                    style="@style/CustomPrimaryButton"
+                    style="@style/CustomButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="@{()->vm.onSubmitClaim()}"
                     android:text="@string/submit"
                     android:textAllCaps="false"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
+
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </LinearLayout>
 </layout>
