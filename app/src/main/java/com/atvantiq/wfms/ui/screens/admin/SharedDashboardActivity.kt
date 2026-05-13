@@ -23,6 +23,7 @@ import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.network.Status
+import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
 import com.atvantiq.wfms.ui.screens.admin.ui.site.SitesActivity
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity
 import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
@@ -131,6 +132,10 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(this, ApplyLeaveActivity::class.java)
+                }
+
+                DashboardClickEvents.CHANGE_THEME_CLICK -> {
+                    ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
                 }
             }
         }

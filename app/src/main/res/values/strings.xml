@@ -397,5 +397,15 @@
     <string name="location">Location</string>
     <string name="tap_to_take_photo">Tap to take photo</string>
     <string name="select_month_year">Select Month and Year</string>
-    
+    <string name="theme">Theme</string>
+    <string name="notifications">Notifications</string>
+    <string name="no_site_approvals_found">No site approvals found</string>
+    <string name="select_date">Select date</string>
+    <string name="check_in">Check in</string>
+    <string name="check_out">Check out</string>
+    <string name="view_sites_visited">View sites visited</string>
+    <string name="total_work_hours_format">Total %1$s hrs</string>
+    <string name="no_work_sites_found">No work sites found</string>
+    <string name="view_details">View details</string>
+
 </resources>

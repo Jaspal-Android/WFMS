@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -26,41 +28,52 @@
             type="Boolean" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_small"
-        app:cardBackgroundColor="@color/white"
+        android:layout_marginVertical="@dimen/margin_small_extra"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
         app:cardCornerRadius="@dimen/card_radius"
-        app:cardElevation="@dimen/elevation_small"
-        app:cardUseCompatPadding="true"
-        app:strokeColor="@color/lightGray"
-        app:strokeWidth="1dp">
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/padding">
 
+            <!-- ════════════════════════════════════
+                 HEADER ROW: icon | name + id | status
+            ════════════════════════════════════ -->
             <ImageView
                 android:id="@+id/ivSiteIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/site"
                 android:src="@drawable/rounded_location_on_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/colorPrimaryDark" />
+                app:tint="?attr/wfmsColorPrimary" />
 
             <TextView
                 android:id="@+id/tvSiteName"
-                style="@style/CustomRegularDarkTextView"
+                style="@style/CustomRegularTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@{item.site.name}"
+                android:textColor="?attr/wfmsColorOnSurface"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/tvStatus"
                 app:layout_constraintStart_toEndOf="@id/ivSiteIcon"
                 app:layout_constraintTop_toTopOf="@id/ivSiteIcon"
                 tools:text="Chandigarh site" />
@@ -68,13 +81,13 @@
             <TextView
                 android:id="@+id/tvStatus"
                 style="@style/CustomSmallTextView"
-                assignedSiteStatus="@{item.status.code}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/status_gray_bg"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:textStyle="bold"
+                app:assignedSiteStatus="@{item.status.code}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Approved"
@@ -83,32 +96,44 @@
             <TextView
                 android:id="@+id/tvSiteId"
                 style="@style/CustomMediumTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small_extra"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@{item.site.siteId}"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                app:layout_constraintEnd_toStartOf="@id/tvStatus"
                 app:layout_constraintStart_toStartOf="@id/tvSiteName"
                 app:layout_constraintTop_toBottomOf="@id/tvSiteName"
                 tools:text="CHD-345-POWN-234" />
 
+            <!-- ════════════════════════════════════
+                 DIVIDER
+            ════════════════════════════════════ -->
             <View
                 android:id="@+id/divider1"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
+                android:layout_height="@dimen/border_width_1dp"
                 android:layout_marginTop="@dimen/margin_small"
-                android:background="@color/background_light"
+                android:background="?attr/wfmsColorOutline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvSiteId" />
 
+            <!-- ════════════════════════════════════
+                 META ROWS (project / circle / date+time)
+            ════════════════════════════════════ -->
             <ImageView
                 android:id="@+id/imgForwardArrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/view_details"
                 android:src="@drawable/forward_arrow_right_24"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/barrier"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"
@@ -117,71 +142,84 @@
                 app:barrierDirection="start"
                 app:constraint_referenced_ids="imgForwardArrow" />
 
+            <!-- Project -->
             <ImageView
                 android:id="@+id/ivProjectIcon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="@dimen/margin_small"
+                android:contentDescription="@string/project"
                 android:src="@drawable/ic_briefcase_16"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider1"
-                app:tint="@color/darkGray" />
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/tvProjectName"
-                style="@style/CustomMediumDarkTextView"
+                style="@style/CustomMediumTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
-                android:text="@{item.project.name}"
                 android:layout_marginEnd="@dimen/margin_small"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{item.project.name}"
+                android:textColor="?attr/wfmsColorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@id/ivProjectIcon"
                 app:layout_constraintEnd_toStartOf="@+id/barrier"
                 app:layout_constraintStart_toEndOf="@id/ivProjectIcon"
                 app:layout_constraintTop_toTopOf="@id/ivProjectIcon"
                 tools:text="ERRICSON-TOWER-110" />
 
+            <!-- Circle -->
             <ImageView
                 android:id="@+id/ivCircleIcon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="@dimen/margin_small_extra"
+                android:contentDescription="@string/circle"
                 android:src="@drawable/ic_circle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvProjectName"
-                app:tint="@color/darkGray" />
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/tvCircleName"
-                style="@style/CustomMediumDarkTextView"
+                style="@style/CustomMediumTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
-                android:text="@{item.circle.name}"
                 android:layout_marginEnd="@dimen/margin_small"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{item.circle.name}"
+                android:textColor="?attr/wfmsColorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@id/ivCircleIcon"
+                app:layout_constraintEnd_toStartOf="@+id/barrier"
                 app:layout_constraintStart_toEndOf="@id/ivCircleIcon"
                 app:layout_constraintTop_toTopOf="@id/ivCircleIcon"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                tools:text="Harayana" />
+                tools:text="Haryana" />
 
+            <!-- Date + Time range -->
             <ImageView
                 android:id="@+id/ivClockIcon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="@dimen/margin_small_extra"
+                android:contentDescription="@string/date"
                 android:src="@drawable/ic_clock_16"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvCircleName"
-                app:tint="@color/darkGray" />
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
             <TextView
                 android:id="@+id/tvDate"
                 style="@style/CustomMediumTextView"
-                formatApiDateToMonthDayYear="@{item.startTime}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                app:formatApiDateToMonthDayYear="@{item.startTime}"
                 app:layout_constraintBottom_toBottomOf="@id/ivClockIcon"
                 app:layout_constraintStart_toEndOf="@id/ivClockIcon"
                 app:layout_constraintTop_toTopOf="@id/ivClockIcon"
@@ -189,28 +227,34 @@
 
             <TextView
                 android:id="@+id/tvBullet1"
-                style="@style/CustomMediumDarkTextView"
+                style="@style/CustomMediumTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
                 android:text="•"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                 app:layout_constraintBottom_toBottomOf="@id/tvDate"
                 app:layout_constraintStart_toEndOf="@id/tvDate"
                 app:layout_constraintTop_toTopOf="@id/tvDate" />
 
             <TextView
                 android:id="@+id/tvTimeRange"
-                style="@style/CustomMediumDarkTextView"
-                android:layout_width="wrap_content"
+                style="@style/CustomMediumTextView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@{timeRangeString}"
+                android:textColor="?attr/wfmsColorOnSurface"
                 app:layout_constraintBottom_toBottomOf="@id/tvDate"
+                app:layout_constraintEnd_toStartOf="@+id/barrier"
                 app:layout_constraintStart_toEndOf="@id/tvBullet1"
                 app:layout_constraintTop_toTopOf="@id/tvDate"
                 tools:text="07:05 AM - 07:13 AM" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 </layout>
