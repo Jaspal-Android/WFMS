@@ -3,6 +3,7 @@ package com.atvantiq.wfms.ui.screens.reimbursement
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,21 +13,11 @@ import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.FragmentReimbursementBinding
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.Record
-import com.atvantiq.wfms.models.work.workAssigned.Site
-import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AllClaimsAdapter
-import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
-import com.atvantiq.wfms.ui.screens.adapters.AttendanceOptionsAdapter
-import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
-import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
-import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
-import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
-import com.atvantiq.wfms.ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.claimDetails.ClaimDetailActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivity
-import com.atvantiq.wfms.ui.screens.reimbursement.myClaims.MyClaimsActivity
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.DividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +38,16 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
 
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpAllClaimsList()
+        swipeRefresh()
+        page = 1
+        isLastPage = false
+        adapter?.submitList(emptyList())
+        getAllClaims()
+    }
+
     override fun subscribeToEvents(vm: ReimbursementViewModel) {
         binding.vm = vm
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
@@ -63,12 +64,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        setUpAllClaimsList()
-        swipeRefresh()
-        page = 1
-        isLastPage = false
-        adapter?.submitList(emptyList()) // Clear adapter data
-        getAllClaims() // Fetch data only on first creation
+        // Intentionally empty: avoid attaching adapters / triggering loads during restore.
     }
 
     override fun onDestroyView() {
@@ -92,10 +88,10 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
                 stopRefreshingData()
                 response.response?.let {
                     if (it.code == 200) {
-                        if (it?.data?.records == null) {
+                        if (it.data?.records == null) {
                             handleAllClaimsSuccess(emptyList())
-                        }else{
-                            it.data?.records?.let { records -> handleAllClaimsSuccess(records) }
+                        } else {
+                            handleAllClaimsSuccess(it.data.records)
                         }
                     } else {
                         handleErrorResponse(it.code, it.message)
@@ -182,8 +178,8 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
             }
         })
 
-        adapter = AllClaimsAdapter(onClaimClicked = { claim, position ->
-            Utils.jumpActivityWithData(
+        adapter = AllClaimsAdapter(onClaimClicked = { claim, _ ->
+             Utils.jumpActivityWithData(
                 requireActivity(),
                 ClaimDetailActivity::class.java,
                 Bundle().apply {
@@ -209,7 +205,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     private fun emptyDataLayout() {
         isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
-        if (adapter?.count() ?: 0 <= 0) {
+        if ((adapter?.count() ?: 0) <= 0) {
             binding.isEmptyReimbursements = true
         }
     }

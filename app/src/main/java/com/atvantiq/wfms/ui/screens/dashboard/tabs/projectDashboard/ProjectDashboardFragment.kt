@@ -3,9 +3,7 @@ package com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingFragment
@@ -16,12 +14,9 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
 
 /**
  * A simple [Fragment] subclass.
- * Use the [ProjectDashboardFragment.newInstance] factory method to
- * create an instance of this fragment.
  */
 
 class ProjectDashboardFragment : BaseBindingFragment<FragmentProjectDashboardBinding>() {
@@ -36,8 +31,12 @@ class ProjectDashboardFragment : BaseBindingFragment<FragmentProjectDashboardBin
 
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Clear in case the view is recreated.
+        projectEntries.clear()
+        labels.clear()
 
         // Sample data for projects
         projectEntries.add(BarEntry(0f, 45f)) // Project 1: 80%
@@ -59,7 +58,7 @@ class ProjectDashboardFragment : BaseBindingFragment<FragmentProjectDashboardBin
         val barData = BarData(barDataSet)
 
         // Configure XAxis
-        val xAxis = binding.barChart.xAxis.apply {
+        binding.barChart.xAxis.apply {
             isGranularityEnabled = false
             valueFormatter = IndexAxisValueFormatter(labels)
             position = XAxis.XAxisPosition.BOTTOM
@@ -81,7 +80,11 @@ class ProjectDashboardFragment : BaseBindingFragment<FragmentProjectDashboardBin
             animateY(1000)
             invalidate() // Refresh the chart
         }
+    }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        // Intentionally empty.
     }
 
 }
