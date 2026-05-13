@@ -88,6 +88,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(requireContext(), ApplyLeaveActivity::class.java)
                 }
+                else -> {
+
+                }
             }
         }
 

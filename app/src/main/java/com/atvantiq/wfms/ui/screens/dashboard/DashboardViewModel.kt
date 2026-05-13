@@ -158,4 +158,8 @@ class DashboardViewModel @Inject constructor(
     fun onApplyLeaveClick(){
         clickEvents.value = DashboardClickEvents.APPLY_LEAVE_CLICK
     }
+
+    fun onChangeThemeClick() {
+        clickEvents.value = DashboardClickEvents.CHANGE_THEME_CLICK
+    }
 }
