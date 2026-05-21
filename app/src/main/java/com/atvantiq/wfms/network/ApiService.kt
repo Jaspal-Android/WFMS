@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.network
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
+import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
@@ -8,6 +9,7 @@ import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
+import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
@@ -15,6 +17,9 @@ import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
+import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
 import com.atvantiq.wfms.models.site.create.CreateSiteResponse
@@ -23,6 +28,7 @@ import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
+import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
@@ -158,4 +164,27 @@ interface ApiService {
 
 	@POST(NetworkEndPoints.verifyOTP)
 	suspend fun verifyOTP(@Body params: JsonObject): LoginResponse
+
+	@GET(NetworkEndPoints.workSiteByDate)
+	suspend fun workSiteByDate(@Header("Authorization") token: String, @Query("date") date: String): WorkSiteByDateResponse
+
+	@GET(NetworkEndPoints.allProjects)
+	suspend fun allProjects(@Header("Authorization") token: String): AllProjectsResponse
+
+	@GET(NetworkEndPoints.circleEmployees)
+	suspend fun employeeByCircle(@Header("Authorization") token: String, @Query("code") circleId: String): EmployeeByCircleResponse
+
+	@Multipart
+	@POST(NetworkEndPoints.createClaim)
+	suspend fun createClaim(
+		@Header("Authorization") token: String,
+		@Part("data") data: RequestBody,
+		@Part files: List<MultipartBody.Part>
+	): CreateClaimResponse
+
+	@GET(NetworkEndPoints.allClaims)
+	suspend fun allClaims(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") pageSize:Int ): AllClaimsResponse
+
+	@GET(NetworkEndPoints.claimById)
+	suspend fun claimById(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): ClaimDetailResponse
 }

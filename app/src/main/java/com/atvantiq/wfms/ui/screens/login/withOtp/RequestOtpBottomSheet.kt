@@ -1,34 +1,19 @@
 package com.atvantiq.wfms.ui.screens.login.withOtp
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
-import com.atvantiq.wfms.databinding.BottomSheetEndWorkBinding
 import com.atvantiq.wfms.databinding.BottomSheetRequestOtpBinding
-import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
-import com.atvantiq.wfms.models.StatusOption
-import com.atvantiq.wfms.ui.screens.adapters.StatusAdapter
-import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.utils.ValidatorUtils
-import com.atvantiq.wfms.utils.files.PickMediaHelper
-import com.atvantiq.wfms.widgets.DividerItemDecoration
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class RequestOtpBottomSheet(var onSubmitEmail:(email:String)->Unit) : BottomSheetDialogFragment() {
+class RequestOtpBottomSheet(var onSubmitEmail:(email:String)->Unit) : BaseBottomSheet() {
 
     lateinit var binding: BottomSheetRequestOtpBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

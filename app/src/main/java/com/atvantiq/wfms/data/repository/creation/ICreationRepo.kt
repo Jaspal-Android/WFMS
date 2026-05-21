@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.data.repository.creation
 
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
+import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
@@ -24,5 +25,5 @@ interface ICreationRepo {
     suspend fun activityListByPoType(poId: Long, typeId: Long): ActivityListByProjectTypeResponse
     suspend fun siteListAll(page:Int,limit:Int,is_active:Int): SitesListAllResponse
     suspend fun createSite(params: JsonObject): CreateSiteResponse
-
+    suspend fun allProjects(): AllProjectsResponse
 }

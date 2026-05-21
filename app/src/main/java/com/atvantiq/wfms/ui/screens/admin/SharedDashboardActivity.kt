@@ -23,6 +23,7 @@ import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.network.Status
+import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
 import com.atvantiq.wfms.ui.screens.admin.ui.site.SitesActivity
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity
 import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
@@ -32,6 +33,7 @@ import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -51,8 +53,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     private var isDayStarted = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    var lat: Double = 0.0
-    var long: Double = 0.0
     private lateinit var appUpdateManager: AppUpdateManager
 
     override val bindingActivity: ActivityBinding
@@ -75,12 +75,11 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     }
 
     private fun setupHeaderData(userData: User?) {
-        if (userData == null)
-            return
+        if (userData == null) return
         setGeofenceLocation(userData.officialLocation?.latitude ?: 0.0, userData.officialLocation?.longitude ?: 0.0)
         binding.userNameString = (userData.firstName ?: "") + " " + (userData.lastName ?: "")
-        binding.tvUserEmail.text = getString(R.string.email)+": "+userData?.email ?: ""
-        binding.tvUserRole.text = getString(R.string.role)+": "+userData?.role ?: ""
+        binding.tvUserEmail.text = "${getString(R.string.email)}: ${userData.email}"
+        binding.tvUserRole.text = "${getString(R.string.role)}: ${userData.role}"
     }
 
     private fun logoutUser(){
@@ -133,6 +132,10 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(this, ApplyLeaveActivity::class.java)
+                }
+
+                DashboardClickEvents.CHANGE_THEME_CLICK -> {
+                    ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
                 }
             }
         }
@@ -272,36 +275,13 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             binding.slideStartDay.isReversed = true
         } else {
             binding.slideStartDay.text = getString(R.string.start_day)
-            binding.slideStartDay.outerColor = ContextCompat.getColor(this, R.color.colorPrimaryDark)
+            binding.slideStartDay.outerColor = MaterialColors.getColor(binding.slideStartDay, R.attr.wfmsColorPrimary)
             binding.slideStartDay.isReversed = false
         }
     }
 
     private fun checkInAttendanceStatus() {
         viewModel.checkInStatusAttendance()
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun isWithinGeofence(onResult: (Boolean) -> Unit) {
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            lat = location?.latitude ?: 0.0
-            long = location?.longitude ?: 0.0
-            val distance = FloatArray(1)
-            viewModel.GEOFENCE_LAT.get()?.let {
-                viewModel.GEOFENCE_LON.get()?.let { it1 ->
-                    Location.distanceBetween(
-                        lat, long,
-                        it, it1,
-                        distance
-                    )
-                }
-            }
-            onResult(distance[0] <= ValConstants.GEOFENCE_RADIUS_METERS)
-        }.addOnFailureListener {
-            lat = 0.0
-            long = 0.0
-            onResult(false)
-        }
     }
 
     private fun setGeofenceLocation(lat: Double, lon: Double) {
@@ -331,25 +311,35 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     @SuppressLint("MissingPermission")
     private fun manageDayStartEnd() {
-        if (isDayStarted) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                lat = location?.latitude ?: 0.0
-                long = location?.longitude ?: 0.0
-                viewModel.checkOutAttendance(lat, long,false)
-            }.addOnFailureListener {
-                lat = 0.0
-                long = 0.0
-            }
-        } else {
-            isWithinGeofence { isWithin ->
-                if (isWithin) {
-                    checkPermissionsAndUpdateGeofence()
-                } else {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location == null) {
                     binding.slideStartDay.setCompleted(false, true)
-                    alertDialogShow(this, getString(R.string.home_location_check))
+                    alertDialogShow(
+                        this,
+                        getString(R.string.alert),
+                        getString(R.string.unable_to_fetch_location)
+                    )
+                    return@addOnSuccessListener
+                }
+
+                val lat = location.latitude
+                val lon = location.longitude
+
+                if (isDayStarted) {
+                    viewModel.checkOutAttendance(lat, lon, false)
+                } else {
+                    viewModel.checkInAttendance(lat, lon)
                 }
             }
-        }
+            .addOnFailureListener {
+                binding.slideStartDay.setCompleted(false, true)
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    getString(R.string.unable_to_fetch_location)
+                )
+            }
     }
 
     private val permissionLauncherCurrentLatLon = registerForActivityResult(
@@ -374,16 +364,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
         }
     }
 
-    private val permissionLauncherGeofencing = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> viewModel.checkInAttendance(lat, long)
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
-            else -> showPermissionRationale()
-        }
-    }
-
     private fun openApplicationSettings() {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = android.net.Uri.fromParts("package", this.packageName, null)
@@ -396,15 +376,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             hasAllPermissions(permissions) -> viewModel.startTracking()
             permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
             else -> permissionLauncherLocationTracking.launch(permissions)
-        }
-    }
-
-    private fun checkPermissionsAndUpdateGeofence() {
-        val permissions = getRequiredPermissions()
-        if (hasAllPermissions(permissions)) {
-            viewModel.checkInAttendance(lat, long)
-        } else {
-            permissionLauncherGeofencing.launch(permissions)
         }
     }
 
@@ -474,15 +445,16 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                 fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                     val latitude = location?.latitude
                     val longitude = location?.longitude
-                    lat = latitude ?: 0.0
-                    long = longitude ?: 0.0
+                    val lat = latitude ?: 0.0
+                    val lon = longitude ?: 0.0
+
                     if (latitude != null && longitude != null) {
-                        Utils.getAddressFromLatLong(this, lat, long) { addressFromLatLon ->
+                        Utils.getAddressFromLatLong(this, lat, lon) { addressFromLatLon ->
                             this.runOnUiThread {
                                 alertDialogShow(
                                     this,
                                     getString(R.string.current_location),
-                                    "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${getString(R.string.Address)}: $addressFromLatLon"
+                                    "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $lon\n\n${getString(R.string.Address)}: $addressFromLatLon"
                                 )
                             }
                         }
@@ -494,8 +466,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                         )
                     }
                 }.addOnFailureListener {
-                    lat = 0.0
-                    long = 0.0
                     alertDialogShow(this, getString(R.string.alert), getString(R.string.unable_to_fetch_location))
                 }
             }

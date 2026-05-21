@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -31,8 +32,10 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashb
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ncorti.slidetoact.SlideToActView
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,8 +46,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private var isDayStarted = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    var lat: Double = 0.0
-    var long: Double = 0.0
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
 
@@ -57,6 +58,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val startColor = MaterialColors.getColor(view, R.attr.wfmsColorPrimaryDark)
+        val endColor   = MaterialColors.getColor(view, R.attr.wfmsColorGradientEnd)
+        binding.appDashHeader.root.background = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT,
+            intArrayOf(startColor, endColor)
+        )
         PrefMethods.getEmpDetailResponse(prefMain)?.let {
             setupUserData(it)
         } ?: viewModel.getEmpDetails()
@@ -71,7 +78,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.onAnnouncementsClicks -> Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
 
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
-                    getCurrentLatitudeLongitudePermissions()
+                    startCurrentLocationPermissionFlow()
                 }
                 DashboardClickEvents.OPEN_SITES_CLICK -> TODO()
                 DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK -> TODO()
@@ -80,6 +87,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.LOGOUT_CLICK -> TODO()
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(requireContext(), ApplyLeaveActivity::class.java)
+                }
+                else -> {
+
                 }
             }
         }
@@ -281,7 +291,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             slideStartDay.isReversed = true
         } else {
             slideStartDay.text = getString(R.string.start_day)
-            slideStartDay.outerColor = ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark)
+            slideStartDay.outerColor = MaterialColors.getColor(slideStartDay, R.attr.wfmsColorPrimary)
             slideStartDay.isReversed = false
         }
     }
@@ -307,26 +317,36 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     @SuppressLint("MissingPermission")
-    private fun isWithinGeofence(onResult: (Boolean) -> Unit) {
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            lat = location?.latitude ?: 0.0
-            long = location?.longitude ?: 0.0
-            val distance = FloatArray(1)
-            viewModel.GEOFENCE_LAT.get()?.let {
-                viewModel.GEOFENCE_LON.get()?.let { it1 ->
-                    Location.distanceBetween(
-                        lat, long,
-                        it, it1,
-                        distance
+    private fun manageDayStartEnd() {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location == null) {
+                    binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                    alertDialogShow(
+                        requireContext(),
+                        getString(R.string.alert),
+                        getString(R.string.unable_to_fetch_location)
                     )
+                    return@addOnSuccessListener
+                }
+
+                val lat = location.latitude
+                val lon = location.longitude
+
+                if (isDayStarted) {
+                    viewModel.checkOutAttendance(lat, lon, true)
+                } else {
+                    viewModel.checkInAttendance(lat, lon)
                 }
             }
-            onResult(distance[0] <= ValConstants.GEOFENCE_RADIUS_METERS)
-        }.addOnFailureListener {
-            lat = 0.0
-            long = 0.0
-            onResult(false)
-        }
+            .addOnFailureListener {
+                binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                alertDialogShow(
+                    requireContext(),
+                    getString(R.string.alert),
+                    getString(R.string.unable_to_fetch_location)
+                )
+            }
     }
 
     private fun setupUserData(userData: EmpData?) {
@@ -349,40 +369,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                         hasAllPermissions(permissions) -> manageDayStartEnd()
                         permissions.any { shouldShowRequestPermissionRationale(it) } -> {
                             binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            showPermissionDeniedPermanently()
+                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+                                permissionLauncher.launch(permissions)
+                            }
                         }
                         else -> {
                             binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            permissionLauncher.launch(permissions)
+                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+                                permissionLauncher.launch(permissions)
+                            }
                         }
                     }
                 }
             }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun manageDayStartEnd() {
-        if (isDayStarted) {
-            // Check-out: Do NOT check geofence
-            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                lat = location?.latitude ?: 0.0
-                long = location?.longitude ?: 0.0
-                viewModel.checkOutAttendance(lat, long,true)
-            }.addOnFailureListener {
-                lat = 0.0
-                long = 0.0
-            }
-        } else {
-            // Check-in: Only here we check geofence
-            isWithinGeofence { isWithin ->
-                if (isWithin) {
-                    checkPermissionsAndUpdateGeofence()
-                } else {
-                    binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                    alertDialogShow(requireContext(), getString(R.string.home_location_check))
-                }
-            }
-        }
     }
 
     private fun setupTabBar() {
@@ -403,12 +402,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
 
-    private val permissionLauncherCurrentLatLon = registerForActivityResult(
+    private val permissionLauncherCurrentLocation = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
             permissions.all { it.value } -> {
-                getCurrentLatitudeLongitudePermissions()
+                getCurrentLatitudeLongitude()
             }
             !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
             else -> showPermissionRationale()
@@ -425,15 +424,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    private val permissionLauncherGeofencing = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> viewModel.checkInAttendance(lat, long)
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
-            else -> showPermissionRationale()
-        }
-    }
 
     private fun openApplicationSettings() {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -450,16 +440,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    private fun checkPermissionsAndUpdateGeofence() {
-        val permissions = getRequiredPermissions()
-        if (hasAllPermissions(permissions)) {
-            viewModel.checkInAttendance(lat, long)
-        } else {
-            permissionLauncherGeofencing.launch(permissions)
-        }
-    }
-
-    private fun getLocationRequiredPermissions(): Array<String> {
+    private fun getForegroundRequiredPermissions(): Array<String> {
         val list = mutableListOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -468,10 +449,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun getRequiredPermissions(): Array<String> {
-        val list = mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
+        val list = getForegroundRequiredPermissions().toMutableList()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             list.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
@@ -517,41 +496,47 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun getCurrentLatitudeLongitudePermissions() {
-        val permissions = getLocationRequiredPermissions()
+    private fun startCurrentLocationPermissionFlow() {
+        val foreground = getForegroundRequiredPermissions()
         when {
-            hasAllPermissions(permissions) -> {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    val latitude = location?.latitude
-                    val longitude = location?.longitude
-                    lat = latitude ?: 0.0
-                    long = longitude ?: 0.0
-                    if (latitude != null && longitude != null) {
-                        Utils.getAddressFromLatLong(requireContext(), lat, long) { addressFromLatLon ->
-                            requireActivity().runOnUiThread {
-                                alertDialogShow(
-                                    requireContext(),
-                                    getString(R.string.current_location),
-                                    "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${getString(R.string.Address)}: $addressFromLatLon"
-                                )
-                            }
-                        }
-                    } else {
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.alert),
-                            getString(R.string.unable_to_fetch_location)
-                        )
-                    }
-                }.addOnFailureListener {
-                    lat = 0.0
-                    long = 0.0
-                    alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.unable_to_fetch_location))
+            hasAllPermissions(foreground) -> {
+                getCurrentLatitudeLongitude()
+            }
+            foreground.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
+            else -> {
+                Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
+                    permissionLauncherCurrentLocation.launch(foreground)
                 }
             }
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> permissionLauncherCurrentLatLon.launch(permissions)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLatitudeLongitude() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            val latitude = location?.latitude
+            val longitude = location?.longitude
+            val lat = latitude ?: 0.0
+            val lon = longitude ?: 0.0
+            if (latitude != null && longitude != null) {
+                Utils.getAddressFromLatLong(requireContext(), lat, lon) { addressFromLatLon ->
+                    requireActivity().runOnUiThread {
+                        alertDialogShow(
+                            requireContext(),
+                            getString(R.string.current_location),
+                            "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $lon\n\n${getString(R.string.Address)}: $addressFromLatLon"
+                        )
+                    }
+                }
+            } else {
+                alertDialogShow(
+                    requireContext(),
+                    getString(R.string.alert),
+                    getString(R.string.unable_to_fetch_location)
+                )
+            }
+        }.addOnFailureListener {
+            alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.unable_to_fetch_location))
         }
     }
 }

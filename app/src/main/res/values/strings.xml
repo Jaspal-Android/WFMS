@@ -194,7 +194,7 @@
     <string name="location_tracking_active">Location Tracking Active</string>
     <string name="your_location_tracked">Your location is being tracked for attendance</string>
     <string name="current_location">Current Location</string>
-    <string name="unable_to_fetch_location">Unable to fetch location. Please try again.</string>
+    <string name="unable_to_fetch_location">Unable to fetch location. May be your location is turned off. Please enable location services to use this feature.</string>
     <string name="get_current_latitude_longitude">Get my current latitude and longitude</string>
     <string name="Latitude">Latitude</string>
     <string name="Longitude">Longitude</string>
@@ -285,5 +285,127 @@
     <string name="ops">OPS</string>
     <string name="admin">Admin</string>
     <string name="started">Started</string>
+    <string name="absent_system_generated">Absent (System Generated)</string>
+    <string name="incomplete_attendance">Incomplete</string>
+    <string name="background_location_usage">Location Access for Attendance &amp; Travel Tracking</string>
+    <string name="background_location_usage_msg">This app collects location data, including background location, to support:\n\n
+        • Live location tracking during work hours for daily attendance\n
+        • Verifying start and end site locations to ensure site visits\n
+        • Calculating travel distance for reimbursement claims\n
+        • Allowing employees to share their current location with the office\n
+        • Enforcing attendance only when you are within 500 meters of the office\n\n
+        Location tracking may continue even when the app is closed or not in use during active work sessions.\n
+        Location data is used only for official work purposes and is not shared with third parties.</string>
+    <string name="allow_and_continue">Allow &amp; Continue</string>
+    <string name="location_permission_needed">Location Permission Needed</string>
+    <string name="start_end_work_location_permission_msg">We use your location to record Start Work and End Work activities.\n
+        • Your location is captured only when you tap Start or End Work to:\n\n
+        • Verify that you have reached the assigned work site\n
+        • Record accurate attendance time\n
+        • Calculate travel distance for reimbursement\n
+        • Your location is not tracked continuously and is not collected when the app is closed.</string>
+    <string name="share_current_location">Share Current Location</string>
+    <string name="share_location_msg">
+        We use your current location to help your organization set the office location during account creation.\n
+        This location will be shared with your organization to:\n\n
+        • Save the official office address\n
+        • Enable attendance marking within a 500-meter range of the office.\n
+        • Your location is captured only when you tap “Get Current Location”.\n
+        • We do not track your location continuously and do not collect it in the background.\n
+        • Ensure your safety while on field assignments\n
+        </string>
+
+    <string name="select_type_to_end_work">Select type to end the work</string>
+    <string name="no_claims_found">No claims found</string>
+    <string name="submitted_claims">Submitted Claims</string>
+    <string name="date">Date</string>
+    <string name="singleSite">Single Site</string>
+    <string name="multiSite">Multiple Site</string>
+    <string name="expesnse_type">Expense Type</string>
+    <string name="traveling">Traveling</string>
+    <string name="add">Add</string>
+    <string name="no_entries_added">No entries added</string>
+    <string name="da">DA (Daily Allowance)</string>
+    <string name="hotel">Hotel</string>
+    <string name="others">Others</string>
+    <string name="enter_purpose">Enter Purpose</string>
+    <string name="add_site_details">Add Site Details</string>
+    <string name="local">Local</string>
+    <string name="outstation">Outstation</string>
+    <string name="add_travel_entry">Add Travel Entry</string>
+    <string name="mode">Mode</string>
+    <string name="amount">Amount</string>
+    <string name="travelingWith">Traveling With</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="attach_receipt">Attach Receipt</string>
+    <string name="add_da_entery">Add DA Entry</string>
+    <string name="add_hotel_entry">Add Hotel Entry</string>
+    <string name="add_others_entry">Enter Others Entry</string>
+    <string name="enter_valid_amount">Enter valid amount</string>
+    <string name="category">Category</string>
+    <string name="purpose">Purpose</string>
+    <string name="select_purpose">Select Purpose</string>
+    <string name="select_travel_mode">Select Travel Mode</string>
+    <string name="circle_id_not_found">Circle not found</string>
+    <string name="success">Success</string>
+    <string name="claim_submitted_successfully">Claim submitted successfully</string>
+    <string name="expenses">Expenses</string>
+    <string name="single_site">Single Site</string>
+    <string name="multiple_site">Multiple Site</string>
+    <string name="claim_amount">Claim Amount</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="total_claim_amount">Total Claim Amount</string>
+    <string name="rupee_format" translatable="false">₹ %1$.2f</string>
+    <string name="remarks">Remarks</string>
+    <string name="claim_details">Claim Details</string>
+    <string name="sites_expenses">Sites &amp; Expenses</string>
+    <string name="sites_count_calculation">%1$d Sites</string>
+    <plurals name="expense_count">
+        <item quantity="one">%d expense(s)</item>
+        <item quantity="other">%d expense(s)</item>
+    </plurals>
+    <string name="of_format" translatable="false">of ₹ %1$.2f</string>
+    <string name="locations">Locations</string>
+    <string name="items">Items</string>
+    <string name="please_enter_from_location">Please enter from location</string>
+    <string name="please_enter_to_location">Please enter to location</string>
+    <string name="please_enter_travel_mode">Please enter travel mode</string>
+    <string name="please_enter_travel_amount">Please enter travel amount</string>
+    <string name="please_enter_travel_purpose">Please enter travel purpose</string>
+    <string name="please_select_date">Please select date</string>
+    <string name="please_select_site">Please select site</string>
+    <string name="please_select_project">Please select project</string>
+    <string name="please_select_circle">Please select circle</string>
+    <string name="please_add_at_least_one_expense_entry">Please add at least one expense entry</string>
+    <string name="please_select_purpose">Please select purpose</string>
+    <string name="please_select_at_least_one_site">Please select at least one site</string>
+₹     <string name="selected_po">Selected PO</string>
+    <string name="login_to_continue">Login to continue</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="incomplete">Incomplete</string>
+    <string name="hrs_mins">hrs : mins</string>
+    <string name="work_types">Work Types</string>
+    <string name="self_work_assign">Self Work Assign</string>
+    <string name="start_work">Start Work</string>
+    <string name="create_new_work_assignment">Create New Work Assignment</string>
+    <string name="submit_new_reimbursement_claim">Submit New Reimbursement Claim</string>
+    <string name="approved_amount">Approved Amount</string>
+    <string name="upload_receipt_subtitle">Upload receipt for reimbursement claim</string>
+    <string name="route">Route</string>
+    <string name="with">with</string>
+    <string name="location">Location</string>
+    <string name="tap_to_take_photo">Tap to take photo</string>
+    <string name="select_month_year">Select Month and Year</string>
+    <string name="theme">Theme</string>
+    <string name="notifications">Notifications</string>
+    <string name="no_site_approvals_found">No site approvals found</string>
+    <string name="select_date">Select date</string>
+    <string name="check_in">Check in</string>
+    <string name="check_out">Check out</string>
+    <string name="view_sites_visited">View sites visited</string>
+    <string name="total_work_hours_format">Total %1$s hrs</string>
+    <string name="no_work_sites_found">No work sites found</string>
+    <string name="view_details">View details</string>
 
 </resources>

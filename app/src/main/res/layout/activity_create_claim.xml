@@ -1,210 +1,843 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
-        <import type="android.view.View"/>
-
-        <variable
-            name="dateString"
-            type="String" />
-
+        <import type="android.view.View" />
         <variable
             name="vm"
-            type="com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInVM" />
+            type="com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimVM" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
         android:orientation="vertical"
         tools:context=".ui.screens.reimbursement.createClaim.CreateClaimActivity">
 
-        <include
-            android:id="@+id/createClaimsToolbar"
-            layout="@layout/custom_toolbar"></include>
-
-        <ScrollView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:layout_height="match_parent">
 
+            <!-- Toolbar — gradient applied in code -->
+            <include
+                android:id="@+id/createReimbursementToolbar"
+                layout="@layout/custom_toolbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- ── Scrollable Content ── -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toTopOf="@id/bottomButtonsLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/createReimbursementToolbar">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/padding">
+
+                    <!-- ══════════════════════════════════════
+                         1. DATE CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/dateCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:drawableStart="@drawable/ic_calender_small"
+                                android:drawablePadding="@dimen/padding_x_small"
+                                android:drawableTint="?attr/wfmsColorPrimary"
+                                android:text="@string/date"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/date"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:endIconDrawable="@drawable/ic_calendar_today"
+                                app:endIconMode="custom"
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/date_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:onClick="@{()->vm.onDateClick()}"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:text="@={vm.date}"
+                                    tools:text="20-01-2026" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         2. SITE SELECTION CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/siteCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <!-- Section label -->
+                            <TextView
+                                android:id="@+id/tvSiteLabel"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:text="@string/select_site"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <!-- Single / Multi toggle -->
+                            <RadioGroup
+                                android:id="@+id/segmentSiteType"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/switch_button_height"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:background="@drawable/bg_segment_container"
+                                android:checkedButton="@+id/singleSiteBt"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/padding_x_small"
+                                app:layout_constraintTop_toBottomOf="@+id/tvSiteLabel">
+
+                                <RadioButton
+                                    android:id="@+id/singleSiteBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onSingleSiteClick()}"
+                                    android:text="@string/singleSite" />
+
+                                <RadioButton
+                                    android:id="@+id/multiSiteBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onMultiSiteClick()}"
+                                    android:text="@string/multiSite" />
+                            </RadioGroup>
+
+                            <!-- Single Site dropdown -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:hint="@string/select_site"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                app:endIconMode="custom"
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                                app:layout_constraintTop_toBottomOf="@+id/segmentSiteType"
+                                tools:visibility="visible">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/site_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:onClick="@{()->vm.onSiteDropdownClick()}"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Multi-Site container -->
+                            <LinearLayout
+                                android:id="@+id/multipleSiteContainer"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:orientation="vertical"
+                                android:visibility="@{vm.isMultiSite ? View.VISIBLE : View.GONE}"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/segmentSiteType"
+                                tools:visibility="gone">
+
+                                <!-- Purpose -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="@dimen/margin_small"
+                                    android:hint="@string/purpose"
+                                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                    app:endIconMode="custom"
+                                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/purpose_et"
+                                        style="@style/CustomSelectableTextInputEditStyle"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="start"
+                                        android:onClick="@{()->vm.onPurposeClick()}"
+                                        android:padding="@dimen/padding"
+                                        android:scrollHorizontally="true"
+                                        android:singleLine="true"
+                                        android:text="@={vm.purpose}"
+                                        tools:text="Select purpose" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Project -->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="@dimen/margin_small"
+                                    android:hint="@string/project"
+                                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                                    app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                    app:endIconMode="custom"
+                                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/project_select_et"
+                                        style="@style/CustomSelectableTextInputEditStyle"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="start"
+                                        android:onClick="@{()->vm.onProjectDropdownClick()}"
+                                        android:padding="@dimen/padding"
+                                        android:scrollHorizontally="true"
+                                        android:singleLine="true"
+                                        tools:text="Select Project" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <!-- Add Site dashed button -->
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnAddSite"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_dashed_button"
+                                    android:gravity="center"
+                                    android:onClick="@{()->vm.onAddMultipleSiteClick()}"
+                                    android:text="@string/add_site"
+                                    android:textAllCaps="false"
+                                    android:textColor="?attr/wfmsColorPrimary"
+                                    android:textStyle="bold" />
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/rvSelectedSites"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/margin_small"
+                                    tools:itemCount="2"
+                                    tools:listitem="@layout/item_selected_site" />
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         3. PROJECT & CIRCLE CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/projectCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:text="@string/project"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <!-- Project (single site only) -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/projectInputLayout"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:hint="@string/select_project"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                android:visibility="@{vm.isMultiSite ? View.GONE : View.VISIBLE}"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                app:endIconMode="custom"
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/project_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Circle -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/circleInputLayout"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/circle"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                app:endIconMode="custom"
+                                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/circle_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:clickable="@{vm.isMultiSite ? true : false}"
+                                    android:ellipsize="start"
+                                    android:onClick="@{()->vm.onCircleDropdownClick()}"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    tools:text="Select Circle" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         4. EXPENSE TYPE CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/expenseTypeCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding">
+
+                            <!-- FIX: "expesnse_type" typo corrected -->
+                            <TextView
+                                android:id="@+id/tvExpenseTypeLabel"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:text="@string/expesnse_type"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <RadioGroup
+                                android:id="@+id/segmentExpenseType"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/switch_button_height"
+                                android:background="@drawable/bg_segment_container"
+                                android:checkedButton="@+id/localExpenseBt"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/padding_x_small">
+
+                                <RadioButton
+                                    android:id="@+id/localExpenseBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onLocalClaimClick()}"
+                                    android:text="@string/local" />
+
+                                <RadioButton
+                                    android:id="@+id/outstationExpenseBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onOutstationClaimClick()}"
+                                    android:text="@string/outstation" />
+                            </RadioGroup>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         5. TRAVELING CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/travelingCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvTravelingLabel"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/traveling"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddTravel"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <!-- FIX: blue_bt_bg → GradientButton -->
+                            <com.atvantiq.wfms.widgets.GradientButton
+                                android:id="@+id/btnAddTravel"
+                                style="@style/CustomSmallButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{()->vm.onAddTravelingExpenseClick()}"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoTravelEntries"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddTravel" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvTravelEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddTravel"
+                                tools:itemCount="2"
+                                tools:listitem="@layout/item_travel_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         6. DAILY ALLOWANCE CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/daCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvDALabel"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/da"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddDA"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.atvantiq.wfms.widgets.GradientButton
+                                android:id="@+id/btnAddDA"
+                                style="@style/CustomSmallButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{()-> vm.onAddDailyAllowanceClick()}"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoDAEntries"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddDA" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvDAEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddDA"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_da_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         7. HOTEL CARD (Outstation only)
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/hotelCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:visibility="@{vm.isOutstationExpense ? View.VISIBLE : View.GONE}"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvHotelLabel"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hotel"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddHotel"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.atvantiq.wfms.widgets.GradientButton
+                                android:id="@+id/btnAddHotel"
+                                style="@style/CustomSmallButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{()-> vm.onAddHotelExpenseClick()}"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoHotelEntries"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddHotel" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvHotelEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddHotel"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_hotel_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         8. OTHERS CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/othersCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvOthersLabel"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/others"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddOther"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.atvantiq.wfms.widgets.GradientButton
+                                android:id="@+id/btnAddOther"
+                                style="@style/CustomSmallButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:onClick="@{()-> vm.onAddOthersExpenseClick()}"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:paddingHorizontal="@dimen/padding"
+                                android:paddingVertical="@dimen/padding_small"
+                                android:minHeight="0dp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoOtherEntries"
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddOther" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvOtherEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:visibility="visible"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddOther"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_other_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
+                         9. REMARKS CARD
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/remarksCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/margin_small"
+                                android:text="@string/remarks"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/enter_remarks"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:boxStrokeColor="?attr/wfmsColorOutline"
+                                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/remarks_et"
+                                    style="@style/CustomEditInputTextRegularStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:imeOptions="actionNext"
+                                    android:inputType="textCapCharacters"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:text="@={vm.remarks}" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- ══════════════════════════════════════
+                 BOTTOM ACTION BAR
+            ══════════════════════════════════════ -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="@dimen/padding">
+                android:id="@+id/bottomButtonsLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="?attr/wfmsColorSurface"
+                android:elevation="@dimen/elevation"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Date*"
-                    app:endIconDrawable="@drawable/ic_calendar_today"
-                    app:endIconMode="custom">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:inputType="none"
-                        android:cursorVisible="false"
-                        android:text="@{dateString}"
-                        tools:text="12/12/2024" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Circle*"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/circle_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:focusable="false"
-                        android:inputType="text"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Project*"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/project_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:focusable="false"
-                        android:inputType="text"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Site*"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/site_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:focusable="false"
-                        android:inputType="text"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Expense Type*"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/expense_type_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:cursorVisible="false"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Travelling With*"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/travelling_with_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:focusable="false"
-                        android:inputType="none"
-                        android:cursorVisible="false"
-                        android:ellipsize="start"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Amount*">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_amount"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="Remarks (if any)">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_remarks"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
-
+                <!-- FIX: CustomRedButton → outline error style -->
                 <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomPrimaryButton"
-                    android:layout_width="match_parent"
+                    android:id="@+id/btnCancel"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:text="@string/save" />
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:background="@drawable/error_bg_outline"
+                    android:onClick="@{()->vm.onCancelClick()}"
+                    android:text="@string/cancel"
+                    android:textAllCaps="false"
+                    android:textColor="?attr/wfmsColorError"
+                    android:textStyle="bold" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomRedButton"
-                    android:layout_width="match_parent"
+                <!-- FIX: added textColor + textStyle -->
+                <com.atvantiq.wfms.widgets.GradientButton
+                    android:id="@+id/btnSubmit"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:text="@string/cancel" />
+                    android:layout_weight="1"
+                    android:onClick="@{()->vm.onSubmitClaim()}"
+                    android:text="@string/submit"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
 
             </LinearLayout>
-        </ScrollView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

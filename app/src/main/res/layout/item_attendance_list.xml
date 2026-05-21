@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -10,25 +12,30 @@
             type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
     </data>
 
-    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.cardview.widget.CardView
         android:id="@+id/cardAttendanceItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_small"
-        app:cardBackgroundColor="@android:color/white"
+        android:layout_marginVertical="@dimen/margin_small_extra"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
         app:cardCornerRadius="@dimen/card_radius"
-        app:cardElevation="@dimen/elevation_small"
-        app:cardUseCompatPadding="true">
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true">
 
         <LinearLayout
-            android:layout_marginVertical="@dimen/padding_small"
-            android:layout_marginHorizontal="@dimen/padding_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/padding_small"
+            android:layout_marginVertical="@dimen/padding_small"
             android:orientation="vertical">
 
+            <!-- ════════════════════════════════════
+                 HEADER: name + code | status
+            ════════════════════════════════════ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,13 +51,15 @@
 
                     <TextView
                         android:id="@+id/tvEmployeeName"
-                        style="@style/CustomRegularDarkTextView"
+                        style="@style/CustomRegularTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@{item.employee.name}"
+                        android:textColor="?attr/wfmsColorOnSurface"
                         android:textStyle="bold"
-                        tools:ignore="HardcodedText"
-                        tools:text="Jaspal Kumar" />
+                        tools:text="Jaspal Singh" />
 
                     <TextView
                         android:id="@+id/tvEmployeeCode"
@@ -58,7 +67,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{item.employee.code}"
-                        tools:ignore="HardcodedText"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
                         tools:text="jaspal006" />
 
                 </LinearLayout>
@@ -66,19 +75,23 @@
                 <TextView
                     android:id="@+id/tvStatus"
                     style="@style/CustomMediumTextView"
-                    attendanceStatus="@{item.status.code}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
                     android:paddingHorizontal="@dimen/padding_medium"
                     android:paddingVertical="@dimen/padding_x_small"
                     android:textStyle="bold"
-                    tools:ignore="HardcodedText"
+                    app:attendanceStatus="@{item.status.code}"
                     tools:text="Present" />
             </LinearLayout>
 
+            <!-- ════════════════════════════════════
+                 META: date chip + total hours
+            ════════════════════════════════════ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -93,178 +106,172 @@
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:contentDescription="Date"
+                        android:contentDescription="@string/date"
                         android:src="@drawable/ic_calendar_today"
-                        app:tint="@color/colorPrimaryDark" />
+                        app:tint="?attr/wfmsColorPrimary" />
 
                     <TextView
                         android:id="@+id/tvDate"
-                        style="@style/CustomSmallDarkPrimaryTextView"
-                        formatApiDateToMonthDayYear="@{item.createdAt}"
+                        style="@style/CustomSmallTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_small"
-                        android:text="Oct 31, 2025"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/wfmsColorPrimary"
                         android:textStyle="bold"
-                        tools:ignore="HardcodedText" />
+                        app:formatApiDateToMonthDayYear="@{item.createdAt}"
+                        tools:text="Oct 31, 2025" />
 
                 </LinearLayout>
 
                 <TextView
-                    style="@style/CustomSmallDarkPrimaryTextView"
+                    style="@style/CustomSmallTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:text='@{"Total Work Hours "+item.workHours + " hrs"}'
+                    android:text="@{@string/total_work_hours_format(item.workHours)}"
+                    android:textColor="?attr/wfmsColorPrimary"
                     android:textStyle="bold"
-                    tools:text="Total Work Hours 8 hrs" />
+                    tools:text="Total 8 hrs" />
             </LinearLayout>
 
+            <!-- ════════════════════════════════════
+                 CHECK-IN / CHECK-OUT PAIR
+            ════════════════════════════════════ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <!-- Check In -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="?attr/wfmsColorSuccessLight"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="0dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_small">
 
-                        <com.google.android.material.card.MaterialCardView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:cardBackgroundColor="@color/checkin_bg"
-                            app:cardCornerRadius="20dp"
-                            app:cardElevation="0dp"
-                            app:strokeColor="@color/checkin_bg">
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_margin="@dimen/margin_small_extra"
-                                android:contentDescription="Check In"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:contentDescription="@string/check_in"
                                 android:src="@drawable/ic_clock_16"
-                                app:tint="@color/green" />
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <View
-                            android:id="@+id/viewTimelineLine"
-                            android:layout_width="2dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginVertical="@dimen/margin_small_extra"
-                            android:background="@drawable/ic_gradient_timelime" />
-
-                    </LinearLayout>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/checkin_bg"
-                        app:cardCornerRadius="@dimen/card_radius"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/checkin_bg"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="@dimen/padding_small">
-
-                            <TextView
-                                style="@style/CustomSmallDarkTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:letterSpacing="0.05"
-                                android:text="CHECK IN"
-                                android:textColor="@color/green"
-                                android:textStyle="bold"
-                                tools:ignore="HardcodedText" />
-
-                            <TextView
-                                android:id="@+id/tvCheckinTime"
-                                style="@style/CustomRegularDarkTextView"
-                                formatApiDateToTime="@{item.checkin.time}"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small_extra"
-                                android:textColor="@color/checkin_dark"
-                                android:textStyle="bold"
-                                tools:ignore="HardcodedText"
-                                tools:text="08:25 AM" />
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardCheckout"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_small"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/checkout_bg"
-                        app:cardCornerRadius="@dimen/card_radius"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/checkout_bg"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="@dimen/padding_small">
+                                app:tint="?attr/wfmsColorSuccess" />
 
                             <TextView
                                 style="@style/CustomSmallTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small_extra"
                                 android:letterSpacing="0.05"
-                                android:text="CHECK OUT"
-                                android:textColor="@color/red"
-                                android:textStyle="bold"
-                                tools:ignore="HardcodedText" />
-
-                            <TextView
-                                android:id="@+id/tvCheckoutTime"
-                                style="@style/CustomRegularDarkTextView"
-                                formatApiDateToTime="@{item.checkout.time}"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/margin_small_extra"
-                                android:textColor="@color/checkout_dark"
-                                android:textStyle="bold"
-                                tools:ignore="HardcodedText"
-                                tools:text="--:--" />
-
+                                android:text="@string/check_in"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorSuccess"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
-                    </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:id="@+id/tvCheckinTime"
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small_extra"
+                            android:textColor="?attr/wfmsColorSuccess"
+                            android:textStyle="bold"
+                            app:formatApiDateToTime="@{item.checkin.time}"
+                            tools:text="08:25 AM" />
 
-                </LinearLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Check Out -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardCheckout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="?attr/wfmsColorErrorLight"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_small">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:contentDescription="@string/check_out"
+                                android:src="@drawable/ic_clock_16"
+                                app:tint="?attr/wfmsColorError" />
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small_extra"
+                                android:letterSpacing="0.05"
+                                android:text="@string/check_out"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorError"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvCheckoutTime"
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small_extra"
+                            android:textColor="?attr/wfmsColorError"
+                            android:textStyle="bold"
+                            app:formatApiDateToTime="@{item.checkout.time}"
+                            tools:text="--:--" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
 
+            <!-- ════════════════════════════════════
+                 VIEW SITES VISITED BUTTON
+            ════════════════════════════════════ -->
             <LinearLayout
                 android:id="@+id/viewSitesBt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
                 android:background="@drawable/primary_bt_bg"
+                android:clickable="true"
+                android:contentDescription="@string/view_sites_visited"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:padding="@dimen/padding_small">
@@ -272,19 +279,20 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/rounded_location_on_24" />
+                    android:src="@drawable/rounded_location_on_24"
+                    app:tint="@android:color/white" />
 
                 <TextView
                     style="@style/CustomMediumLightTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
-                    android:text="View Sites Visited"
+                    android:text="@string/view_sites_visited"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 </layout>

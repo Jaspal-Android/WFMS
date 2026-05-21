@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/wfmsColorBackground"
+        android:orientation="vertical"
+        tools:context=".ui.screens.reimbursement.createClaim.addSiteDetail.AddMutilSiteDetailsActivity">
+
+        <!-- Toolbar — gradient applied in code -->
+        <include
+            android:id="@+id/addSiteToolbar"
+            layout="@layout/custom_toolbar" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                style="@style/CustomRegularTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_site"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- ── Select Site — FIX: OutlinedBox + theme attrs ── -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/siteIdInput"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:hint="@string/select_site"
+                android:minHeight="@dimen/text_input_edit_text_min_height"
+                app:boxStrokeColor="?attr/wfmsColorOutline"
+                app:boxStrokeWidthFocused="2dp"
+                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                app:endIconMode="custom"
+                app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/site_et"
+                    style="@style/CustomSelectableTextInputEditStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="1"
+                    android:ellipsize="start"
+                    android:padding="@dimen/padding"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- ── Purpose — FIX: OutlinedBox + theme attrs ── -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etPurposeInput"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:hint="@string/enter_purpose"
+                android:minHeight="@dimen/text_input_edit_text_min_height"
+                app:boxStrokeColor="?attr/wfmsColorOutline"
+                app:boxStrokeWidthFocused="2dp"
+                app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/siteIdInput">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPurpose"
+                    style="@style/CustomEditInputTextRegularStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="1"
+                    android:ellipsize="start"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapCharacters"
+                    android:padding="@dimen/padding"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- ── Cancel — FIX: CustomRedButton → error outline ── -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_cancel"
+                style="@style/CustomButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:background="@drawable/error_bg_outline"
+                android:text="@string/cancel"
+                android:textAllCaps="false"
+                android:textColor="?attr/wfmsColorError"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_done"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etPurposeInput" />
+
+            <!-- FIX: added textColor + textStyle -->
+            <com.atvantiq.wfms.widgets.GradientButton
+                android:id="@+id/btn_done"
+                style="@style/CustomButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@string/submit"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_cancel"
+                app:layout_constraintTop_toTopOf="@+id/btn_cancel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</layout>

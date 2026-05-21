@@ -27,7 +27,7 @@
                 android:layout_marginEnd="@dimen/margin_small"
                 android:layout_weight="1"
                 tools:itemCount="5"
-                tools:listitem="@layout/item_my_claims" />
+                tools:listitem="@layout/item_claims" />
 
         </LinearLayout>
     </LinearLayout>

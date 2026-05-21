@@ -28,6 +28,7 @@ import com.atvantiq.wfms.ui.screens.adapters.WorkTypeAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
+import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -79,9 +80,14 @@ class AssignedTaskDetailActivity :
             checkAttendanceStatus(workSiteId ?: -1, position = itemPosition)
         }
         binding.btnEndWork.setOnClickListener {
+            val selectedTypes = itemTypeAdapter?.getSelectedTypes().orEmpty()
+            if (selectedTypes.isEmpty()) {
+                showToast(this, getString(R.string.select_type_to_end_work))
+                return@setOnClickListener
+            }
             endWorkWithLocationPermissions(
                 workSiteId ?: -1,
-                itemTypeAdapter?.getSelectedTypes() ?: emptyList(),
+                selectedTypes,
                 itemPosition
             )
         }
@@ -126,6 +132,7 @@ class AssignedTaskDetailActivity :
         binding.tvCircle.text = record?.circle?.name ?: getString(R.string.not_available)
         binding.tvSiteName.text = record?.name ?: getString(R.string.not_available)
         binding.tvSiteCode.text = record?.siteId ?: getString(R.string.not_available)
+        val canRestart = record?.canRestart ?: false
 
         when (record?.status?.code) {
             StatusCodes.OPEN -> {
@@ -142,7 +149,8 @@ class AssignedTaskDetailActivity :
 
             StatusCodes.WIP -> {
                 binding.isOpenAssignment = false
-                binding.isAcceptedAssignment = false
+                binding.isAcceptedAssignment = canRestart
+                if (canRestart) binding.showEndAssignment = false
             }
 
             StatusCodes.COMPLETED -> {
@@ -154,16 +162,12 @@ class AssignedTaskDetailActivity :
             else -> {
                 binding.isOpenAssignment = false
                 binding.isAcceptedAssignment = false
+                binding.showEndAssignment = false
             }
 
         }
 
-        /*val hasEligibleToEnd = record?.status?.code !in listOf(
-            StatusCodes.OPEN,
-            StatusCodes.ACCEPTED,
-            StatusCodes.COMPLETED
-        )*/
-        val hasEligibleToEnd = record?.status?.code in listOf(StatusCodes.WIP)
+        val hasEligibleToEnd = record?.status?.code in listOf(StatusCodes.WIP) && record?.canRestart == false
 
         if (record?.type?.isNullOrEmpty() == true) {
             binding.showSelectAll = false
@@ -248,7 +252,7 @@ class AssignedTaskDetailActivity :
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(this, it.message ?: getString(successMessage))
-                        handleStatusUpdateResponse(it.data)
+                        handleStatusUpdateResponse(it.data, true)
                     } else {
                         handleErrorResponse(it.code, it.message)
                     }
@@ -270,6 +274,7 @@ class AssignedTaskDetailActivity :
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(this, it.message ?: getString(successMessage))
+                        it?.data?.canRestart = false
                         handleStatusUpdateResponse(it.data)
                     } else {
                         handleErrorResponse(it.code, it.message)
@@ -411,7 +416,11 @@ class AssignedTaskDetailActivity :
         when {
             hasAllPermissions(permissions) -> onPermissionsGranted()
             permissions.any { shouldShowRequestPermissionRationale(it) } -> onPermissionsDenied()
-            else -> permissionLauncher.launch(permissions)
+            else ->{
+                Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.location_permission_needed),getString(R.string.start_end_work_location_permission_msg)){
+                    permissionLauncher.launch(permissions)
+                }
+            }
         }
     }
 

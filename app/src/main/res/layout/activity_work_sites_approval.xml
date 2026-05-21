@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -14,66 +17,69 @@
             type="String" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        android:fitsSystemWindows="true"
         android:orientation="vertical"
-        android:background="@color/cardLightBackground"
         tools:context=".ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity">
 
         <include
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
             android:id="@+id/siteApprovalToolbar"
-            layout="@layout/custom_toolbar"></include>
+            layout="@layout/custom_toolbar" />
 
 
-            <LinearLayout
-                android:id="@+id/monthSelctorLayout"
-                android:layout_marginEnd="@dimen/margin"
-                android:background="@drawable/dark_primary_wire_bg"
+        <LinearLayout
+            android:id="@+id/monthSelctorLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="@dimen/margin"
+            android:background="@drawable/dark_primary_wire_bg"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding_small"
+            android:paddingVertical="@dimen/padding_x_small">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="@string/date"
+                android:src="@drawable/ic_calendar_today"
+                app:tint="?attr/wfmsColorPrimary" />
+
+            <TextView
+                android:id="@+id/tvSelectedDate"
+                style="@style/CustomSmallTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:layout_gravity="end"
-                android:paddingHorizontal="@dimen/padding_small"
-                android:paddingVertical="@dimen/padding_x_small">
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:text="@{selectedDate}"
+                android:textColor="?attr/wfmsColorPrimary"
+                android:textStyle="bold"
+                tools:text="2025-10-31" />
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:contentDescription="Calendar"
-                    android:src="@drawable/ic_calendar_today"
-                    app:tint="@color/colorPrimaryDark" />
-
-                <TextView
-                    android:textColor="@color/colorPrimaryDark"
-                    android:id="@+id/tvSelectedDate"
-                    style="@style/CustomSmallLightTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_small"
-                    android:layout_marginEnd="@dimen/margin_small"
-                    android:text="2025-10-31" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="Expand"
-                    android:src="@drawable/ic_arrow_down_24"
-                    app:tint="@color/colorPrimaryDark" />
-            </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/select_date"
+                android:src="@drawable/ic_arrow_down_24"
+                app:tint="?attr/wfmsColorPrimary" />
+        </LinearLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/margin_small"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="match_parent">
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -82,12 +88,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    android:paddingHorizontal="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small"
+                    android:paddingBottom="@dimen/margin"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/item_attendance_list" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:orientation="vertical"
                     android:visibility="@{isEmptyAttendanceList ? View.VISIBLE : View.GONE}"
                     tools:visibility="visible">
@@ -103,13 +115,17 @@
                         app:lottie_rawRes="@raw/no_data" />
 
                     <TextView
+                        style="@style/CustomMediumTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/no_work_details_found" />
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:text="@string/no_site_approvals_found"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
                 </LinearLayout>
 
-            </RelativeLayout>
+            </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     </LinearLayout>
 </layout>

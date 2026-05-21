@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="dateString"
+            type="String" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimVM" />
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.screens.reimbursement.createClaim.CreateClaimActivity">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/createReimbursementToolbar"
+                layout="@layout/custom_toolbar" />
+
+            <!-- Scrollable Content -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toTopOf="@id/bottomButtonsLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/createReimbursementToolbar">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/padding">
+
+                    <!-- Date Selection Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/dateCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/date"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:endIconDrawable="@drawable/ic_calendar_today"
+                                app:endIconMode="custom"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/date_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Site Selection Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/siteCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvSiteLabel"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/select_site"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <RadioGroup
+                                android:id="@+id/segmentSiteType"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/switch_button_height"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:background="@drawable/bg_segment_container"
+                                android:checkedButton="@+id/singleSiteBt"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/padding_x_small"
+                                app:layout_constraintTop_toBottomOf="@+id/tvSiteLabel">
+
+                                <RadioButton
+                                    android:id="@+id/singleSiteBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onSingleSiteClick()}"
+                                    android:text="@string/singleSite" />
+
+                                <RadioButton
+                                    android:id="@+id/multiSiteBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onMultiSiteClick()}"
+                                    android:text="@string/multiSite" />
+
+                            </RadioGroup>
+
+                            <!-- Single Site Selection -->
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:hint="@string/select_site"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:endIconDrawable="@drawable/ic_arrow_down_24"
+                                app:endIconMode="custom"
+                                app:layout_constraintTop_toBottomOf="@+id/segmentSiteType">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/site_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:visibility="gone" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <!-- Multiple Site Container -->
+                            <LinearLayout
+                                android:id="@+id/multipleSiteContainer"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:orientation="vertical"
+                                android:visibility="visible"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/segmentSiteType">
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/btnAddSite"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/bg_dashed_button"
+                                    android:gravity="center"
+                                    android:text="@string/add_site"
+                                    android:textAllCaps="false"
+                                    android:textColor="?attr/colorPrimary"
+                                    android:textStyle="bold" />
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/rvSelectedSites"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/margin"
+                                    tools:itemCount="2"
+                                    tools:listitem="@layout/item_selected_site" />
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Project Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/projectCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/select_project"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/project_et"
+                                    style="@style/CustomSelectableTextInputEditStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Expense Type Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/expenseTypeCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvExpenseTypeLabel"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/expesnse_type"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <RadioGroup
+                                android:id="@+id/segmentExpenseType"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/switch_button_height"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:background="@drawable/bg_segment_container"
+                                android:checkedButton="@+id/localExpenseBt"
+                                android:orientation="horizontal"
+                                android:padding="@dimen/padding_x_small"
+                                app:layout_constraintTop_toBottomOf="@+id/tvExpenseTypeLabel">
+
+                                <RadioButton
+                                    android:id="@+id/localExpenseBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onLocalClaimClick()}"
+                                    android:text="@string/singleSite" />
+
+                                <RadioButton
+                                    android:id="@+id/outstationExpenseBt"
+                                    style="@style/SwitchButtonStyle"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:onClick="@{()->vm.onOutstationClaimClick()}"
+                                    android:text="@string/multiSite" />
+
+                            </RadioGroup>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Traveling Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/travelingCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/padding"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvTravelingLabel"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/traveling"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddTravel"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnAddTravel"
+                                style="@style/CustomMediumLightTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
+                                android:background="@drawable/blue_bt_bg"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                app:icon="@drawable/ic_add_white_24"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoTravelEntries"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddTravel" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvTravelEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddTravel"
+                                tools:itemCount="2"
+                                tools:listitem="@layout/item_travel_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- DA Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/daCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvDALabel"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/da"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddDA"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnAddDA"
+                                style="@style/CustomSmallLightTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
+                                android:background="@drawable/blue_bt_bg"
+                                android:drawableStart="@drawable/ic_add_white_24"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                app:cornerRadius="@dimen/card_radius_small"
+                                app:icon="@drawable/ic_add_white_24"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoDAEntries"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddDA" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvDAEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddDA"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_da_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Hotel Card (Visible only for Outstation) -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/hotelCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvHotelLabel"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hotel"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddHotel"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnAddHotel"
+                                style="@style/CustomSmallLightTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
+                                android:background="@drawable/blue_bt_bg"
+                                android:drawableStart="@drawable/ic_add_white_24"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                app:icon="@drawable/ic_add_white_24"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoHotelEntries"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddHotel" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvHotelEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddHotel"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_hotel_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Others Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/othersCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                android:id="@+id/tvOthersLabel"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/others"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toStartOf="@id/btnAddOther"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnAddOther"
+                                style="@style/CustomSmallLightTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/small_button_height"
+                                android:background="@drawable/blue_bt_bg"
+                                android:drawableStart="@drawable/ic_add_white_24"
+                                android:text="@string/add"
+                                android:textAllCaps="false"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/tvNoOtherEntries"
+                                style="@style/CustomMediumDarkTextView"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
+                                android:text="@string/no_entries_added"
+                                android:visibility="gone"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddOther" />
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvOtherEntries"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:visibility="visible"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/btnAddOther"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_other_entry" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Remarks Card -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/remarksCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/padding">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/enter_remarks"
+                                android:minHeight="@dimen/text_input_edit_text_min_height"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/remarks_et"
+                                    style="@style/CustomEditInputTextRegularStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:completionThreshold="1"
+                                    android:ellipsize="start"
+                                    android:imeOptions="actionNext"
+                                    android:inputType="textCapCharacters"
+                                    android:padding="@dimen/padding"
+                                    android:scrollHorizontally="true"
+                                    android:singleLine="true"
+                                    android:text="@={vm.remarks}" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- Bottom Buttons -->
+            <LinearLayout
+                android:id="@+id/bottomButtonsLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:elevation="@dimen/elevation"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnCancel"
+                    style="@style/CustomRedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin"
+                    android:layout_weight="1"
+                    android:text="@string/cancel"
+                    android:textAllCaps="false"
+                    android:textStyle="bold" />
+
+                <com.atvantiq.wfms.widgets.GradientButton
+                    android:id="@+id/btnSubmit"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/submit"
+                    android:textAllCaps="false"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

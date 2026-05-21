@@ -1,41 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
-        <import type="android.view.View"/>
-        <variable
-            name="dateString"
-            type="String" />
-
-        <variable
-            name="timeString"
-            type="String" />
-
-        <variable
-            name="locationString"
-            type="String" />
-
-        <variable
-            name="hasPreviewImage"
-            type="Boolean" />
-
-        <variable
-            name="vm"
-            type="com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInVM" />
+        <import type="android.view.View" />
+        <variable name="dateString" type="String" />
+        <variable name="timeString" type="String" />
+        <variable name="locationString" type="String" />
+        <variable name="hasPreviewImage" type="Boolean" />
+        <variable name="vm" type="com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInVM" />
     </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:background="?attr/wfmsColorBackground"
         android:fitsSystemWindows="true"
+        android:orientation="vertical"
         tools:context=".ui.screens.attendance.addSignInActivity.AddSignInActivity">
 
+        <!-- Toolbar — gradient applied in code -->
         <include
             android:id="@+id/addSignInToolbar"
-            layout="@layout/custom_toolbar"></include>
+            layout="@layout/custom_toolbar" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -50,17 +39,23 @@
                 android:orientation="vertical"
                 android:padding="@dimen/padding">
 
+                <!-- ── Select Client ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_client"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/client_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
@@ -70,204 +65,254 @@
                         android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select Project ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_project"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/project_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isProjectLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:enabled="@{!vm.isProjectLoading}"
-                        />
+                        android:singleLine="true" />
+
+                    <!-- FIX: colorPrimaryDark → wfmsColorPrimary -->
                     <ProgressBar
                         android:id="@+id/project_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
                         android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select PO Number ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_po_number"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/po_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isPoLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:enabled="@{!vm.isPoLoading}" />
+                        android:singleLine="true" />
 
                     <ProgressBar
                         android:id="@+id/po_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
                         android:visibility="@{vm.isPoLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select Circle ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_circle"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/circle_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isCircleLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:enabled="@{!vm.isCircleLoading}" />
+                        android:singleLine="true" />
 
                     <ProgressBar
                         android:id="@+id/circle_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
                         android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select Site ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_site"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/site_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isSiteLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:enabled="@{!vm.isSiteLoading}" />
+                        android:singleLine="true" />
 
                     <ProgressBar
                         android:id="@+id/site_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
                         android:visibility="@{vm.isSiteLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-
+                <!-- ── Select Type ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_type"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
                     app:endIconMode="custom"
-                    >
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/type_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isTypeLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:enabled="@{!vm.isTypeLoading}" />
+                        android:singleLine="false" />
 
                     <ProgressBar
                         android:id="@+id/type_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
                         android:visibility="@{vm.isTypeLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select Activity (hidden) ── -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:visibility="gone"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:hint="@string/select_activity"
+                    android:visibility="gone"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/activities_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isActivityLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="false"
-                        android:enabled="@{!vm.isActivityLoading}" />
+                        android:singleLine="false" />
 
                     <ProgressBar
                         android:id="@+id/activities_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
                         android:visibility="@{vm.isActivityLoading ? View.VISIBLE : View.GONE}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:onClick="@{()->vm.onSaveClick()}"
-                    style="@style/CustomPrimaryButton"
+                <!-- ── Divider ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:layout_marginBottom="@dimen/margin"
+                    android:alpha="0.15"
+                    android:background="?attr/wfmsColorOnSurface" />
+
+                <!-- ── Assign Work — gradient button ── -->
+                <com.atvantiq.wfms.widgets.GradientButton
+                    style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:text="@string/assign_work" />
+                    android:onClick="@{()->vm.onSaveClick()}"
+                    android:text="@string/assign_work"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
 
+                <!-- ── Cancel — outline style, not hardcoded red ── -->
                 <androidx.appcompat.widget.AppCompatButton
-                    android:onClick="@{()->vm.onCancelClick()}"
-                    style="@style/CustomRedButton"
+                    style="@style/CustomPrimaryWireButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:text="@string/cancel" />
+                    android:layout_marginBottom="@dimen/margin"
+                    android:onClick="@{()->vm.onCancelClick()}"
+                    android:text="@string/cancel"
+                    android:textStyle="bold" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>

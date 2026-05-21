@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -26,28 +28,26 @@
             type="com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteVM" />
     </data>
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:isScrollContainer="true"
-        android:overScrollMode="always"
-        android:scrollbars="vertical"
+        android:background="?attr/wfmsColorBackground"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
         tools:context=".ui.screens.admin.ui.site.addSite.AddSiteActivity">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <!-- Toolbar — stays fixed at top -->
+        <include
+            android:id="@+id/addSiteToolbar"
+            layout="@layout/custom_toolbar" />
 
-            <include
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:id="@+id/addSiteToolbar"
-                layout="@layout/custom_toolbar"></include>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:focusableInTouchMode="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,13 +55,19 @@
                 android:orientation="vertical"
                 android:padding="@dimen/padding">
 
+                <!-- ── Select Client ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/select_client"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/client_et"
@@ -75,14 +81,20 @@
                         android:singleLine="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select Project ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_project"
                     android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/project_et"
@@ -97,173 +109,208 @@
                         android:singleLine="true" />
 
                     <ProgressBar
-                        tools:visibility="gone"
                         android:id="@+id/project_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
-                        android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}" />
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
+                        android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}"
+                        tools:visibility="gone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Select Circle ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/select_circle"
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
                     app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom">
+                    app:endIconMode="custom"
+                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        style="@style/CustomSelectableTextInputEditStyle"
                         android:id="@+id/circle_et"
+                        style="@style/CustomSelectableTextInputEditStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:completionThreshold="1"
                         android:ellipsize="start"
+                        android:enabled="@{!vm.isCircleLoading}"
                         android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:enabled="@{!vm.isCircleLoading}" />
+                        android:singleLine="true" />
 
                     <ProgressBar
-                        tools:visibility="gone"
                         android:id="@+id/circle_progress"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="@color/colorPrimaryDark"
-                        android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}" />
+                        android:indeterminateTint="?attr/wfmsColorPrimary"
+                        android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}"
+                        tools:visibility="gone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-
+                <!-- ── Site ID ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/siteIdHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height">
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/site_id_et"
                         style="@style/CustomEditInputTextRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
+                        android:ellipsize="end"
                         android:imeOptions="actionNext"
                         android:inputType="textCapCharacters"
-                        android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="@={vm.siteId}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Site Name ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/siteNameHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height">
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/site_name_et"
                         style="@style/CustomEditInputTextRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
+                        android:ellipsize="end"
                         android:imeOptions="actionNext"
-                        android:inputType="textCapCharacters"
-                        android:padding="@dimen/padding"
+                        android:inputType="textCapWords"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="@={vm.siteName}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Site Address ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/siteAddressHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height">
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/site_address_et"
                         style="@style/CustomEditInputTextRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
+                        android:ellipsize="end"
                         android:imeOptions="actionNext"
                         android:inputType="textPostalAddress"
-                        android:padding="@dimen/padding"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="@={vm.siteAddress}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Latitude ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/siteLatitudeHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height">
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/site_latitude_et"
                         style="@style/CustomEditInputTextRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
+                        android:ellipsize="end"
                         android:imeOptions="actionNext"
-                        android:inputType="numberDecimal"
-                        android:padding="@dimen/padding"
+                        android:inputType="numberDecimal|numberSigned"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="@={vm.siteLatitude}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- ── Longitude ── -->
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:hint="@string/siteLongitudeHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height">
+                    android:minHeight="@dimen/text_input_edit_text_min_height"
+                    app:boxStrokeColor="?attr/wfmsColorOutline"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/site_longitude_et"
                         style="@style/CustomEditInputTextRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
+                        android:ellipsize="end"
                         android:imeOptions="actionDone"
-                        android:inputType="numberDecimal"
-                        android:padding="@dimen/padding"
+                        android:inputType="numberDecimal|numberSigned"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="@={vm.siteLongitude}" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomPrimaryButton"
+                <!-- ── Divider ── -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/margin_large"
+                    android:layout_marginBottom="@dimen/margin"
+                    android:alpha="0.15"
+                    android:background="?attr/wfmsColorOnSurface" />
+
+                <!-- ── Add Site — gradient button ── -->
+                <com.atvantiq.wfms.widgets.GradientButton
+                    style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
                     android:onClick="@{()->vm.onSaveClick()}"
-                    android:text="@string/add_site" />
+                    android:text="@string/add_site"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
 
+                <!-- ── Cancel — primary wire (outlined) ── -->
                 <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomRedButton"
+                    style="@style/CustomPrimaryWireButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginBottom="@dimen/margin"
                     android:onClick="@{()->vm.onCancelClick()}"
-                    android:text="@string/cancel" />
+                    android:text="@string/cancel"
+                    android:textStyle="bold" />
+
             </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 </layout>

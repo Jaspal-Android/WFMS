@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -10,6 +10,7 @@
         <variable
             name="isEmptySites"
             type="Boolean" />
+
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.admin.ui.site.SitesVM" />
@@ -19,102 +20,116 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
         android:orientation="vertical"
-        android:background="@color/cardLightBackground"
         tools:context=".ui.screens.admin.ui.site.SitesActivity">
 
+        <!-- ════════════════════════════════════
+             TOOLBAR
+        ════════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:elevation="@dimen/elevation"
+            android:background="?attr/wfmsColorSurface"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/toolbarBackButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="Back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
                 android:padding="@dimen/padding"
-                android:src="@drawable/arrow_back_ios_24" />
+                android:src="@drawable/arrow_back_ios_24"
+                app:tint="?attr/wfmsColorOnSurface" />
 
             <TextView
-                android:layout_weight="1"
-                style="@style/CustomRegularPrimaryTextView"
                 android:id="@+id/toolbarTitle"
+                style="@style/CustomLargeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="16dp"
-                android:text="Custom Toolbar"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_weight="1"
+                android:text="@string/sites"
+                android:textColor="?attr/wfmsColorOnSurface"
                 android:textStyle="bold" />
 
             <ImageButton
-                android:onClick="@{()->vm.onAddSiteClick()}"
-                android:background="@drawable/small_primary_bg"
-                android:layout_gravity="center_vertical"
-                android:layout_marginVertical="@dimen/margin_small"
-                android:layout_marginHorizontal="@dimen/margin"
-                android:padding="@dimen/padding_small"
-                android:src="@drawable/ic_add_white_24"
+                android:id="@+id/btnAddSite"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></ImageButton>
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin"
+                android:layout_marginVertical="@dimen/margin_small"
+                android:background="@drawable/small_primary_bg"
+                android:contentDescription="@string/add_site"
+                android:onClick="@{()->vm.onAddSiteClick()}"
+                android:padding="@dimen/padding_small"
+                android:src="@drawable/ic_add_white_24" />
 
         </LinearLayout>
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <!-- Thin divider under toolbar — matches the flat outline pattern -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/border_width_1dp"
+            android:background="?attr/wfmsColorOutline" />
+
+        <!-- ════════════════════════════════════
+             SITES LIST + EMPTY STATE
+        ════════════════════════════════════ -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:layout_marginTop="@dimen/margin_small"
-                android:id="@+id/swipeRefreshLayout"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                android:layout_height="match_parent">
 
-                <RelativeLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSites"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="@dimen/margin_small"
+                    android:paddingTop="@dimen/margin_small"
+                    android:paddingBottom="@dimen/margin"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/item_sites" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvSites"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="@{isEmptySites ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible">
 
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/animationView"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@android:color/transparent"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        app:lottie_rawRes="@raw/no_data" />
 
-                    <LinearLayout
+                    <TextView
+                        style="@style/CustomMediumTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:orientation="vertical"
-                        android:visibility="@{isEmptySites ? View.VISIBLE : View.GONE}"
-                        tools:visibility="visible">
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:text="@string/no_sites_available"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+                </LinearLayout>
 
-                        <com.airbnb.lottie.LottieAnimationView
-                            android:id="@+id/animationView"
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:layout_gravity="center"
-                            android:backgroundTint="@android:color/transparent"
-                            app:lottie_autoPlay="true"
-                            app:lottie_loop="true"
-                            app:lottie_rawRes="@raw/no_data" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="@string/no_work_details_found" />
-                    </LinearLayout>
-
-                </RelativeLayout>
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            </FrameLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 </layout>

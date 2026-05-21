@@ -7,28 +7,33 @@
         android:id="@+id/statusBoxLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingEnd="@dimen/padding"
-        android:paddingVertical="@dimen/padding_x_small"
-        android:orientation="horizontal">
+        android:paddingVertical="@dimen/padding_x_small">
 
+        <!-- FIX: buttonTint → wfmsColorPrimary -->
         <CheckBox
-            android:checked="true"
             android:id="@+id/statusCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:checked="true"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false" />
 
+        <!-- FIX: CustomMediumDarkTextView → theme color -->
         <TextView
-            android:textAllCaps="true"
             android:id="@+id/statusName"
-            style="@style/CustomMediumDarkTextView"
+            style="@style/CustomMediumTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding_medium" />
+            android:padding="@dimen/padding_medium"
+            android:textAllCaps="true"
+            android:textColor="?attr/wfmsColorOnSurface"
+            tools:text="Completed" />
 
     </LinearLayout>
 </layout>

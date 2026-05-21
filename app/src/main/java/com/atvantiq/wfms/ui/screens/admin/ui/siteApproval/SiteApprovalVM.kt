@@ -25,6 +25,7 @@ class SiteApprovalVM @Inject constructor(
 
     var attendanceDetailsResponse = MutableLiveData<ApiState<AttendanceDetailListResponse>>()
     fun getAttendanceDetails(month: Int, year: Int) {
+
         executeApiCall(
             apiCall = { attendanceRepo.attendanceDetails(month, year) },
             liveData = attendanceDetailsResponse

@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,6 +29,7 @@ import com.atvantiq.wfms.base.BaseBindingActivity
 import com.atvantiq.wfms.databinding.ActivityDashboardBinding
 import com.atvantiq.wfms.databinding.NavHeaderDashboardBinding
 import com.atvantiq.wfms.models.loginResponse.User
+import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
@@ -42,7 +45,7 @@ import com.google.android.play.core.install.model.InstallStatus
 
 
 @AndroidEntryPoint
-class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
+class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val navController: androidx.navigation.NavController
@@ -68,6 +71,22 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
         batterOptimizationCheck()
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.dashboard_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_palette -> {
+                ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun batterOptimizationCheck() {
@@ -135,6 +154,12 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.changeTheme -> {
+                    // Implement your change theme logic here
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
+                    true
+                }
                 R.id.logout -> {
                     // Implement your logout logic here
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -182,14 +207,7 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>() {
                 R.id.nav_vendor -> {
                     // Implement your logout logic here
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_reimbursement -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
+                    alertDialogShow(this, getString(R.string.under_development))
                     true
                 }
 

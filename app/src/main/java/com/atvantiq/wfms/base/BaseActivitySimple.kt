@@ -19,7 +19,9 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
+import com.facebook.stetho.common.Util
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
@@ -37,6 +39,7 @@ abstract class BaseActivitySimple : AppCompatActivity() {
     private var progressDialog: ProgressDialog? = null
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
+        ThemeManager.applyTheme(this)  // always first
         super.onCreate(savedInstanceState)
         getBundle()
     }
@@ -249,4 +252,27 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         }
     }
 
+    fun showDisclosureDialog(
+        title: String,
+        message: String,
+        positiveButtonText: String = getString(R.string.ok),
+        negativeButtonText: String = getString(R.string.cancel),
+        cancelable: Boolean = false,
+        onPositive: (() -> Unit)? = null,
+        onNegative: (() -> Unit)? = null,
+    ) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText) { dialog, _ ->
+                dialog.dismiss()
+                onPositive?.invoke()
+            }
+            .setNegativeButton(negativeButtonText) { dialog, _ ->
+                dialog.dismiss()
+                onNegative?.invoke()
+            }
+            .setCancelable(cancelable)
+            .show()
+    }
 }

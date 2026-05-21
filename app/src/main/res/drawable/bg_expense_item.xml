@@ -1,0 +1,21 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background with rounded corners (no stroke) -->
+
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="?attr/cardBackgroundColor" />
+        </shape>
+    </item>
+
+    <!-- Left-side blue line -->
+    <item android:gravity="start">
+        <shape android:shape="rectangle">
+            <size android:width="2dp" />
+            <solid android:color="?attr/colorPrimary" />
+        </shape>
+    </item>
+
+</layer-list>

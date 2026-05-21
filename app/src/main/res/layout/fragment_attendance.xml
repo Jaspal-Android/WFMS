@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="vm"
             type="com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel" />
-
         <variable
             name="isEmptyAssignedTasks"
             type="Boolean" />
-
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/cardLightBackground"
+        android:background="?attr/wfmsColorBackground"
         tools:context=".ui.screens.attendance.AttendanceFragment">
 
         <androidx.core.widget.NestedScrollView
@@ -30,84 +27,136 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
 
-                <com.google.android.material.card.MaterialCardView
+                <!-- ══════════════════════════════════════
+                     SELF WORK ASSIGN CARD
+                ══════════════════════════════════════ -->
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/margin"
-                    android:layout_marginVertical="@dimen/margin"
-                    app:cardBackgroundColor="@color/white"
+                    android:layout_marginBottom="@dimen/margin"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
                     app:cardCornerRadius="@dimen/card_radius"
-                    app:cardElevation="@dimen/elevation_small"
-                    app:cardPreventCornerOverlap="true">
+                    app:cardElevation="@dimen/elevation_small">
 
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="@{()->vm.onSignInClick()}"
                         android:padding="@dimen/padding">
 
+                        <!-- Icon box -->
                         <ImageView
-                            app:tint="@color/colorPrimary"
-                            android:src="@drawable/round_add_box_24"
+                            android:padding="@dimen/padding_small"
+                            android:id="@+id/iconSelfAssign"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"></ImageView>
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/icon_box_bg"
+                            android:src="@drawable/round_add_box_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="?attr/wfmsColorPrimary" />
+
+                        <!-- Title + subtitle -->
+                        <TextView
+                            android:id="@+id/signInText"
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:text="@string/self_work_assign"
+                            android:textAllCaps="true"
+                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toStartOf="@+id/arrowSelfAssign"
+                            app:layout_constraintStart_toEndOf="@+id/iconSelfAssign"
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:layout_marginStart="@dimen/margin_small"
-                            android:id="@+id/signInText"
-                            style="@style/CustomRegularPrimaryTextView"
-                            android:layout_width="match_parent"
+                            style="@style/CustomSmallTextView"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:drawableEnd="@drawable/forward_arrow_right_24"
-                            android:gravity="center_vertical"
-                            android:onClick="@{()->vm.onSignInClick()}"
-                            android:text="Self Work Assign"
-                            android:textAllCaps="true"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_marginTop="@dimen/margin_small_extra"
+                            android:text="@string/create_new_work_assignment"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            app:layout_constraintEnd_toStartOf="@+id/arrowSelfAssign"
+                            app:layout_constraintStart_toEndOf="@+id/iconSelfAssign"
+                            app:layout_constraintTop_toBottomOf="@+id/signInText" />
 
+                        <!-- Forward arrow -->
+                        <ImageView
+                            android:id="@+id/arrowSelfAssign"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/forward_arrow_right_24"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
-                <TextView
-                    android:layout_marginTop="@dimen/margin_small_extra"
-                    android:id="@+id/tvSignInDetails"
-                    style="@style/CustomRegularDarkTextView"
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- ══════════════════════════════════════
+                     ASSIGNED WORK HEADER
+                ══════════════════════════════════════ -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/padding"
-                    android:text="@string/assigned_work"
-                    android:textAllCaps="true"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <!-- FIX: CustomRegularDarkTextView → theme color -->
+                    <TextView
+                        android:id="@+id/tvSignInDetails"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/assigned_work"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- ══════════════════════════════════════
+                     TASK LIST + EMPTY STATE
+                ══════════════════════════════════════ -->
                 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                     android:id="@+id/swipeRefreshLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                    android:layout_height="match_parent">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
+                        <!-- Task list -->
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvAssignedTasks"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:clipToPadding="false"
-                            android:padding="@dimen/padding"
+                            android:visibility="@{isEmptyAssignedTasks ? View.GONE : View.VISIBLE}"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            tools:itemCount="2"
+                            tools:itemCount="3"
                             tools:listitem="@layout/item_assigned_tasks" />
 
+                        <!-- Empty state -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
+                            android:gravity="center"
                             android:orientation="vertical"
                             android:visibility="@{isEmptyAssignedTasks ? View.VISIBLE : View.GONE}"
-                            tools:visibility="visible">
+                            tools:visibility="gone">
 
                             <com.airbnb.lottie.LottieAnimationView
                                 android:id="@+id/animationView"
@@ -119,18 +168,21 @@
                                 app:lottie_loop="true"
                                 app:lottie_rawRes="@raw/no_data" />
 
+                            <!-- FIX: no style/color → theme-aware -->
                             <TextView
+                                style="@style/CustomMediumTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="@string/no_work_details_found" />
+                                android:text="@string/no_work_details_found"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
                         </LinearLayout>
 
                     </RelativeLayout>
                 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             </LinearLayout>
-
         </androidx.core.widget.NestedScrollView>
 
     </FrameLayout>

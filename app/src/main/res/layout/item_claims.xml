@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="claimItem"
+            type="com.atvantiq.wfms.models.reimbursement.allClaims.Record" />
+    </data>
+
+    <!-- FIX: cardBackgroundColor added -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_small"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding">
+
+            <!-- ── Claim Number ── -->
+            <TextView
+                android:id="@+id/tvClaimNumber"
+                style="@style/CustomRegularTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{claimItem.claimNumber}"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/ivChevron"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="CLM-2026-00021" />
+
+            <!-- ── Chevron ── -->
+            <ImageView
+                android:id="@+id/ivChevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/forward_arrow_right_24"
+                app:layout_constraintBottom_toBottomOf="@id/tvClaimNumber"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvClaimNumber"
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+            <!-- ── Divider below title ── -->
+            <View
+                android:id="@+id/dividerTitle"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:alpha="0.12"
+                android:background="?attr/wfmsColorOnSurface"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvClaimNumber" />
+
+            <!-- ── Status chip — binding adapter sets color ── -->
+            <TextView
+                android:id="@+id/chipStatus"
+                style="@style/CustomSmallTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/status_primary_bg"
+                android:paddingHorizontal="@dimen/padding_small"
+                android:paddingVertical="@dimen/padding_x_small"
+                android:text="@{claimItem.status.code}"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dividerTitle"
+                tools:text="Pending Approval" />
+
+            <!-- ── Date ── -->
+            <TextView
+                android:id="@+id/tvDate"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:drawableStart="@drawable/ic_calender_small"
+                android:drawablePadding="@dimen/padding_x_small"
+                android:drawableTint="?attr/wfmsColorOnSurfaceVariant"
+                android:gravity="center_vertical"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                app:layout_constraintBottom_toBottomOf="@id/chipStatus"
+                app:layout_constraintEnd_toStartOf="@+id/chipExpenseType"
+                app:layout_constraintStart_toEndOf="@+id/chipStatus"
+                app:layout_constraintTop_toTopOf="@id/chipStatus"
+                formatApiDateToMonthDayYear="@{claimItem.createdAt}"
+                tools:text="Jan 22, 2026" />
+
+
+            <TextView
+                android:id="@+id/chipExpenseType"
+                style="@style/CustomSmallTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/info_chip_bg"
+                android:paddingHorizontal="@dimen/padding_small"
+                android:paddingVertical="@dimen/padding_x_small"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/chipStatus"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/chipStatus"
+                tools:text="Local" />
+
+            <!-- ══════════════════════════════════════
+                 AMOUNT BOXES — 2 column grid
+            ══════════════════════════════════════ -->
+            <LinearLayout
+                android:id="@+id/amountContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/chipStatus">
+
+                <!-- Claim Amount -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_small_extra"
+                    android:layout_weight="1"
+                    android:background="@drawable/info_chip_bg"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/padding_medium"
+                    android:paddingVertical="@dimen/padding_small">
+
+                    <TextView
+                        android:id="@+id/claimAmountLabel"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/claim_amount"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvAmount"
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_2dp"
+                        android:text="@{@string/rupee_format(claimItem.totalAmount != null ? claimItem.totalAmount : 0.0)}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="₹ 350.00" />
+                </LinearLayout>
+
+                <!-- Approved Amount — always semantic green, not theme-dependent -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small_extra"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_approval_approved"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/padding_medium"
+                    android:paddingVertical="@dimen/padding_small">
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/approved_amount"
+                        android:textAllCaps="true"
+                        android:textColor="@color/status_present_text"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/approvedAmount"
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_2dp"
+                        android:text="@{@string/rupee_format(claimItem.latestApprovedAmount != null ? claimItem.latestApprovedAmount : 0.0)}"
+                        android:textColor="@color/status_present_text"
+                        android:textStyle="bold"
+                        tools:text="₹ 1050.00" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ══════════════════════════════════════
+                 STATS BAR — Sites | Expenses | Type
+            ══════════════════════════════════════ -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/statsBar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/amountContainer">
+
+                <!-- Divider top -->
+                <View
+                    android:id="@+id/dividerStats"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:alpha="0.1"
+                    android:background="?attr/wfmsColorOnSurface"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Sites -->
+                <LinearLayout
+                    android:id="@+id/statSites"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toStartOf="@+id/divV1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/dividerStats">
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sites"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        android:id="@+id/tvSitesCount"
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{String.valueOf(claimItem.siteCount)}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="2" />
+                </LinearLayout>
+
+                <!-- Vertical divider 1 -->
+                <View
+                    android:id="@+id/divV1"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:alpha="0.15"
+                    android:background="?attr/wfmsColorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="@+id/statSites"
+                    app:layout_constraintEnd_toStartOf="@+id/statExpenses"
+                    app:layout_constraintStart_toEndOf="@+id/statSites"
+                    app:layout_constraintTop_toTopOf="@+id/statSites" />
+
+                <!-- Expenses -->
+                <LinearLayout
+                    android:id="@+id/statExpenses"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toStartOf="@+id/divV2"
+                    app:layout_constraintStart_toEndOf="@+id/divV1"
+                    app:layout_constraintTop_toBottomOf="@+id/dividerStats">
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/expenses"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        android:id="@+id/tvExpensesCount"
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{String.valueOf(claimItem.expenseCount)}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="3" />
+                </LinearLayout>
+
+                <!-- Vertical divider 2 -->
+                <View
+                    android:id="@+id/divV2"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:alpha="0.15"
+                    android:background="?attr/wfmsColorOnSurface"
+                    app:layout_constraintBottom_toBottomOf="@+id/statExpenses"
+                    app:layout_constraintEnd_toStartOf="@+id/statType"
+                    app:layout_constraintStart_toEndOf="@+id/statExpenses"
+                    app:layout_constraintTop_toTopOf="@+id/statExpenses" />
+
+                <!-- Type -->
+                <LinearLayout
+                    android:id="@+id/statType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/divV2"
+                    app:layout_constraintTop_toBottomOf="@+id/dividerStats">
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/type"
+                        android:textAllCaps="true"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        android:id="@+id/tvTypeValue"
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="Multiple" />
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

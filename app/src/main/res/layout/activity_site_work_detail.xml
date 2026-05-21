@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -19,14 +21,16 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/cardLightBackground">
+        android:background="?attr/wfmsColorBackground"
+        android:fitsSystemWindows="true">
 
+        <!-- ════════════════════════════════════
+             HEADER
+        ════════════════════════════════════ -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutHeader"
             android:layout_width="match_parent"
@@ -38,10 +42,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/back"
                 android:padding="@dimen/padding"
                 android:src="@drawable/arrow_back_ios_24"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/wfmsColorPrimary" />
 
             <TextView
                 android:id="@+id/tvBack"
@@ -56,29 +62,38 @@
 
             <TextView
                 android:id="@+id/tvSiteName"
-                style="@style/CustomLargeDarkTextView"
+                style="@style/CustomLargeTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin"
                 android:layout_marginTop="@dimen/margin_small"
-                tools:text="Chandigarh site"
+                android:layout_marginEnd="@dimen/margin"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/wfmsColorOnSurface"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnBack" />
+                app:layout_constraintTop_toBottomOf="@id/btnBack"
+                tools:text="Chandigarh site" />
 
             <TextView
                 android:id="@+id/tvSiteCode"
-                style="@style/CustomMediumDarkTextView"
+                style="@style/CustomMediumTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small_extra"
-                tools:text="CHD-345-POWN-234"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
                 app:layout_constraintStart_toStartOf="@+id/tvSiteName"
-                app:layout_constraintTop_toBottomOf="@id/tvSiteName" />
+                app:layout_constraintTop_toBottomOf="@id/tvSiteName"
+                tools:text="CHD-345-POWN-234" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- ════════════════════════════════════
+             SCROLLABLE BODY
+        ════════════════════════════════════ -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollContent"
             android:layout_width="0dp"
@@ -95,16 +110,19 @@
                 android:padding="@dimen/padding">
 
                 <!-- SITE INFORMATION CARD -->
-                <com.google.android.material.card.MaterialCardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/cardSiteInfo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
                     app:cardCornerRadius="@dimen/card_radius"
-                    app:cardElevation="@dimen/elevation_small"
+                    app:cardElevation="0dp"
+                    app:cardPreventCornerOverlap="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="?attr/wfmsColorOutline"
+                    app:strokeWidth="@dimen/border_width_1dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -114,12 +132,29 @@
                         <TextView
                             android:id="@+id/tvInfoTitle"
                             style="@style/CustomRegularPrimaryTextView"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_small"
                             android:text="@string/site_information"
                             android:textStyle="bold"
+                            app:layout_constraintEnd_toStartOf="@id/tvStatus"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            style="@style/CustomSmallTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/status_green_bg"
+                            android:paddingHorizontal="@dimen/padding"
+                            android:paddingVertical="@dimen/padding_x_small"
+                            android:textStyle="bold"
+                            app:assignedSiteStatus="@{siteStatusInteger}"
+                            app:layout_constraintBottom_toBottomOf="@id/tvInfoTitle"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tvInfoTitle"
+                            tools:text="OPEN" />
 
                         <TextView
                             android:id="@+id/tvProjectLabel"
@@ -128,18 +163,23 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text="@string/project"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tvInfoTitle" />
 
                         <TextView
                             android:id="@+id/tvProject"
-                            style="@style/CustomMediumDarkTextView"
-                            android:layout_width="wrap_content"
+                            style="@style/CustomMediumTextView"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="ERRICSON-TOWER-110"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/tvProjectLabel" />
+                            app:layout_constraintTop_toBottomOf="@id/tvProjectLabel"
+                            tools:text="ERRICSON-TOWER-110" />
 
                         <TextView
                             android:id="@+id/tvCircleLabel"
@@ -148,65 +188,59 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
                             android:text="@string/circle"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tvProject" />
 
                         <TextView
                             android:id="@+id/tvCircle"
-                            style="@style/CustomMediumDarkTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Haryana (HR)"
-                            android:textStyle="bold"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/tvCircleLabel" />
-
-                        <TextView
-                            android:id="@+id/tvStatus"
                             style="@style/CustomMediumTextView"
-                            assignedSiteStatus="@{siteStatusInteger}"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/status_green_bg"
-                            android:paddingHorizontal="@dimen/padding"
-                            android:paddingVertical="@dimen/padding_x_small"
-                            android:textColor="#16A34A"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/tvInfoTitle"
-                            tools:text="OPEN" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tvCircleLabel"
+                            tools:text="Haryana (HR)" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
+                </androidx.cardview.widget.CardView>
 
-                <!-- WORK TYPES -->
+                <!-- WORK TYPES SECTION HEADER -->
                 <TextView
                     android:id="@+id/tvWorkTitle"
-                    style="@style/CustomRegularDarkTextView"
+                    style="@style/CustomRegularTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin"
-                    android:text="WORK TYPES (3)"
+                    android:text="@string/work_types"
+                    android:textAllCaps="true"
+                    android:textColor="?attr/wfmsColorOnSurface"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cardSiteInfo" />
 
                 <!-- Select All Checkbox -->
                 <CheckBox
-                    android:layout_marginStart="@dimen/margin_small_extra"
                     android:id="@+id/cbSelectAllWorkTypes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small_extra"
                     android:layout_marginTop="@dimen/margin_small"
+                    android:buttonTint="?attr/wfmsColorPrimary"
                     android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvWorkTitle" />
 
                 <TextView
-                    style="@style/CustomRegularDarkTextView"
+                    style="@style/CustomRegularTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/select_all"
+                    android:textColor="?attr/wfmsColorOnSurface"
                     android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/cbSelectAllWorkTypes"
                     app:layout_constraintStart_toEndOf="@+id/cbSelectAllWorkTypes"
@@ -227,12 +261,14 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <!-- BOTTOM ACTIONS -->
-
+        <!-- ════════════════════════════════════
+             BOTTOM ACTIONS — Reject (left) + Approve (right)
+        ════════════════════════════════════ -->
         <LinearLayout
             android:id="@+id/layoutActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/wfmsColorSurface"
             android:orientation="horizontal"
             android:padding="@dimen/padding"
             android:visibility="@{hideButtons ? View.GONE : View.VISIBLE}"
@@ -240,47 +276,41 @@
             tools:visibility="visible">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnApprove"
-                style="@style/Widget.Material3.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/green"
-                android:text="@string/approve"
-                android:textColor="@color/white"
-                android:textSize="@dimen/default_text"
-                android:textStyle="bold"
-                app:cornerRadius="@dimen/card_radius"
-                app:icon="@drawable/ic_check_16"
-                app:iconGravity="textStart"
-                app:iconPadding="@dimen/padding_small"
-                app:iconTint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnReject"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnReject"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:layout_weight="1"
                 android:text="@string/reject"
-                android:textColor="@color/red"
+                android:textColor="?attr/wfmsColorError"
                 android:textSize="@dimen/default_text"
                 android:textStyle="bold"
                 app:cornerRadius="@dimen/card_radius"
                 app:icon="@drawable/ic_close_16"
                 app:iconGravity="textStart"
                 app:iconPadding="@dimen/padding_small"
-                app:iconTint="@color/red"
-                app:layout_constraintEnd_toStartOf="@id/btnApprove"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:strokeColor="@color/red_pastel"
-                app:strokeWidth="1dp" />
+                app:iconTint="?attr/wfmsColorError"
+                app:strokeColor="?attr/wfmsColorError"
+                app:strokeWidth="@dimen/border_width_1dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnApprove"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_weight="1"
+                android:backgroundTint="?attr/wfmsColorSuccess"
+                android:text="@string/approve"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/default_text"
+                android:textStyle="bold"
+                app:cornerRadius="@dimen/card_radius"
+                app:icon="@drawable/ic_check_16"
+                app:iconGravity="textStart"
+                app:iconPadding="@dimen/padding_small"
+                app:iconTint="@android:color/white" />
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

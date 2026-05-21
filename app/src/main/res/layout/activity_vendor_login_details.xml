@@ -144,13 +144,13 @@
                 android:background="@drawable/custom_divider"
                 app:layout_constraintTop_toBottomOf="@+id/tvRemarks" />
 
-            <Button
-                style="@style/CustomPrimaryButton"
+            <com.atvantiq.wfms.widgets.GradientButton
+                style="@style/CustomButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_large"
                 android:text="@string/sign_out"
-                app:layout_constraintTop_toBottomOf="@+id/v2"></Button>
+                app:layout_constraintTop_toBottomOf="@+id/v2" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

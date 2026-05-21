@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.data.repository.creation
 
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
+import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
@@ -11,7 +12,7 @@ import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
-import com.ssas.jibli.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,5 +64,9 @@ class CreationRepo @Inject constructor(private val apiService: ApiService, priva
     override suspend fun createSite(params: JsonObject): CreateSiteResponse  = apiService.createSite(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         params = params
+    )
+
+    override suspend fun allProjects(): AllProjectsResponse = apiService.allProjects(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
     )
 }

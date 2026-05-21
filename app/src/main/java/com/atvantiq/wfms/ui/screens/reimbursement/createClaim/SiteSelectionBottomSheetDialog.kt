@@ -1,0 +1,206 @@
+package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
+
+import android.app.Dialog
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.Spinner
+import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.atvantiq.wfms.R
+import com.atvantiq.wfms.databinding.DialogMultiSelectBottomSheetBinding
+import com.atvantiq.wfms.models.site.SiteData
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.util.Locale
+
+class SiteSelectionBottomSheetDialog(
+    private val context: Context,
+    private val sites: List<SiteData>,
+    private val preSelectedSites: Set<SiteData> = emptySet(),
+    private val onSubmit: (List<SiteData>) -> Unit  // returns only selected sites (with selectedPo set)
+) : BottomSheetDialogFragment() {
+
+    private lateinit var binding: DialogMultiSelectBottomSheetBinding
+    private lateinit var adapter: SitePoAdapter
+
+    private val workingSites: MutableList<SiteData> = sites.map { site ->
+        site.copy(
+            selectedPo = if (preSelectedSites.any { it.id == site.id }) {
+                if (site.po?.size == 1) site.po[0] else site.selectedPo
+            } else null
+        )
+    }.toMutableList()
+
+    private val selectedSiteIds = preSelectedSites.map { it.id }.toMutableSet()
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return BottomSheetDialog(context, R.style.AppBottomSheetDialogTheme)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DialogMultiSelectBottomSheetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.titleTextView.visibility = View.VISIBLE
+        binding.titleTextView.text = getString(R.string.select_site)
+
+        adapter = SitePoAdapter(
+            sites = workingSites,
+            selectedSiteIds = selectedSiteIds,
+            onSelectionChanged = { updateSubmitButton() }
+        )
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = adapter
+
+        binding.searchBar.addTextChangedListener { text ->
+            adapter.filter(text.toString())
+        }
+
+        updateSubmitButton()
+        binding.submitButton.setOnClickListener {
+            val selected = workingSites.filter { it.id in selectedSiteIds }
+            onSubmit(selected)
+            dismiss()
+        }
+    }
+
+    private fun updateSubmitButton() {
+        val selectedSites = workingSites.filter { it.id in selectedSiteIds }
+        val allHavePo = selectedSites.isNotEmpty() &&
+                selectedSites.all { site ->
+                    site.po?.isEmpty() == true || site.selectedPo != null
+                }
+        binding.submitButton.isEnabled = allHavePo
+        binding.submitButton.alpha = if (allHavePo) 1f else 0.5f
+    }
+
+
+    private inner class SitePoAdapter(
+        private val sites: MutableList<SiteData>,
+        private val selectedSiteIds: MutableSet<Long>,
+        private val onSelectionChanged: () -> Unit
+    ) : RecyclerView.Adapter<SitePoAdapter.ViewHolder>() {
+
+        private var filteredSites = sites.toMutableList()
+
+        fun filter(query: String) {
+            filteredSites = if (query.isEmpty()) {
+                sites.toMutableList()
+            } else {
+                sites.filter {
+                    it.name.lowercase(Locale.getDefault())
+                        .contains(query.lowercase(Locale.getDefault()))
+                }.toMutableList()
+            }
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_site_with_po, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.bind(filteredSites[position])
+        }
+
+        override fun getItemCount() = filteredSites.size
+
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            private val checkBox: CheckBox = itemView.findViewById(R.id.checkBox)
+            private val tvSiteName: TextView = itemView.findViewById(R.id.textView)
+            private val layoutPoSection: View = itemView.findViewById(R.id.layoutPoSection)
+            private val tvAutoSelectedPo: TextView = itemView.findViewById(R.id.tvAutoSelectedPo)
+            private val spinnerPo: Spinner = itemView.findViewById(R.id.spinnerPo)
+
+            fun bind(site: SiteData) {
+                val isSelected = site.id in selectedSiteIds
+                tvSiteName.text = site.name
+                checkBox.setOnCheckedChangeListener(null) // prevent trigger during rebind
+                checkBox.isChecked = isSelected
+
+                bindPoSection(site, isSelected)
+
+                checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        selectedSiteIds.add(site.id)
+                        // Auto-select PO if only one exists
+                        if (site.po?.size == 1) {
+                            site.selectedPo = site.po[0]
+                        }
+                    } else {
+                        selectedSiteIds.remove(site.id)
+                        site.selectedPo = null
+                    }
+                    notifyItemChanged(adapterPosition)
+                    onSelectionChanged()
+                }
+            }
+
+            private fun bindPoSection(site: SiteData, isSelected: Boolean) {
+                if (!isSelected || site.po?.isEmpty() == true) {
+                    layoutPoSection.visibility = View.GONE
+                    return
+                }
+
+                layoutPoSection.visibility = View.VISIBLE
+
+                when (site.po?.size) {
+                    1 -> {
+                        tvAutoSelectedPo.visibility = View.VISIBLE
+                        tvAutoSelectedPo.text = "PO: ${site?.po?.get(0)?.poNumber}"
+                        spinnerPo.visibility = View.GONE
+                        site.selectedPo = site?.po?.get(0) // ensure it's set
+                    }
+                    else -> {
+                        tvAutoSelectedPo.visibility = View.GONE
+                        spinnerPo.visibility = View.VISIBLE
+
+                        val poLabels = listOf(itemView.context.getString(R.string.select_po_number)) + (site.po?.map { it.poNumber } ?: emptyList())
+                        val spinnerAdapter = ArrayAdapter(
+                            itemView.context,
+                            android.R.layout.simple_spinner_item,
+                            poLabels
+                        ).apply {
+                            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        }
+
+                        spinnerPo.onItemSelectedListener = null
+                        spinnerPo.adapter = spinnerAdapter
+
+                        val restoredIndex = site.po?.indexOfFirst { it.id == site.selectedPo?.id }
+                        restoredIndex?.let { spinnerPo.setSelection(if (it >= 0) restoredIndex + 1 else 0) }
+
+                        spinnerPo.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                            override fun onItemSelected(
+                                parent: AdapterView<*>, view: View?, pos: Int, id: Long
+                            ) {
+                                site.selectedPo = if (pos == 0) null else site.po?.get(pos - 1)
+                                onSelectionChanged()
+                            }
+                            override fun onNothingSelected(parent: AdapterView<*>) {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
