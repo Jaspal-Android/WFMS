@@ -25,8 +25,8 @@ android {
         applicationId = "com.atvantiq.wfms"
         minSdk = 24
         targetSdk = 35
-        versionCode = 14
-        versionName = "1.1.4"
+        versionCode = 17
+        versionName = "1.1.5"
 
         manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
         buildConfigField("String","GOOGLE_MAPS_API_KEY","\"" + secrets.getProperty("GOOGLE_MAPS_API_KEY") + "\"")
@@ -161,8 +161,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-analytics-ktx")
-
     //Auto update app
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")

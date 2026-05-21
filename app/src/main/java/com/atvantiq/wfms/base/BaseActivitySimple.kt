@@ -25,6 +25,7 @@ import com.facebook.stetho.common.Util
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.Lazy
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ import javax.inject.Inject
 abstract class BaseActivitySimple : AppCompatActivity() {
 
     @Inject
-    lateinit var prefMain: SecurePrefMain
+    lateinit var prefMainLazy: Lazy<SecurePrefMain>
 
     private var progressCircularDialog: ProgressCircularDialog? = null
     private var progressDialog: ProgressDialog? = null
@@ -197,6 +198,11 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         var animation: Animation = AnimationUtils.loadAnimation(context, R.anim.shake)
         view.startAnimation(animation)
     }
+
+    // Backwards-compatible accessor — existing call sites keep working unchanged.
+    // First access constructs SecurePrefMain; subsequent accesses are cached by Lazy.
+    val prefMain: SecurePrefMain
+        get() = prefMainLazy.get()
 
     private fun performGlobalLogout() {
         FirebaseMessaging.getInstance().deleteToken()
