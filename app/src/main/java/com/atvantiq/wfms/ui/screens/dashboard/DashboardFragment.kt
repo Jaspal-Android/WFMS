@@ -53,17 +53,23 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         get() = FragmentBinding(R.layout.fragment_dashboard, DashboardViewModel::class.java)
 
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
-        // No-op
+
     }
 
+    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val startColor = MaterialColors.getColor(view, R.attr.wfmsColorPrimaryDark)
         val endColor   = MaterialColors.getColor(view, R.attr.wfmsColorGradientEnd)
         binding.appDashHeader.root.background = GradientDrawable(
             GradientDrawable.Orientation.LEFT_RIGHT,
             intArrayOf(startColor, endColor)
         )
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        setupTabBar()
+        setupSwipeButton()
+
         PrefMethods.getEmpDetailResponse(prefMain)?.let {
             setupUserData(it)
         } ?: viewModel.getEmpDetails()
@@ -296,21 +302,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
-    @SuppressLint("MissingPermission")
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
-    /*    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            lat = location?.latitude ?: 0.0
-            long = location?.longitude ?: 0.0
-        }.addOnFailureListener {
-            lat = 0.0
-            long = 0.0
-        }*/
-        setupTabBar()
-        setupSwipeButton()
-    }
 
     private fun checkInAttendanceStatus() {
         viewModel.checkInStatusAttendance()
@@ -385,12 +376,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun setupTabBar() {
-        val adapter = DashboardPagerAdapter(requireActivity()).apply {
-            addFragment(AttendanceStatusFragment())
-            addFragment(MyTargetsFragment())
-            addFragment(ProjectDashboardFragment())
-        }
-        binding.viewPager.adapter = adapter
+        val pages = listOf(
+            DashboardPagerAdapter.Page(key = "attendance") { AttendanceStatusFragment() },
+            DashboardPagerAdapter.Page(key = "targets") { MyTargetsFragment() },
+            DashboardPagerAdapter.Page(key = "projects") { ProjectDashboardFragment() }
+        )
+        binding.viewPager.adapter = DashboardPagerAdapter(requireActivity(), pages)
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> getString(R.string.attendance)

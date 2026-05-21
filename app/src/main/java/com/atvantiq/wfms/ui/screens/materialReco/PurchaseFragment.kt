@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.materialReco
 
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
@@ -28,11 +29,12 @@ class PurchaseFragment : BaseFragment<FragmentPurchaseBinding,MaterialViewModel>
 
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initListeners()
         inflateMaterialList()
     }
+
 
     private fun initListeners(){
         binding.addMaterialText.setOnClickListener {

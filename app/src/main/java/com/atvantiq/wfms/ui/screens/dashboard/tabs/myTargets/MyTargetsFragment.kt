@@ -2,9 +2,7 @@ package com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
@@ -15,8 +13,6 @@ import com.atvantiq.wfms.widgets.DividerItemDecoration
 
 /**
  * A simple [Fragment] subclass.
- * Use the [MyTargetsFragment.newInstance] factory method to
- * create an instance of this fragment.
  */
 
 class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding,MyTargetsVM>() {
@@ -30,13 +26,18 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding,MyTargetsVM>() {
 
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initMyTargetList()
+    }
+
     override fun subscribeToEvents(vm: MyTargetsVM) {
 
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        initMyTargetList()
+        // Intentionally empty.
     }
 
     private fun initMyTargetList(){
