@@ -29,8 +29,6 @@ import java.util.Calendar
 
 /**
  * A simple [Fragment] subclass.
- * Use the [AttendanceStatusFragment.newInstance] factory method to
- * create an instance of this fragment.
  */
 
 @AndroidEntryPoint
@@ -51,19 +49,18 @@ class AttendanceStatusFragment :
         binding.customCalender.background = ColorDrawable(
             MaterialColors.getColor(requireView(), R.attr.wfmsColorSurface)
         )
+
+        // Hook the handler as soon as the view is created.
+        binding.customCalender.setCustomCalendarEventHandler(calendarEventHandler)
+
         communicationViewModel.refreshCalendar.observe(viewLifecycleOwner) {
             refreshCalendar()
         }
-    }
-
-    private fun refreshCalendar() {
         getAttendanceDetails()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        binding.customCalender.setCustomCalendarEventHandler(calendarEventHandler)
+
+    private fun refreshCalendar() {
         getAttendanceDetails()
     }
 
@@ -157,10 +154,10 @@ class AttendanceStatusFragment :
         val records = response.data?.records
         if (!records.isNullOrEmpty()) {
             val attendanceDays = records.map { detail ->
-                val date = if (detail.checkin == null  || detail.checkin?.time.isNullOrEmpty()) {
+                val date = if (detail.checkin == null  || detail.checkin.time.isNullOrEmpty()) {
                     DateUtils.formatApiDateToYMD(detail.createdAt).toString()
                 } else {
-                    DateUtils.formatApiDateToYMD(detail.checkin?.time).toString()
+                    DateUtils.formatApiDateToYMD(detail.checkin.time).toString()
                 }
                 AttendanceDay(
                     date = date,
@@ -214,4 +211,3 @@ class AttendanceStatusFragment :
         naText.text = noApiDays.toString()
     }
 }
-

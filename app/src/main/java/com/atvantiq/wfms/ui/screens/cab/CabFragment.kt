@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.cab
 
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
@@ -22,12 +23,8 @@ class CabFragment : BaseFragment<FragmentCabBinding, CabViewModel>() {
 
     }
 
-    override fun subscribeToEvents(vm: CabViewModel) {
-
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val cabRides = listOf(
             CabRide("1", "04-03-205","PB","RM45454","Rahul-ATQ/8245","Monthly",30.7333,76.7794,30.6942,76.8606,"4:30 AM","8:40PM"),
             CabRide("1", "05-03-205","HR","HR45555","Rakesh-ATQ/12205","On-Call",30.7333,76.7794,30.9010,75.8573,"10:40 AM","6:00PM"),
@@ -36,6 +33,15 @@ class CabFragment : BaseFragment<FragmentCabBinding, CabViewModel>() {
         )
         setListeners()
         setCabListAllList(cabRides)
+    }
+
+    override fun subscribeToEvents(vm: CabViewModel) {
+
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        // Intentionally empty.
     }
 
     private fun setListeners(){

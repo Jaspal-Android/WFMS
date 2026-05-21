@@ -24,9 +24,11 @@ class GetOTPBottomSheetDialog(
     override fun onCreateViewFragment(savedInstanceState: Bundle?) {
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        clearOtpInputs()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState == null) {
+            clearOtpInputs()
+        }
         setupOtpInputs()
         setListeners()
     }
@@ -59,7 +61,7 @@ class GetOTPBottomSheetDialog(
 
         otpBoxes.forEachIndexed { idx, editText ->
             // Select all text when focused (for tap or programmatic focus)
-            editText.setOnFocusChangeListener { v, hasFocus ->
+            editText.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     editText.post {
                         editText.selectAll()
