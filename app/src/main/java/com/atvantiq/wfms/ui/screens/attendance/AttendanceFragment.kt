@@ -432,27 +432,6 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         )
     }
 
-    @SuppressLint("MissingPermission")
-    private fun endWorkWithLocationPermissions(workId: Long, position: Int) {
-        handleLocationPermissions(
-            onPermissionsGranted = {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val latitude = location.latitude.toString()
-                        val longitude = location.longitude.toString()
-                        EndWorkBottomSheet(latitude, longitude) { statusId, remarks ->
-                            //viewModel.workEnd(workId, latitude.toDouble(), longitude.toDouble(), statusId, remarks, position)
-                        }.show(requireActivity().supportFragmentManager, "END_WORK_BOTTOM_SHEET_TAG")
-                    } else {
-                        showToast(requireContext(), getString(R.string.location_not_found))
-                    }
-                }.addOnFailureListener {
-                    showToast(requireContext(), getString(R.string.location_error))
-                }
-            }
-        )
-    }
-
     private fun getRequiredPermissions(): Array<String> {
         return buildList {
             add(Manifest.permission.ACCESS_FINE_LOCATION)

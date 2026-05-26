@@ -8,6 +8,7 @@ import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
 import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.models.inventory.InventoryByProjectResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -51,5 +52,10 @@ class WorkRepo @Inject constructor(private val apiService: ApiService, private v
     override suspend fun workDetailByDate(date: String): WorkDetailsByDateResponse  = apiService.workDetailByDate(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         date = date
+    )
+
+    override suspend fun inventoryByProject(projectId: Long): InventoryByProjectResponse = apiService.inventoryByProject(
+            token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+            projectId = projectId
     )
 }

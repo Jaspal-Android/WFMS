@@ -81,4 +81,7 @@ object NetworkEndPoints {
 
 	/*Claim by ID*/
 	const val claimById = "claim/{claim_id}"
+
+    /*Inventory by projects*/
+    const val inventoryByProject = "inventory/by-project/{project_id}"
 }

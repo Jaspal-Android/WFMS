@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.data.repository.work
 
+import com.atvantiq.wfms.models.inventory.InventoryByProjectResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
@@ -23,4 +24,6 @@ interface IWorkRepo {
     suspend fun workById(workSiteId:Long): WorkDetailResponse
 
     suspend fun workDetailByDate(date: String): WorkDetailsByDateResponse
+
+    suspend fun inventoryByProject(projectId: Long): InventoryByProjectResponse
 }

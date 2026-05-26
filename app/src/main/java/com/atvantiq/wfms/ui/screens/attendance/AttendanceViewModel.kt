@@ -9,6 +9,7 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
+import com.atvantiq.wfms.models.inventory.UsedMaterial
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.Type
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
@@ -100,7 +101,7 @@ class AttendanceViewModel @Inject constructor(
 
     fun workDetailsByDate(date: String) {
         executeApiCall(
-            apiCall = { workRepo.workDetailByDate(date)},
+            apiCall = { workRepo.workDetailByDate(date) },
             liveData = workDetailsByDateResponse
         )
     }
@@ -111,13 +112,21 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workAccept(workSiteId) },
             liveData = workAcceptResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(-1)
+                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                    -1
+                )
             },
             onError = { itemPosition.postValue(-1) }
         )
     }
 
-    fun workStart(workId: String, latitude: String, longitude: String, photoPath: String, position: Int) {
+    fun workStart(
+        workId: String,
+        latitude: String,
+        longitude: String,
+        photoPath: String,
+        position: Int
+    ) {
         val file = File(photoPath)
         val photoPart = MultipartBody.Part.createFormData(
             "photo", file.name, file.asRequestBody("image/*".toMediaType())
@@ -131,13 +140,24 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workStart(workIdBody, latitudeBody, longitudeBody, photoPart) },
             liveData = workStartResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(-1)
+                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                    -1
+                )
             },
             onError = { itemPosition.postValue(-1) }
         )
     }
 
-    fun workEnd(workSiteId: Long, latitude: Double, longitude: Double, types: List<Type>,statusId:Int,remarks:String,position: Int) {
+    fun workEnd(
+        workSiteId: Long,
+        latitude: Double,
+        longitude: Double,
+        types: List<Type>,
+        statusId: Int,
+        remarks: String,
+        position: Int,
+        usedMaterials: List<UsedMaterial>?
+    ) {
         val params = JsonObject().apply {
             addProperty("work_site_id", workSiteId)
             addProperty("latitude", latitude)
@@ -147,18 +167,33 @@ class AttendanceViewModel @Inject constructor(
                 val typeObject = JsonObject().apply {
                     addProperty("type_id", type.id)
                     addProperty("status", statusId)
-                    addProperty("remarks",remarks)
+                    addProperty("remarks", remarks)
                 }
                 typesArray.add(typeObject)
             }
             add("types", typesArray)
+
+            if (!usedMaterials.isNullOrEmpty()) {
+                val itemsUsedArray = JsonArray()
+                usedMaterials?.forEach { material ->
+                    val itemObject = JsonObject().apply {
+                        addProperty("item_id", material.materialId)
+                        addProperty("quantity", material.usedQuantity)
+                    }
+                    itemsUsedArray.add(itemObject)
+                }
+                add("items_used", itemsUsedArray)
+            }
+
         }
         itemPosition.postValue(position)
         executeApiCall(
             apiCall = { workRepo.workEnd(params) },
             liveData = workEndResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(-1)
+                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                    -1
+                )
             },
             onError = { itemPosition.postValue(-1) }
         )
