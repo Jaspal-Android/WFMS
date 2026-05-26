@@ -28,6 +28,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WFMS"
         tools:targetApi="31">
+
+        <activity android:name=".ui.screens.intentory.MaterialUsageActivity"
+            android:exported="false"
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".ui.screens.reimbursement.claimDetails.ClaimDetailActivity"
             android:exported="false" />

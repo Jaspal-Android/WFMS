@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground">
+
+            <include
+                android:id="@+id/materialUsageToolbar"
+                layout="@layout/custom_toolbar"></include>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/searchContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin"
+                app:cardBackgroundColor="?attr/wfmsColorSurfaceVariant"
+                app:cardCornerRadius="@dimen/card_radius"
+                app:cardElevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/materialUsageToolbar">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingEnd="@dimen/padding_medium">
+
+                    <ImageView
+                        android:id="@+id/ivSearchIcon"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_search"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <EditText
+                        android:id="@+id/searchEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_marginEnd="@dimen/margin_small"
+                        android:background="@null"
+                        android:hint="@string/material_search_hint"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:minHeight="40dp"
+                        android:paddingTop="@dimen/padding_small"
+                        android:paddingBottom="@dimen/padding_small"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textColorHint="?attr/wfmsColorOnSurfaceVariant"
+                        android:textSize="@dimen/default_text"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/searchClearIcon"
+                        app:layout_constraintStart_toEndOf="@id/ivSearchIcon"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/searchClearIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="2dp"
+                        android:src="@drawable/ic_close_16"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/wfmsColorOnSurfaceVariant"
+                        tools:visibility="visible" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tvMaterialCount"
+                style="@style/CustomSmallTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                app:layout_constraintEnd_toStartOf="@id/tvClearAll"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/searchContainer"
+                tools:text="8 materials" />
+
+            <TextView
+                android:id="@+id/tvClearAll"
+                style="@style/CustomSmallTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin"
+                android:padding="@dimen/padding_x_small"
+                android:text="@string/material_clear_all"
+                android:textColor="?attr/wfmsColorError"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/tvMaterialCount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvMaterialCount"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/materialRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/padding_medium"
+                android:paddingEnd="@dimen/padding_medium"
+                android:paddingBottom="@dimen/padding_small"
+                app:layout_constraintBottom_toTopOf="@id/footerContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMaterialCount"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_material" />
+
+            <LinearLayout
+                android:id="@+id/emptyContainer"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_large"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/footerContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMaterialCount"
+                tools:visibility="gone">
+
+
+                <TextView
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@string/material_empty_title"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold" />
+
+                <TextView
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:gravity="center"
+                    android:text="@string/material_empty_msg"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/errorContainer"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_large"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/footerContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMaterialCount"
+                tools:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:src="@drawable/ic_warning"
+                    app:tint="?attr/wfmsColorError" />
+
+                <TextView
+                    android:id="@+id/tvErrorMessage"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:gravity="center"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    tools:text="Failed to load materials" />
+
+                <com.atvantiq.wfms.widgets.GradientButton
+                    android:id="@+id/btnRetry"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin"
+                    android:minHeight="0dp"
+                    android:paddingHorizontal="@dimen/button_padding_lr"
+                    android:paddingVertical="@dimen/button_padding_tb"
+                    android:text="@string/material_retry"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/footerContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="?attr/wfmsColorSurface"
+                android:paddingStart="@dimen/padding"
+                android:paddingTop="@dimen/padding_medium"
+                android:paddingEnd="@dimen/padding"
+                android:paddingBottom="@dimen/padding_medium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <View
+                    android:id="@+id/footerDivider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:alpha="0.1"
+                    android:background="?attr/wfmsColorOnSurface"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvAddedCount"
+                    style="@style/CustomMediumTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/tvTotalQty"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/footerDivider"
+                    tools:text="3 materials added" />
+
+                <TextView
+                    android:id="@+id/tvTotalQty"
+                    style="@style/CustomSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    app:layout_constraintBottom_toBottomOf="@id/tvAddedCount"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvAddedCount"
+                    tools:text="Total: 54" />
+
+                <com.atvantiq.wfms.widgets.GradientButton
+                    android:id="@+id/btnSubmit"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="@string/material_submit_completion"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAddedCount" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

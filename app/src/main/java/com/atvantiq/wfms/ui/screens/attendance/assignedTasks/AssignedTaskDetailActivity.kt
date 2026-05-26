@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -41,6 +42,7 @@ class AssignedTaskDetailActivity :
 
     private var itemPosition: Int = -1
     private var workSiteId: Long? = null
+    private var projectId: Long? = null
     private var itemTypeAdapter: WorkTypeAdapter? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -127,6 +129,7 @@ class AssignedTaskDetailActivity :
     }
 
     private fun setupUI(record: WorkDetailData?) {
+        projectId = record?.project?.id
         binding.tvProject.text = record?.project?.name ?: getString(R.string.not_available)
         binding.siteStatusInteger = record?.status?.code
         binding.tvCircle.text = record?.circle?.name ?: getString(R.string.not_available)
@@ -503,17 +506,25 @@ class AssignedTaskDetailActivity :
                     if (location != null) {
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
-                        EndWorkBottomSheet(latitude, longitude) { statusId, remarks ->
+                        val bottomSheet = EndWorkBottomSheet.newInstance(
+                            latitude = latitude,
+                            longitude = longitude,
+                            workId = workSiteId,
+                            projectId = projectId ?: -1
+                        )
+                        bottomSheet.onSubmitDetails = { statusId, remarks ->
                             viewModel.workEnd(
-                                workSiteId,
-                                latitude.toDouble(),
-                                longitude.toDouble(),
-                                types,
-                                statusId,
-                                remarks,
-                                position
+                                workSiteId, latitude.toDouble(), longitude.toDouble(),
+                                types, statusId, remarks, position, null
                             )
-                        }.show(this.supportFragmentManager, "END_WORK_BOTTOM_SHEET_TAG")
+                        }
+                        bottomSheet.onMaterialFlowCompleted = { statusId, remarks, usedMaterials ->
+                            viewModel.workEnd(
+                                workSiteId, latitude.toDouble(), longitude.toDouble(),
+                                types, statusId, remarks, position, usedMaterials
+                            )
+                        }
+                        bottomSheet.show(supportFragmentManager, "EndWorkBottomSheet")
                     } else {
                         showToast(this, getString(R.string.location_not_found))
                     }
@@ -525,4 +536,3 @@ class AssignedTaskDetailActivity :
     }
 
 }
-
