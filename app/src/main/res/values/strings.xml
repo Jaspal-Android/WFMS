@@ -408,4 +408,42 @@
     <string name="no_work_sites_found">No work sites found</string>
     <string name="view_details">View details</string>
 
+    <!--Material Usage Strings-->
+    <string name="material_usage_title">Material Usage</string>
+    <string name="material_usage_subtitle">Enter consumed material quantity</string>
+    <string name="material_search_hint">Search by name or unit</string>
+    <string name="material_qty_hint">Qty</string>
+
+    <string name="material_count_total">%1$d materials</string>
+    <string name="material_count_matched">%1$d of %2$d match</string>
+    <string name="material_added_count">%1$d materials added</string>
+    <string name="material_total_qty">Total: %1$s</string>
+    <string name="material_available_qty">Available: %1$s %2$s</string>
+    <string name="material_out_of_stock">Out of stock</string>
+
+    <string name="material_submit_completion">Submit work completion</string>
+    <string name="material_submit_without">Submit without materials</string>
+    <string name="material_submitting">Submitting…</string>
+
+    <string name="material_clear_all">Clear all</string>
+    <string name="material_clear_all_title">Clear all entries?</string>
+    <string name="material_clear_all_msg">All entered quantities will be removed. You can re-enter them again.</string>
+    <string name="material_clear">Clear</string>
+
+    <string name="material_confirm_submit_title">Complete work?</string>
+    <string name="material_confirm_submit_msg">%1$d materials used · Total %2$s. The work order will be marked completed and material usage recorded.</string>
+    <string name="material_yes_complete">Yes, complete</string>
+    <string name="material_review">Review again</string>
+
+    <string name="material_err_exceeds">Cannot exceed available stock (%1$s %2$s)</string>
+    <string name="material_err_negative">Must be a positive number</string>
+    <string name="material_err_invalid">Enter a valid number</string>
+    <string name="material_fix_errors">Fix highlighted errors before submitting</string>
+
+    <string name="material_empty_title">No material assigned</string>
+    <string name="material_empty_msg">There is no material assigned for this work. You can still complete the work without recording any usage.</string>
+
+    <string name="material_retry">Retry</string>
+    <string name="work_completed_success">Work completed successfully.</string>
+
 </resources>

@@ -11,6 +11,7 @@ import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
+import com.atvantiq.wfms.models.inventory.InventoryByProjectResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
@@ -187,4 +188,8 @@ interface ApiService {
 
 	@GET(NetworkEndPoints.claimById)
 	suspend fun claimById(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): ClaimDetailResponse
+
+    @GET(NetworkEndPoints.inventoryByProject)
+    suspend fun inventoryByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): InventoryByProjectResponse
+
 }
