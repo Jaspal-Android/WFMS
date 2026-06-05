@@ -81,7 +81,7 @@
                     android:paddingHorizontal="@dimen/padding_medium"
                     android:paddingVertical="@dimen/padding_x_small"
                     android:textStyle="bold"
-                    app:attendanceStatus="@{item.status.code}"
+                    app:attendanceStatus="@{item.status}"
                     tools:text="Present" />
             </LinearLayout>
 

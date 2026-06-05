@@ -39,11 +39,12 @@ class AttendanceRepo @Inject constructor(
         )
     }
 
-    override suspend fun attendanceDetails(month: Int, year: Int): AttendanceDetailListResponse {
+    override suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean): AttendanceDetailListResponse {
         return apiService.attendanceDetails(
             "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
             month,
-            year
+            year,
+            flag
         )
     }
 

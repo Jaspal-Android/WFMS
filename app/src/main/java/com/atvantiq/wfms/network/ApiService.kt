@@ -67,7 +67,7 @@ interface ApiService {
 	suspend fun attendanceCheckInStatus(@Header("Authorization") token: String): CheckInStatusResponse
 
 	@GET(NetworkEndPoints.attendanceDetails)
-	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int): AttendanceDetailListResponse
+	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int,@Query("is_export") flag: Boolean ): AttendanceDetailListResponse
 
 	@GET(NetworkEndPoints.workAssignedAll)
 	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedResponse

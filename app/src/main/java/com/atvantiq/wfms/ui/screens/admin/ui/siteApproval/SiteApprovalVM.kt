@@ -27,7 +27,7 @@ class SiteApprovalVM @Inject constructor(
     fun getAttendanceDetails(month: Int, year: Int) {
 
         executeApiCall(
-            apiCall = { attendanceRepo.attendanceDetails(month, year) },
+            apiCall = { attendanceRepo.attendanceDetails(month, year,true) },
             liveData = attendanceDetailsResponse
         )
     }
