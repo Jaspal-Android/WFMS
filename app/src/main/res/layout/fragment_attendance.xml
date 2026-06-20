@@ -103,27 +103,134 @@
                 </androidx.cardview.widget.CardView>
 
                 <!-- ══════════════════════════════════════
-                     ASSIGNED WORK HEADER
+                     SEARCH BAR
                 ══════════════════════════════════════ -->
-                <LinearLayout
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/margin_small"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius_large"
+                    app:cardElevation="@dimen/elevation_small">
 
-                    <!-- FIX: CustomRegularDarkTextView → theme color -->
-                    <TextView
-                        android:id="@+id/tvSignInDetails"
-                        style="@style/CustomSmallTextView"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/assigned_work"
-                        android:textAllCaps="true"
-                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/padding_medium"
+                        android:paddingTop="10dp"
+                        android:paddingEnd="@dimen/padding"
+                        android:paddingBottom="10dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_search"
+                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                        <EditText
+                            android:id="@+id/etSearch"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:hint="@string/search_by_site_or_project"
+                            android:imeOptions="actionSearch"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textColorHint="?attr/wfmsColorOnSurfaceVariant"
+                            android:textSize="@dimen/default_medium_small_text" />
+
+                        <ImageView
+                            android:id="@+id/ivClearSearch"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_close_16"
+                            android:visibility="gone"
+                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- ══════════════════════════════════════
+                     FILTER CHIPS
+                ══════════════════════════════════════ -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/filterChipsRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/chipAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:background="@drawable/bg_filter_chip_selected"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="8dp"
+                            android:text="@string/filter_all"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/default_medium_small_text"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/chipPending"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:background="@drawable/bg_filter_chip_unselected"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="8dp"
+                            android:text="@string/filter_pending"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            android:textSize="@dimen/default_medium_small_text"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/chipActive"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_small"
+                            android:background="@drawable/bg_filter_chip_unselected"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="8dp"
+                            android:text="@string/filter_active"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            android:textSize="@dimen/default_medium_small_text"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/chipCompleted"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_filter_chip_unselected"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="8dp"
+                            android:text="@string/filter_completed"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            android:textSize="@dimen/default_medium_small_text"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
 
                 <!-- ══════════════════════════════════════
                      TASK LIST + EMPTY STATE

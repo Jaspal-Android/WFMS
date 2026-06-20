@@ -9,6 +9,7 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
+import com.atvantiq.wfms.ui.screens.attendance.WorkFilter
 import com.atvantiq.wfms.models.inventory.UsedMaterial
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.Type
@@ -37,6 +38,10 @@ class AttendanceViewModel @Inject constructor(
     var clickEvents = MutableLiveData<AttendanceClickEvents>()
     var itemPosition = MutableLiveData<Int>().apply { value = -1 }
     var currentWorkId: Long? = null
+
+    // Search & filter state
+    var searchQuery: String = ""
+    var activeFilter: WorkFilter = WorkFilter.ALL
 
     private val _isTracking = MutableLiveData<Boolean>(false)
     val isTracking: LiveData<Boolean> get() = _isTracking
@@ -84,10 +89,9 @@ class AttendanceViewModel @Inject constructor(
         getApplication<Application>().stopService(serviceIntent)
     }
 
-    // API call methods
     fun getWorkAssignedAll(page: Int, pageSize: Int) {
         executeApiCall(
-            apiCall = { workRepo.workAssignedAll(page, pageSize) },
+            apiCall = { workRepo.workAssignedAll(page, pageSize, searchQuery, activeFilter.statusParam) },
             liveData = workAssignedAllResponse
         )
     }

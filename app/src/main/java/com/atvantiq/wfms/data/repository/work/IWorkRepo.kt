@@ -11,7 +11,7 @@ import okhttp3.RequestBody
 
 interface IWorkRepo {
 
-    suspend fun workAssignedAll(page:Int,pageSize:Int): WorkAssignedResponse
+    suspend fun workAssignedAll(page: Int, pageSize: Int, search: String? = null, status: String? = null): WorkAssignedResponse
 
     suspend fun workAccept(workSiteId: Long): WorkDetailResponse
 

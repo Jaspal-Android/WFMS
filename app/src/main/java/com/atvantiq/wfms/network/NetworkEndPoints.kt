@@ -84,4 +84,8 @@ object NetworkEndPoints {
 
     /*Inventory by projects*/
     const val inventoryByProject = "inventory/by-project/{project_id}"
+
+    /*Budget / Targets*/
+    const val myTargets = "budget/emp/my-targets"
+    const val myProjects = "budget/emp/my-projects"
 }

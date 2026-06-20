@@ -4,6 +4,8 @@ import com.atvantiq.wfms.data.repository.atten.AttendanceRepo
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.data.repository.auth.AuthRepo
+import com.atvantiq.wfms.data.repository.budget.BudgetRepo
+import com.atvantiq.wfms.data.repository.budget.IBudgetRepo
 import com.atvantiq.wfms.data.repository.claims.ClaimRepo
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
@@ -46,4 +48,8 @@ class RepoModule() {
 	@Provides
 	@Singleton
 	fun provideIClaimRepo(claimRepo: ClaimRepo): IClaimRepo = claimRepo
+
+	@Provides
+	@Singleton
+	fun provideIBudgetRepo(budgetRepo: BudgetRepo): IBudgetRepo = budgetRepo
 }

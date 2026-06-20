@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.atvantiq.wfms.dev" />
-                  <option name="mobileSdkAppId" value="1:927965717895:android:e1cf2b901375e75a715f22" />
-                  <option name="projectId" value="wfms-a85aa" />
-                  <option name="projectNumber" value="927965717895" />
+                  <option name="appId" value="com.atvantiq.wfms" />
+                  <option name="mobileSdkAppId" value="1:740762328944:android:ae63f79b306eac8b88b9b5" />
+                  <option name="projectId" value="wfms-24378" />
+                  <option name="projectNumber" value="740762328944" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

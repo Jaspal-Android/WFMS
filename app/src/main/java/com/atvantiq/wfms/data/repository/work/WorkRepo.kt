@@ -17,11 +17,14 @@ import javax.inject.Singleton
 @Singleton
 class WorkRepo @Inject constructor(private val apiService: ApiService, private val prefMain: SecurePrefMain) : IWorkRepo {
 
-    override suspend fun workAssignedAll(page: Int, pageSize: Int): WorkAssignedResponse = apiService.workAssignedAll(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-        page = page,
-        page_size = pageSize
-    )
+    override suspend fun workAssignedAll(page: Int, pageSize: Int, search: String?, status: String?): WorkAssignedResponse =
+        apiService.workAssignedAll(
+            token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN, ""),
+            page = page,
+            page_size = pageSize,
+            search = search?.takeIf { it.isNotBlank() },
+            status = status
+        )
 
     override suspend fun workAccept(workSiteId:Long): WorkDetailResponse = apiService.workAccept(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),workSiteId)
