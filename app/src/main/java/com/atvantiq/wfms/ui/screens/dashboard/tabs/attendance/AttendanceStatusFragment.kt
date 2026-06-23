@@ -161,7 +161,7 @@ class AttendanceStatusFragment :
                 }
                 AttendanceDay(
                     date = date,
-                    status = mapStatus(detail.status?.code ?: -1),
+                    status = mapStatus(detail.status ?: -1),
                     record = detail
                 )
             }
