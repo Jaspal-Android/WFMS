@@ -267,6 +267,26 @@ object DateUtils {
         }
     }
 
+    /** Formats a 1-based month + year into display label e.g. "June 2026". */
+    fun formatMonthYear(month: Int, year: Int): String {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.MONTH, month - 1)
+            set(Calendar.YEAR, year)
+        }
+        return SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(calendar.time)
+    }
+
+    /** Parses an API "YYYY-MM" string into display label e.g. "June 2026". Returns raw string on failure. */
+    fun formatYearMonthString(yearMonth: String?): String {
+        if (yearMonth == null) return "-"
+        return try {
+            val date = SimpleDateFormat("yyyy-MM", Locale.getDefault()).parse(yearMonth)
+            SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(date!!)
+        } catch (e: Exception) {
+            yearMonth
+        }
+    }
+
     fun isStartDateBeforeEndDate(startDate:String,endDate:String): Boolean {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return try {

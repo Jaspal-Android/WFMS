@@ -446,4 +446,26 @@
     <string name="material_retry">Retry</string>
     <string name="work_completed_success">Work completed successfully.</string>
 
+    <!-- My Targets -->
+    <string name="period">PERIOD</string>
+    <string name="revenue_target">REVENUE TARGET</string>
+    <string name="on_track">On Track</string>
+    <string name="behind">Behind</string>
+    <string name="achieved">achieved</string>
+    <string name="to_go">to go</string>
+    <string name="sites_completed">Sites Completed</string>
+    <string name="active_days">Active Days</string>
+    <string name="hours_worked">Hours Worked</string>
+    <string name="efficiency">Efficiency</string>
+    <string name="select_month">Select Month</string>
+    <string name="no_targets_data">No targets data available for this period.</string>
+    <string name="status_above_target">Above Target</string>
+    <string name="status_under_target">Under Target</string>
+    <string name="no_projects_data">No projects found for this period.</string>
+    <string name="search_by_site_or_project">Search by site or project</string>
+    <string name="filter_all">All</string>
+    <string name="filter_pending">Pending</string>
+    <string name="filter_active">Active</string>
+    <string name="filter_completed">Completed</string>
+
 </resources>
