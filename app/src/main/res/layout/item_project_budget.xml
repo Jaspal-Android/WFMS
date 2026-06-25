@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="@dimen/margin_small"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <!-- Row 1: Project name + status badge -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvProjectName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="AT&amp;T 5G Rollout" />
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingBottom="5dp"
+                    android:textSize="@dimen/default_medium_small_text"
+                    android:textStyle="bold"
+                    tools:background="@drawable/bg_status_on_track"
+                    tools:text="On Track"
+                    tools:textColor="@color/status_present_text" />
+
+            </LinearLayout>
+
+            <!-- Row 2: Client · Circle -->
+            <TextView
+                android:id="@+id/tvClientLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:textSize="@dimen/default_medium_small_text"
+                tools:text="AT&amp;T Networks · Northeast" />
+
+            <!-- Row 3: Progress bar -->
+            <ProgressBar
+                android:id="@+id/progressProject"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:max="100"
+                android:progressDrawable="@drawable/progress_revenue"
+                tools:progress="60" />
+
+            <!-- Row 4: Sites · Revenue -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small_extra"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvSitesRatio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textSize="@dimen/default_medium_small_text"
+                    android:textStyle="bold"
+                    tools:text="3/5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" sites  ·  "
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    android:textSize="@dimen/default_medium_small_text" />
+
+                <TextView
+                    android:id="@+id/tvRevenue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textSize="@dimen/default_medium_small_text"
+                    android:textStyle="bold"
+                    tools:text="$220K of $250K" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
