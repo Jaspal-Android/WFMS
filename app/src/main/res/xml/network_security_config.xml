@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-<domain-config cleartextTrafficPermitted="true">
-    <domain includeSubdomains="true">31.97.62.78</domain>
-    <domain includeSubdomains="true">157.173.220.189</domain>
-    <domain includeSubdomains="true">devapi.onaqt.com</domain>
-</domain-config>
+    <!--
+        Cleartext (HTTP) traffic is denied app-wide. All API flavors (dev/beta/demo/prod)
+        use HTTPS base URLs, so no host needs a cleartext exception. This prevents auth
+        tokens and location data from ever being sent over an unencrypted connection.
+    -->
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>
