@@ -28,7 +28,7 @@ data class AttendanceRecord(
     @SerializedName("logs")
     val logs: Logs?,
     @SerializedName("status")
-    val status: Status?,
+    val status: Int?,
     @SerializedName("work_hours")
     val workHours: String?
 ):Parcelable

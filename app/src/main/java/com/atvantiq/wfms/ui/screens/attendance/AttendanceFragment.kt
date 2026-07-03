@@ -7,7 +7,12 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -49,6 +54,9 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     private var isLastPage = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private val searchDebounce = Runnable { resetAndFetch() }
+
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance, AttendanceViewModel::class.java)
 
@@ -59,11 +67,13 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpWorkAssignmentList()
+        setupSearch()
+        setupFilterChips()
         swipeRefresh()
         page = 1
         isLastPage = false
-        adapter?.submitList(emptyList()) // Clear adapter data
-        getWorkAssignedAll() // Fetch data only on first creation
+        adapter?.submitList(emptyList())
+        getWorkAssignedAll()
     }
 
     override fun onDestroyView() {
@@ -283,13 +293,71 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun getWorkAssignedAll() {
-        if (isLoading || isLastPage)
-            return
+        if (isLoading || isLastPage) return
         isLoading = true
-        if (page != 1) {
-            adapter?.addLoadingFooter() // Show loading footer only for next pages
-        }
+        if (page != 1) adapter?.addLoadingFooter()
         viewModel.getWorkAssignedAll(page, pageSize)
+    }
+
+    private fun resetAndFetch() {
+        page = 1
+        isLastPage = false
+        isLoading = false
+        adapter?.removeLoadingFooter()
+        adapter?.submitList(emptyList())
+        getWorkAssignedAll()
+    }
+
+    private fun setupSearch() {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val query = s?.toString() ?: ""
+                viewModel.searchQuery = query
+                binding.ivClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
+                searchHandler.removeCallbacks(searchDebounce)
+                searchHandler.postDelayed(searchDebounce, 500L)
+            }
+        })
+        binding.ivClearSearch.setOnClickListener {
+            binding.etSearch.setText("")
+        }
+    }
+
+    private fun setupFilterChips() {
+        val chips = mapOf(
+            binding.chipAll to WorkFilter.ALL,
+            binding.chipPending to WorkFilter.PENDING,
+            binding.chipActive to WorkFilter.ACTIVE,
+            binding.chipCompleted to WorkFilter.COMPLETED
+        )
+        chips.forEach { (chip, filter) ->
+            chip.setOnClickListener {
+                if (viewModel.activeFilter == filter) return@setOnClickListener
+                viewModel.activeFilter = filter
+                updateChipStyles(chips, filter)
+                resetAndFetch()
+            }
+        }
+    }
+
+    private fun updateChipStyles(chips: Map<TextView, WorkFilter>, selected: WorkFilter) {
+        val primaryColor = com.google.android.material.color.MaterialColors.getColor(
+            requireView(), com.atvantiq.wfms.R.attr.wfmsColorPrimary
+        )
+        val onSurfaceVariantColor = com.google.android.material.color.MaterialColors.getColor(
+            requireView(), com.atvantiq.wfms.R.attr.wfmsColorOnSurfaceVariant
+        )
+        chips.forEach { (chip, filter) ->
+            if (filter == selected) {
+                chip.setBackgroundResource(R.drawable.bg_filter_chip_selected)
+                chip.setTextColor(resources.getColor(android.R.color.white, requireContext().theme))
+            } else {
+                chip.setBackgroundResource(R.drawable.bg_filter_chip_unselected)
+                chip.setTextColor(onSurfaceVariantColor)
+            }
+        }
     }
 
     private fun setUpWorkAssignmentList() {
@@ -361,11 +429,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun startRefreshingData() {
-        page = 1
-        isLastPage = false // Reset last page flag
-        adapter?.removeLoadingFooter() // Remove loading footer on refresh
-        adapter?.submitList(emptyList()) // Clear adapter data on refresh
-        viewModel.getWorkAssignedAll(page, pageSize)
+        resetAndFetch()
     }
 
     private fun stopRefreshingData() {

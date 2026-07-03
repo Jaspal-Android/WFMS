@@ -12,6 +12,8 @@ import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.models.inventory.InventoryByProjectResponse
+import com.atvantiq.wfms.models.targets.MyProjectsResponse
+import com.atvantiq.wfms.models.targets.MyTargetsResponse
 import com.atvantiq.wfms.models.location.SendLocationResponse
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
@@ -67,10 +69,16 @@ interface ApiService {
 	suspend fun attendanceCheckInStatus(@Header("Authorization") token: String): CheckInStatusResponse
 
 	@GET(NetworkEndPoints.attendanceDetails)
-	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int): AttendanceDetailListResponse
+	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int,@Query("is_export") flag: Boolean ): AttendanceDetailListResponse
 
 	@GET(NetworkEndPoints.workAssignedAll)
-	suspend fun workAssignedAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") page_size:Int ): WorkAssignedResponse
+	suspend fun workAssignedAll(
+		@Header("Authorization") token: String,
+		@Query("page") page: Int,
+		@Query("page_size") page_size: Int,
+		@Query("search") search: String? = null,
+		@Query(value = "status", encoded = true) status: String? = null
+	): WorkAssignedResponse
 
 	@GET(NetworkEndPoints.workSiteDetails)
 	suspend fun workById(@Header("Authorization") token: String, @Path("work_site_id") workSiteId:Long): WorkDetailResponse
@@ -191,5 +199,11 @@ interface ApiService {
 
     @GET(NetworkEndPoints.inventoryByProject)
     suspend fun inventoryByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): InventoryByProjectResponse
+
+    @GET(NetworkEndPoints.myTargets)
+    suspend fun myTargets(@Header("Authorization") token: String, @Query("month") month: String?): MyTargetsResponse
+
+    @GET(NetworkEndPoints.myProjects)
+    suspend fun myProjects(@Header("Authorization") token: String, @Query("month") month: String?): MyProjectsResponse
 
 }

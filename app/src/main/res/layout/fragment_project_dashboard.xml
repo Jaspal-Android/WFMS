@@ -1,56 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ui.screens.dashboard.tabs.projectDashboard.ProjectDashboardFragment">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/padding"
+            android:paddingTop="@dimen/padding"
+            android:paddingEnd="@dimen/padding"
+            android:paddingBottom="@dimen/padding">
 
-            <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <!-- Header row: Month chip (left) + Refresh (right) -->
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small">
 
                 <TextView
-                    android:layout_marginTop="@dimen/margin_x_large"
-                    android:text="@string/under_development"
-                    style="@style/CustomRegularTextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/tvMonthFilter"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bg_month_filter_chip"
+                    android:drawableEnd="@drawable/ic_calender_small"
+                    android:drawablePadding="@dimen/padding_x_small"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingBottom="6dp"
+                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textSize="@dimen/default_medium_small_text"
+                    android:textStyle="bold"
+                    tools:text="May 2026" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:visibility="gone"
-                    android:layout_margin="@dimen/margin_small"
-                    app:cardUseCompatPadding="true"
-                    app:cardElevation="@dimen/elevation"
-                    app:cardCornerRadius="@dimen/card_radius"
-                    app:cardBackgroundColor="@color/white"
-                    app:layout_constraintHeight_percent=".5"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/ivRefresh"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_refresh_24"
+                    app:tint="?attr/wfmsColorPrimary" />
 
-                    <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/barChart"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+            </RelativeLayout>
 
-                </com.google.android.material.card.MaterialCardView>
+            <!-- Loading -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_big"
+                android:visibility="gone" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Empty state -->
+            <TextView
+                android:id="@+id/tvEmpty"
+                style="@style/CustomRegularTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_big"
+                android:gravity="center"
+                android:text="@string/no_projects_data"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:visibility="gone" />
 
-        </FrameLayout>
+            <!-- Project cards list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProjects"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="@dimen/padding"
+                android:visibility="gone"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_project_budget"
+                tools:visibility="visible" />
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>
