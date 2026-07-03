@@ -45,6 +45,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
@@ -62,6 +63,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var appUpdateManager: AppUpdateManager
+    private var flexibleUpdateListener: InstallStateUpdatedListener? = null
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_shared_dashboard, DashboardViewModel::class.java)
@@ -593,6 +595,8 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     private fun checkForUpdates() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            // The callback is async; bail if the activity is gone to avoid a crash.
+            if (isFinishing || isDestroyed) return@addOnSuccessListener
             if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && info.isUpdateTypeAllowed(
                     AppUpdateType.IMMEDIATE)) {
                 val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
@@ -615,7 +619,8 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     }
 
     private fun listenFlexibleUpdate() {
-        appUpdateManager.registerListener { state ->
+        if (flexibleUpdateListener != null) return // already registered
+        val listener = InstallStateUpdatedListener { state ->
             if (state.installStatus() == InstallStatus.DOWNLOADED) {
                 Snackbar.make(
                     findViewById(android.R.id.content), getString(R.string.update_downloaded),
@@ -625,14 +630,23 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                 }.show()
             }
         }
+        flexibleUpdateListener = listener
+        appUpdateManager.registerListener(listener)
     }
 
     private fun checkUpdateFlow(){
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (isFinishing || isDestroyed) return@addOnSuccessListener
             if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
                 val options = AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
                 appUpdateManager.startUpdateFlow(info, this, options)
             }
         }
+    }
+
+    override fun onDestroy() {
+        flexibleUpdateListener?.let { appUpdateManager.unregisterListener(it) }
+        flexibleUpdateListener = null
+        super.onDestroy()
     }
 }

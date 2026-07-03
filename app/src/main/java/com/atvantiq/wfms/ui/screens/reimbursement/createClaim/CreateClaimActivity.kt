@@ -32,7 +32,6 @@ import com.atvantiq.wfms.models.workSiteByDate.Site
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.AddDaExpenseEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedHotelEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedOtherEntriesAdapter
@@ -461,17 +460,6 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         }
     }
 
-    private val addSiteDetailsActivityResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data: Intent? = result.data
-            val siteID = data?.getLongExtra(SharingKeys.SITE_ID, -1) ?: -1
-            val purpose = data?.getStringExtra(SharingKeys.SITE_PURPOSE) ?: ""
-            //viewModel.addMultipleSite(MultipleSite(siteID, purpose))
-        }
-    }
-
     private val addTravelingDetailsActivityResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -603,32 +591,6 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 }
             }
             dialog.show(supportFragmentManager, "SiteSelectionDialog")
-
-           /* val preSelectedSites = viewModel.selectedSitesIdList?.value?.mapNotNull { site ->
-                sites.find { it == site }
-            }?.toSet() ?: emptySet()
-
-            val dialog = MultiSelectBottomSheetDialog(
-                context = this,
-                items = sites,
-                preSelectedItems = preSelectedSites,
-                bind = { view, site, isSelected ->
-                    view.findViewById<TextView>(R.id.textView).text = site.name
-                    view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
-                },
-                onSelectionChanged = { selectedSites ->
-                    updateSelectedSites(selectedSites)
-                },
-                onSubmit = { selectedSites ->
-                    updateSelectedSites(selectedSites)
-                },
-                filterCondition = { site, query ->
-                    site?.name?.lowercase(Locale.getDefault())
-                        ?.contains(query.lowercase(Locale.getDefault())) ?: false
-                },
-                title = getString(R.string.select_site)
-            )
-            dialog.show(supportFragmentManager, "SiteSelectionDialog")*/
         }
     }
 

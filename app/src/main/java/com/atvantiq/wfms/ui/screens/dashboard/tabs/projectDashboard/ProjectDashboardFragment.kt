@@ -48,14 +48,16 @@ class ProjectDashboardFragment : BaseFragment<FragmentProjectDashboardBinding, P
                         projectAdapter.submitList(list)
                     } else {
                         binding.rvProjects.visibility = View.GONE
+                        binding.tvEmpty.text = getString(R.string.no_projects_data)
                         binding.tvEmpty.visibility = View.VISIBLE
                     }
                 }
                 Status.ERROR -> {
                     showLoading(false)
                     binding.rvProjects.visibility = View.GONE
+                    // Distinguish a network/server failure from a genuinely empty month.
+                    binding.tvEmpty.text = state.throwable?.message ?: getString(R.string.something_went_wrong)
                     binding.tvEmpty.visibility = View.VISIBLE
-                    showToast(requireContext(), state.throwable?.message ?: getString(R.string.please_wait))
                 }
             }
         }

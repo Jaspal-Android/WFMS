@@ -51,12 +51,10 @@ abstract class BaseActivitySimple : AppCompatActivity() {
     }
 
     fun hideSoftKeyboard(activity: Activity) {
-        try {
-            val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(activity.currentFocus!!.windowToken, 0)
-        } catch (exp: Exception) {
-        }
-
+        // No-op when nothing is focused (common) instead of NPE-ing on currentFocus!!.
+        val focusedView = activity.currentFocus ?: return
+        val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+        imm.hideSoftInputFromWindow(focusedView.windowToken, 0)
     }
 
     fun showSnackbar(view: View, message: Int) {
