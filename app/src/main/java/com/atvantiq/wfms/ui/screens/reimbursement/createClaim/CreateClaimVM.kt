@@ -322,164 +322,134 @@ class CreateClaimVM @Inject constructor(
             return
         }
         isSubmitting.set(true)
-        val selectedDate = date.get()?.trim().orEmpty()
-        val selectedPurpose = purpose.get()?.trim().orEmpty()
-        val selectedRemarks = remarks.value?.trim().orEmpty()
 
-        val projectId = selectedProjectId
-        val circleId = selectedCircleId
-
-        val isMultipleSite = isMultiSite.get() == true
-
-        val type = if (isMultipleSite) "multiple_site" else "single_site"
-
-        val siteIdsJson = JSONArray().apply {
-            if (isMultipleSite) {
-                selectedSitesIdList.value.orEmpty().forEach { s ->
-                    val poIds = JSONArray().apply {
-                        s.selectedPo?.id?.let { put(it) }
-                    }
-                    put(JSONObject()
-                            .put("id", s.id)
-                            .put("purchase_order_ids", poIds)
-                    )
-                }
-            } else {
-                selectedSingleSite?.siteId?.let { id ->
-                    put(
-                        JSONObject()
-                            .put("id", id)
-                            .put("work_site_id", selectedSingleSite?.workSiteId)
-                    )
-                }
-            }
-        }
-
-        // Build expense_type JSON + collect file parts
-        val fileParts = mutableListOf<MultipartBody.Part>()
-
-        fun addFilePart(fileKey: String, file: File): Boolean {
-            if (!file.exists() || !file.isFile) return false
-            val mediaType = "application/octet-stream".toMediaType()
-            val body = file.asRequestBody(mediaType)
-            fileParts += MultipartBody.Part.createFormData(fileKey, file.name, body)
-            return true
-        }
-
-        fun nextKey(prefix: String, index1Based: Int) = "file_${prefix}${index1Based}"
-
-        fun buildAttachmentsArray(fileKeyList: List<String>): JSONArray =
-            JSONArray().apply { fileKeyList.forEach { put(JSONObject().put("fileKey", it)) } }
-
-        // NOTE:
-        // If your models differ, map accordingly (e.g., Uri -> File, or already-uploaded keys).
-        val travelJson = JSONArray().apply {
-            travelingEntriesList.value.orEmpty().forEachIndexed { i, t ->
-                val attachmentKeys = mutableListOf<String>()
-                t.receiptAttachments.orEmpty().forEachIndexed { j, path ->
-                    val key = "${nextKey("t${i + 1}_", j + 1)}" // file_t1_1, file_t1_2, ...
-                    if (addFilePart(key, File(path))) attachmentKeys += key
-                }
-
-                val travellingWithJson = JSONArray().apply {
-                    t.travelingWith.orEmpty().forEach { tw ->
-                        put(JSONObject().put("id", tw.id).put("name", tw.name))
-                    }
-                }
-
-                put(
-                    JSONObject()
-                        .put("travel_mode", t.mode?.label ?: "")
-                        .put("amount", t.amount)
-                        .put("travelling_with", travellingWithJson)
-                        .put("start_location", t.from)
-                        .put("end_location", t.to)
-                        .put("attachments", buildAttachmentsArray(attachmentKeys))
-                )
-            }
-        }
-
-        val daJson = JSONArray().apply {
-            daEntriesList.value.orEmpty().forEachIndexed { i, d ->
-                val attachmentKeys = mutableListOf<String>()
-                d.receiptAttachments.orEmpty().forEachIndexed { j, path ->
-                    val key = "${nextKey("d${i + 1}_", j + 1)}" // file_d1_1, ...
-                    if (addFilePart(key, File(path))) attachmentKeys += key
-                }
-                put(
-                    JSONObject()
-                        .put("amount", d.amount)
-                        .put("attachments", buildAttachmentsArray(attachmentKeys))
-                )
-            }
-        }
-
-
-        val hotelJson = JSONArray().apply {
-            hotelEntriesList.value.orEmpty().forEachIndexed { i, h ->
-                val attachmentKeys = mutableListOf<String>()
-                h.receiptAttachments.orEmpty().forEachIndexed { j, path ->
-                    val key = "${nextKey("h${i + 1}_", j + 1)}" // file_h1_1, file_h1_2, ...
-                    if (addFilePart(key, File(path))) attachmentKeys += key
-                }
-
-                put(
-                    JSONObject()
-                        .put("amount", h.amount)
-                        .put("attachments", buildAttachmentsArray(attachmentKeys))
-                )
-            }
-        }
-        val otherJson = JSONArray().apply {
-            othersEntriesList.value.orEmpty().forEachIndexed { i, o ->
-                val attachmentKeys = mutableListOf<String>()
-                o.receiptAttachments.orEmpty().forEachIndexed { j, path ->
-                    val key = "${
-                        nextKey(
-                            "other${i + 1}_",
-                            j + 1
-                        )
-                    }" // file_other1_1 (adjust if backend requires file_other_1 style)
-                    if (addFilePart(key, File(path))) attachmentKeys += key
-                }
-
-                put(
-                    JSONObject()
-                        .put("category", o.category)
-                        .put("amount", o.amount)
-                        .put("attachments", buildAttachmentsArray(attachmentKeys))
-                )
-            }
-        }
-
-        val expenseTypeJson = JSONObject()
-            .put("travel", travelJson)
-            .put("da", daJson)
-            .put("hotel", hotelJson)
-            .put("other", otherJson)
-
-        val dataJson = JSONObject()
-            .put("date", selectedDate)
-            .put("type", type)
-            .put("purpose", selectedPurpose)
-            .put("site_id", siteIdsJson)
-            .put("project_id", projectId ?: JSONObject.NULL)
-            .put(
-                "expense_category",
-                isOutstationExpense.get()?.let { if (it) "outstation" else "local" } ?: "local")
-            .put("circle_id", circleId ?: JSONObject.NULL)
-            .put("expense_type", expenseTypeJson)
-            .put("remarks", selectedRemarks)
-
-        val dataPart: RequestBody =
-            dataJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
-
+        val (dataPart, fileParts) = buildClaimRequest()
         executeApiCall(
             apiCall = { claimRepo.createClaim(dataPart, files = fileParts) },
             liveData = createClaimResponse,
             onSuccess = { isSubmitting.set(false) },
             onError = { isSubmitting.set(false) }
         )
+    }
+
+    /**
+     * Serializes the whole claim into the JSON `data` part plus its multipart file parts.
+     * Kept out of onSubmitClaim so that method stays validate -> guard -> delegate -> call.
+     */
+    private fun buildClaimRequest(): Pair<RequestBody, List<MultipartBody.Part>> {
+        val selectedDate = date.get()?.trim().orEmpty()
+        val selectedPurpose = purpose.get()?.trim().orEmpty()
+        val selectedRemarks = remarks.value?.trim().orEmpty()
+        val isMultipleSite = isMultiSite.get() == true
+        val type = if (isMultipleSite) "multiple_site" else "single_site"
+
+        val siteIdsJson = JSONArray().apply {
+            if (isMultipleSite) {
+                selectedSitesIdList.value.orEmpty().forEach { s ->
+                    val poIds = JSONArray().apply { s.selectedPo?.id?.let { put(it) } }
+                    put(JSONObject().put("id", s.id).put("purchase_order_ids", poIds))
+                }
+            } else {
+                selectedSingleSite?.siteId?.let { id ->
+                    put(JSONObject().put("id", id).put("work_site_id", selectedSingleSite?.workSiteId))
+                }
+            }
+        }
+
+        val collector = AttachmentCollector()
+        val expenseTypeJson = JSONObject()
+            .put("travel", buildTravelJson(collector))
+            .put("da", buildAmountOnlyJson("d", daEntriesList.value.orEmpty(), collector,
+                amountOf = { it.amount }, pathsOf = { it.receiptAttachments }))
+            .put("hotel", buildAmountOnlyJson("h", hotelEntriesList.value.orEmpty(), collector,
+                amountOf = { it.amount }, pathsOf = { it.receiptAttachments }))
+            .put("other", buildOtherJson(collector))
+
+        val dataJson = JSONObject()
+            .put("date", selectedDate)
+            .put("type", type)
+            .put("purpose", selectedPurpose)
+            .put("site_id", siteIdsJson)
+            .put("project_id", selectedProjectId ?: JSONObject.NULL)
+            .put("expense_category",
+                isOutstationExpense.get()?.let { if (it) "outstation" else "local" } ?: "local")
+            .put("circle_id", selectedCircleId ?: JSONObject.NULL)
+            .put("expense_type", expenseTypeJson)
+            .put("remarks", selectedRemarks)
+
+        val dataPart: RequestBody =
+            dataJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+        return dataPart to collector.fileParts
+    }
+
+    private fun buildTravelJson(collector: AttachmentCollector): JSONArray = JSONArray().apply {
+        travelingEntriesList.value.orEmpty().forEachIndexed { i, t ->
+            val attachments = collector.collect("t", i + 1, t.receiptAttachments)
+            val travellingWithJson = JSONArray().apply {
+                t.travelingWith.orEmpty().forEach { tw ->
+                    put(JSONObject().put("id", tw.id).put("name", tw.name))
+                }
+            }
+            put(
+                JSONObject()
+                    .put("travel_mode", t.mode?.label ?: "")
+                    .put("amount", t.amount)
+                    .put("travelling_with", travellingWithJson)
+                    .put("start_location", t.from)
+                    .put("end_location", t.to)
+                    .put("attachments", attachments)
+            )
+        }
+    }
+
+    private fun buildOtherJson(collector: AttachmentCollector): JSONArray = JSONArray().apply {
+        othersEntriesList.value.orEmpty().forEachIndexed { i, o ->
+            put(
+                JSONObject()
+                    .put("category", o.category)
+                    .put("amount", o.amount)
+                    .put("attachments", collector.collect("other", i + 1, o.receiptAttachments))
+            )
+        }
+    }
+
+    /** DA and Hotel share the same amount-only shape; only the file-key letter and source list differ. */
+    private fun <T> buildAmountOnlyJson(
+        letter: String,
+        entries: List<T>,
+        collector: AttachmentCollector,
+        amountOf: (T) -> Any?,
+        pathsOf: (T) -> List<String>?
+    ): JSONArray = JSONArray().apply {
+        entries.forEachIndexed { i, entry ->
+            put(
+                JSONObject()
+                    .put("amount", amountOf(entry))
+                    .put("attachments", collector.collect(letter, i + 1, pathsOf(entry)))
+            )
+        }
+    }
+
+    /**
+     * Accumulates multipart file parts while producing the per-entry `attachments` JSON array.
+     * File key format preserved exactly: file_{letter}{entry}_{index}, e.g. file_t1_1, file_other2_3.
+     */
+    private class AttachmentCollector {
+        val fileParts = mutableListOf<MultipartBody.Part>()
+
+        fun collect(letter: String, entryIndex1Based: Int, paths: List<String>?): JSONArray {
+            val keys = mutableListOf<String>()
+            paths.orEmpty().forEachIndexed { j, path ->
+                val key = "file_${letter}${entryIndex1Based}_${j + 1}"
+                val file = File(path)
+                if (file.exists() && file.isFile) {
+                    val body = file.asRequestBody("application/octet-stream".toMediaType())
+                    fileParts += MultipartBody.Part.createFormData(key, file.name, body)
+                    keys += key
+                }
+            }
+            return JSONArray().apply { keys.forEach { put(JSONObject().put("fileKey", it)) } }
+        }
     }
 
     fun onSubmitCompleted() {
