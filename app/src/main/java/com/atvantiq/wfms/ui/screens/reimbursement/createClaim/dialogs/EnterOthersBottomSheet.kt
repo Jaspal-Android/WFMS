@@ -104,9 +104,7 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 					.takeUnless { it.isNullOrEmpty() }
 
 				val parsedAmount = amountRaw?.toDoubleOrNull()
-				val isAmountValid = !amountRaw.isNullOrBlank() && parsedAmount != null && parsedAmount > 0.0
-
-				if (!isAmountValid) {
+				if (amountRaw.isNullOrBlank() || parsedAmount == null || parsedAmount <= 0.0) {
 					runCatching { binding.amountEt.error = getString(R.string.enter_valid_amount) }
 					return@setOnClickListener
 				}
@@ -114,7 +112,10 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 				binding.showImageError = false
 				binding.hasPreviewImage = !imagePath.isNullOrBlank()
 
-				onDataSubmitted.invoke(categoryRaw, parsedAmount.toString(), imagePath ?: "")
+				// Submit the raw validated string (amountRaw is smart-cast non-null here), not
+				// parsedAmount.toString(): the Double round-trip corrupted currency
+				// ("10.20"->"10.2", ">=10M"->scientific notation).
+				onDataSubmitted.invoke(categoryRaw, amountRaw, imagePath ?: "")
 				dismiss()
 			}
 			binding.btnCancel.setOnClickListener {
