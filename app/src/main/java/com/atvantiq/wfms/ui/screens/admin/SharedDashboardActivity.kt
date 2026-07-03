@@ -433,7 +433,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     private fun getAttendanceActionLocation(onResult: (Location?) -> Unit) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { cachedLocation ->
-                if (isUsableAttendanceLocation(cachedLocation)) {
+                if (Utils.isUsableAttendanceLocation(cachedLocation)) {
                     onResult(cachedLocation)
                     return@addOnSuccessListener
                 }
@@ -453,13 +453,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             }
     }
 
-    private fun isUsableAttendanceLocation(location: Location?): Boolean {
-        if (location == null) return false
-        val maxAgeMillis = 2 * 60 * 1000L
-        val maxAccuracyMeters = 100f
-        val ageMillis = System.currentTimeMillis() - location.time
-        return ageMillis in 0..maxAgeMillis && location.accuracy <= maxAccuracyMeters
-    }
 
     private val permissionLauncherCurrentLatLon = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()

@@ -33,6 +33,18 @@ import java.util.*
 
 object Utils {
 
+    // Attendance actions must use a recent, accurate fix. Shared by the employee and
+    // admin dashboards so the freshness/accuracy thresholds never drift apart.
+    private const val ATTENDANCE_LOCATION_MAX_AGE_MILLIS = 2 * 60 * 1000L
+    private const val ATTENDANCE_LOCATION_MAX_ACCURACY_METERS = 100f
+
+    fun isUsableAttendanceLocation(location: android.location.Location?): Boolean {
+        if (location == null) return false
+        val ageMillis = System.currentTimeMillis() - location.time
+        return ageMillis in 0..ATTENDANCE_LOCATION_MAX_AGE_MILLIS &&
+                location.accuracy <= ATTENDANCE_LOCATION_MAX_ACCURACY_METERS
+    }
+
     @Synchronized
     fun <T> getIntent(context: Context, clazz: Class<T>, bundle: Bundle): Intent {
         val intent = Intent(context, clazz)

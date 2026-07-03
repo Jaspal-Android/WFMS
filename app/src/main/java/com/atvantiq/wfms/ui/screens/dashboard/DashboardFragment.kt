@@ -397,7 +397,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun getAttendanceActionLocation(onResult: (Location?) -> Unit) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { cachedLocation ->
-                if (isUsableAttendanceLocation(cachedLocation)) {
+                if (Utils.isUsableAttendanceLocation(cachedLocation)) {
                     onResult(cachedLocation)
                     return@addOnSuccessListener
                 }
@@ -417,13 +417,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
     }
 
-    private fun isUsableAttendanceLocation(location: Location?): Boolean {
-        if (location == null) return false
-        val maxAgeMillis = 2 * 60 * 1000L
-        val maxAccuracyMeters = 100f
-        val ageMillis = System.currentTimeMillis() - location.time
-        return ageMillis in 0..maxAgeMillis && location.accuracy <= maxAccuracyMeters
-    }
 
     private fun setupUserData(userData: EmpData?) {
         if (userData == null) return
