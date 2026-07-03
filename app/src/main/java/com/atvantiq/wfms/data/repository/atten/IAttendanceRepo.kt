@@ -26,7 +26,7 @@ interface IAttendanceRepo {
 
     suspend fun attendanceCheckInStatus(): CheckInStatusResponse
 
-    suspend fun attendanceDetails(month: Int, year: Int): AttendanceDetailListResponse
+    suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean): AttendanceDetailListResponse
 
     suspend fun workSites(employeeId: String,date: String): WorkSitesResponse
 

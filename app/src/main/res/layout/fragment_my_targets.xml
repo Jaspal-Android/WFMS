@@ -1,42 +1,452 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ui.screens.dashboard.tabs.myTargets.MyTargetsFragment">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
 
-            <LinearLayout
+            <!-- Header row: Month chip (left) + Refresh (right) -->
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small">
 
                 <TextView
-                    android:layout_marginTop="@dimen/margin_x_large"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    style="@style/CustomRegularTextView"
-                    android:text="@string/under_development"
+                    android:id="@+id/tvMonthFilter"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true"
+                    android:background="@drawable/bg_month_filter_chip"
+                    android:drawableEnd="@drawable/ic_calender_small"
+                    android:drawablePadding="@dimen/padding_x_small"
+                    android:ellipsize="end"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingBottom="6dp"
+                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textSize="@dimen/default_medium_small_text"
+                    android:textStyle="bold"
+                    tools:text="May 2026" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:visibility="gone"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:id="@+id/myTargetList"
+                <ImageView
+                    android:id="@+id/ivRefresh"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_refresh_24"
+                    app:tint="?attr/wfmsColorPrimary" />
+
+            </RelativeLayout>
+
+            <!-- Loading indicator -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_big"
+                android:visibility="gone" />
+
+            <!-- Empty state -->
+            <TextView
+                android:id="@+id/tvEmpty"
+                style="@style/CustomRegularTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_big"
+                android:gravity="center"
+                android:text="@string/no_targets_data"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:visibility="gone" />
+
+            <!-- Content group -->
+            <LinearLayout
+                android:id="@+id/layoutContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <!-- Card 1: Period -->
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/item_my_targets" />
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/padding">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.08"
+                                android:text="@string/period"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_small_text"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvPeriod"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                tools:text="May 2026" />
+
+                        </LinearLayout>
+
+                        <!-- Status badge -->
+                        <TextView
+                            android:id="@+id/tvStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_status_on_track"
+                            android:paddingStart="@dimen/padding_medium"
+                            android:paddingTop="6dp"
+                            android:paddingEnd="@dimen/padding_medium"
+                            android:paddingBottom="6dp"
+                            android:textSize="@dimen/default_medium_small_text"
+                            android:textStyle="bold"
+                            tools:text="On Track" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card 2: Revenue Target -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.08"
+                            android:text="@string/revenue_target"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            android:textSize="@dimen/default_small_text"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvRevenueAchieved"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            tools:text="$382K" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvRevenueTarget"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text"
+                                tools:text="of $450K target" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small_extra"
+                                android:layout_marginEnd="@dimen/margin_small_extra"
+                                android:text="·"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text" />
+
+                            <TextView
+                                android:id="@+id/tvRevenueDifference"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="@dimen/default_medium_small_text"
+                                android:textStyle="bold"
+                                tools:text="-$68K"
+                                tools:textColor="@color/error_red" />
+
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:id="@+id/progressRevenue"
+                            style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="6dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:max="100"
+                            android:progressDrawable="@drawable/progress_revenue"
+                            tools:progress="85" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small_extra"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvRevenueAchievedPct"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_small_text"
+                                tools:text="85% achieved" />
+
+                            <TextView
+                                android:id="@+id/tvRevenueRemainingPct"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_small_text"
+                                tools:text="15% to go" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card 3: Performance Stats -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="@dimen/margin"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Row: Sites Completed -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="@dimen/padding_medium"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="@dimen/padding_medium">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/sites_completed"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text" />
+
+                            <TextView
+                                android:id="@+id/tvSitesValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin_small"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textSize="@dimen/default_medium_small_text"
+                                android:textStyle="bold"
+                                tools:text="5 / 8" />
+
+                            <TextView
+                                android:id="@+id/tvSitesPct"
+                                android:layout_width="48dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text"
+                                tools:text="63%" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:alpha="0.2"
+                            android:background="?attr/wfmsColorOutline" />
+
+                        <!-- Row: Active Days -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="@dimen/padding_medium"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="@dimen/padding_medium">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/active_days"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text" />
+
+                            <TextView
+                                android:id="@+id/tvActiveDaysValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin_small"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textSize="@dimen/default_medium_small_text"
+                                android:textStyle="bold"
+                                tools:text="22 / 25" />
+
+                            <TextView
+                                android:id="@+id/tvActiveDaysPct"
+                                android:layout_width="48dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text"
+                                tools:text="88%" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:alpha="0.2"
+                            android:background="?attr/wfmsColorOutline" />
+
+                        <!-- Row: Hours Worked -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="@dimen/padding_medium"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="@dimen/padding_medium">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/hours_worked"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text" />
+
+                            <TextView
+                                android:id="@+id/tvHoursWorkedValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/margin_small"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textSize="@dimen/default_medium_small_text"
+                                android:textStyle="bold"
+                                tools:text="168 / 176" />
+
+                            <TextView
+                                android:id="@+id/tvHoursWorkedPct"
+                                android:layout_width="48dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text"
+                                tools:text="95%" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:alpha="0.2"
+                            android:background="?attr/wfmsColorOutline" />
+
+                        <!-- Row: Efficiency -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="@dimen/padding"
+                            android:paddingTop="@dimen/padding_medium"
+                            android:paddingEnd="@dimen/padding"
+                            android:paddingBottom="@dimen/padding_medium">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/efficiency"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text" />
+
+                            <TextView
+                                android:id="@+id/tvEfficiencyValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textSize="@dimen/default_medium_small_text"
+                                android:textStyle="bold"
+                                tools:text="87%" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
-        </FrameLayout>
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>
