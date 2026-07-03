@@ -1,7 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,29 +20,23 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Locale
 
-class SiteSelectionBottomSheetDialog(
-    private val context: Context,
-    private val sites: List<SiteData>,
-    private val preSelectedSites: Set<SiteData> = emptySet(),
-    private val onSubmit: (List<SiteData>) -> Unit  // returns only selected sites (with selectedPo set)
-) : BottomSheetDialogFragment() {
+class SiteSelectionBottomSheetDialog : BottomSheetDialogFragment() {
+
+    // Data + callback are wired by the host after construction. A no-arg constructor
+    // prevents the FragmentManager from throwing InstantiationException on restore, and
+    // requireContext() replaces the leaked Activity Context reference.
+    var sites: List<SiteData> = emptyList()
+    var preSelectedSites: Set<SiteData> = emptySet()
+    var onSubmit: ((List<SiteData>) -> Unit)? = null  // returns only selected sites (with selectedPo set)
 
     private lateinit var binding: DialogMultiSelectBottomSheetBinding
     private lateinit var adapter: SitePoAdapter
 
-    private val workingSites: MutableList<SiteData> = sites.map { site ->
-        val preSelectedSite = preSelectedSites.firstOrNull { it.id == site.id }
-        site.copy(
-            selectedPo = if (preSelectedSite != null) {
-                preSelectedSite.selectedPo ?: if (site.po?.size == 1) site.po[0] else site.selectedPo
-            } else null
-        )
-    }.toMutableList()
-
-    private val selectedSiteIds = preSelectedSites.map { it.id }.toMutableSet()
+    private lateinit var workingSites: MutableList<SiteData>
+    private lateinit var selectedSiteIds: MutableSet<Long>
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BottomSheetDialog(context, R.style.AppBottomSheetDialogTheme)
+        return BottomSheetDialog(requireContext(), R.style.AppBottomSheetDialogTheme)
     }
 
     override fun onCreateView(
@@ -57,6 +50,23 @@ class SiteSelectionBottomSheetDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // On process-death-while-open the host callback/data are gone; dismiss
+        // gracefully instead of showing a stale, non-functional sheet.
+        if (onSubmit == null || sites.isEmpty()) {
+            dismiss()
+            return
+        }
+
+        workingSites = sites.map { site ->
+            val preSelectedSite = preSelectedSites.firstOrNull { it.id == site.id }
+            site.copy(
+                selectedPo = if (preSelectedSite != null) {
+                    preSelectedSite.selectedPo ?: if (site.po?.size == 1) site.po[0] else site.selectedPo
+                } else null
+            )
+        }.toMutableList()
+        selectedSiteIds = preSelectedSites.map { it.id }.toMutableSet()
 
         binding.titleTextView.visibility = View.VISIBLE
         binding.titleTextView.text = getString(R.string.select_site)
@@ -77,7 +87,7 @@ class SiteSelectionBottomSheetDialog(
         updateSubmitButton()
         binding.submitButton.setOnClickListener {
             val selected = workingSites.filter { it.id in selectedSiteIds }
-            onSubmit(selected)
+            onSubmit?.invoke(selected)
             dismiss()
         }
     }

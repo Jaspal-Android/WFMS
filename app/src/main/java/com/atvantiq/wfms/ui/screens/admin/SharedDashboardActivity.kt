@@ -341,8 +341,10 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     }
 
     private fun showRemarksDialog(attendanceId: Long) {
-        val remarksBottomSheet = com.atvantiq.wfms.ui.screens.dashboard.AttendanceRemarksBottomSheet { remarks ->
-            viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+        val remarksBottomSheet = com.atvantiq.wfms.ui.screens.dashboard.AttendanceRemarksBottomSheet.newInstance().apply {
+            onSubmitDetails = { remarks ->
+                viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+            }
         }
         remarksBottomSheet.show(supportFragmentManager, "AttendanceRemarksBottomSheet")
     }

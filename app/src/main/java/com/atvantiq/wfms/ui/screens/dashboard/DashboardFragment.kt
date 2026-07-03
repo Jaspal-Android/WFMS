@@ -314,8 +314,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun showRemarksDialog(attendanceId: Long) {
-        var remarksBottomSheet = AttendanceRemarksBottomSheet{remarks ->
-            viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+        val remarksBottomSheet = AttendanceRemarksBottomSheet.newInstance().apply {
+            onSubmitDetails = { remarks ->
+                viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+            }
         }
         remarksBottomSheet.show(parentFragmentManager, "AttendanceRemarksBottomSheet")
     }

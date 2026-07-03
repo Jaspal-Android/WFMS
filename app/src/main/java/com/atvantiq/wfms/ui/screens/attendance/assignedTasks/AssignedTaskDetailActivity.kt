@@ -519,14 +519,16 @@ class AssignedTaskDetailActivity :
                     if (location != null) {
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
-                        StartWorkBottomSheet(latitude, longitude) { imagePath ->
-                            viewModel.workStart(
-                                workSiteId.toString(),
-                                latitude,
-                                longitude,
-                                imagePath,
-                                position
-                            )
+                        StartWorkBottomSheet.newInstance(latitude, longitude).apply {
+                            onImageSelected = { imagePath ->
+                                viewModel.workStart(
+                                    workSiteId.toString(),
+                                    latitude,
+                                    longitude,
+                                    imagePath,
+                                    position
+                                )
+                            }
                         }.show(supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
                     } else {
                         showToast(this, getString(R.string.location_not_found))

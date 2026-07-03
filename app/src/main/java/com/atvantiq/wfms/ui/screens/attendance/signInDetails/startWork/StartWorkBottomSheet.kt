@@ -12,8 +12,15 @@ import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class StartWorkBottomSheet(var latitude:String,var longitude:String,var onImageSelected:(path:String)->Unit) : BottomSheetDialogFragment() {
-	
+class StartWorkBottomSheet : BottomSheetDialogFragment() {
+
+	// latitude/longitude survive recreation via arguments; the image callback is
+	// re-wired by the host. A no-arg constructor prevents the FragmentManager from
+	// throwing InstantiationException on process-death/config-change restore.
+	private var latitude: String = ""
+	private var longitude: String = ""
+	var onImageSelected: ((path: String) -> Unit)? = null
+
 	lateinit var binding: BottomSheetStartWorkBinding
 	private var imagePath: String? = null
 
@@ -40,6 +47,10 @@ class StartWorkBottomSheet(var latitude:String,var longitude:String,var onImageS
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
+		arguments?.let {
+			latitude = it.getString(ARG_LATITUDE).orEmpty()
+			longitude = it.getString(ARG_LONGITUDE).orEmpty()
+		}
 	}
 	
 	override fun onCreateView(
@@ -93,12 +104,26 @@ class StartWorkBottomSheet(var latitude:String,var longitude:String,var onImageS
 					binding.showImageError = true
 				} else {
 					binding.showImageError = false
-					onImageSelected(imagePath!!)
+					onImageSelected?.invoke(imagePath!!)
 					dismiss()
 				}
 			}
 			binding.btnCancel.setOnClickListener {
 				dismiss()
+			}
+		}
+	}
+
+	companion object {
+		private const val ARG_LATITUDE = "latitude"
+		private const val ARG_LONGITUDE = "longitude"
+
+		fun newInstance(latitude: String, longitude: String): StartWorkBottomSheet {
+			return StartWorkBottomSheet().apply {
+				arguments = Bundle().apply {
+					putString(ARG_LATITUDE, latitude)
+					putString(ARG_LONGITUDE, longitude)
+				}
 			}
 		}
 	}

@@ -595,14 +595,13 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 ?.mapNotNull { saved -> sites.find { it.id == saved.id } }
                 ?.toSet() ?: emptySet()
 
-            val dialog = SiteSelectionBottomSheetDialog(
-                context = this,
-                sites = sites,                    // List<SiteModel> from API
-                preSelectedSites = preSelected,
+            val dialog = SiteSelectionBottomSheetDialog().apply {
+                this.sites = sites                    // List<SiteModel> from API
+                this.preSelectedSites = preSelected
                 onSubmit = { selectedSites ->
                     updateSelectedSites(selectedSites.toSet())
                 }
-            )
+            }
             dialog.show(supportFragmentManager, "SiteSelectionDialog")
 
            /* val preSelectedSites = viewModel.selectedSitesIdList?.value?.mapNotNull { site ->
