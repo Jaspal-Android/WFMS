@@ -371,7 +371,7 @@ class AssignedTaskDetailActivity :
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200 && it.data.checkedIn == true) {
+                    if (it.code == 200 && it.data?.checkedIn == true) {
                         finishWorkAction()
                         startWorkWithLocationPermissions(
                             viewModel.currentWorkId ?: -1,

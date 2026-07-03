@@ -230,7 +230,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
               communicationViewModel.triggerCalendarRefresh()
             }
             3001 ->{
-                handleNoWorkForDay(response.data.attendanceId)
+                handleNoWorkForDay(response.data?.attendanceId)
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
@@ -247,7 +247,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         dismissProgress()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
-                isDayStarted = response.data.checkedIn == true
+                isDayStarted = response.data?.checkedIn == true
                 updateSlideButton(isDayStarted)
                 if(isDayStarted) checkPermissionForLiveLocation()
             }
@@ -425,7 +425,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private fun setupUserData(userData: EmpData?) {
         if (userData == null) return
-        setGeofenceLocation(userData.officialLocation.latitude, userData.officialLocation.longitude)
+        setGeofenceLocation(userData.officialLocation?.latitude ?: 0.0, userData.officialLocation?.longitude ?: 0.0)
         binding.appDashHeader.userData = userData
     }
 
