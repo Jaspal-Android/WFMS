@@ -227,13 +227,14 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         val role = viewModel.user?.role ?: ""
         val permissions = viewModel?.user?.permissions
 
+        val permissionsList = ArrayList(permissions.orEmpty())
         if (role.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true)) {
             Utils.jumpActivityWithData(this, DashboardActivity::class.java, Bundle().apply {
-                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissions as ArrayList)
+                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissionsList)
             })
         } else {
             Utils.jumpActivityWithData(this, SharedDashboardActivity::class.java, Bundle().apply {
-                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissions as ArrayList)
+                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissionsList)
             })
         }
         finish()

@@ -37,6 +37,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 
@@ -54,6 +56,10 @@ class LocationTrackingService : Service() {
     private var isServiceRunning = false
     private var isUpdatingLocation = false
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    // Serializes enqueue + flush so overlapping location callbacks can't re-send the
+    // same event or drop an unsynced one via the front-count removal.
+    private val syncMutex = Mutex()
 
     @Inject
     lateinit var api: ApiService // Your API service interface
@@ -205,15 +211,17 @@ class LocationTrackingService : Service() {
 
     private fun sendLocationToServer(location: Location) {
         serviceScope.launch {
-            locationEventQueue.enqueue(
-                QueuedLocationEvent(
-                    latitude = location.latitude,
-                    longitude = location.longitude,
-                    recordedAtMillis = System.currentTimeMillis(),
-                    accuracyMeters = if (location.hasAccuracy()) location.accuracy else null
+            syncMutex.withLock {
+                locationEventQueue.enqueue(
+                    QueuedLocationEvent(
+                        latitude = location.latitude,
+                        longitude = location.longitude,
+                        recordedAtMillis = System.currentTimeMillis(),
+                        accuracyMeters = if (location.hasAccuracy()) location.accuracy else null
+                    )
                 )
-            )
-            flushQueuedLocations()
+                flushQueuedLocations()
+            }
         }
     }
 
