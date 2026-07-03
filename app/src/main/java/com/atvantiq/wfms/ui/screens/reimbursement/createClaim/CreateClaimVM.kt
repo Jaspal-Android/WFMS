@@ -1,7 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 import android.app.Application
-import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
@@ -20,6 +19,8 @@ import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.workSiteByDate.Site
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.utils.NoInternetException
+import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -40,6 +41,7 @@ class CreateClaimVM @Inject constructor(
 
     var isOutstationExpense = ObservableField<Boolean>().apply { set(false) }
     var isMultiSite = ObservableField<Boolean>().apply { set(false) }
+    val isSubmitting = ObservableField<Boolean>().apply { set(false) }
 
     var remarks = MutableLiveData<String>().apply { value = "" }
     var date = ObservableField<String>().apply { set("") }
@@ -110,8 +112,10 @@ class CreateClaimVM @Inject constructor(
 
     /*On project selected*/
     fun onProjectSelected(project: Project) {
-        selectedProjectId = project?.id
-        circles = project?.circle as List<Circle>
+        selectedProjectId = project.id
+        selectedCircleId = null
+        selectedCircleCode = null
+        circles = project.circle.orEmpty().filterNotNull()
     }
 
     /*On Project circle selected*/
@@ -123,7 +127,7 @@ class CreateClaimVM @Inject constructor(
     /*Handling multiple site*/
     fun addMultipleSite(sites: List<SiteData>) {
         val currentList = selectedSitesIdList.value?.toMutableList() ?: mutableListOf()
-        currentList?.clear()
+        currentList.clear()
         currentList.addAll(sites)
         selectedSitesIdList.value = currentList
     }
@@ -311,7 +315,13 @@ class CreateClaimVM @Inject constructor(
     /*On submit claim*/
     var createClaimResponse = MutableLiveData<ApiState<CreateClaimResponse>>()
     fun onSubmitClaim() {
+        if (isSubmitting.get() == true) return
         if (!validateCreateClaim()) return
+        if (!Utils.isInternet(getApplication())) {
+            createClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            return
+        }
+        isSubmitting.set(true)
         val selectedDate = date.get()?.trim().orEmpty()
         val selectedPurpose = purpose.get()?.trim().orEmpty()
         val selectedRemarks = remarks.value?.trim().orEmpty()
@@ -348,10 +358,12 @@ class CreateClaimVM @Inject constructor(
         // Build expense_type JSON + collect file parts
         val fileParts = mutableListOf<MultipartBody.Part>()
 
-        fun addFilePart(fileKey: String, file: File) {
+        fun addFilePart(fileKey: String, file: File): Boolean {
+            if (!file.exists() || !file.isFile) return false
             val mediaType = "application/octet-stream".toMediaType()
             val body = file.asRequestBody(mediaType)
             fileParts += MultipartBody.Part.createFormData(fileKey, file.name, body)
+            return true
         }
 
         fun nextKey(prefix: String, index1Based: Int) = "file_${prefix}${index1Based}"
@@ -366,23 +378,22 @@ class CreateClaimVM @Inject constructor(
                 val attachmentKeys = mutableListOf<String>()
                 t.receiptAttachments.orEmpty().forEachIndexed { j, path ->
                     val key = "${nextKey("t${i + 1}_", j + 1)}" // file_t1_1, file_t1_2, ...
-                    attachmentKeys += key
-                    addFilePart(key, File(path))
+                    if (addFilePart(key, File(path))) attachmentKeys += key
                 }
 
                 val travellingWithJson = JSONArray().apply {
                     t.travelingWith.orEmpty().forEach { tw ->
-                        put(JSONObject().put("id", tw.id).put("name", tw.name ?: ""))
+                        put(JSONObject().put("id", tw.id).put("name", tw.name))
                     }
                 }
 
                 put(
                     JSONObject()
                         .put("travel_mode", t.mode?.label ?: "")
-                        .put("amount", t.amount ?: 0)
+                        .put("amount", t.amount)
                         .put("travelling_with", travellingWithJson)
-                        .put("start_location", t.from ?: "")
-                        .put("end_location", t.to ?: "")
+                        .put("start_location", t.from)
+                        .put("end_location", t.to)
                         .put("attachments", buildAttachmentsArray(attachmentKeys))
                 )
             }
@@ -393,12 +404,11 @@ class CreateClaimVM @Inject constructor(
                 val attachmentKeys = mutableListOf<String>()
                 d.receiptAttachments.orEmpty().forEachIndexed { j, path ->
                     val key = "${nextKey("d${i + 1}_", j + 1)}" // file_d1_1, ...
-                    attachmentKeys += key
-                    addFilePart(key, File(path))
+                    if (addFilePart(key, File(path))) attachmentKeys += key
                 }
                 put(
                     JSONObject()
-                        .put("amount", d.amount ?: 0)
+                        .put("amount", d.amount)
                         .put("attachments", buildAttachmentsArray(attachmentKeys))
                 )
             }
@@ -410,13 +420,12 @@ class CreateClaimVM @Inject constructor(
                 val attachmentKeys = mutableListOf<String>()
                 h.receiptAttachments.orEmpty().forEachIndexed { j, path ->
                     val key = "${nextKey("h${i + 1}_", j + 1)}" // file_h1_1, file_h1_2, ...
-                    attachmentKeys += key
-                    addFilePart(key, File(path))
+                    if (addFilePart(key, File(path))) attachmentKeys += key
                 }
 
                 put(
                     JSONObject()
-                        .put("amount", h.amount ?: 0)
+                        .put("amount", h.amount)
                         .put("attachments", buildAttachmentsArray(attachmentKeys))
                 )
             }
@@ -431,14 +440,13 @@ class CreateClaimVM @Inject constructor(
                             j + 1
                         )
                     }" // file_other1_1 (adjust if backend requires file_other_1 style)
-                    attachmentKeys += key
-                    addFilePart(key, File(path))
+                    if (addFilePart(key, File(path))) attachmentKeys += key
                 }
 
                 put(
                     JSONObject()
-                        .put("category", o.category ?: "")
-                        .put("amount", o.amount ?: 0)
+                        .put("category", o.category)
+                        .put("amount", o.amount)
                         .put("attachments", buildAttachmentsArray(attachmentKeys))
                 )
             }
@@ -466,14 +474,16 @@ class CreateClaimVM @Inject constructor(
         val dataPart: RequestBody =
             dataJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
 
-        Log.e("CreateClaimVM", "onSubmitClaim: Data JSON: $dataJson")
-
-        Log.e("CreateClaimVM", "onSubmitClaim: Total File Parts: ${fileParts}")
-
         executeApiCall(
             apiCall = { claimRepo.createClaim(dataPart, files = fileParts) },
             liveData = createClaimResponse,
+            onSuccess = { isSubmitting.set(false) },
+            onError = { isSubmitting.set(false) }
         )
+    }
+
+    fun onSubmitCompleted() {
+        isSubmitting.set(false)
     }
 
     fun clearProjectSelection() {

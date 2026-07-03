@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -21,6 +22,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SplashActivity : BaseActivitySimple() {
 
+    companion object {
+        const val ACTION_LOCATION_NOTIFICATION = "com.atvantiq.wfms.action.LOCATION_NOTIFICATION"
+        const val ACTION_PUSH_NOTIFICATION = "com.atvantiq.wfms.action.PUSH_NOTIFICATION"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,7 +37,23 @@ class SplashActivity : BaseActivitySimple() {
             insets
         }
         checkAppVersion()
-        splashTimer()
+        if (isNotificationLaunch()) {
+            routeNext()
+        } else {
+            splashTimer()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (isNotificationLaunch()) {
+            routeNext()
+        }
+    }
+
+    private fun isNotificationLaunch(): Boolean {
+        return intent?.action in setOf(ACTION_LOCATION_NOTIFICATION, ACTION_PUSH_NOTIFICATION)
     }
 
     private fun checkAppVersion() {

@@ -21,6 +21,7 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -223,8 +224,8 @@ open class BaseFragmentSimple : Fragment() {
 
 	fun performLogout(){
 		FirebaseMessaging.getInstance().deleteToken()
-		prefMain.deleteAll()
-		Utils.jumpActivity(requireContext(), LoginActivity::class.java)
+		SessionCleanup.clearForLogout(requireContext(), prefMain)
+		Utils.jumpActivityClearTask(requireContext(), LoginActivity::class.java)
 		requireActivity().finish()
 	}
 
@@ -239,4 +240,3 @@ open class BaseFragmentSimple : Fragment() {
 			})
 	}
 }
-

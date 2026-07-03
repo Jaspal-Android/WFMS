@@ -15,8 +15,13 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.tracking.ITrackingRepo
+import com.atvantiq.wfms.data.tracking.LocationEventQueue
+import com.atvantiq.wfms.data.tracking.QueuedLocationEvent
 import com.atvantiq.wfms.network.ApiService
 import com.atvantiq.wfms.ui.screens.SplashActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -29,6 +34,8 @@ import com.google.gson.JsonObject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,20 +44,28 @@ import javax.inject.Inject
 class LocationTrackingService : Service() {
 
     companion object {
-        private const val CHANNEL_ID = "location_service_channel"
-        private const val NOTIFICATION_ID = 12345
+        const val CHANNEL_ID = "location_service_channel_v2"
+        const val NOTIFICATION_ID = 12345
         private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
     }
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private var locationCallback: LocationCallback? = null
     private var isServiceRunning = false
+    private var isUpdatingLocation = false
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Inject
     lateinit var api: ApiService // Your API service interface
 
     @Inject
     lateinit var trackingService: ITrackingRepo
+
+    @Inject
+    lateinit var prefMain: SecurePrefMain
+
+    @Inject
+    lateinit var locationEventQueue: LocationEventQueue
 
     override fun onCreate() {
         super.onCreate()
@@ -83,16 +98,13 @@ class LocationTrackingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         try {
+            if (!prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false)) {
+                stopSelf()
+                return START_NOT_STICKY
+            }
             startForeground(NOTIFICATION_ID, buildNotification())
             isServiceRunning = true
             startLocationUpdates()
-            when (intent?.action) {
-                "com.atvantiq.wfms.ACTION_START_WORK" -> {
-                    val workId = intent.getStringExtra("WORK_ID")
-                    Log.e("jaspal", "Work ID: $workId")
-                }
-                // handle other actions if needed
-            }
             return START_STICKY
         } catch (e: Exception) {
             Log.e("LocationService", "Error starting service", e)
@@ -102,7 +114,10 @@ class LocationTrackingService : Service() {
     }
 
     private fun buildNotification(): Notification {
-        val notificationIntent = Intent(this, SplashActivity::class.java)
+        val notificationIntent = Intent(this, SplashActivity::class.java).apply {
+            action = SplashActivity.ACTION_LOCATION_NOTIFICATION
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
@@ -114,15 +129,21 @@ class LocationTrackingService : Service() {
             .setContentTitle(getString(R.string.location_tracking_active))
             .setContentText(getString(R.string.your_location_tracked))
             .setSmallIcon(R.drawable.ic_loc)
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // Changed to HIGH
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setContentIntent(pendingIntent)
             .setAutoCancel(false)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
 
         // For older devices
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+            builder.setPriority(NotificationCompat.PRIORITY_LOW)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            builder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
         }
 
         return builder.build()
@@ -133,11 +154,12 @@ class LocationTrackingService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Location Tracking",
-                NotificationManager.IMPORTANCE_HIGH // Use HIGH importance
+                NotificationManager.IMPORTANCE_LOW
             )
             channel.setShowBadge(false)
             channel.enableLights(false)
             channel.enableVibration(false)
+            channel.setSound(null, null)
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
@@ -145,7 +167,7 @@ class LocationTrackingService : Service() {
 
 
     private fun startLocationUpdates() {
-        if (!isServiceRunning) return
+        if (!isServiceRunning || isUpdatingLocation) return
 
         val locationRequest = LocationRequest.Builder(LOCATION_UPDATE_INTERVAL)
             .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
@@ -158,6 +180,7 @@ class LocationTrackingService : Service() {
                     locationCallback ?: return,
                     Looper.getMainLooper()
                 )
+                isUpdatingLocation = true
             } catch (e: SecurityException) {
                 Log.e("LocationService", "Security exception: ${e.message}")
                 stopSelf()
@@ -168,24 +191,57 @@ class LocationTrackingService : Service() {
         }
     }
 
-    private fun checkLocationPermission(): Boolean =
-        ContextCompat.checkSelfPermission(
+    private fun checkLocationPermission(): Boolean {
+        val fineGranted = ContextCompat.checkSelfPermission(
             this,
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+        val coarseGranted = ContextCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        return fineGranted || coarseGranted
+    }
 
     private fun sendLocationToServer(location: Location) {
-        CoroutineScope(Dispatchers.IO).launch {
+        serviceScope.launch {
+            locationEventQueue.enqueue(
+                QueuedLocationEvent(
+                    latitude = location.latitude,
+                    longitude = location.longitude,
+                    recordedAtMillis = System.currentTimeMillis(),
+                    accuracyMeters = if (location.hasAccuracy()) location.accuracy else null
+                )
+            )
+            flushQueuedLocations()
+        }
+    }
+
+    private suspend fun flushQueuedLocations() {
+        val queuedLocations = locationEventQueue.peekAll()
+        var syncedCount = 0
+
+        for (event in queuedLocations) {
             try {
                 val params = JsonObject().apply {
-                    addProperty("latitude", location.latitude)
-                    addProperty("longitude", location.longitude)
+                    addProperty("latitude", event.latitude)
+                    addProperty("longitude", event.longitude)
                 }
-               var response = trackingService.sendLocation(params)
-                Log.d("jaspal","Location Response: $response")
-                Log.d("LocationService", "Location sent: ${location.latitude}, ${location.longitude}")
+                trackingService.sendLocation(params)
+                syncedCount++
             } catch (e: Exception) {
-                e.printStackTrace()
+                if (syncedCount > 0) {
+                    locationEventQueue.removeSynced(syncedCount)
+                }
+                Log.e("LocationService", "Queued location sync paused after failure", e)
+                return
+            }
+        }
+
+        if (syncedCount > 0) {
+            locationEventQueue.removeSynced(syncedCount)
+            if (BuildConfig.DEBUG) {
+                Log.d("LocationService", "Synced $syncedCount queued location event(s)")
             }
         }
     }
@@ -194,10 +250,15 @@ class LocationTrackingService : Service() {
 
     override fun onDestroy() {
         isServiceRunning = false
+        isUpdatingLocation = false
         try {
-            fusedLocationClient?.removeLocationUpdates(locationCallback ?: return)
+            locationCallback?.let { callback ->
+                fusedLocationClient?.removeLocationUpdates(callback)
+            }
             locationCallback = null
             fusedLocationClient = null
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            serviceScope.cancel()
         } catch (e: Exception) {
             Log.e("LocationService", "Error cleaning up service", e)
         }

@@ -32,9 +32,10 @@ class SiteSelectionBottomSheetDialog(
     private lateinit var adapter: SitePoAdapter
 
     private val workingSites: MutableList<SiteData> = sites.map { site ->
+        val preSelectedSite = preSelectedSites.firstOrNull { it.id == site.id }
         site.copy(
-            selectedPo = if (preSelectedSites.any { it.id == site.id }) {
-                if (site.po?.size == 1) site.po[0] else site.selectedPo
+            selectedPo = if (preSelectedSite != null) {
+                preSelectedSite.selectedPo ?: if (site.po?.size == 1) site.po[0] else site.selectedPo
             } else null
         )
     }.toMutableList()
@@ -140,6 +141,8 @@ class SiteSelectionBottomSheetDialog(
                 bindPoSection(site, isSelected)
 
                 checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    val currentPosition = adapterPosition
+                    if (currentPosition == RecyclerView.NO_POSITION) return@setOnCheckedChangeListener
                     if (isChecked) {
                         selectedSiteIds.add(site.id)
                         // Auto-select PO if only one exists
@@ -150,7 +153,7 @@ class SiteSelectionBottomSheetDialog(
                         selectedSiteIds.remove(site.id)
                         site.selectedPo = null
                     }
-                    notifyItemChanged(adapterPosition)
+                    notifyItemChanged(currentPosition)
                     onSelectionChanged()
                 }
             }
@@ -166,9 +169,9 @@ class SiteSelectionBottomSheetDialog(
                 when (site.po?.size) {
                     1 -> {
                         tvAutoSelectedPo.visibility = View.VISIBLE
-                        tvAutoSelectedPo.text = "PO: ${site?.po?.get(0)?.poNumber}"
+                        tvAutoSelectedPo.text = "PO: ${site.po[0].poNumber}"
                         spinnerPo.visibility = View.GONE
-                        site.selectedPo = site?.po?.get(0) // ensure it's set
+                        site.selectedPo = site.po[0] // ensure it's set
                     }
                     else -> {
                         tvAutoSelectedPo.visibility = View.GONE

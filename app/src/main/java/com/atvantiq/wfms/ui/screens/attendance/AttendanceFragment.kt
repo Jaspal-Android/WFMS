@@ -78,8 +78,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
 
     override fun onDestroyView() {
         super.onDestroyView()
+        searchHandler.removeCallbacks(searchDebounce)
         binding.rvAssignedTasks.adapter = null // Avoid memory leaks
-        viewModel.stopTracking() // Stop tracking when the fragment is destroyed
     }
 
     override fun subscribeToEvents(vm: AttendanceViewModel) {

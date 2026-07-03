@@ -19,6 +19,7 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
 import com.facebook.stetho.common.Util
@@ -206,8 +207,8 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 
     private fun performGlobalLogout() {
         FirebaseMessaging.getInstance().deleteToken()
-        prefMain.deleteAll()
-        Utils.jumpActivity(this, LoginActivity::class.java)
+        SessionCleanup.clearForLogout(this, prefMain)
+        Utils.jumpActivityClearTask(this, LoginActivity::class.java)
         finish()
     }
 

@@ -59,8 +59,8 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 	private fun setImagePicker(){
 		pickMediaHelper = PickMediaHelper(requireContext(), cameraLauncher, galleryLauncher, permissionLauncher, object : PickMediaHelper.Callback {
 			override fun onImagePicked(path: String, request: Int) {
-				if(!path.isNullOrBlank()){
-					imagePath = pickMediaHelper.compressImageTo1MB(path)
+				if(path.isNotBlank()){
+					imagePath = pickMediaHelper.compressImageTo1MB(path) ?: path
 					binding.hasPreviewImage = true
 					var bitmap = pickMediaHelper.decodeBitmap(path)
 					binding.capturedImagePreview.setImageBitmap(bitmap)

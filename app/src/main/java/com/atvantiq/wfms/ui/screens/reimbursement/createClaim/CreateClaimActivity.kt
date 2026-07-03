@@ -4,7 +4,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -263,8 +262,13 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun handleCreateClaimResponse(response: ApiState<CreateClaimResponse>) {
         when (response.status) {
-            Status.LOADING -> showProgress()
+            Status.LOADING -> {
+                setSubmitEnabled(false)
+                showProgress()
+            }
             Status.SUCCESS -> {
+                viewModel.onSubmitCompleted()
+                setSubmitEnabled(true)
                 dismissProgress()
                 when (response.response?.code) {
                     ValConstants.SUCCESS_CREATION_CODE -> {
@@ -291,6 +295,8 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             Status.ERROR -> {
+                viewModel.onSubmitCompleted()
+                setSubmitEnabled(true)
                 dismissProgress()
                 handleError(response.throwable)
             }
@@ -678,8 +684,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun updateSelectedSites(selectedSites: Set<SiteData>) {
         viewModel.addMultipleSite(selectedSites.toList())
-        selectedSites.forEach {
-            Log.e("PO Selection", "Selected Site: ${it.name}, Selected PO: ${it.selectedPo?.poNumber}")
-        }
+    }
+
+    private fun setSubmitEnabled(enabled: Boolean) {
+        binding.btnSubmit.isEnabled = enabled
+        binding.btnSubmit.alpha = if (enabled) 1f else 0.55f
     }
 }

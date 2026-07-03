@@ -6,6 +6,8 @@ import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -32,7 +34,8 @@ import javax.inject.Inject
 class AttendanceViewModel @Inject constructor(
     application: Application,
     private val workRepo: IWorkRepo,
-    private val attendanceRepo: IAttendanceRepo
+    private val attendanceRepo: IAttendanceRepo,
+    private val prefMain: SecurePrefMain
 ) : BaseViewModel(application) {
 
     var clickEvents = MutableLiveData<AttendanceClickEvents>()
@@ -67,11 +70,13 @@ class AttendanceViewModel @Inject constructor(
     // Location tracking methods
     fun startTracking() {
         _isTracking.value = true
+        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, true)
         startService(LocationTrackingService::class.java)
     }
 
     fun stopTracking() {
         _isTracking.value = false
+        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false)
         stopService(LocationTrackingService::class.java)
     }
 

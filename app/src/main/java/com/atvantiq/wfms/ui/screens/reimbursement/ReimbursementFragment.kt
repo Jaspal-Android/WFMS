@@ -219,9 +219,10 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     private fun startRefreshingData() {
         page = 1
         isLastPage = false // Reset last page flag
+        isLoading = false
         adapter?.removeLoadingFooter() // Remove loading footer on refresh
         adapter?.submitList(emptyList()) // Clear adapter data on refresh
-        viewModel.getAllClaims(page, pageSize)
+        getAllClaims()
     }
 
     private fun stopRefreshingData() {

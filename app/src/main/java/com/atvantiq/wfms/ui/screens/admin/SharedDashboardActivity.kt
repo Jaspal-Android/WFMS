@@ -2,12 +2,15 @@ package com.atvantiq.wfms.ui.screens.admin
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -30,9 +33,12 @@ import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
 import com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents
 import com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -52,6 +58,8 @@ import retrofit2.HttpException
 class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,DashboardViewModel>() {
 
     private var isDayStarted = false
+    private var attendanceActionInFlight = false
+    private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var appUpdateManager: AppUpdateManager
 
@@ -98,8 +106,8 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     private fun performLogout() {
         FirebaseMessaging.getInstance().deleteToken()
-        prefMain.deleteAll()
-        Utils.jumpActivity(this, LoginActivity::class.java)
+        SessionCleanup.clearForLogout(this, prefMain)
+        Utils.jumpActivityClearTask(this, LoginActivity::class.java)
         finish()
     }
 
@@ -157,7 +165,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                     Status.ERROR -> handleError(response.throwable, response.response?.message)
                     Status.LOADING -> showProgress()
                 }
-                binding.slideStartDay.setCompleted(false, true)
             }
         }
 
@@ -168,7 +175,6 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                     Status.ERROR -> handleError(response.throwable, response.response?.message)
                     Status.LOADING -> showProgress()
                 }
-                binding.slideStartDay.setCompleted(false, true)
             }
         }
 
@@ -180,6 +186,28 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                     Status.LOADING -> {
                         showProgress()
                     }
+                }
+            }
+        }
+
+        vm.attendanceRemarksResponse.observe(this) { response ->
+            if (isLifeCycleResumed()) {
+                when (response.status) {
+                    Status.SUCCESS -> {
+                        dismissProgress()
+                        if (response.response?.code == ValConstants.SUCCESS_CODE) {
+                            val location = pendingCheckoutLocation
+                            if (location != null) {
+                                attendanceActionInFlight = true
+                                viewModel.checkOutAttendance(location.first, location.second, false)
+                            } else {
+                                checkInAttendanceStatus()
+                            }
+                        }
+                        showToast(this, response.response?.message ?: getString(R.string.something_went_wrong))
+                    }
+                    Status.ERROR -> handleError(response.throwable, response.response?.message)
+                    Status.LOADING -> showProgress()
                 }
             }
         }
@@ -205,6 +233,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     private fun handleCheckInResponse(response: CheckInOutResponse?) = runOnUiThread {
         dismissProgress()
+        resetAttendanceAction()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
                 isDayStarted = true
@@ -219,12 +248,15 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     private fun handleCheckOutResponse(response: CheckInOutResponse?) = runOnUiThread {
         dismissProgress()
+        resetAttendanceAction()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
+                pendingCheckoutLocation = null
                 isDayStarted = false
                 updateSlideButton(false)
                 viewModel.stopTracking()
             }
+            3001 -> handleNoWorkForDay(response.data?.attendanceId)
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             else -> alertDialogShow(this, getString(R.string.alert), response?.message ?: getString(
                 R.string.something_went_wrong))
@@ -250,6 +282,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     private fun handleError(throwable: Throwable?, message: String?) {
         dismissProgress()
+        resetAttendanceAction()
         if (throwable is HttpException && throwable.code() ==ValConstants.UNAUTHORIZED_CODE) {
             tokenExpiresAlert()
         } else {
@@ -284,6 +317,36 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
         viewModel.checkInStatusAttendance()
     }
 
+    private fun resetAttendanceAction() {
+        attendanceActionInFlight = false
+        binding.slideStartDay.setCompleted(false, true)
+    }
+
+    private fun handleNoWorkForDay(attendanceId: Long?) {
+        alertDialogShow(
+            this,
+            getString(R.string.no_work_started_title),
+            getString(R.string.no_work_started_message),
+            getString(R.string.enter_work_details),
+            { dialog, _ ->
+                dialog.dismiss()
+                Utils.jumpActivity(this, WorkSitesApprovalActivity::class.java)
+            },
+            getString(R.string.mark_idle),
+            { dialog, _ ->
+                dialog.dismiss()
+                showRemarksDialog(attendanceId ?: 0L)
+            }
+        )
+    }
+
+    private fun showRemarksDialog(attendanceId: Long) {
+        val remarksBottomSheet = com.atvantiq.wfms.ui.screens.dashboard.AttendanceRemarksBottomSheet { remarks ->
+            viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+        }
+        remarksBottomSheet.show(supportFragmentManager, "AttendanceRemarksBottomSheet")
+    }
+
     private fun setGeofenceLocation(lat: Double, lon: Double) {
         viewModel.GEOFENCE_LAT.set(lat)
         viewModel.GEOFENCE_LON.set(lon)
@@ -293,6 +356,10 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
         binding.slideStartDay.onSlideCompleteListener =
             object : SlideToActView.OnSlideCompleteListener {
                 override fun onSlideComplete(view: SlideToActView) {
+                    if (attendanceActionInFlight) {
+                        binding.slideStartDay.setCompleted(false, true)
+                        return
+                    }
                     val permissions = getRequiredPermissions()
                     when {
                         hasAllPermissions(permissions) -> manageDayStartEnd()
@@ -311,35 +378,83 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
 
     @SuppressLint("MissingPermission")
     private fun manageDayStartEnd() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
+        if (!isDeviceLocationEnabled()) {
+            resetAttendanceAction()
+            showLocationDisabledDialog()
+            return
+        }
+        getAttendanceActionLocation { location ->
                 if (location == null) {
-                    binding.slideStartDay.setCompleted(false, true)
+                    resetAttendanceAction()
                     alertDialogShow(
                         this,
                         getString(R.string.alert),
                         getString(R.string.unable_to_fetch_location)
                     )
-                    return@addOnSuccessListener
+                    return@getAttendanceActionLocation
                 }
 
                 val lat = location.latitude
                 val lon = location.longitude
 
+                attendanceActionInFlight = true
                 if (isDayStarted) {
+                    pendingCheckoutLocation = lat to lon
                     viewModel.checkOutAttendance(lat, lon, false)
                 } else {
+                    pendingCheckoutLocation = null
                     viewModel.checkInAttendance(lat, lon)
                 }
+        }
+    }
+
+    private fun isDeviceLocationEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun showLocationDisabledDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.permission_required)
+            .setMessage(R.string.location_permission_rationale)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
-            .addOnFailureListener {
-                binding.slideStartDay.setCompleted(false, true)
-                alertDialogShow(
-                    this,
-                    getString(R.string.alert),
-                    getString(R.string.unable_to_fetch_location)
-                )
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getAttendanceActionLocation(onResult: (Location?) -> Unit) {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { cachedLocation ->
+                if (isUsableAttendanceLocation(cachedLocation)) {
+                    onResult(cachedLocation)
+                    return@addOnSuccessListener
+                }
+
+                val cancellationTokenSource = CancellationTokenSource()
+                fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    cancellationTokenSource.token
+                ).addOnSuccessListener { freshLocation ->
+                    onResult(freshLocation)
+                }.addOnFailureListener {
+                    onResult(null)
+                }
+            }.addOnFailureListener {
+                resetAttendanceAction()
+                onResult(null)
             }
+    }
+
+    private fun isUsableAttendanceLocation(location: Location?): Boolean {
+        if (location == null) return false
+        val maxAgeMillis = 2 * 60 * 1000L
+        val maxAccuracyMeters = 100f
+        val ageMillis = System.currentTimeMillis() - location.time
+        return ageMillis in 0..maxAgeMillis && location.accuracy <= maxAccuracyMeters
     }
 
     private val permissionLauncherCurrentLatLon = registerForActivityResult(

@@ -1,9 +1,9 @@
 package com.atvantiq.wfms.app
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
-import com.facebook.stetho.BuildConfig
+import com.atvantiq.wfms.BuildConfig
+import com.atvantiq.wfms.utils.ThemeManager
 import com.facebook.stetho.Stetho
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -26,7 +26,7 @@ class MApplication : Application() {
 
 		provider = ViewModelProvider.AndroidViewModelFactory(this)
 
-		AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+		ThemeManager.applyStoredDarkMode(this)
 	}
 	
 	companion object {

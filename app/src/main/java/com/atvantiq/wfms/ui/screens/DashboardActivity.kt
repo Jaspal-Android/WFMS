@@ -31,6 +31,7 @@ import com.atvantiq.wfms.databinding.NavHeaderDashboardBinding
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
+import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -225,8 +226,8 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
 
     private fun performLogout() {
         FirebaseMessaging.getInstance().deleteToken()
-        prefMain.deleteAll()
-        Utils.jumpActivity(this, LoginActivity::class.java)
+        SessionCleanup.clearForLogout(this, prefMain)
+        Utils.jumpActivityClearTask(this, LoginActivity::class.java)
         finish()
     }
 
