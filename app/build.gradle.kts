@@ -17,6 +17,19 @@ file("../secrets.properties").takeIf { it.exists() }?.apply {
     secrets.load(inputStream())
 }
 
+val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
+val ciVersionName = System.getenv("VERSION_NAME")
+val releaseSigningStoreFile = System.getenv("SIGNING_STORE_FILE")
+val releaseSigningStorePassword = System.getenv("SIGNING_STORE_PASSWORD")
+val releaseSigningKeyAlias = System.getenv("SIGNING_KEY_ALIAS")
+val releaseSigningKeyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+val hasReleaseSigning = listOf(
+    releaseSigningStoreFile,
+    releaseSigningStorePassword,
+    releaseSigningKeyAlias,
+    releaseSigningKeyPassword
+).all { !it.isNullOrBlank() }
+
 android {
     namespace = "com.atvantiq.wfms"
     compileSdk = 35
@@ -25,8 +38,8 @@ android {
         applicationId = "com.atvantiq.wfms"
         minSdk = 24
         targetSdk = 35
-        versionCode = 19
-        versionName = "1.1.5"
+        versionCode = ciVersionCode ?: 20
+        versionName = ciVersionName ?: "1.1.5"
 
         manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
         buildConfigField("String","GOOGLE_MAPS_API_KEY","\"" + secrets.getProperty("GOOGLE_MAPS_API_KEY") + "\"")
@@ -74,6 +87,20 @@ android {
             dimension = "environment"
             buildConfigField("String", "BASE_URL", "\"https://api.onaqt.com/\"")
         }
+    }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(releaseSigningStoreFile.orEmpty())
+                storePassword = releaseSigningStorePassword
+                keyAlias = releaseSigningKeyAlias
+                keyPassword = releaseSigningKeyPassword
+            }
+        }
+    }
+    if (hasReleaseSigning) {
+        buildTypes.getByName("release").signingConfig = signingConfigs.getByName("release")
     }
 
     compileOptions {

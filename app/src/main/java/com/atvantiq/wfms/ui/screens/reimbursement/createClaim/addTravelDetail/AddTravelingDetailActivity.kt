@@ -183,6 +183,8 @@ class AddTravelingDetailActivity :
         if (throwable is HttpException) {
             if (throwable.code() == 401) {
                 tokenExpiresAlert()
+            } else {
+                showToast(this, throwable.message())
             }
         } else {
             showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
@@ -256,8 +258,8 @@ class AddTravelingDetailActivity :
             object : PickMediaHelper.Callback {
                 override fun onImagePicked(path: String, request: Int) {
                     if (path.isNotBlank()) {
-                        pickMediaHelper.compressImageTo1MB(path)
-                        viewModel.attachmentPath.set(path)
+                        val compressedPath = pickMediaHelper.compressImageTo1MB(path) ?: path
+                        viewModel.attachmentPath.set(compressedPath)
                         binding.hasPreviewImage = true
                         var bitmap = pickMediaHelper.decodeBitmap(path)
                         binding.capturedImagePreview.setImageBitmap(bitmap)

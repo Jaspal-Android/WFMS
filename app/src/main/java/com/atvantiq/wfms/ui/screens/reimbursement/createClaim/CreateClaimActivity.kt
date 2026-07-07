@@ -4,7 +4,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -33,7 +32,6 @@ import com.atvantiq.wfms.models.workSiteByDate.Site
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.AddDaExpenseEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedHotelEntriesAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters.SelectedOtherEntriesAdapter
@@ -263,8 +261,13 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun handleCreateClaimResponse(response: ApiState<CreateClaimResponse>) {
         when (response.status) {
-            Status.LOADING -> showProgress()
+            Status.LOADING -> {
+                setSubmitEnabled(false)
+                showProgress()
+            }
             Status.SUCCESS -> {
+                viewModel.onSubmitCompleted()
+                setSubmitEnabled(true)
                 dismissProgress()
                 when (response.response?.code) {
                     ValConstants.SUCCESS_CREATION_CODE -> {
@@ -291,6 +294,8 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             Status.ERROR -> {
+                viewModel.onSubmitCompleted()
+                setSubmitEnabled(true)
                 dismissProgress()
                 handleError(response.throwable)
             }
@@ -455,17 +460,6 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         }
     }
 
-    private val addSiteDetailsActivityResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data: Intent? = result.data
-            val siteID = data?.getLongExtra(SharingKeys.SITE_ID, -1) ?: -1
-            val purpose = data?.getStringExtra(SharingKeys.SITE_PURPOSE) ?: ""
-            //viewModel.addMultipleSite(MultipleSite(siteID, purpose))
-        }
-    }
-
     private val addTravelingDetailsActivityResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -589,41 +583,14 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 ?.mapNotNull { saved -> sites.find { it.id == saved.id } }
                 ?.toSet() ?: emptySet()
 
-            val dialog = SiteSelectionBottomSheetDialog(
-                context = this,
-                sites = sites,                    // List<SiteModel> from API
-                preSelectedSites = preSelected,
+            val dialog = SiteSelectionBottomSheetDialog().apply {
+                this.sites = sites                    // List<SiteModel> from API
+                this.preSelectedSites = preSelected
                 onSubmit = { selectedSites ->
                     updateSelectedSites(selectedSites.toSet())
                 }
-            )
+            }
             dialog.show(supportFragmentManager, "SiteSelectionDialog")
-
-           /* val preSelectedSites = viewModel.selectedSitesIdList?.value?.mapNotNull { site ->
-                sites.find { it == site }
-            }?.toSet() ?: emptySet()
-
-            val dialog = MultiSelectBottomSheetDialog(
-                context = this,
-                items = sites,
-                preSelectedItems = preSelectedSites,
-                bind = { view, site, isSelected ->
-                    view.findViewById<TextView>(R.id.textView).text = site.name
-                    view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
-                },
-                onSelectionChanged = { selectedSites ->
-                    updateSelectedSites(selectedSites)
-                },
-                onSubmit = { selectedSites ->
-                    updateSelectedSites(selectedSites)
-                },
-                filterCondition = { site, query ->
-                    site?.name?.lowercase(Locale.getDefault())
-                        ?.contains(query.lowercase(Locale.getDefault())) ?: false
-                },
-                title = getString(R.string.select_site)
-            )
-            dialog.show(supportFragmentManager, "SiteSelectionDialog")*/
         }
     }
 
@@ -678,8 +645,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun updateSelectedSites(selectedSites: Set<SiteData>) {
         viewModel.addMultipleSite(selectedSites.toList())
-        selectedSites.forEach {
-            Log.e("PO Selection", "Selected Site: ${it.name}, Selected PO: ${it.selectedPo?.poNumber}")
-        }
+    }
+
+    private fun setSubmitEnabled(enabled: Boolean) {
+        binding.btnSubmit.isEnabled = enabled
+        binding.btnSubmit.alpha = if (enabled) 1f else 0.55f
     }
 }

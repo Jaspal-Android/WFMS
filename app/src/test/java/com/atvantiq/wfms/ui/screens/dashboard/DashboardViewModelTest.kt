@@ -9,6 +9,7 @@ import android.net.NetworkInfo
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -43,6 +44,7 @@ class DashboardViewModelTest {
     private lateinit var application: Application
     private lateinit var attendanceRepo: IAttendanceRepo
     private lateinit var authRepo: IAuthRepo
+    private lateinit var prefMain: SecurePrefMain
     private lateinit var viewModel: DashboardViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -53,11 +55,12 @@ class DashboardViewModelTest {
         application = mockk(relaxed = true)
         attendanceRepo = mockk(relaxed = true)
         authRepo = mockk(relaxed = true)
+        prefMain = mockk(relaxed = true)
 
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
 
-        viewModel = DashboardViewModel(application, attendanceRepo, authRepo)
+        viewModel = DashboardViewModel(application, attendanceRepo, authRepo, prefMain)
     }
 
     @After

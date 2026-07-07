@@ -10,14 +10,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.ui.screens.SplashActivity
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "FCM"
-        private const val CHANNEL_ID = "default_channel_id"
-        private const val CHANNEL_NAME = "Default Channel"
+        private const val CHANNEL_ID = "wfms_general_notifications_v2"
+        private const val CHANNEL_NAME = "WFMS Notifications"
         private const val CHANNEL_DESC = "WFMS Notifications"
     }
 
@@ -26,17 +28,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * Avoids duplicate notifications if both data and notification payloads are present.
      */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        if (BuildConfig.DEBUG) Log.d(TAG, "FCM message received")
 
         // Prefer data payload if present to avoid duplicate notifications
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+            if (BuildConfig.DEBUG) Log.d(TAG, "Message data payload received")
             val title = remoteMessage.data["title"] ?: remoteMessage.notification?.title ?: "Notification"
             val message = remoteMessage.data["body"] ?: remoteMessage.data["message"] ?: remoteMessage.notification?.body ?: ""
             showNotification(title, message, remoteMessage.data)
         } else if (remoteMessage.notification != null) {
             val notification = remoteMessage.notification
-            Log.d(TAG, "Message Notification Body: ${notification?.body}")
+            if (BuildConfig.DEBUG) Log.d(TAG, "Notification payload received")
             showNotification(
                 title = notification?.title ?: "Notification",
                 message = notification?.body ?: "",
@@ -46,7 +48,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
+        if (BuildConfig.DEBUG) Log.d(TAG, "FCM token refreshed")
         // Optionally send token to your server
     }
 
@@ -56,20 +58,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun showNotification(title: String, message: String, data: Map<String, String>) {
         createNotificationChannelIfNeeded()
 
-        val intent = Intent(this, getLaunchActivityClass(this)).apply {
+        val intent = Intent(this, SplashActivity::class.java).apply {
+            action = SplashActivity.ACTION_PUSH_NOTIFICATION
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            // Pass data to activity if needed
             for ((key, value) in data) {
                 putExtra(key, value)
             }
         }
+        val requestCode = stableNotificationId(data, title, message)
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
+            this, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        // Use a unique notification ID for each notification
-        val notificationId = (System.currentTimeMillis() % 10000).toInt()
 
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notifications_24)
@@ -77,12 +77,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText(message)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setOnlyAlertOnce(true)
             .setShowWhen(true)
             .setWhen(System.currentTimeMillis())
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-        notificationManager?.notify(notificationId, notificationBuilder.build())
+        notificationManager?.notify(requestCode, notificationBuilder.build())
     }
 
     /**
@@ -91,7 +94,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun createNotificationChannelIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH
+                CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
                 description = CHANNEL_DESC
             }
@@ -100,13 +103,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
-    /**
-     * Helper to get the launch activity class for PendingIntent.
-     */
-    private fun getLaunchActivityClass(context: Context): Class<*> {
-        val packageName = context.packageName
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
-        val className = launchIntent?.component?.className
-        return Class.forName(className ?: throw IllegalStateException("Launch activity not found"))
+    private fun stableNotificationId(data: Map<String, String>, title: String, message: String): Int {
+        val stableKey = data["notification_id"]
+            ?: data["id"]
+            ?: data["type"]?.let { "$it:$title:$message" }
+            ?: "$title:$message"
+        return (stableKey.hashCode() and Int.MAX_VALUE).takeIf { it != 0 } ?: 1
     }
 }

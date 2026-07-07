@@ -5,7 +5,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-feature android:name="android.hardware.camera.any" />
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -71,10 +73,6 @@
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.materialReco.add.AddMaterialActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity
@@ -158,11 +156,13 @@
             android:name=".ui.screens.DashboardActivity"
             android:exported="false"
             android:label="@string/title_activity_dashboard"
+            android:launchMode="singleTop"
             android:screenOrientation="userPortrait"
             android:theme="@style/Theme.WFMS.NoActionBar" />
         <activity
             android:name=".ui.screens.SplashActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="userPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

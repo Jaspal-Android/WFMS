@@ -23,6 +23,8 @@ import com.atvantiq.wfms.databinding.ActivityMaterialUsageBinding
 import com.atvantiq.wfms.models.inventory.UsedMaterial
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,7 +35,8 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
     private lateinit var adapter: MaterialAdapter
     private var searchDebounceJob: Job? = null
     private var lastVisibleRows: List<MaterialRow>? = null
-    private val qtyFormatter = DecimalFormat("0.00")
+    // Locale.US so the decimal separator is always a dot, matching the API contract.
+    private val qtyFormatter = DecimalFormat("0.00", DecimalFormatSymbols(Locale.US))
 
     companion object {
         const val RESULT_SUBMITTED = RESULT_FIRST_USER + 1

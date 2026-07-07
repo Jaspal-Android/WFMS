@@ -100,6 +100,10 @@ object ThemeManager {
         applyDarkMode(context)
     }
 
+    fun applyStoredDarkMode(context: Context) {
+        applyDarkMode(context)
+    }
+
     fun setTheme(context: Context, theme: WfmsTheme) {
         prefs(context).edit()
             .putString(PrefKeys.KEY_THEME, theme.key)
