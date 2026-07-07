@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <exclude domain="sharedpref" path="wfms_secure_pref.xml"/>
+    <exclude domain="sharedpref" path="wfms_secure_prefs.xml"/>
+    <exclude domain="sharedpref" path="__androidx_security_crypto_encrypted_prefs_keyset__.xml"/>
 </full-backup-content>

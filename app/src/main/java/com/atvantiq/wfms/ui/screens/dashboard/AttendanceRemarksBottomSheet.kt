@@ -10,8 +10,12 @@ import com.atvantiq.wfms.databinding.BottomSheetAttendanceRemarksBinding
 import com.atvantiq.wfms.models.StatusOption
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class AttendanceRemarksBottomSheet(var onSubmitDetails: (remarkds: String) -> Unit
-) : BottomSheetDialogFragment() {
+class AttendanceRemarksBottomSheet : BottomSheetDialogFragment() {
+
+    // Callback is wired by the host after construction. Keeping a no-arg constructor
+    // lets the FragmentManager re-instantiate this sheet on process-death/config-change
+    // restore without an InstantiationException (mirrors EndWorkBottomSheet).
+    var onSubmitDetails: ((remarks: String) -> Unit)? = null
 
     lateinit var binding: BottomSheetAttendanceRemarksBinding
     private var selectedStatus: StatusOption? = null
@@ -35,13 +39,18 @@ class AttendanceRemarksBottomSheet(var onSubmitDetails: (remarkds: String) -> Un
         super.onViewCreated(view, savedInstanceState)
         initListeners()
     }
+
     private fun initListeners() {
         binding.btnDone.setOnClickListener {
-            onSubmitDetails(binding.remarksEditText.text.toString())
+            onSubmitDetails?.invoke(binding.remarksEditText.text.toString())
             dismiss()
         }
         binding.btnCancel.setOnClickListener {
             dismiss()
         }
+    }
+
+    companion object {
+        fun newInstance(): AttendanceRemarksBottomSheet = AttendanceRemarksBottomSheet()
     }
 }

@@ -59,8 +59,8 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 	private fun setImagePicker(){
 		pickMediaHelper = PickMediaHelper(requireContext(), cameraLauncher, galleryLauncher, permissionLauncher, object : PickMediaHelper.Callback {
 			override fun onImagePicked(path: String, request: Int) {
-				if(!path.isNullOrBlank()){
-					imagePath = pickMediaHelper.compressImageTo1MB(path)
+				if(path.isNotBlank()){
+					imagePath = pickMediaHelper.compressImageTo1MB(path) ?: path
 					binding.hasPreviewImage = true
 					var bitmap = pickMediaHelper.decodeBitmap(path)
 					binding.capturedImagePreview.setImageBitmap(bitmap)
@@ -88,9 +88,7 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 
 
 				val parsedAmount = amountRaw?.toDoubleOrNull()
-				val isAmountValid = !amountRaw.isNullOrBlank() && parsedAmount != null && parsedAmount > 0.0
-
-				if (!isAmountValid) {
+				if (amountRaw.isNullOrBlank() || parsedAmount == null || parsedAmount <= 0.0) {
 					runCatching { binding.amountEt.error = getString(R.string.enter_valid_amount) }
 					return@setOnClickListener
 				}
@@ -98,7 +96,10 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 				binding.showImageError = false
 				binding.hasPreviewImage = !imagePath.isNullOrBlank()
 
-				onDataSubmitted.invoke(parsedAmount.toString(),imagePath?:"")
+				// Submit the raw validated string (amountRaw is smart-cast non-null here), not
+				// parsedAmount.toString(): the Double round-trip corrupted currency
+				// ("10.20"->"10.2", ">=10M"->scientific notation).
+				onDataSubmitted.invoke(amountRaw, imagePath ?: "")
 				dismiss()
 			}
 			binding.btnCancel.setOnClickListener {

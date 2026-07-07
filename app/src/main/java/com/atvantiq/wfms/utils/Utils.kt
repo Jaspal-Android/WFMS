@@ -33,6 +33,18 @@ import java.util.*
 
 object Utils {
 
+    // Attendance actions must use a recent, accurate fix. Shared by the employee and
+    // admin dashboards so the freshness/accuracy thresholds never drift apart.
+    private const val ATTENDANCE_LOCATION_MAX_AGE_MILLIS = 2 * 60 * 1000L
+    private const val ATTENDANCE_LOCATION_MAX_ACCURACY_METERS = 100f
+
+    fun isUsableAttendanceLocation(location: android.location.Location?): Boolean {
+        if (location == null) return false
+        val ageMillis = System.currentTimeMillis() - location.time
+        return ageMillis in 0..ATTENDANCE_LOCATION_MAX_AGE_MILLIS &&
+                location.accuracy <= ATTENDANCE_LOCATION_MAX_ACCURACY_METERS
+    }
+
     @Synchronized
     fun <T> getIntent(context: Context, clazz: Class<T>, bundle: Bundle): Intent {
         val intent = Intent(context, clazz)
@@ -247,7 +259,7 @@ object Utils {
 
     fun openAppSettings(context: Context) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", "com.atvantiq.parqngo", null)
+        val uri = Uri.fromParts("package", context.packageName, null)
         intent.data = uri
         context.startActivity(intent)
     }
@@ -277,7 +289,7 @@ object Utils {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_SUBJECT, "Check out this awesome app!")
-            val appPackageName = "com.atvantiq.parqngo"  // Get your app's package name
+            val appPackageName = context.packageName
             val playStoreLink = "https://play.google.com/store/apps/details?id=$appPackageName"
             putExtra(Intent.EXTRA_TEXT, "Download this app from the Play Store: $playStoreLink")
         }
@@ -422,4 +434,3 @@ object Utils {
 
 
 }
-

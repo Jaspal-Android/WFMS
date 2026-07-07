@@ -76,12 +76,13 @@ class AttendanceRepoTest {
     fun `attendanceDetails calls apiService with correct token, month, and year`() = runTest {
         val month = 6
         val year = 2024
+        val flag = false
         val expectedResponse = mockk<AttendanceDetailListResponse>()
-        coEvery { apiService.attendanceDetails(any(), month, year) } returns expectedResponse
+        coEvery { apiService.attendanceDetails(any(), month, year, flag) } returns expectedResponse
 
-        val result = repo.attendanceDetails(month, year)
+        val result = repo.attendanceDetails(month, year, flag)
 
-        coVerify { apiService.attendanceDetails("Bearer $token", month, year) }
+        coVerify { apiService.attendanceDetails("Bearer $token", month, year, flag) }
         assertEquals(expectedResponse, result)
     }
 }

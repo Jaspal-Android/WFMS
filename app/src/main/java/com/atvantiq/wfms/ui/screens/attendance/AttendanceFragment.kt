@@ -78,8 +78,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
 
     override fun onDestroyView() {
         super.onDestroyView()
+        searchHandler.removeCallbacks(searchDebounce)
         binding.rvAssignedTasks.adapter = null // Avoid memory leaks
-        viewModel.stopTracking() // Stop tracking when the fragment is destroyed
     }
 
     override fun subscribeToEvents(vm: AttendanceViewModel) {
@@ -483,8 +483,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                     if (location != null) {
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
-                        StartWorkBottomSheet(latitude, longitude) { imagePath ->
-                            viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
+                        StartWorkBottomSheet.newInstance(latitude, longitude).apply {
+                            onImageSelected = { imagePath ->
+                                viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
+                            }
                         }.show(requireActivity().supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
                     } else {
                         showToast(requireContext(), getString(R.string.location_not_found))

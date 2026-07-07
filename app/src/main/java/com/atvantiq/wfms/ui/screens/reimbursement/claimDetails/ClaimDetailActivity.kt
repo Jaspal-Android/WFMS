@@ -14,8 +14,10 @@ import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.reimbursement.ReimbursementViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 
+@AndroidEntryPoint
 class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,ReimbursementViewModel>() {
 
     private val siteAdapter by lazy { SiteAdapter() }
@@ -54,6 +56,12 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
         val claimId = intent.getLongExtra(SharingKeys.CLAIM_ID, -1L)
         if (claimId != -1L) {
             viewModel.getClaimById(claimId)
+        } else {
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.something_went_wrong)
+            )
         }
     }
 

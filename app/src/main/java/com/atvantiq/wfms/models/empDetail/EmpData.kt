@@ -24,7 +24,7 @@ data class EmpData(
     @SerializedName("name")
     val name: String,
     @SerializedName("official_location")
-    val officialLocation: OfficialLocation,
+    val officialLocation: OfficialLocation?,
     @SerializedName("permissions")
     val permissions: List<Permission>,
     @SerializedName("reporting_manager")

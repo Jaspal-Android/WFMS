@@ -71,12 +71,13 @@ class AddTravelDetailViewModel @Inject constructor(
         val amount = travelAmount.get().orEmpty().trim()
         val from = fromLocation.get().orEmpty().trim()
         val to = toLocation.get().orEmpty().trim()
+        val parsedAmount = amount.toDoubleOrNull()
 
         if (mode == null) {
             errorHandler.value = AddTravelDetailsErrorHandler.ON_EMPTY_TRAVEL_MODE
             return false
         }
-        if (amount.isEmpty()) {
+        if (amount.isEmpty() || parsedAmount == null || parsedAmount <= 0.0) {
             errorHandler.value = AddTravelDetailsErrorHandler.ON_EMPTY_TRAVEL_AMOUNT
             return false
         }
@@ -95,10 +96,10 @@ class AddTravelDetailViewModel @Inject constructor(
     fun createTravelDetail(): TravelExpense {
         return TravelExpense(
             mode = selectedTravelMode.get(),
-            amount = travelAmount.get().toString(),
+            amount = travelAmount.get().orEmpty().trim(),
             travelingWith = if (selectedEmployee.get() != null) listOf(selectedEmployee.get()!!) else emptyList(),
-            from = fromLocation.get().toString(),
-            to = toLocation.get().toString(),
+            from = fromLocation.get().orEmpty().trim(),
+            to = toLocation.get().orEmpty().trim(),
             receiptAttachments = if (!attachmentPath.get().isNullOrEmpty()) listOf(attachmentPath.get()!!) else emptyList()
         )
     }

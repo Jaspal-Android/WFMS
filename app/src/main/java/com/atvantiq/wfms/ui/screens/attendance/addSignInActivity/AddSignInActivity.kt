@@ -196,6 +196,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         vm.clientListResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
+                    vm.onSubmitCompleted()
                     dismissProgress()
                     when (response.response?.code) {
                         200 -> {
@@ -219,6 +220,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 }
 
                 Status.ERROR -> {
+                    vm.onSubmitCompleted()
                     dismissProgress()
                     val throwable = response.throwable
                     if (throwable is HttpException) {
@@ -778,7 +780,15 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     private fun updateSelectedTypes(selectedTypes: Set<TypeData>) {
         viewModel.selectedTypeIdList?.clear()
         viewModel.selectedTypeIdList?.addAll(selectedTypes)
+        viewModel.selectedActivityIdList?.clear()
+        binding.activitiesEt.setText("")
         binding.typeEt.setText(selectedTypes.joinToString(", ") { it.name.toString() })
+        val firstTypeId = selectedTypes.firstOrNull()?.id
+        if (firstTypeId != null) {
+            getActivityListByPoType(viewModel.selectedPoNumberId ?: 0L, firstTypeId)
+        } else {
+            viewModel.activities = emptyList()
+        }
     }
 
 
@@ -835,4 +845,3 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         viewModel.getActivityListByPoType(poId, typeId)
     }
 }
-

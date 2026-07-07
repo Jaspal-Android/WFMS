@@ -8,6 +8,8 @@ import androidx.security.crypto.MasterKey
 import com.ssas.jibli.data.prefs.SharedPrefPrint
 import java.io.File
 import java.security.KeyStore
+import javax.crypto.AEADBadTagException
+import javax.crypto.BadPaddingException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +24,14 @@ class SecurePrefMain @Inject constructor(
         return try {
             buildPrefs()
         } catch (firstError: Exception) {
-            Log.w(TAG, "EncryptedSharedPreferences init failed. Resetting secure state.", firstError)
+            // Only wipe secure state when the failure is actual crypto/keystore corruption.
+            // A transient error (e.g. keystore briefly unavailable) must NOT destroy the
+            // session — rethrow so the data survives and the next launch can recover.
+            if (!isCorruptionError(firstError)) {
+                Log.e(TAG, "EncryptedSharedPreferences init failed (non-corruption). Preserving state.", firstError)
+                throw firstError
+            }
+            Log.w(TAG, "EncryptedSharedPreferences corrupted. Resetting secure state.", firstError)
             resetCorruptedState()
             try {
                 buildPrefs()
@@ -31,6 +40,23 @@ class SecurePrefMain @Inject constructor(
                 throw secondError
             }
         }
+    }
+
+    /** Walks the cause chain looking for signatures of an unrecoverable keyset/crypto corruption. */
+    private fun isCorruptionError(error: Throwable): Boolean {
+        var cause: Throwable? = error
+        while (cause != null) {
+            val name = cause.javaClass.name
+            if (cause is AEADBadTagException ||
+                cause is BadPaddingException ||
+                name.contains("GeneralSecurityException") ||
+                name.contains("InvalidProtocolBufferException")
+            ) {
+                return true
+            }
+            cause = cause.cause
+        }
+        return false
     }
 
     private fun buildPrefs(): SharedPreferences {

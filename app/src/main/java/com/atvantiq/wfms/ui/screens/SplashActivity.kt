@@ -1,12 +1,13 @@
 package com.atvantiq.wfms.ui.screens
 
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivitySimple
@@ -17,9 +18,17 @@ import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivitySimple() {
+
+    companion object {
+        const val ACTION_LOCATION_NOTIFICATION = "com.atvantiq.wfms.action.LOCATION_NOTIFICATION"
+        const val ACTION_PUSH_NOTIFICATION = "com.atvantiq.wfms.action.PUSH_NOTIFICATION"
+        private const val SPLASH_DELAY_MS = 2000L
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +40,23 @@ class SplashActivity : BaseActivitySimple() {
             insets
         }
         checkAppVersion()
-        splashTimer()
+        if (isNotificationLaunch()) {
+            routeNext()
+        } else {
+            splashTimer()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (isNotificationLaunch()) {
+            routeNext()
+        }
+    }
+
+    private fun isNotificationLaunch(): Boolean {
+        return intent?.action in setOf(ACTION_LOCATION_NOTIFICATION, ACTION_PUSH_NOTIFICATION)
     }
 
     private fun checkAppVersion() {
@@ -39,9 +64,12 @@ class SplashActivity : BaseActivitySimple() {
     }
 
     private fun splashTimer() {
-        Handler(mainLooper).postDelayed({
+        // lifecycleScope cancels automatically on destroy, so routeNext() can never
+        // fire on a finished activity (avoids the leak + double-launch of the old Handler).
+        lifecycleScope.launch {
+            delay(SPLASH_DELAY_MS)
             routeNext()
-        }, 2000)
+        }
     }
 
     private fun routeNext() {
@@ -80,7 +108,7 @@ class SplashActivity : BaseActivitySimple() {
         }
 
         Utils.jumpActivityWithData(this, target, Bundle().apply {
-            putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissions as ArrayList)
+            putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, ArrayList(permissions.orEmpty()))
         })
         finish()
     }

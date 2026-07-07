@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.constants.SharingKeys
@@ -89,8 +90,10 @@ class AttendanceStatusFragment :
         }
 
         override fun attendanceSummaryResult(statusCounts: Map<String, Int>, noApiDays: Int) {
-            Log.d("CalendarView", "Status Counts: $statusCounts")
-            Log.d("CalendarView", "Days without API data: $noApiDays")
+            if (BuildConfig.DEBUG) {
+                Log.d("CalendarView", "Status Counts: $statusCounts")
+                Log.d("CalendarView", "Days without API data: $noApiDays")
+            }
             showAttendanceSummary(statusCounts, noApiDays)
         }
     }

@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -45,6 +44,8 @@ class AssignedTaskDetailActivity :
     private var projectId: Long? = null
     private var itemTypeAdapter: WorkTypeAdapter? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var workActionInFlight = false
+    private var pendingLocationPermissionAction: (() -> Unit)? = null
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(
@@ -76,19 +77,25 @@ class AssignedTaskDetailActivity :
 
     private fun initListeners() {
         binding.btnAccept.setOnClickListener {
-            viewModel.workAccept(workSiteId ?: -1, position = itemPosition)
+            val id = validWorkSiteIdOrShowError() ?: return@setOnClickListener
+            if (!beginWorkAction()) return@setOnClickListener
+            viewModel.workAccept(id, position = itemPosition)
         }
         binding.btnStartWork.setOnClickListener {
-            checkAttendanceStatus(workSiteId ?: -1, position = itemPosition)
+            val id = validWorkSiteIdOrShowError() ?: return@setOnClickListener
+            if (!beginWorkAction()) return@setOnClickListener
+            checkAttendanceStatus(id, position = itemPosition)
         }
         binding.btnEndWork.setOnClickListener {
+            val id = validWorkSiteIdOrShowError() ?: return@setOnClickListener
             val selectedTypes = itemTypeAdapter?.getSelectedTypes().orEmpty()
             if (selectedTypes.isEmpty()) {
                 showToast(this, getString(R.string.select_type_to_end_work))
                 return@setOnClickListener
             }
+            if (!beginWorkAction()) return@setOnClickListener
             endWorkWithLocationPermissions(
-                workSiteId ?: -1,
+                id,
                 selectedTypes,
                 itemPosition
             )
@@ -97,15 +104,21 @@ class AssignedTaskDetailActivity :
 
     private fun fetchIntentData() {
         workSiteId = intent.getLongExtra(SharingKeys.WORK_ID, -1)
-        if (workSiteId != null) {
+        if ((workSiteId ?: -1L) > 0L) {
             itemPosition = intent.getIntExtra(SharingKeys.WORK_POSITION, -1)
             viewModel.itemPosition.value = itemPosition
             getWorkDetailsById()
+        } else {
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                getString(R.string.something_went_wrong)
+            )
         }
     }
 
     private fun getWorkDetailsById() {
-        viewModel.workById(workSiteId!!)
+        validWorkSiteIdOrShowError()?.let { viewModel.workById(it) }
     }
 
     private fun setupWokTypeRecyclerView() {
@@ -210,12 +223,13 @@ class AssignedTaskDetailActivity :
 
                 Status.ERROR -> {
                     dismissProgress()
-                    if ((response.throwable as HttpException).code() == 401) {
+                    val throwable = response.throwable
+                    if (throwable is HttpException && throwable.code() == 401) {
                         tokenExpiresAlert()
                     } else {
                         showToast(
                             this,
-                            response.throwable.message ?: getString(R.string.something_went_wrong)
+                            throwable?.message ?: getString(R.string.something_went_wrong)
                         )
                     }
                 }
@@ -252,6 +266,7 @@ class AssignedTaskDetailActivity :
         when (response.status) {
             Status.SUCCESS -> {
                 dismissProgress()
+                finishWorkAction()
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(this, it.message ?: getString(successMessage))
@@ -262,7 +277,10 @@ class AssignedTaskDetailActivity :
                 }
             }
 
-            Status.ERROR -> handleError(response.throwable)
+            Status.ERROR -> {
+                finishWorkAction()
+                handleError(response.throwable)
+            }
             Status.LOADING -> showProgress()
         }
     }
@@ -274,10 +292,11 @@ class AssignedTaskDetailActivity :
         when (response.status) {
             Status.SUCCESS -> {
                 dismissProgress()
+                finishWorkAction()
                 response.response?.let {
                     if (it.code == 200) {
                         showToast(this, it.message ?: getString(successMessage))
-                        it?.data?.canRestart = false
+                        it.data?.canRestart = false
                         handleStatusUpdateResponse(it.data)
                     } else {
                         handleErrorResponse(it.code, it.message)
@@ -285,7 +304,10 @@ class AssignedTaskDetailActivity :
                 }
             }
 
-            Status.ERROR -> handleError(response.throwable)
+            Status.ERROR -> {
+                finishWorkAction()
+                handleError(response.throwable)
+            }
             Status.LOADING -> showProgress()
         }
     }
@@ -294,6 +316,7 @@ class AssignedTaskDetailActivity :
         when (response.status) {
             Status.SUCCESS -> {
                 dismissProgress()
+                finishWorkAction()
                 response.response?.let {
                     when (it.code) {
                         200 -> {
@@ -311,7 +334,10 @@ class AssignedTaskDetailActivity :
                 }
             }
 
-            Status.ERROR -> handleError(response.throwable)
+            Status.ERROR -> {
+                finishWorkAction()
+                handleError(response.throwable)
+            }
             Status.LOADING -> showProgress()
         }
     }
@@ -346,11 +372,13 @@ class AssignedTaskDetailActivity :
                 dismissProgress()
                 response.response?.let {
                     if (it.code == 200 && it.data?.checkedIn == true) {
+                        finishWorkAction()
                         startWorkWithLocationPermissions(
                             viewModel.currentWorkId ?: -1,
                             viewModel.itemPosition.value ?: -1
                         )
                     } else {
+                        finishWorkAction()
                         alertDialogShow(
                             this,
                             getString(R.string.alert),
@@ -364,7 +392,10 @@ class AssignedTaskDetailActivity :
                 }
             }
 
-            Status.ERROR -> handleError(response.throwable)
+            Status.ERROR -> {
+                finishWorkAction()
+                handleError(response.throwable)
+            }
             Status.LOADING -> showProgress()
         }
     }
@@ -379,6 +410,7 @@ class AssignedTaskDetailActivity :
 
     private fun handleError(throwable: Throwable?) {
         dismissProgress()
+        finishWorkAction()
         if (throwable is HttpException && throwable.code() == 401) {
             tokenExpiresAlert()
         } else {
@@ -391,14 +423,20 @@ class AssignedTaskDetailActivity :
     ) { permissions ->
         when {
             permissions.all { it.value } -> {
-
+                val pendingAction = pendingLocationPermissionAction
+                pendingLocationPermissionAction = null
+                pendingAction?.invoke()
             }
 
             !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
+                pendingLocationPermissionAction = null
+                finishWorkAction()
                 showPermissionDeniedPermanently()
             }
 
             else -> {
+                pendingLocationPermissionAction = null
+                finishWorkAction()
                 showPermissionRationale()
             }
         }
@@ -412,14 +450,17 @@ class AssignedTaskDetailActivity :
 
     private fun handleLocationPermissions(
         onPermissionsGranted: () -> Unit,
-        onPermissionsDenied: () -> Unit = { showPermissionRationale() },
-        onPermissionsDeniedPermanently: () -> Unit = { showPermissionDeniedPermanently() }
+        onPermissionsDenied: () -> Unit = { showPermissionRationale() }
     ) {
         val permissions = getRequiredPermissions()
         when {
             hasAllPermissions(permissions) -> onPermissionsGranted()
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> onPermissionsDenied()
+            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
+                pendingLocationPermissionAction = onPermissionsGranted
+                onPermissionsDenied()
+            }
             else ->{
+                pendingLocationPermissionAction = onPermissionsGranted
                 Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.location_permission_needed),getString(R.string.start_end_work_location_permission_msg)){
                     permissionLauncher.launch(permissions)
                 }
@@ -450,7 +491,10 @@ class AssignedTaskDetailActivity :
                 // Launch permission request after showing rationale
                 permissionLauncher.launch(getRequiredPermissions())
             }
-            .setNegativeButton(R.string.cancel, null)
+            .setNegativeButton(R.string.cancel) { _, _ ->
+                pendingLocationPermissionAction = null
+                finishWorkAction()
+            }
             .show()
     }
 
@@ -461,7 +505,7 @@ class AssignedTaskDetailActivity :
             .setPositiveButton(R.string.open_settings) { _, _ ->
                 openApplicationSettings()
             }
-            .setNegativeButton(R.string.cancel, null)
+            .setNegativeButton(R.string.cancel) { _, _ -> finishWorkAction() }
             .show()
     }
 
@@ -471,22 +515,26 @@ class AssignedTaskDetailActivity :
         handleLocationPermissions(
             onPermissionsGranted = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    finishWorkAction()
                     if (location != null) {
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
-                        StartWorkBottomSheet(latitude, longitude) { imagePath ->
-                            viewModel.workStart(
-                                workSiteId.toString(),
-                                latitude,
-                                longitude,
-                                imagePath,
-                                position
-                            )
+                        StartWorkBottomSheet.newInstance(latitude, longitude).apply {
+                            onImageSelected = { imagePath ->
+                                viewModel.workStart(
+                                    workSiteId.toString(),
+                                    latitude,
+                                    longitude,
+                                    imagePath,
+                                    position
+                                )
+                            }
                         }.show(supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
                     } else {
                         showToast(this, getString(R.string.location_not_found))
                     }
                 }.addOnFailureListener {
+                    finishWorkAction()
                     showToast(this, getString(R.string.location_error))
                 }
             }
@@ -503,6 +551,7 @@ class AssignedTaskDetailActivity :
         handleLocationPermissions(
             onPermissionsGranted = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    finishWorkAction()
                     if (location != null) {
                         val latitude = location.latitude.toString()
                         val longitude = location.longitude.toString()
@@ -529,10 +578,38 @@ class AssignedTaskDetailActivity :
                         showToast(this, getString(R.string.location_not_found))
                     }
                 }.addOnFailureListener {
+                    finishWorkAction()
                     showToast(this, getString(R.string.location_error))
                 }
             }
         )
+    }
+
+    private fun beginWorkAction(): Boolean {
+        if (workActionInFlight) return false
+        workActionInFlight = true
+        setWorkButtonsEnabled(false)
+        return true
+    }
+
+    private fun finishWorkAction() {
+        if (!workActionInFlight) return
+        workActionInFlight = false
+        setWorkButtonsEnabled(true)
+    }
+
+    private fun setWorkButtonsEnabled(enabled: Boolean) {
+        listOf(binding.btnAccept, binding.btnStartWork, binding.btnEndWork).forEach { button ->
+            button.isEnabled = enabled
+            button.alpha = if (enabled) 1f else 0.55f
+        }
+    }
+
+    private fun validWorkSiteIdOrShowError(): Long? {
+        val id = workSiteId
+        if (id != null && id > 0L) return id
+        showToast(this, getString(R.string.something_went_wrong))
+        return null
     }
 
 }
