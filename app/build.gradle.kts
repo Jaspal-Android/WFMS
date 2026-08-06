@@ -32,12 +32,12 @@ val hasReleaseSigning = listOf(
 
 android {
     namespace = "com.atvantiq.wfms"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.atvantiq.wfms"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = ciVersionCode ?: 20
         versionName = ciVersionName ?: "1.1.5"
 
@@ -147,12 +147,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     // Hilt Testing
-    testImplementation("com.google.dagger:hilt-android-testing:2.48")
-    kaptTest("com.google.dagger:hilt-android-compiler:2.48")
+    testImplementation("com.google.dagger:hilt-android-testing:2.56.2")
+    kaptTest("com.google.dagger:hilt-android-compiler:2.56.2")
 
     // Hilt
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.56.2")
+    implementation("com.google.dagger:hilt-android:2.56.2")
     // Google Gson
     implementation("com.google.code.gson:gson:2.11.0")
     // Retrofit

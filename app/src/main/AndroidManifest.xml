@@ -31,6 +31,19 @@
         android:theme="@style/Theme.WFMS"
         tools:targetApi="31">
 
+        <!--
+            Android 16 (API 36) ignores android:screenOrientation on displays >= 600dp, so the
+            portrait-only activities below would become resizable/landscape on tablets and
+            foldables. This property keeps the existing portrait behaviour while those layouts
+            are made adaptive.
+
+            NOTE: this is a temporary opt-out. Google removes it once the app targets API 37,
+            so the layouts still need to be made adaptive before the next target bump.
+        -->
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
+
         <activity android:name=".ui.screens.intentory.MaterialUsageActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
