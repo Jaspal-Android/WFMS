@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
@@ -33,7 +35,8 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     application: Application,
     private val attendanceRepo: IAttendanceRepo,
-    private val authRepo: IAuthRepo
+    private val authRepo: IAuthRepo,
+    private val prefMain: SecurePrefMain
 ) : BaseViewModel(application) {
 
     var clickEvents = MutableLiveData<DashboardClickEvents>()
@@ -59,6 +62,7 @@ class DashboardViewModel @Inject constructor(
 
     fun startTracking() {
         _isTracking.value = true
+        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, true)
         val serviceIntent = Intent(getApplication(), LocationTrackingService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getApplication<Application>().startForegroundService(serviceIntent)
@@ -69,6 +73,7 @@ class DashboardViewModel @Inject constructor(
 
     fun stopTracking() {
         _isTracking.value = false
+        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false)
         val serviceIntent = Intent(getApplication(), LocationTrackingService::class.java)
         getApplication<Application>().stopService(serviceIntent)
     }

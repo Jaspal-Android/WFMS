@@ -31,6 +31,7 @@ import com.atvantiq.wfms.models.work.selfAssign.Site
 import com.atvantiq.wfms.models.work.selfAssign.Type
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.Utils
+import com.google.gson.JsonObject
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -354,6 +355,82 @@ class AddSignInVMTest {
         viewModel.selectedClient = null // validation fails
         viewModel.onSaveClick()
         coVerify(exactly = 0) { workRepo.workSelfAssign(any()) }
+    }
+
+    @Test
+    fun `validateAssignTaskFields requires selected activity`() {
+        viewModel.selectedClient = Client(
+            id = 1L,
+            companyName = "Client",
+            displayName = "Client",
+            gstNumber = "GST",
+            state = "State",
+            address = "Address",
+            alternateAddress = "Alt",
+            isActive = 1,
+            addedBy = AddedBy(id = 1L, name = "Admin"),
+            createdAt = "2026-01-01"
+        )
+        viewModel.selectedProjectId = 2L
+        viewModel.selectedPoNumberId = 3L
+        viewModel.selectedCircleId = 4L
+        viewModel.selectedSiteId = 5L
+        viewModel.selectedTypeIdList = arrayListOf(
+            com.atvantiq.wfms.models.type.TypeData(
+                activities = emptyList(),
+                id = 6L,
+                name = "Type"
+            )
+        )
+        viewModel.selectedActivityIdList = arrayListOf()
+
+        assertFalse(viewModel.validateAssignTaskFields())
+        assertEquals(AssignTaskError.ON_ACTIVITY_ERROR, viewModel.errorHandler.value)
+    }
+
+    @Test
+    fun `onSaveClick sends selected activity ids in self assign payload`() = runTest {
+        val response = mockk<SelfAssignResponse>(relaxed = true)
+        val params = slot<JsonObject>()
+        coEvery { workRepo.workSelfAssign(capture(params)) } returns response
+
+        viewModel.selectedClient = Client(
+            id = 11L,
+            companyName = "Client",
+            displayName = "Client",
+            gstNumber = "GST",
+            state = "State",
+            address = "Address",
+            alternateAddress = "Alt",
+            isActive = 1,
+            addedBy = AddedBy(id = 1L, name = "Admin"),
+            createdAt = "2026-01-01"
+        )
+        viewModel.selectedProjectId = 22L
+        viewModel.selectedPoNumberId = 33L
+        viewModel.selectedCircleId = 44L
+        viewModel.selectedSiteId = 55L
+        viewModel.selectedTypeIdList = arrayListOf(
+            com.atvantiq.wfms.models.type.TypeData(
+                activities = listOf(
+                    com.atvantiq.wfms.models.type.Activity(id = 999L, name = "Not selected")
+                ),
+                id = 66L,
+                name = "Type"
+            )
+        )
+        viewModel.selectedActivityIdList = arrayListOf(77L, 88L)
+
+        viewModel.onSaveClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 1) { workRepo.workSelfAssign(any()) }
+        val activityArray = params.captured
+            .getAsJsonArray("type")
+            .first()
+            .asJsonObject
+            .getAsJsonArray("activity")
+        assertEquals(listOf(77L, 88L), activityArray.map { it.asJsonObject.get("id").asLong })
     }
 
    /* @Test

@@ -2,17 +2,21 @@ package com.atvantiq.wfms.ui.screens.dashboard
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.constants.ValConstants
@@ -32,6 +36,8 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashb
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
@@ -45,6 +51,8 @@ import retrofit2.HttpException
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
 
     private var isDayStarted = false
+    private var attendanceActionInFlight = false
+    private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
@@ -86,17 +94,18 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
                     startCurrentLocationPermissionFlow()
                 }
-                DashboardClickEvents.OPEN_SITES_CLICK -> TODO()
-                DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK -> TODO()
-                DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK -> TODO()
-                DashboardClickEvents.OPEN_PROFILE_CLICK -> TODO()
-                DashboardClickEvents.LOGOUT_CLICK -> TODO()
+                DashboardClickEvents.OPEN_SITES_CLICK,
+                DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK,
+                DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK,
+                DashboardClickEvents.OPEN_PROFILE_CLICK,
+                DashboardClickEvents.CHANGE_THEME_CLICK -> {
+                    showToast(requireContext(), getString(R.string.under_development))
+                }
+                DashboardClickEvents.LOGOUT_CLICK -> logoutUser()
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(requireContext(), ApplyLeaveActivity::class.java)
                 }
-                else -> {
-
-                }
+                null -> Unit
             }
         }
 
@@ -117,7 +126,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     Status.ERROR -> handleError(response.throwable, response.response?.message)
                     Status.LOADING -> showProgress()
                 }
-                binding.appDashHeader.slideStartDay.setCompleted(false, true)
             }
         }
 
@@ -128,7 +136,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     Status.ERROR -> handleError(response.throwable, response.response?.message)
                     Status.LOADING -> showProgress()
                 }
-                binding.appDashHeader.slideStartDay.setCompleted(false, true)
             }
         }
 
@@ -150,12 +157,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     Status.SUCCESS -> {
                         dismissProgress()
                         if (response.response?.code == ValConstants.SUCCESS_CODE) {
-                            checkInAttendanceStatus()
+                            val location = pendingCheckoutLocation
+                            if (location != null) {
+                                attendanceActionInFlight = true
+                                viewModel.checkOutAttendance(location.first, location.second, true)
+                            } else {
+                                checkInAttendanceStatus()
+                            }
                         }
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.alert),
-                            response.response?.message.toString())
+                        showToast(requireContext(), response.response?.message ?: getString(R.string.something_went_wrong))
                     }
                     Status.ERROR -> handleError(response.throwable, response.response?.message)
                     Status.LOADING -> showProgress()
@@ -167,6 +177,20 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     override fun onResume() {
         super.onResume()
         checkInAttendanceStatus()
+    }
+
+    private fun logoutUser() {
+        alertDialogShow(
+            requireContext(),
+            getString(R.string.logout),
+            getString(R.string.logout_confirmation),
+            getString(R.string.yes),
+            { dialog, _ ->
+                dialog.dismiss()
+                performLogout()
+            },
+            { dialog, _ -> dialog.dismiss() }
+        )
     }
 
     private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
@@ -183,6 +207,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private fun handleCheckInResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
         dismissProgress()
+        resetAttendanceAction()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
                 isDayStarted = true
@@ -197,19 +222,22 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private fun handleCheckOutResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
         dismissProgress()
+        resetAttendanceAction()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
-              performCheckOut(true)
+              pendingCheckoutLocation = null
+              performCheckOut()
+              communicationViewModel.triggerCalendarRefresh()
             }
             3001 ->{
-                handleNoWorkForDay(response?.data?.attendanceId)
+                handleNoWorkForDay(response.data?.attendanceId)
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
             else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
         }
     }
 
-    private fun performCheckOut(isShowProgress:Boolean){
+    private fun performCheckOut(){
         isDayStarted = false
         updateSlideButton(false)
         viewModel.stopTracking()
@@ -224,13 +252,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 if(isDayStarted) checkPermissionForLiveLocation()
             }
             ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            ValConstants.BAD_REQUEST_CODE -> alertDialogShow(requireContext(), getString(R.string.alert), response.message ?: getString(R.string.something_went_wrong))
+            ValConstants.BAD_REQUEST_CODE -> alertDialogShow(requireContext(), getString(R.string.alert), response.message)
             else -> handleCheckInStatusError(response?.message, null)
         }
     }
 
     private fun handleError(throwable: Throwable?, message: String?) {
         dismissProgress()
+        resetAttendanceAction()
         if (throwable is HttpException && throwable.code() ==ValConstants.UNAUTHORIZED_CODE) {
             tokenExpiresAlert()
         } else {
@@ -273,8 +302,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             getString(R.string.no_work_started_title),
             getString(R.string.no_work_started_message),
             getString(R.string.enter_work_details),
-            DialogInterface.OnClickListener { _, _ ->
-
+            DialogInterface.OnClickListener { dialog, _ ->
+                dialog.dismiss()
+                findNavController().navigate(R.id.nav_attendance)
             },
             getString(R.string.mark_idle),
             DialogInterface.OnClickListener { _, _ ->
@@ -284,8 +314,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun showRemarksDialog(attendanceId: Long) {
-        var remarksBottomSheet = AttendanceRemarksBottomSheet{remarks ->
-            viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+        val remarksBottomSheet = AttendanceRemarksBottomSheet.newInstance().apply {
+            onSubmitDetails = { remarks ->
+                viewModel.setAttendanceEmpRemarks(attendanceId, remarks)
+            }
         }
         remarksBottomSheet.show(parentFragmentManager, "AttendanceRemarksBottomSheet")
     }
@@ -307,42 +339,88 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         viewModel.checkInStatusAttendance()
     }
 
+    private fun resetAttendanceAction() {
+        attendanceActionInFlight = false
+        binding.appDashHeader.slideStartDay.setCompleted(false, true)
+    }
+
     @SuppressLint("MissingPermission")
     private fun manageDayStartEnd() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
+        if (!isDeviceLocationEnabled()) {
+            resetAttendanceAction()
+            showLocationDisabledDialog()
+            return
+        }
+        getAttendanceActionLocation { location ->
                 if (location == null) {
-                    binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                    resetAttendanceAction()
                     alertDialogShow(
                         requireContext(),
                         getString(R.string.alert),
                         getString(R.string.unable_to_fetch_location)
                     )
-                    return@addOnSuccessListener
+                    return@getAttendanceActionLocation
                 }
 
                 val lat = location.latitude
                 val lon = location.longitude
 
+                attendanceActionInFlight = true
                 if (isDayStarted) {
+                    pendingCheckoutLocation = lat to lon
                     viewModel.checkOutAttendance(lat, lon, true)
                 } else {
+                    pendingCheckoutLocation = null
                     viewModel.checkInAttendance(lat, lon)
                 }
+        }
+    }
+
+    private fun isDeviceLocationEnabled(): Boolean {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun showLocationDisabledDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.permission_required)
+            .setMessage(R.string.location_permission_rationale)
+            .setPositiveButton(R.string.open_settings) { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
-            .addOnFailureListener {
-                binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                alertDialogShow(
-                    requireContext(),
-                    getString(R.string.alert),
-                    getString(R.string.unable_to_fetch_location)
-                )
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getAttendanceActionLocation(onResult: (Location?) -> Unit) {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { cachedLocation ->
+                if (Utils.isUsableAttendanceLocation(cachedLocation)) {
+                    onResult(cachedLocation)
+                    return@addOnSuccessListener
+                }
+
+                val cancellationTokenSource = CancellationTokenSource()
+                fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    cancellationTokenSource.token
+                ).addOnSuccessListener { freshLocation ->
+                    onResult(freshLocation)
+                }.addOnFailureListener {
+                    onResult(null)
+                }
+            }.addOnFailureListener {
+                resetAttendanceAction()
+                onResult(null)
             }
     }
 
+
     private fun setupUserData(userData: EmpData?) {
         if (userData == null) return
-        setGeofenceLocation(userData?.officialLocation?.latitude ?: 0.0, userData?.officialLocation?.longitude ?: 0.0)
+        setGeofenceLocation(userData.officialLocation?.latitude ?: 0.0, userData.officialLocation?.longitude ?: 0.0)
         binding.appDashHeader.userData = userData
     }
 
@@ -355,6 +433,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         binding.appDashHeader.slideStartDay.onSlideCompleteListener =
             object : SlideToActView.OnSlideCompleteListener {
                 override fun onSlideComplete(view: SlideToActView) {
+                    if (attendanceActionInFlight) {
+                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                        return
+                    }
                     val permissions = getRequiredPermissions()
                     when {
                         hasAllPermissions(permissions) -> manageDayStartEnd()

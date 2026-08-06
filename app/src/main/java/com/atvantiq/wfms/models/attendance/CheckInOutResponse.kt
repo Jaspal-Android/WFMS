@@ -7,7 +7,7 @@ data class CheckInOutResponse(
     @SerializedName("code")
     val code: Int,
     @SerializedName("data")
-    val `data`: CheckoutData,
+    val `data`: CheckoutData?,
     @SerializedName("message")
     val message: String,
     @SerializedName("success")

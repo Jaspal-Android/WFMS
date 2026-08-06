@@ -45,8 +45,14 @@ class NetModule() {
         val client = OkHttpClient.Builder()
         client.readTimeout(TIME_OUT, TimeUnit.MINUTES)
         client.connectTimeout(TIME_OUT, TimeUnit.MINUTES)
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BODY
+        val logging = HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+            redactHeader("Authorization")
+        }
         client.addInterceptor { chain ->
             val request = chain.request()
                 .newBuilder()

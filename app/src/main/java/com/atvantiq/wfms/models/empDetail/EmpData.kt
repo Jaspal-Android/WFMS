@@ -1,12 +1,15 @@
 package com.atvantiq.wfms.models.empDetail
 
 
+import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.loginResponse.OfficialLocation
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 
 data class EmpData(
     @SerializedName("circle")
-    val circle: String,
+    @JsonAdapter(CircleListDeserializer::class)
+    val circle: List<CircleData>? = null,
     @SerializedName("date_of_joining")
     val dateOfJoining: String,
     @SerializedName("designation")
@@ -24,7 +27,7 @@ data class EmpData(
     @SerializedName("name")
     val name: String,
     @SerializedName("official_location")
-    val officialLocation: OfficialLocation,
+    val officialLocation: OfficialLocation?,
     @SerializedName("permissions")
     val permissions: List<Permission>,
     @SerializedName("reporting_manager")
@@ -35,4 +38,14 @@ data class EmpData(
     val shortName: String,
     @SerializedName("team")
     val team: Any?
-)
+) {
+    /**
+     * Circle codes joined for display, e.g. "CHD" or "CHD, PB".
+     * Computed (no backing field) so Gson never serialises it into the cached payload.
+     */
+    val circleDisplay: String
+        get() = circle.orEmpty()
+            .map { it.code }
+            .filter { it.isNotBlank() }
+            .joinToString(", ")
+}

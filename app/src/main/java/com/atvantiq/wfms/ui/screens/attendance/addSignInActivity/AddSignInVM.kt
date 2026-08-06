@@ -1,11 +1,8 @@
 package com.atvantiq.wfms.ui.screens.attendance.addSignInActivity
 
 import android.app.Application
-import android.util.Log
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
@@ -29,7 +26,6 @@ import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -67,6 +63,7 @@ class AddSignInVM @Inject constructor(
     val isSiteLoading = ObservableField<Boolean>().apply { set(false) }
     val isTypeLoading = ObservableField<Boolean>().apply { set(false) }
     val isActivityLoading = ObservableField<Boolean>().apply { set(false) }
+    val isSubmitting = ObservableField<Boolean>().apply { set(false) }
 
     // Click event handlers
     fun onSaveClick() = getWorkAssigned()
@@ -184,13 +181,23 @@ class AddSignInVM @Inject constructor(
                 errorHandler.value = AssignTaskError.ON_TYPE_ERROR
                 false
             }
+            selectedActivityIdList.isNullOrEmpty() -> {
+                errorHandler.value = AssignTaskError.ON_ACTIVITY_ERROR
+                false
+            }
             else -> true
         }
     }
 
     // Work assigned API using executeApiCall
     private fun getWorkAssigned() {
+        if (isSubmitting.get() == true) return
         if (!validateAssignTaskFields()) return
+        if (!Utils.isInternet(getApplication())) {
+            workAssignedResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            return
+        }
+        isSubmitting.set(true)
 
         val params = JsonObject().apply {
             addProperty("po_id", selectedPoNumberId)
@@ -207,14 +214,15 @@ class AddSignInVM @Inject constructor(
 
             // Type array
             val typeArray = JsonArray()
+            val selectedActivityIds = selectedActivityIdList.orEmpty().toSet()
             for (type in selectedTypeIdList ?: emptyList()) {
                 val typeObj = JsonObject()
-                typeObj.addProperty("id", type?.id)
+                typeObj.addProperty("id", type.id)
                 // Activity array inside type
                 val activityArray = JsonArray()
-                for (activity in type.activities ?: emptyList()) {
+                selectedActivityIds.forEach { activityId ->
                     val activityObj = JsonObject()
-                    activityObj.addProperty("id", activity?.id)
+                    activityObj.addProperty("id", activityId)
                     activityArray.add(activityObj)
                 }
                 typeObj.add("activity", activityArray)
@@ -224,7 +232,13 @@ class AddSignInVM @Inject constructor(
         }
         executeApiCall(
             apiCall = { workRepo.workSelfAssign(params) },
-            liveData = workAssignedResponse
+            liveData = workAssignedResponse,
+            onSuccess = { isSubmitting.set(false) },
+            onError = { isSubmitting.set(false) }
         )
+    }
+
+    fun onSubmitCompleted() {
+        isSubmitting.set(false)
     }
 }

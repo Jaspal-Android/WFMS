@@ -39,14 +39,16 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding, MyTargetsVM>() 
                         bindData(data)
                     } else {
                         showContent(false)
+                        binding.tvEmpty.text = getString(R.string.no_targets_data)
                         binding.tvEmpty.visibility = View.VISIBLE
                     }
                 }
                 Status.ERROR -> {
                     showLoading(false)
                     showContent(false)
+                    // Distinguish a network/server failure from a genuinely empty month.
+                    binding.tvEmpty.text = state.throwable?.message ?: getString(R.string.something_went_wrong)
                     binding.tvEmpty.visibility = View.VISIBLE
-                    showToast(requireContext(), state.throwable?.message ?: getString(R.string.please_wait))
                 }
             }
         }

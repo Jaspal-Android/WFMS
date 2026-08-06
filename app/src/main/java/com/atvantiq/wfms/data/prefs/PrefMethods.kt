@@ -55,7 +55,10 @@ object PrefMethods {
 	 */
 	fun getEmpDetailResponse(prefMain: SecurePrefMain): EmpData? {
 		val empDetailString = prefMain[PrefKeys.EMP_DATA, ""]
-		return Gson().fromJson(empDetailString, EmpData::class.java)
+		// A cached payload written by an older build can no longer match the model. Treat an
+		// unreadable cache as "no cache" and let the caller re-fetch instead of crashing.
+		return runCatching { Gson().fromJson(empDetailString, EmpData::class.java) }
+			.getOrNull()
 	}
 
 }

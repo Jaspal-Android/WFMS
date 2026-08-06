@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.attendance
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -37,6 +38,7 @@ class AttendanceViewModelTest {
     private lateinit var application: Application
     private lateinit var workRepo: IWorkRepo
     private lateinit var attendanceRepo: IAttendanceRepo
+    private lateinit var prefMain: SecurePrefMain
     private lateinit var viewModel: AttendanceViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -47,11 +49,12 @@ class AttendanceViewModelTest {
         application = mockk(relaxed = true)
         workRepo = mockk(relaxed = true)
         attendanceRepo = mockk(relaxed = true)
+        prefMain = mockk(relaxed = true)
 
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
 
-        viewModel = AttendanceViewModel(application, workRepo, attendanceRepo)
+        viewModel = AttendanceViewModel(application, workRepo, attendanceRepo, prefMain)
     }
 
     @After
