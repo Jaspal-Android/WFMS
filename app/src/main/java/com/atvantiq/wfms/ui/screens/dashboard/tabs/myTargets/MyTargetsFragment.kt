@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentMyTargetsBinding
 import com.atvantiq.wfms.models.targets.MyTargetsData
 import com.atvantiq.wfms.network.Status
@@ -33,6 +34,13 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding, MyTargetsVM>() 
                 Status.LOADING -> showLoading(true)
                 Status.SUCCESS -> {
                     showLoading(false)
+                    // The API reports auth failures in the body (HTTP 200 + code 401), so an
+                    // expired session lands here and must route to login like every other screen.
+                    if (state.response?.code == ValConstants.UNAUTHORIZED_CODE) {
+                        showContent(false)
+                        tokenExpiresAlert()
+                        return@observe
+                    }
                     val data = state.response?.data
                     if (data != null) {
                         showContent(true)
