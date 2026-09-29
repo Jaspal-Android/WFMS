@@ -22,10 +22,12 @@ import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
 import com.atvantiq.wfms.models.site.create.CreateSiteResponse
+import com.atvantiq.wfms.models.site.detail.SiteDetailResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
@@ -40,6 +42,7 @@ import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -194,8 +197,23 @@ interface ApiService {
 	@GET(NetworkEndPoints.allClaims)
 	suspend fun allClaims(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") pageSize:Int ): AllClaimsResponse
 
+	@GET(NetworkEndPoints.siteById)
+	suspend fun siteById(@Header("Authorization") token: String, @Path("id") siteId: Long): SiteDetailResponse
+
 	@GET(NetworkEndPoints.claimById)
 	suspend fun claimById(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): ClaimDetailResponse
+
+	@Multipart
+	@PUT(NetworkEndPoints.updateClaim)
+	suspend fun updateClaim(
+		@Header("Authorization") token: String,
+		@Path("claim_id") claimId: Long,
+		@Part("data") data: RequestBody,
+		@Part files: List<MultipartBody.Part>
+	): CreateClaimResponse
+
+	@DELETE(NetworkEndPoints.deleteClaim)
+	suspend fun deleteClaim(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): DeleteClaimResponse
 
     @GET(NetworkEndPoints.inventoryByProject)
     suspend fun inventoryByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): InventoryByProjectResponse

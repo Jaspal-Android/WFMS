@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ReimbursementData
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
@@ -14,6 +16,10 @@ import com.atvantiq.wfms.models.reimbursement.HotelExpense
 import com.atvantiq.wfms.models.reimbursement.OtherExpense
 import com.atvantiq.wfms.models.reimbursement.TravelExpense
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.detail.ClaimData
+import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
+import com.atvantiq.wfms.models.site.detail.SiteDetail
+import com.atvantiq.wfms.models.site.detail.SiteDetailResponse
 import com.atvantiq.wfms.models.site.SiteData
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.workSiteByDate.Site
@@ -42,6 +48,11 @@ class CreateClaimVM @Inject constructor(
     var isOutstationExpense = ObservableField<Boolean>().apply { set(false) }
     var isMultiSite = ObservableField<Boolean>().apply { set(false) }
     val isSubmitting = ObservableField<Boolean>().apply { set(false) }
+
+    /* Edit mode: header (date, sites, project, circle, category) is locked; only expenses change. */
+    val isEditMode = ObservableField<Boolean>().apply { set(false) }
+    val lockedSitesSummary = ObservableField<String>().apply { set("") }
+    private var lockedHeader: LockedClaimHeader? = null
 
     var remarks = MutableLiveData<String>().apply { value = "" }
     var date = ObservableField<String>().apply { set("") }
@@ -261,6 +272,48 @@ class CreateClaimVM @Inject constructor(
         )
     }
 
+    /** The claim being edited plus one of its sites, which supplies the claim's project and circle. */
+    data class ClaimEditSource(val claim: ClaimDetailResponse, val site: SiteDetailResponse?)
+
+    /*Claim to edit*/
+    var claimForEditResponse = MutableLiveData<ApiState<ClaimEditSource>>()
+    fun loadClaimForEdit(claimId: Long) {
+        isEditMode.set(true)
+        if (lockedHeader?.claimId == claimId) return // already loaded; keep the user's edits
+        executeApiCall(
+            apiCall = {
+                val claim = claimRepo.claimById(claimId)
+                val siteId = claim.data?.sites?.firstNotNullOfOrNull { it.siteId }
+                val site = if (claim.code == ValConstants.SUCCESS_CODE && siteId != null) {
+                    creationRepo.siteById(siteId)
+                } else null
+                ClaimEditSource(claim, site)
+            },
+            liveData = claimForEditResponse,
+        )
+    }
+
+    /** Fills the form from an existing claim. Returns false when the claim cannot be edited. */
+    fun applyClaimForEdit(claim: ClaimData?, site: SiteDetail?): Boolean {
+        // LiveData replays the last response after a configuration change; don't overwrite edits.
+        if (lockedHeader != null && lockedHeader?.claimId == claim?.id) return true
+        val editable = claim?.let { ClaimEditMapper.toEditableClaim(it, site) } ?: return false
+        val header = editable.header
+        lockedHeader = header
+        selectedCircleCode = header.circleCode // "travelling with" lists employees of this circle
+        date.set(header.date)
+        purpose.set(header.purpose)
+        isMultiSite.set(!header.claimType.equals(ReimbursementData.CLAIM_SINGLE_SITE, ignoreCase = true))
+        isOutstationExpense.set(header.expenseCategory.equals(ReimbursementData.CLAIM_TYPE_OUTSTATION, ignoreCase = true))
+        lockedSitesSummary.set(header.siteNames.joinToString(", "))
+        remarks.value = editable.remarks
+        travelingEntriesList.value = editable.travel
+        daEntriesList.value = editable.da
+        hotelEntriesList.value = editable.hotel
+        othersEntriesList.value = editable.other
+        return true
+    }
+
     private fun postValidationError(error: CreateClaimErrorHandler): Boolean {
         errorEvents.value = error
         return false
@@ -275,6 +328,11 @@ class CreateClaimVM @Inject constructor(
     }
 
     private fun validateCreateClaim(): Boolean {
+        if (isEditMode.get() == true) {
+            // Header comes from the saved claim and is not editable; only expenses need checking.
+            return hasAnyExpenseEntry(includeHotel = isOutstationExpense.get() == true) ||
+                postValidationError(CreateClaimErrorHandler.EMPTY_EXPENSES)
+        }
         val selectedDate = date.get()?.trim().orEmpty()
         val selectedPurpose = purpose.get()?.trim().orEmpty()
 
@@ -316,6 +374,8 @@ class CreateClaimVM @Inject constructor(
     var createClaimResponse = MutableLiveData<ApiState<CreateClaimResponse>>()
     fun onSubmitClaim() {
         if (isSubmitting.get() == true) return
+        // Never fall through to "create" while editing a claim that failed to load.
+        if (isEditMode.get() == true && lockedHeader == null) return
         if (!validateCreateClaim()) return
         if (!Utils.isInternet(getApplication())) {
             createClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
@@ -324,8 +384,12 @@ class CreateClaimVM @Inject constructor(
         isSubmitting.set(true)
 
         val (dataPart, fileParts) = buildClaimRequest()
+        val editingClaimId = lockedHeader?.claimId
         executeApiCall(
-            apiCall = { claimRepo.createClaim(dataPart, files = fileParts) },
+            apiCall = {
+                if (editingClaimId != null) claimRepo.updateClaim(editingClaimId, dataPart, fileParts)
+                else claimRepo.createClaim(dataPart, files = fileParts)
+            },
             liveData = createClaimResponse,
             onSuccess = { isSubmitting.set(false) },
             onError = { isSubmitting.set(false) }
@@ -337,9 +401,58 @@ class CreateClaimVM @Inject constructor(
      * Kept out of onSubmitClaim so that method stays validate -> guard -> delegate -> call.
      */
     private fun buildClaimRequest(): Pair<RequestBody, List<MultipartBody.Part>> {
+        val collector = AttachmentCollector()
+        val expenseTypeJson = buildExpenseTypeJson(collector)
+        val selectedRemarks = remarks.value?.trim().orEmpty()
+        val header = lockedHeader
+        val dataJson = if (header != null) buildLockedHeaderJson(header) else buildNewClaimHeaderJson()
+        dataJson
+            .put("expense_type", expenseTypeJson)
+            .put("remarks", selectedRemarks)
+
+        val dataPart: RequestBody =
+            dataJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+        return dataPart to collector.fileParts
+    }
+
+    private fun buildExpenseTypeJson(collector: AttachmentCollector): JSONObject = JSONObject()
+        .put("travel", buildTravelJson(collector))
+        .put("da", buildAmountOnlyJson("d", daEntriesList.value.orEmpty(), collector,
+            amountOf = { it.amount }, pathsOf = { it.receiptAttachments }))
+        .put("hotel", buildAmountOnlyJson("h", hotelEntriesList.value.orEmpty(), collector,
+            amountOf = { it.amount }, pathsOf = { it.receiptAttachments }))
+        .put("other", buildOtherJson(collector))
+
+    /**
+     * Edit: echoes the saved claim's header unchanged, in the same per-site shape create sends
+     * (multi-site: purchase_order_ids, single-site: work_site_id).
+     */
+    private fun buildLockedHeaderJson(header: LockedClaimHeader): JSONObject {
+        val isMultipleSite = !header.claimType.equals(ReimbursementData.CLAIM_SINGLE_SITE, ignoreCase = true)
+        val siteIdsJson = JSONArray().apply {
+            header.sites.forEach { site ->
+                val siteJson = JSONObject().put("id", site.id)
+                if (isMultipleSite) {
+                    siteJson.put("purchase_order_ids", JSONArray(site.purchaseOrderIds))
+                } else {
+                    site.workSiteId?.let { siteJson.put("work_site_id", it) }
+                }
+                put(siteJson)
+            }
+        }
+        return JSONObject()
+            .put("date", header.date)
+            .put("type", header.claimType)
+            .put("purpose", header.purpose)
+            .put("site_id", siteIdsJson)
+            .put("project_id", header.projectId)
+            .put("expense_category", header.expenseCategory)
+            .put("circle_id", header.circleId)
+    }
+
+    private fun buildNewClaimHeaderJson(): JSONObject {
         val selectedDate = date.get()?.trim().orEmpty()
         val selectedPurpose = purpose.get()?.trim().orEmpty()
-        val selectedRemarks = remarks.value?.trim().orEmpty()
         val isMultipleSite = isMultiSite.get() == true
         val type = if (isMultipleSite) "multiple_site" else "single_site"
 
@@ -356,16 +469,7 @@ class CreateClaimVM @Inject constructor(
             }
         }
 
-        val collector = AttachmentCollector()
-        val expenseTypeJson = JSONObject()
-            .put("travel", buildTravelJson(collector))
-            .put("da", buildAmountOnlyJson("d", daEntriesList.value.orEmpty(), collector,
-                amountOf = { it.amount }, pathsOf = { it.receiptAttachments }))
-            .put("hotel", buildAmountOnlyJson("h", hotelEntriesList.value.orEmpty(), collector,
-                amountOf = { it.amount }, pathsOf = { it.receiptAttachments }))
-            .put("other", buildOtherJson(collector))
-
-        val dataJson = JSONObject()
+        return JSONObject()
             .put("date", selectedDate)
             .put("type", type)
             .put("purpose", selectedPurpose)
@@ -374,12 +478,6 @@ class CreateClaimVM @Inject constructor(
             .put("expense_category",
                 isOutstationExpense.get()?.let { if (it) "outstation" else "local" } ?: "local")
             .put("circle_id", selectedCircleId ?: JSONObject.NULL)
-            .put("expense_type", expenseTypeJson)
-            .put("remarks", selectedRemarks)
-
-        val dataPart: RequestBody =
-            dataJson.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
-        return dataPart to collector.fileParts
     }
 
     private fun buildTravelJson(collector: AttachmentCollector): JSONArray = JSONArray().apply {
@@ -398,7 +496,19 @@ class CreateClaimVM @Inject constructor(
                     .put("start_location", t.from)
                     .put("end_location", t.to)
                     .put("attachments", attachments)
+                    .apply { putAutoKmFields(t) }
             )
+        }
+    }
+
+    /** Auto-fetched KM data only exists on saved trips; new trips leave these out as before. */
+    private fun JSONObject.putAutoKmFields(t: TravelExpense) {
+        t.distanceKm?.let { put("distance_km", it) }
+        t.distanceSource?.let { put("distance_source", it) }
+        t.tripRefs?.takeIf { it.isNotEmpty() }?.let { refs ->
+            put("trip_refs", JSONArray().apply {
+                refs.forEach { put(JSONObject().put("start_at", it.startAt).put("end_at", it.endAt)) }
+            })
         }
     }
 

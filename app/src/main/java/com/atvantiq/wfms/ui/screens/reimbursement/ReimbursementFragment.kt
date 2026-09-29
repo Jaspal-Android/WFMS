@@ -18,7 +18,6 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AllClaimsAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.claimDetails.ClaimDetailActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivity
-import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.DividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
@@ -179,11 +178,9 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
         })
 
         adapter = AllClaimsAdapter(onClaimClicked = { claim, _ ->
-             Utils.jumpActivityWithData(
-                requireActivity(),
-                ClaimDetailActivity::class.java,
-                Bundle().apply {
-                    putLong(SharingKeys.CLAIM_ID, claim.claimId ?: 0)
+             claimDetailLauncher.launch(
+                Intent(requireContext(), ClaimDetailActivity::class.java).apply {
+                    putExtra(SharingKeys.CLAIM_ID, claim.claimId ?: 0L)
                 }
             )
         })
@@ -230,6 +227,13 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
             binding.swipeRefreshLayout.isRefreshing = false
         }
     }
+
+    private val claimDetailLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                startRefreshingData()
+            }
+        }
 
     private val createClaimLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->

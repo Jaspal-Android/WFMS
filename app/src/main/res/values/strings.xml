@@ -350,6 +350,17 @@
     <string name="circle_id_not_found">Circle not found</string>
     <string name="success">Success</string>
     <string name="claim_submitted_successfully">Claim submitted successfully</string>
+    <string name="delete_claim">Delete Claim</string>
+    <string name="delete">Delete</string>
+    <string name="delete_claim_confirmation">This claim will be permanently deleted. This cannot be undone.</string>
+    <string name="claim_deleted_successfully">Claim deleted successfully</string>
+    <string name="edit_claim">Edit Claim</string>
+    <string name="edit">Edit</string>
+    <string name="update">Update</string>
+    <string name="claim_type_category_format">%1$s · %2$s</string>
+    <string name="claim_updated_successfully">Claim updated successfully</string>
+    <string name="claim_edit_unavailable">This claim\'s project details couldn\'t be loaded, so it can\'t be edited right now. Please try again.</string>
+    <string name="edit_claim_locked_note">Date, sites, project and category can\'t be changed. You can update the expenses below.</string>
     <string name="expenses">Expenses</string>
     <string name="single_site">Single Site</string>
     <string name="multiple_site">Multiple Site</string>

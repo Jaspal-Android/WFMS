@@ -11,5 +11,9 @@ data class TravelExpense(
     val travelingWith: List<Data>? = emptyList(),
     val from: String,
     val to: String,
-    val receiptAttachments: List<String> = emptyList()
+    val receiptAttachments: List<String> = emptyList(),
+    /* Set by the server for auto-fetched KM trips; sent back unchanged when editing. */
+    val distanceKm: Double? = null,
+    val distanceSource: String? = null,
+    val tripRefs: List<TripRef>? = null
 ):Parcelable

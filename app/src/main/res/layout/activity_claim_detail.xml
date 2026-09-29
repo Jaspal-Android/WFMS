@@ -154,7 +154,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:fillViewport="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/claimActionBar"
             app:layout_constraintTop_toBottomOf="@id/cardTotalAmount">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -267,6 +267,48 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <!-- ══════════════════════════════════════
+             ACTION BAR — shown only for a claim the employee can still change
+        ══════════════════════════════════════ -->
+        <LinearLayout
+            android:id="@+id/claimActionBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/wfmsColorSurface"
+            android:elevation="@dimen/elevation"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDeleteClaim"
+                style="@style/CustomButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/error_bg_outline"
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                android:textColor="?attr/wfmsColorError"
+                android:textStyle="bold" />
+
+            <com.atvantiq.wfms.widgets.GradientButton
+                android:id="@+id/btnEditClaim"
+                style="@style/CustomButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_weight="1"
+                android:text="@string/edit"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
