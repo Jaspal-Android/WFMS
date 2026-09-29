@@ -8,6 +8,8 @@ data class ClaimData(
     val claimCategory: String?,
     @SerializedName("claim_purpose")
     val claimPurpose: String?,
+    @SerializedName("claim_type")
+    val claimType: String? = null,
     @SerializedName("date")
     val date: String?,
     @SerializedName("employee")

@@ -43,6 +43,7 @@ object NetworkEndPoints {
 
 	/*Site*/
 	const val siteListByProject = "site/project/{project_id}"
+	const val siteById = "site/{id}"
 	const val createSite="site/create"
 	const val workSites = "work/sites/{employee_id}"
 	const val workSiteDetailsAdmin ="/work/site/progress/{work_site_id}"
@@ -81,6 +82,10 @@ object NetworkEndPoints {
 
 	/*Claim by ID*/
 	const val claimById = "claim/{claim_id}"
+
+	/*Update / delete own claim (same path as claimById, different verb)*/
+	const val updateClaim = "claim/{claim_id}"
+	const val deleteClaim = "claim/{claim_id}"
 
     /*Inventory by projects*/
     const val inventoryByProject = "inventory/by-project/{project_id}"

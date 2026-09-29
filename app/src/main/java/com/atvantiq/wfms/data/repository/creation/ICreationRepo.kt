@@ -14,6 +14,7 @@ import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Query
+import com.atvantiq.wfms.models.site.detail.SiteDetailResponse
 
 interface ICreationRepo {
     suspend fun clientList(): ClientListResponse
@@ -26,4 +27,5 @@ interface ICreationRepo {
     suspend fun siteListAll(page:Int,limit:Int,is_active:Int): SitesListAllResponse
     suspend fun createSite(params: JsonObject): CreateSiteResponse
     suspend fun allProjects(): AllProjectsResponse
+    suspend fun siteById(siteId: Long): SiteDetailResponse
 }
