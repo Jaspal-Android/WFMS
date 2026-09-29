@@ -8,9 +8,12 @@ import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
+import com.atvantiq.wfms.utils.NoInternetException
+import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -44,6 +47,26 @@ class ReimbursementViewModel @Inject constructor(
         executeApiCall(
             apiCall = { claimRepo.claimById(claimId) },
             liveData = claimByIdResponse
+        )
+    }
+
+    /*Delete own claim*/
+    var deleteClaimResponse = MutableLiveData<ApiState<DeleteClaimResponse>>()
+    private var isDeleting = false
+    fun deleteClaim(claimId: Long) {
+        if (isDeleting) return
+        // executeApiCall does not invoke onError when offline, so check first; otherwise
+        // isDeleting would stay set and block every later delete on this screen.
+        if (!Utils.isInternet(getApplication())) {
+            deleteClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            return
+        }
+        isDeleting = true
+        executeApiCall(
+            apiCall = { claimRepo.deleteClaim(claimId) },
+            liveData = deleteClaimResponse,
+            onSuccess = { isDeleting = false },
+            onError = { isDeleting = false }
         )
     }
 }

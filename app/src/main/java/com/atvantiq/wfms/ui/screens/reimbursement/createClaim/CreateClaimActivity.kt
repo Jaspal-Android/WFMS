@@ -41,6 +41,7 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.Ad
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterDaBottomSheet
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterOthersBottomSheet
 import com.atvantiq.wfms.utils.DateUtils
+import com.atvantiq.wfms.utils.serverMessage
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
@@ -70,6 +71,15 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         setUpSelectedDAEntriesRecycler()
         setUpSelectedHotelEntriesRecycler()
         setUpSelectedOthersEntriesRecycler()
+        handleEditIntent()
+    }
+
+    private fun handleEditIntent() {
+        val editClaimId = intent.getLongExtra(SharingKeys.EDIT_CLAIM_ID, INVALID_CLAIM_ID)
+        if (editClaimId == INVALID_CLAIM_ID) return
+        binding.createReimbursementToolbar.toolbarTitle.text = getString(R.string.edit_claim)
+        binding.btnSubmit.text = getString(R.string.update)
+        viewModel.loadClaimForEdit(editClaimId)
     }
 
     private fun setUpToolbar() {
@@ -131,6 +141,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     override fun subscribeToEvents(vm: CreateClaimVM) {
         binding.vm = vm
+        // vm.remarks is LiveData; without an owner the field never sees values set after binding
+        // (e.g. remarks loaded when editing a claim).
+        binding.lifecycleOwner = this
 
         vm.selectedSitesIdList.observe(this) { list ->
             selectedSitesAdapter.submitList(list)
@@ -174,6 +187,46 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         vm.createClaimResponse.observe(this) { response ->
             handleCreateClaimResponse(response)
         }
+        vm.claimForEditResponse.observe(this) { response ->
+            handleClaimForEditResponse(response)
+        }
+    }
+
+    private fun handleClaimForEditResponse(response: ApiState<CreateClaimVM.ClaimEditSource>) {
+        when (response.status) {
+            Status.LOADING -> showProgress()
+            Status.SUCCESS -> {
+                dismissProgress()
+                val claim = response.response?.claim
+                val site = response.response?.site
+                when {
+                    claim?.code == ValConstants.UNAUTHORIZED_CODE || site?.code == ValConstants.UNAUTHORIZED_CODE ->
+                        tokenExpiresAlert()
+                    claim?.code == ValConstants.SUCCESS_CODE &&
+                        viewModel.applyClaimForEdit(claim.data, site?.data) -> Unit
+                    claim?.code != ValConstants.SUCCESS_CODE -> showEditLoadFailure(claim?.message)
+                    else -> showEditLoadFailure(getString(R.string.claim_edit_unavailable))
+                }
+            }
+            Status.ERROR -> {
+                dismissProgress()
+                val throwable = response.throwable
+                if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
+                    tokenExpiresAlert()
+                } else {
+                    showEditLoadFailure((throwable as? HttpException)?.serverMessage() ?: throwable?.message)
+                }
+            }
+        }
+    }
+
+    /** The form cannot be edited without the saved claim, so close instead of showing an empty form. */
+    private fun showEditLoadFailure(message: String?) {
+        alertDialogShow(
+            this,
+            message ?: getString(R.string.something_went_wrong),
+            DialogInterface.OnClickListener { _, _ -> finish() }
+        )
     }
 
     private fun handleWorkBySiteResponse(response: ApiState<WorkSiteByDateResponse>) {
@@ -269,14 +322,20 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 viewModel.onSubmitCompleted()
                 setSubmitEnabled(true)
                 dismissProgress()
-                when (response.response?.code) {
-                    ValConstants.SUCCESS_CREATION_CODE -> {
+                val isEdit = viewModel.isEditMode.get() == true
+                val code = response.response?.code
+                val isSuccess = code == ValConstants.SUCCESS_CREATION_CODE ||
+                    (isEdit && code == ValConstants.SUCCESS_CODE)
+                when {
+                    isSuccess -> {
                         setResult(RESULT_OK)
                         alertDialogShow(
                             this,
                             getString(R.string.success),
-                            response.response?.message
-                                ?: getString(R.string.claim_submitted_successfully),
+                            response.response?.message ?: getString(
+                                if (isEdit) R.string.claim_updated_successfully
+                                else R.string.claim_submitted_successfully
+                            ),
                             okLister = DialogInterface.OnClickListener { _, _ ->
                                 finish()
                             }
@@ -285,10 +344,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                     }
 
                     else -> {
-                        handleErrorResponse(
-                            response.response?.code ?: 0,
-                            response.response?.message
-                        )
+                        handleErrorResponse(code ?: 0, response.response?.message)
                     }
                 }
             }
@@ -453,7 +509,11 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             if (throwable.code() == 401) {
                 tokenExpiresAlert()
             } else {
-                showToast(this, throwable.message())
+                alertDialogShow(
+                    this,
+                    getString(R.string.alert),
+                    throwable.serverMessage() ?: getString(R.string.something_went_wrong)
+                )
             }
         } else {
             showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
@@ -650,5 +710,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     private fun setSubmitEnabled(enabled: Boolean) {
         binding.btnSubmit.isEnabled = enabled
         binding.btnSubmit.alpha = if (enabled) 1f else 0.55f
+    }
+
+    private companion object {
+        const val INVALID_CLAIM_ID = -1L
     }
 }
