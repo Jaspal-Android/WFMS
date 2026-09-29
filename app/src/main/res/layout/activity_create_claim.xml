@@ -50,10 +50,97 @@
                     android:padding="@dimen/padding">
 
                     <!-- ══════════════════════════════════════
+                         0. EDIT MODE — locked claim summary (replaces cards 1–4)
+                    ══════════════════════════════════════ -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/lockedClaimCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_small"
+                        android:visibility="@{vm.isEditMode ? View.VISIBLE : View.GONE}"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small"
+                        tools:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="@dimen/padding">
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/edit_claim_locked_note"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:text="@string/date"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvLockedDate"
+                                style="@style/CustomRegularTextView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.date}"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                tools:text="2026-09-23" />
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:text="@string/sites"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvLockedSites"
+                                style="@style/CustomRegularTextView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.lockedSitesSummary}"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                tools:text="South Chandigarh" />
+
+                            <TextView
+                                style="@style/CustomSmallTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_small"
+                                android:text="@string/type"
+                                android:textAllCaps="true"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvLockedType"
+                                style="@style/CustomRegularTextView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@{@string/claim_type_category_format(vm.isMultiSite ? @string/multiSite : @string/singleSite, vm.isOutstationExpense ? @string/outstation : @string/local)}"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                tools:text="Single Site · Local" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- ══════════════════════════════════════
                          1. DATE CARD
                     ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/dateCard"
+                        android:visibility="@{vm.isEditMode ? View.GONE : View.VISIBLE}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
@@ -114,6 +201,7 @@
                     ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/siteCard"
+                        android:visibility="@{vm.isEditMode ? View.GONE : View.VISIBLE}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
@@ -299,6 +387,7 @@
                     ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/projectCard"
+                        android:visibility="@{vm.isEditMode ? View.GONE : View.VISIBLE}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"
@@ -386,6 +475,7 @@
                     ══════════════════════════════════════ -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/expenseTypeCard"
+                        android:visibility="@{vm.isEditMode ? View.GONE : View.VISIBLE}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_small"

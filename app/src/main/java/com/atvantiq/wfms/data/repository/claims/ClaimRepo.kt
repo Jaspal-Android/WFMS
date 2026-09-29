@@ -4,6 +4,7 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiService
@@ -42,6 +43,22 @@ class ClaimRepo @Inject constructor(private val apiService: ApiService, private 
     )
 
     override suspend fun claimById(claimId: Long): ClaimDetailResponse = apiService.claimById(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+        claimId = claimId
+    )
+
+    override suspend fun updateClaim(
+        claimId: Long,
+        data: RequestBody,
+        files: List<MultipartBody.Part>
+    ): CreateClaimResponse = apiService.updateClaim(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+        claimId = claimId,
+        data = data,
+        files = files
+    )
+
+    override suspend fun deleteClaim(claimId: Long): DeleteClaimResponse = apiService.deleteClaim(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         claimId = claimId
     )

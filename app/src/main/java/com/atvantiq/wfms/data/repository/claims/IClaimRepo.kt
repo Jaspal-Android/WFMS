@@ -3,6 +3,7 @@ package com.atvantiq.wfms.data.repository.claims
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
+import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import okhttp3.MultipartBody
@@ -18,4 +19,6 @@ interface IClaimRepo {
     suspend fun createClaim(data: RequestBody, files: List<MultipartBody.Part>): CreateClaimResponse
     suspend fun allClaims(page:Int,pageSize:Int ): AllClaimsResponse
     suspend fun claimById(claimId: Long): ClaimDetailResponse
+    suspend fun updateClaim(claimId: Long, data: RequestBody, files: List<MultipartBody.Part>): CreateClaimResponse
+    suspend fun deleteClaim(claimId: Long): DeleteClaimResponse
 }
