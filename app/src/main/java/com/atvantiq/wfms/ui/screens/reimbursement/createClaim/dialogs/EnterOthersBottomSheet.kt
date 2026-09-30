@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetEnterDaBinding
 import com.atvantiq.wfms.databinding.BottomSheetEnterOthersBinding
@@ -65,15 +67,17 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 		pickMediaHelper = PickMediaHelper(requireContext(), cameraLauncher, galleryLauncher, permissionLauncher, object : PickMediaHelper.Callback {
 			override fun onImagePicked(path: String, request: Int) {
 				if(path.isNotBlank()){
-					imagePath = pickMediaHelper.compressImageTo1MB(path) ?: path
-					binding.hasPreviewImage = true
-					var bitmap = pickMediaHelper.decodeBitmap(path)
-					binding.capturedImagePreview.setImageBitmap(bitmap)
+					pickMediaHelper.prepareImage(path, viewLifecycleOwner.lifecycleScope) { prepared ->
+						imagePath = prepared.uploadPath
+						binding.hasPreviewImage = true
+						binding.capturedImagePreview.setImageBitmap(prepared.preview)
+					}
 				}
 			}
 
 			override fun onError(message: String) {
 				binding.hasPreviewImage = false
+				Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
 			}
 		})
 		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)

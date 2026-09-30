@@ -59,11 +59,12 @@
         <item>Gallery</item>
     </string-array>
     <string name="camera_permission_msg">Please turn on camera permission from settings to upload image.</string>
-    <string name="image_size_error">The image is too big. Please choose an image smaller than 2 MB.</string>
+    <string name="image_process_error">Couldn\'t process this photo. Please try again or choose another.</string>
+    <string name="image_size_error">The image is too large. Please choose an image smaller than 25 MB.</string>
     <string name="app_id" translatable="false">com.atvantiq.wfms.provider</string>
-    <string name="file_creation_error"></string>
-    <string name="camera_error"></string>
-    <string name="gallery_error"></string>
+    <string name="file_creation_error">Couldn\'t prepare a file for the photo. Please try again.</string>
+    <string name="camera_error">Couldn\'t capture the photo. Please try again.</string>
+    <string name="gallery_error">Couldn\'t open that image. Please choose another.</string>
     <string name="warning_location_permission">"The app needs location permissions to continue the application. You can enable them in the app settings.</string>
     <string name="warning_gps_needed">Location Services Required</string>
     <string name="go_to_settings">Go to Settings</string>

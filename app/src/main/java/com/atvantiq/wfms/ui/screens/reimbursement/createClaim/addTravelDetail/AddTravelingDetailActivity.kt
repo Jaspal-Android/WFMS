@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
@@ -258,16 +259,17 @@ class AddTravelingDetailActivity :
             object : PickMediaHelper.Callback {
                 override fun onImagePicked(path: String, request: Int) {
                     if (path.isNotBlank()) {
-                        val compressedPath = pickMediaHelper.compressImageTo1MB(path) ?: path
-                        viewModel.attachmentPath.set(compressedPath)
-                        binding.hasPreviewImage = true
-                        var bitmap = pickMediaHelper.decodeBitmap(path)
-                        binding.capturedImagePreview.setImageBitmap(bitmap)
+                        pickMediaHelper.prepareImage(path, lifecycleScope) { prepared ->
+                            viewModel.attachmentPath.set(prepared.uploadPath)
+                            binding.hasPreviewImage = true
+                            binding.capturedImagePreview.setImageBitmap(prepared.preview)
+                        }
                     }
                 }
 
                 override fun onError(message: String) {
                     binding.hasPreviewImage = false
+                    showToast(this@AddTravelingDetailActivity, message)
                 }
             }
         )

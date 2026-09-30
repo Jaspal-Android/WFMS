@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -20,7 +19,10 @@ import java.io.File
 import java.io.IOException
 import java.util.Locale
 import java.util.UUID
-import kotlin.math.sqrt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PickMediaHelper(
     private val context: Context,
@@ -32,6 +34,12 @@ class PickMediaHelper(
     private var photoFile: File? = null
     private val fileExtensions = setOf("jpg", "png", "jpeg", "webp")
     private var actionId = 0
+    private val imageProcessor = ImageProcessor(context)
+
+    // Files this helper created itself (camera captures, copies of gallery picks). They are
+    // redundant once the upload-sized JPEG exists, so they are deleted then. A path a caller
+    // handed us (a legacy file:// pick) is never in here and is never deleted.
+    private val ownedFiles = mutableSetOf<String>()
 
     // Optional: set from Activity/Fragment (recommended) for best behavior.
     private var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>? = null
@@ -88,6 +96,7 @@ class PickMediaHelper(
 
     private fun launchCamera() {
         photoFile = createFile()
+        photoFile?.let { ownedFiles += it.absolutePath }
         photoFile?.let {
             val authority = "${BuildConfig.APPLICATION_ID}.provider"
             val uri = FileProvider.getUriForFile(context, authority, it)
@@ -162,6 +171,7 @@ class PickMediaHelper(
                 }
             } ?: return null
 
+            ownedFiles += outFile.absolutePath
             outFile.absolutePath
         } catch (e: Exception) {
             Log.e(TAG, "Failed to copy picked Uri to cache", e)
@@ -186,10 +196,10 @@ class PickMediaHelper(
         return if (normalized != null && normalized in fileExtensions) normalized else "jpg"
     }
 
-    private fun isCorrectFileSize(file: File): Boolean {
-        val fileSizeMb = file.length() / (1024.0 * 1024.0)
-        return fileSizeMb <= 2.0
-    }
+    // Only a sanity limit: the photo is downsized and re-encoded to <= 1 MB before upload, so a
+    // normal 3-8 MB phone photo must be accepted. (It used to be rejected above 2 MB, while
+    // camera photos of the same size were fine.)
+    private fun isCorrectFileSize(file: File): Boolean = file.length() <= MAX_SOURCE_BYTES
 
     private fun createFile(): File? {
         return try {
@@ -200,64 +210,33 @@ class PickMediaHelper(
         }
     }
 
-    fun decodeBitmap(path: String): Bitmap? {
-        return runCatching { BitmapFactory.decodeFile(path) }.getOrNull()
+    /**
+     * Decodes, orients and compresses [path] on a background thread, then calls [onReady] on the
+     * main thread with the file to upload and a preview. If the photo cannot be processed the
+     * callback's [Callback.onError] is called instead. [onReady] is not called once [scope] ends.
+     */
+    fun prepareImage(path: String, scope: CoroutineScope, onReady: (PreparedImage) -> Unit) {
+        scope.launch {
+            val prepared = withContext(Dispatchers.Default) {
+                imageProcessor.prepare(path)?.also { discardIfOwned(path) }
+            }
+            if (prepared != null) {
+                onReady(prepared)
+            } else {
+                callback.onError(context.getString(R.string.image_process_error))
+            }
+        }
+    }
+
+    private fun discardIfOwned(path: String) {
+        if (ownedFiles.remove(path)) File(path).delete()
     }
 
     /**
-     * Compress image to <= 1MB and return the path to the compressed file.
-     * Returns null if decode/compress fails.
+     * A small, upright bitmap to preview [path] with. Cheap enough for a screen that does not
+     * upload the photo; screens that do should use [prepareImage].
      */
-    fun compressImageTo1MB(originalPath: String): String? {
-        val bitmap = BitmapFactory.decodeFile(originalPath) ?: return null
-        var quality = 90
-        val maxSizeBytes = 1024 * 1024 // 1MB
-
-        val compressedFile = try {
-            File.createTempFile("compressed_", ".jpg", context.cacheDir)
-        } catch (e: IOException) {
-            Log.e(TAG, "Failed to create temp file for compression", e)
-            bitmap.recycle()
-            return null
-        }
-
-        fun writeJpeg(bmp: Bitmap, q: Int): Long {
-            compressedFile.outputStream().use { os ->
-                bmp.compress(Bitmap.CompressFormat.JPEG, q, os)
-                os.flush()
-            }
-            return compressedFile.length()
-        }
-
-        // Pass 1: lower quality
-        while (quality > 10) {
-            val size = writeJpeg(bitmap, quality)
-            if (size <= maxSizeBytes) break
-            quality -= 10
-        }
-
-        // Pass 2: resize if still too large
-        if (compressedFile.length() > maxSizeBytes) {
-            val current = compressedFile.length().toDouble().coerceAtLeast(1.0)
-            val scale = sqrt(maxSizeBytes.toDouble() / current).coerceIn(0.1, 1.0)
-            val newWidth = (bitmap.width * scale).toInt().coerceAtLeast(1)
-            val newHeight = (bitmap.height * scale).toInt().coerceAtLeast(1)
-
-            val resized = try {
-                Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to resize bitmap", e)
-                bitmap.recycle()
-                return null
-            }
-
-            writeJpeg(resized, quality.coerceAtLeast(20))
-            if (resized !== bitmap) resized.recycle()
-        }
-
-        bitmap.recycle()
-        return if (compressedFile.length() <= maxSizeBytes) compressedFile.absolutePath else null
-    }
+    fun decodeBitmap(path: String): Bitmap? = imageProcessor.decodePreview(path)
 
     interface Callback {
         fun onImagePicked(path: String, request: Int)
@@ -266,5 +245,6 @@ class PickMediaHelper(
 
     companion object {
         const val TAG = "PickMediaHelper"
+        private const val MAX_SOURCE_BYTES = 25L * 1024 * 1024
     }
 }
