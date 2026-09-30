@@ -308,4 +308,14 @@ object DateUtils {
             false
         }
     }
+
+    /**
+     * "2026-09-23" as a localized long date ("September 23, 2026") for screen readers.
+     * Returns [date] unchanged when it is not a yyyy-MM-dd date.
+     */
+    fun formatSpokenDate(date: String, locale: Locale = Locale.getDefault()): String =
+        runCatching {
+            val parsed = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date) ?: return date
+            java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, locale).format(parsed)
+        }.getOrDefault(date)
 }

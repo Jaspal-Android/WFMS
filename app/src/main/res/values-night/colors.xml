@@ -1,0 +1,4 @@
+<resources>
+    <!-- Strong body text in dark mode; see values/colors.xml -->
+    <color name="text_strong">@color/dark_on_surface</color>
+</resources>

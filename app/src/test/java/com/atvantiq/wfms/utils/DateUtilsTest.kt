@@ -80,4 +80,16 @@ class DateUtilsTest {
         assertNull(DateUtils.formatApiDateToTimeAndDate("invalid"))
         assertNull(DateUtils.formatApiDateToTimeAndDate(null))
     }
+
+    @Test
+    fun `formatSpokenDate speaks a localized long date`() {
+        assertEquals("September 23, 2026", DateUtils.formatSpokenDate("2026-09-23", java.util.Locale.US))
+        assertEquals("23 September 2026", DateUtils.formatSpokenDate("2026-09-23", java.util.Locale.UK))
+    }
+
+    @Test
+    fun `formatSpokenDate returns the input when it is not a date`() {
+        assertEquals("not-a-date", DateUtils.formatSpokenDate("not-a-date", java.util.Locale.US))
+        assertEquals("", DateUtils.formatSpokenDate("", java.util.Locale.US))
+    }
 }

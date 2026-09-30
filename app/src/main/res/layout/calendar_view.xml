@@ -38,6 +38,7 @@
                 android:background="@drawable/primary_bt_oval_bg"
                 android:padding="@dimen/padding_small"
                 android:src="@drawable/arrow_back_ios_24"
+                android:contentDescription="@string/previous_month"
                 app:tint="?attr/wfmsColorPrimaryLight" />
 
             <!-- FIX: CustomRegularDarkTextView → theme-aware color -->
@@ -61,6 +62,7 @@
                 android:padding="@dimen/padding_small"
                 android:src="@drawable/arrow_forward_ios_24"
                 android:visibility="@{hideNextBt ? View.INVISIBLE : View.VISIBLE}"
+                android:contentDescription="@string/next_month"
                 app:tint="?attr/wfmsColorPrimaryLight" />
 
         </LinearLayout>
@@ -85,7 +87,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="S"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -95,7 +97,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="M"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -105,7 +107,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="T"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -115,7 +117,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="W"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -125,7 +127,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="T"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -135,7 +137,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="F"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -145,7 +147,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="S"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
         </LinearLayout>

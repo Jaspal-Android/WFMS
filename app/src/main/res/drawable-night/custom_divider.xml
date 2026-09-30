@@ -1,0 +1,5 @@
+<!-- Dark mode: the fixed #ebeff2 divider is a bright white line on a dark surface -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <size android:height="1dp" />
+    <solid android:color="@color/dark_outline" />
+</shape>

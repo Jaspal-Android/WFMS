@@ -78,6 +78,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/ic_circular_bg"
                     android:padding="@dimen/padding_x_small"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/rounded_location_on_24" />
 
                 <!-- FIX: Dark style removed -->

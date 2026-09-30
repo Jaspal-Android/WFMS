@@ -51,7 +51,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvEntryNumber"
             app:layout_constraintEnd_toStartOf="@+id/btnRemove"
             app:layout_constraintTop_toTopOf="@+id/tvEntryNumber"
-            app:tint="?attr/wfmsColorPrimary" />
+            android:contentDescription="@string/receipt_attached"
+            app:tint="?attr/wfmsColorAccent" />
 
         <!-- Remove button — FIX: surfaceVariant circle bg + onSurfaceVariant tint -->
         <ImageButton
@@ -62,6 +63,7 @@
             android:src="@drawable/ic_close_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/remove_entry"
             app:tint="?attr/wfmsColorPrimaryLight" />
 
         <!-- ── Divider below header ── -->

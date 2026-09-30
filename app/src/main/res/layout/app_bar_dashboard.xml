@@ -27,6 +27,7 @@
                     android:layout_gravity="end"
                     android:padding="@dimen/padding_medium"
                     android:src="@drawable/ic_notifications_24"
+                    android:importantForAccessibility="no"
                     app:tint="@color/white" />
 
             </androidx.appcompat.widget.Toolbar>

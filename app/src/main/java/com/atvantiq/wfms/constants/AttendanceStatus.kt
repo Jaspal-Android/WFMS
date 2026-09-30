@@ -1,5 +1,8 @@
 package com.atvantiq.wfms.constants
 
+import androidx.annotation.StringRes
+import com.atvantiq.wfms.R
+
 object AttendanceStatus {
     const val NO_ACTION ="NO_ACTION"
     const val PRESENT = "P"
@@ -12,6 +15,20 @@ object AttendanceStatus {
     const val ABSENT_NA = "ABSENT_NA"
     const val INCOMPLETE = "INCOMPLETE"
 
+    /** The word a screen reader should say for a calendar day, since the color alone says nothing. */
+    @StringRes
+    fun labelRes(status: String): Int = when (status) {
+        PRESENT -> R.string.present
+        ABSENT -> R.string.absent
+        LEAVE -> R.string.leave
+        IDLE -> R.string.idle
+        HOLIDAY -> R.string.holiday
+        WORK_OFF -> R.string.work_off
+        ABSENT_NA -> R.string.absent_system_generated
+        INCOMPLETE -> R.string.incomplete
+        NO_ACTION -> R.string.no_action
+        else -> R.string.status_not_marked
+    }
 }
 
 

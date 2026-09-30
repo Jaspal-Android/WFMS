@@ -272,6 +272,7 @@
                         <ImageView
                             android:id="@+id/capturedImagePreview"
                             android:layout_width="match_parent"
+                            android:contentDescription="@string/photo_preview"
                             android:layout_height="match_parent" />
 
                     </RelativeLayout>

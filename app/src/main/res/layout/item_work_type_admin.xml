@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_small"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
         app:cardCornerRadius="@dimen/card_radius"
         app:cardElevation="@dimen/elevation_small"
         app:strokeWidth="1dp">
@@ -83,7 +83,7 @@
                 android:background="@drawable/status_green_bg"
                 android:paddingHorizontal="@dimen/padding_small"
                 android:paddingVertical="@dimen/padding_x_small"
-                android:textColor="#16A34A"
+                android:textColor="?attr/wfmsColorSuccess"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

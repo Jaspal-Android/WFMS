@@ -35,6 +35,7 @@ import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.utils.setAccessibleAction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -81,6 +82,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
         viewModel.getEmpDetails()
         setupHeaderData(userData)
         setupSwipeButton()
+        binding.slideStartDay.let { it.setAccessibleAction(it.text) }
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
     }
@@ -311,6 +313,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             binding.slideStartDay.outerColor = MaterialColors.getColor(binding.slideStartDay, R.attr.wfmsColorPrimary)
             binding.slideStartDay.isReversed = false
         }
+        binding.slideStartDay.setAccessibleAction(binding.slideStartDay.text)
     }
 
     private fun checkInAttendanceStatus() {

@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/margin_small"
+            android:importantForAccessibility="no"
             android:background="@drawable/ic_pull" />
 
         <!-- ── Title — FIX: verbose string + hardcoded black ── -->
@@ -56,6 +57,7 @@
             android:padding="@dimen/padding"
             android:src="@drawable/ic_menu_camera"
             android:visibility="@{hasPreviewImage ? View.GONE : View.VISIBLE}"
+            android:contentDescription="@string/take_photo"
             app:tint="@color/white" />
 
         <!-- Tap to photo hint -->
@@ -109,6 +111,7 @@
                     android:id="@+id/capturedImagePreview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:contentDescription="@string/photo_preview"
                     android:scaleType="centerCrop" />
             </androidx.cardview.widget.CardView>
 
@@ -131,7 +134,8 @@
                     android:src="@drawable/ic_marker_on_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="?attr/wfmsColorPrimary" />
+                    android:importantForAccessibility="no"
+                    app:tint="?attr/wfmsColorAccent" />
 
                 <TextView
                     style="@style/CustomSmallTextView"

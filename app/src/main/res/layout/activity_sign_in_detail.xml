@@ -33,6 +33,7 @@
                     android:src="@drawable/user_avtar"
                     android:layout_marginTop="@dimen/margin"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:importantForAccessibility="no"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView

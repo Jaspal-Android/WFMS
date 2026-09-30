@@ -80,7 +80,7 @@
         android:layout_width="@dimen/margin_big"
         android:layout_height="@dimen/margin_big"
         android:layout_marginBottom="@dimen/margin_x_large"
-        android:indeterminateTint="?attr/wfmsColorPrimary"
+        android:indeterminateTint="?attr/wfmsColorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

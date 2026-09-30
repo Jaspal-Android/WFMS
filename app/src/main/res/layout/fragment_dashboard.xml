@@ -31,9 +31,9 @@
                 android:background="?attr/wfmsColorBackground"
                 android:contentDescription="@string/tab_layout_desc"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="?attr/wfmsColorPrimary"
+                app:tabIndicatorColor="?attr/wfmsColorAccent"
                 app:tabMode="fixed"
-                app:tabSelectedTextColor="?attr/wfmsColorPrimary"
+                app:tabSelectedTextColor="?attr/wfmsColorAccent"
                 app:tabTextColor="?attr/wfmsColorOnSurfaceVariant" />
 
         </com.google.android.material.appbar.AppBarLayout>

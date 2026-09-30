@@ -24,6 +24,7 @@
             android:src="@drawable/ic_close_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/remove_entry"
             app:tint="?attr/wfmsColorPrimaryLight" />
 
         <!-- Attachment icon -->
@@ -38,7 +39,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnRemove"
             app:layout_constraintEnd_toStartOf="@+id/btnRemove"
             app:layout_constraintTop_toTopOf="@+id/btnRemove"
-            app:tint="?attr/wfmsColorPrimary" />
+            android:contentDescription="@string/receipt_attached"
+            app:tint="?attr/wfmsColorAccent" />
 
         <!-- Amount label -->
         <TextView

@@ -59,6 +59,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:importantForAccessibility="no"
                             app:tint="?attr/wfmsColorPrimary" />
 
                         <!-- Title + subtitle -->
@@ -70,7 +71,7 @@
                             android:layout_marginStart="@dimen/margin_small"
                             android:text="@string/self_work_assign"
                             android:textAllCaps="true"
-                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textColor="?attr/wfmsColorAccent"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toStartOf="@+id/arrowSelfAssign"
                             app:layout_constraintStart_toEndOf="@+id/iconSelfAssign"
@@ -97,6 +98,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:importantForAccessibility="no"
                             app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -127,6 +129,7 @@
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_search"
+                            android:importantForAccessibility="no"
                             app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                         <EditText
@@ -150,6 +153,7 @@
                             android:layout_height="20dp"
                             android:src="@drawable/ic_close_16"
                             android:visibility="gone"
+                            android:contentDescription="@string/clear_search"
                             app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                     </LinearLayout>

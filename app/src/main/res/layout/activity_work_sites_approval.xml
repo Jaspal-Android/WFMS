@@ -52,7 +52,7 @@
                 android:layout_height="16dp"
                 android:contentDescription="@string/date"
                 android:src="@drawable/ic_calendar_today"
-                app:tint="?attr/wfmsColorPrimary" />
+                app:tint="?attr/wfmsColorAccent" />
 
             <TextView
                 android:id="@+id/tvSelectedDate"
@@ -62,7 +62,7 @@
                 android:layout_marginStart="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:text="@{selectedDate}"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold"
                 tools:text="2025-10-31" />
 
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/select_date"
                 android:src="@drawable/ic_arrow_down_24"
-                app:tint="?attr/wfmsColorPrimary" />
+                app:tint="?attr/wfmsColorAccent" />
         </LinearLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

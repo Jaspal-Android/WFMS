@@ -59,6 +59,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:importantForAccessibility="no"
                             app:tint="?attr/wfmsColorPrimary" />
 
                         <!-- Title -->
@@ -70,7 +71,7 @@
                             android:layout_marginStart="@dimen/margin_small"
                             android:text="@string/create_claim"
                             android:textAllCaps="true"
-                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textColor="?attr/wfmsColorAccent"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toStartOf="@+id/arrowCreateClaim"
                             app:layout_constraintStart_toEndOf="@+id/iconCreateClaim"
@@ -98,6 +99,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:importantForAccessibility="no"
                             app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>

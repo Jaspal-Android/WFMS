@@ -34,6 +34,7 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets.MyTargetsFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashboardFragment
 import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.utils.setAccessibleAction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -78,6 +79,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         setupTabBar()
         setupSwipeButton()
+        binding.appDashHeader.slideStartDay.let { it.setAccessibleAction(it.text) }
 
         PrefMethods.getEmpDetailResponse(prefMain)?.let {
             setupUserData(it)
@@ -330,6 +332,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             slideStartDay.outerColor = MaterialColors.getColor(slideStartDay, R.attr.wfmsColorPrimary)
             slideStartDay.isReversed = false
         }
+        slideStartDay.setAccessibleAction(slideStartDay.text)
     }
 
 
