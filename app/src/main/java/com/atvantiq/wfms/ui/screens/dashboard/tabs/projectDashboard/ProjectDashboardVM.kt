@@ -29,7 +29,8 @@ class ProjectDashboardVM @Inject constructor(
         val monthParam = "%04d-%02d".format(selectedYear, selectedMonth)
         executeApiCall(
             apiCall = { budgetRepo.myProjects(monthParam) },
-            liveData = myProjectsResponse
+            liveData = myProjectsResponse,
+            cancelPrevious = true // tapping through months: the last month picked must win
         )
     }
 }

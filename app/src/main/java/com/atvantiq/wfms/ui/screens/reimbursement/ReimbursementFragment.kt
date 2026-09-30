@@ -19,16 +19,15 @@ import com.atvantiq.wfms.ui.screens.adapters.AllClaimsAdapter
 import com.atvantiq.wfms.ui.screens.reimbursement.claimDetails.ClaimDetailActivity
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivity
 import com.atvantiq.wfms.widgets.DividerItemDecoration
+import com.atvantiq.wfms.utils.PagedListState
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 
 @AndroidEntryPoint
 class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, ReimbursementViewModel>() {
     private var adapter: AllClaimsAdapter? = null
-    private var page: Int = 1
-    private var pageSize: Int = 10
-    private var isLoading = false
-    private var isLastPage = false
+    private val pageSize: Int = 10
+    private val paging = PagedListState(pageSize)
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_reimbursement, ReimbursementViewModel::class.java)
@@ -41,10 +40,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
         super.onViewCreated(view, savedInstanceState)
         setUpAllClaimsList()
         swipeRefresh()
-        page = 1
-        isLastPage = false
-        adapter?.submitList(emptyList())
-        getAllClaims()
+        loadFirstPage()
     }
 
     override fun subscribeToEvents(vm: ReimbursementViewModel) {
@@ -85,16 +81,14 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
             Status.SUCCESS -> {
                 dismissProgress()
                 stopRefreshingData()
-                response.response?.let {
-                    if (it.code == 200) {
-                        if (it.data?.records == null) {
-                            handleAllClaimsSuccess(emptyList())
-                        } else {
-                            handleAllClaimsSuccess(it.data.records)
-                        }
-                    } else {
-                        handleErrorResponse(it.code, it.message)
-                    }
+                val body = response.response
+                if (body != null && body.code == 200) {
+                    handleAllClaimsSuccess(body.data?.records ?: emptyList())
+                } else {
+                    // Rejected or empty: release the lock so the same page is retried on scroll.
+                    paging.onRequestFailed()
+                    adapter?.removeLoadingFooter()
+                    if (body != null) handleErrorResponse(body.code, body.message)
                 }
             }
             Status.ERROR -> handleError(response.throwable)
@@ -103,22 +97,20 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     }
 
     private fun handleAllClaimsSuccess(records: List<Record>) {
+        // null: no page was awaited (e.g. a replayed old result), so there is nothing to apply.
+        val isFirstPage = paging.onPageReceived(records.size) ?: return
         adapter?.removeLoadingFooter() // Always remove loading footer before updating list
-        if (page == 1) {
+        if (isFirstPage) {
             adapter?.submitList(emptyList()) // Clear adapter data on refresh
         }
         if (records.isEmpty()) {
-            isLastPage = true
-            if (page == 1) emptyDataLayout() else adapter?.removeLoadingFooter()
+            if (isFirstPage) emptyDataLayout() else adapter?.removeLoadingFooter()
         } else {
             mainLayout()
-            if (page == 1) {
+            if (isFirstPage) {
                 adapter?.submitList(records)
             } else {
                 adapter?.addData(records)
-            }
-            if (records.size < pageSize) {
-                isLastPage = true
             }
         }
     }
@@ -131,7 +123,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
         dismissProgress()
         stopRefreshingData()
         adapter?.removeLoadingFooter()
-        isLoading = false
+        paging.onRequestFailed()
         if (throwable is HttpException && throwable.code() == 401) {
             tokenExpiresAlert()
         } else {
@@ -140,16 +132,25 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     }
 
     private fun showLoadingIndicator() {
-        if (page == 1) showProgress() else {
+        if (paging.isLoadingFirstPage) showProgress() else {
             adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
             adapter?.addLoadingFooter()
         }
     }
 
-    private fun getAllClaims() {
-        if (isLoading || isLastPage)
-            return
-        isLoading = true
+    private fun loadNextPage() {
+        paging.startNextPage()?.let { fetchPage(it) }
+    }
+
+    // Start and refresh both come here. It supersedes any request still in flight, and the
+    // ViewModel cancels that request, so a slow old answer can never overwrite this one.
+    private fun loadFirstPage() {
+        adapter?.removeLoadingFooter() // Remove loading footer on refresh
+        adapter?.submitList(emptyList()) // Clear adapter data on refresh
+        fetchPage(paging.restart())
+    }
+
+    private fun fetchPage(page: Int) {
         if (page != 1) {
             adapter?.addLoadingFooter() // Show loading footer only for next pages
         }
@@ -165,12 +166,11 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                 if (dy > 0) {
-                    if (!isLoading && !isLastPage) {
+                    if (!paging.isLoading && !paging.isLastPage) {
                         if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0
                         ) {
-                            page += 1
-                            getAllClaims()
+                            loadNextPage()
                         }
                     }
                 }
@@ -194,13 +194,11 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     }
 
     private fun mainLayout() {
-        isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
         binding.isEmptyReimbursements = false
     }
 
     private fun emptyDataLayout() {
-        isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
         if ((adapter?.count() ?: 0) <= 0) {
             binding.isEmptyReimbursements = true
@@ -214,12 +212,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     }
 
     private fun startRefreshingData() {
-        page = 1
-        isLastPage = false // Reset last page flag
-        isLoading = false
-        adapter?.removeLoadingFooter() // Remove loading footer on refresh
-        adapter?.submitList(emptyList()) // Clear adapter data on refresh
-        getAllClaims()
+        loadFirstPage()
     }
 
     private fun stopRefreshingData() {

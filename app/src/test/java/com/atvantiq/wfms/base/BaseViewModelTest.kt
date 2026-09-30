@@ -16,6 +16,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -53,8 +54,16 @@ class BaseViewModelTest {
         fun <T> run(
             liveData: MutableLiveData<ApiState<T>>,
             onError: ((Exception) -> Unit)? = null,
+            cancelPrevious: Boolean = false,
+            onSuccess: ((T) -> Unit)? = null,
             apiCall: suspend () -> T
-        ) = executeApiCall(apiCall = apiCall, liveData = liveData, onError = onError)
+        ) = executeApiCall(
+            apiCall = apiCall,
+            liveData = liveData,
+            onSuccess = onSuccess,
+            onError = onError,
+            cancelPrevious = cancelPrevious
+        )
     }
 
     private val testDispatcher = StandardTestDispatcher()
@@ -194,5 +203,96 @@ class BaseViewModelTest {
         assertEquals(text(ApiErrorKind.NO_INTERNET), error?.message)
         assertSame(error, received)
         assertNotNull(received)
+    }
+
+    // ---- superseded requests (search text, filter, refresh, month picker) ----
+
+    @Test
+    fun `a newer request cancels the slow one before it can overwrite the result`() {
+        val slowAnswer = CompletableDeferred<String>()
+        val delivered = mutableListOf<String>()
+        viewModel.run(liveData, cancelPrevious = true, onSuccess = { delivered += it }) { slowAnswer.await() }
+        testDispatcher.scheduler.advanceUntilIdle() // the first request is now waiting on the network
+
+        viewModel.run(liveData, cancelPrevious = true, onSuccess = { delivered += it }) { "new query" }
+        testDispatcher.scheduler.advanceUntilIdle()
+        slowAnswer.complete("old query") // the old answer finally arrives
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("new query", liveData.value?.response)
+        assertEquals(Status.SUCCESS, liveData.value?.status)
+        assertEquals(listOf("new query"), delivered)
+    }
+
+    @Test
+    fun `a superseded request reports neither a result nor an error`() {
+        val slowAnswer = CompletableDeferred<String>()
+        var errorReported = false
+        viewModel.run(liveData, onError = { errorReported = true }, cancelPrevious = true) { slowAnswer.await() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.run(liveData, cancelPrevious = true) { "new" }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(false, errorReported)
+        assertTrue(viewModel.reported.isEmpty())
+    }
+
+    @Test
+    fun `without cancelPrevious both requests still complete`() {
+        val first = CompletableDeferred<String>()
+        val delivered = mutableListOf<String>()
+        viewModel.run(liveData, onSuccess = { delivered += it }) { first.await() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.run(liveData, onSuccess = { delivered += it }) { "second" }
+        testDispatcher.scheduler.advanceUntilIdle()
+        first.complete("first")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(listOf("second", "first"), delivered)
+    }
+
+    @Test
+    fun `cancelling only affects requests for the same LiveData`() {
+        val other = MutableLiveData<ApiState<String>>()
+        val otherAnswer = CompletableDeferred<String>()
+        viewModel.run(other, cancelPrevious = true) { otherAnswer.await() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.run(liveData, cancelPrevious = true) { "unrelated" }
+        testDispatcher.scheduler.advanceUntilIdle()
+        otherAnswer.complete("still delivered")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("still delivered", other.value?.response)
+        assertEquals("unrelated", liveData.value?.response)
+    }
+
+    @Test
+    fun `a newer request that finds no connection still supersedes the slow one`() {
+        val slowAnswer = CompletableDeferred<String>()
+        viewModel.run(liveData, cancelPrevious = true) { slowAnswer.await() }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        every { Utils.isInternet(application) } returns false
+        viewModel.run(liveData, cancelPrevious = true) { "never runs" }
+        slowAnswer.complete("old query")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(Status.ERROR, liveData.value?.status)
+        assertTrue(liveData.value?.throwable is NoInternetException)
+    }
+
+    @Test
+    fun `a request can be superseded again after the previous one finished`() {
+        viewModel.run(liveData, cancelPrevious = true) { "first" }
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals("first", liveData.value?.response)
+
+        viewModel.run(liveData, cancelPrevious = true) { "second" }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("second", liveData.value?.response)
     }
 }

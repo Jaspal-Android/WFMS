@@ -97,7 +97,8 @@ class AttendanceViewModel @Inject constructor(
     fun getWorkAssignedAll(page: Int, pageSize: Int) {
         executeApiCall(
             apiCall = { workRepo.workAssignedAll(page, pageSize, searchQuery, activeFilter.statusParam) },
-            liveData = workAssignedAllResponse
+            liveData = workAssignedAllResponse,
+            cancelPrevious = true
         )
     }
 
