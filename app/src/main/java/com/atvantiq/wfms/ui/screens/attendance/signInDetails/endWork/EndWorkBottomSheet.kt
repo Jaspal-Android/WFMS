@@ -73,6 +73,11 @@ class EndWorkBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // After a restore the host callbacks are gone; Done would silently never end the work.
+        if (onSubmitDetails == null || onMaterialFlowCompleted == null) {
+            dismissAllowingStateLoss()
+            return
+        }
         setLocationLatLon()
         initListeners()
         initStatusList()

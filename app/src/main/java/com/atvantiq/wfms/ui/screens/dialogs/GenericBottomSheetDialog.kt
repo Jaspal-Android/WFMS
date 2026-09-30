@@ -1,5 +1,4 @@
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,19 +12,39 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Locale
 
-class GenericBottomSheetDialog<T>(
-    private val context: Context,
-    private val items: List<T>,
-    private val layoutResId: Int,
-    private val bind: (View, T) -> Unit,
-    private val onItemSelected: (T) -> Unit,
-    private val filterCondition: (T, String) -> Boolean,
-    private val title: String? = null // Added title parameter
-) : BaseBottomSheet() {
+class GenericBottomSheetDialog<T>() : BaseBottomSheet() {
+
+    // Items and callbacks are wired by the host through the secondary constructor. The no-arg
+    // constructor lets the FragmentManager re-instantiate this sheet on restore (process death,
+    // recreate() on a theme change) without an InstantiationException; a sheet that comes back
+    // unwired dismisses itself instead of showing a dead list.
+    private var items: List<T> = emptyList()
+    private var layoutResId: Int = 0
+    private var bind: ((View, T) -> Unit)? = null
+    private var onItemSelected: ((T) -> Unit)? = null
+    private var filterCondition: ((T, String) -> Boolean)? = null
+    private var title: String? = null
 
     private lateinit var binding: DialogGenericBottomSheetBinding
     private lateinit var adapter: RecyclerViewGenericAdapter<T>
-    private var filteredItems: MutableList<T> = items.toMutableList()
+    private val filteredItems: MutableList<T> = mutableListOf()
+
+    constructor(
+        items: List<T>,
+        layoutResId: Int,
+        bind: (View, T) -> Unit,
+        onItemSelected: (T) -> Unit,
+        filterCondition: (T, String) -> Boolean,
+        title: String? = null
+    ) : this() {
+        this.items = items
+        this.layoutResId = layoutResId
+        this.bind = bind
+        this.onItemSelected = onItemSelected
+        this.filterCondition = filterCondition
+        this.title = title
+        filteredItems.addAll(items)
+    }
 
     override fun onCreateView(
         inflater: android.view.LayoutInflater,
@@ -38,6 +57,13 @@ class GenericBottomSheetDialog<T>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bind = bind
+        val onItemSelected = onItemSelected
+        if (bind == null || onItemSelected == null || filterCondition == null) {
+            dismissAllowingStateLoss()
+            return
+        }
 
         // Set the title if provided
         if (!title.isNullOrEmpty()) {
@@ -56,7 +82,7 @@ class GenericBottomSheetDialog<T>(
             dismiss()
         }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -68,7 +94,7 @@ class GenericBottomSheetDialog<T>(
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.addItemDecoration(
             androidx.recyclerview.widget.DividerItemDecoration(
-                context,
+                requireContext(),
                 LinearLayoutManager.VERTICAL
             )
         )
@@ -90,7 +116,8 @@ class GenericBottomSheetDialog<T>(
 
     private fun filterList(query: String) {
         filteredItems.clear()
-        filteredItems.addAll(items.filter { filterCondition(it, query) })
+        val condition = filterCondition ?: return
+        filteredItems.addAll(items.filter { condition(it, query) })
         adapter.notifyDataSetChanged()
     }
 }

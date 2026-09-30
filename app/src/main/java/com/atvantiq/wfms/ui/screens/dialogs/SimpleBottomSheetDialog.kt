@@ -3,7 +3,6 @@ package com.atvantiq.wfms.ui.screens.dialogs
 
 import RecyclerViewGenericAdapter
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,20 +12,37 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
-class SimpleBottomSheetDialog<T>(
-    private val context: Context,
-    private val items: List<T>,
-    private val layoutResId: Int,
-    private val bind: (View, T) -> Unit,
-    private val onItemSelected: (T) -> Unit,
-    private val title: String? = null
-) : BottomSheetDialogFragment() {
+class SimpleBottomSheetDialog<T>() : BottomSheetDialogFragment() {
+
+    // Items and callbacks are wired by the host through the secondary constructor. The no-arg
+    // constructor lets the FragmentManager re-instantiate this sheet on restore (process death,
+    // recreate() on a theme change) without an InstantiationException; a sheet that comes back
+    // unwired dismisses itself instead of showing a dead list.
+    private var items: List<T> = emptyList()
+    private var layoutResId: Int = 0
+    private var bind: ((View, T) -> Unit)? = null
+    private var onItemSelected: ((T) -> Unit)? = null
+    private var title: String? = null
 
     private lateinit var binding: DialogGenericBottomSheetBinding
     private lateinit var adapter: RecyclerViewGenericAdapter<T>
 
+    constructor(
+        items: List<T>,
+        layoutResId: Int,
+        bind: (View, T) -> Unit,
+        onItemSelected: (T) -> Unit,
+        title: String? = null
+    ) : this() {
+        this.items = items
+        this.layoutResId = layoutResId
+        this.bind = bind
+        this.onItemSelected = onItemSelected
+        this.title = title
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BottomSheetDialog(context, R.style.AppBottomSheetDialogTheme)
+        return BottomSheetDialog(requireContext(), R.style.AppBottomSheetDialogTheme)
     }
 
     override fun onCreateView(
@@ -40,6 +56,13 @@ class SimpleBottomSheetDialog<T>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bind = bind
+        val onItemSelected = onItemSelected
+        if (bind == null || onItemSelected == null) {
+            dismissAllowingStateLoss()
+            return
+        }
 
         // Set the title if provided
         if (!title.isNullOrEmpty()) {
@@ -58,11 +81,11 @@ class SimpleBottomSheetDialog<T>(
             dismiss()
         }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.addItemDecoration(
             androidx.recyclerview.widget.DividerItemDecoration(
-                context,
+                requireContext(),
                 LinearLayoutManager.VERTICAL
             )
         )

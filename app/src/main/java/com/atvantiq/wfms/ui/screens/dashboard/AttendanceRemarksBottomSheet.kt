@@ -37,6 +37,11 @@ class AttendanceRemarksBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // After a restore the host callback is gone; Done would silently drop the remarks.
+        if (onSubmitDetails == null) {
+            dismissAllowingStateLoss()
+            return
+        }
         initListeners()
     }
 

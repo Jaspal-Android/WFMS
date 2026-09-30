@@ -55,38 +55,20 @@ class WorkTypeAdapterAdmin(
                 onSelectionChanged?.invoke(selectedTypes.toList())
             }
 
-            // Eligibility logic for approve/reject as per role and status
-            var eligibleToApprove = false
-            val pmStatus = workType?.pm?.status
-            val opsStatus = workType?.ops?.status
-            val adminStatus = workType?.admin?.status
-
-            when (employeeRole.lowercase()) {
-                ValConstants.ROLE_PM.lowercase() -> {
-                    if (pmStatus == 0 && adminStatus == 0) {
-                        eligibleToApprove = true
-                    }
-                }
-                ValConstants.ROLE_OPS.lowercase() -> {
-                    if (opsStatus == 0 && adminStatus == 0) {
-                        eligibleToApprove = true
-                    }
-                }
-                ValConstants.ROLE_Admin.lowercase() -> {
-                    if (adminStatus == 0) {
-                        eligibleToApprove = true
-                    }
-                }
-            }
-            showSelectableOption = workTypes[position].status?.code in listOf(StatusCodes.WIP, StatusCodes.COMPLETED) && eligibleToApprove
+            showSelectableOption = isSelectable(employeeRole, workType)
         }
     }
 
+    // "Select all" must only pick rows the admin could tick individually. Rows whose checkbox is
+    // hidden (not in progress / completed, or already actioned by this role) are skipped;
+    // otherwise a bulk approve or reject is sent for types the admin cannot act on.
     fun setAllSelected(selected: Boolean) {
-        selectedStates.replaceAll { selected }
         selectedTypes.clear()
-        if (selected) {
-            selectedTypes.addAll(workTypes)
+        val selectable = selectableTypes(employeeRole, workTypes)
+        workTypes.forEachIndexed { index, type ->
+            val pick = selected && type in selectable
+            selectedStates[index] = pick
+            if (pick) selectedTypes.add(type)
         }
         notifyDataSetChanged()
         onSelectionChanged?.invoke(selectedTypes.toList())
@@ -105,4 +87,27 @@ class WorkTypeAdapterAdmin(
     }
 
     fun getSelectedTypes(): List<WorkType> = selectedTypes.toList()
+
+    companion object {
+        /** The subset of [workTypes] that "Select all" may pick for [employeeRole]. */
+        fun selectableTypes(employeeRole: String, workTypes: List<WorkType>): List<WorkType> =
+            workTypes.filter { isSelectable(employeeRole, it) }
+
+        /**
+         * A work type can be approved or rejected by [employeeRole] when it is in progress or
+         * completed and that role (and the admin) has not actioned it yet.
+         */
+        fun isSelectable(employeeRole: String, workType: WorkType): Boolean {
+            val eligibleToApprove = when (employeeRole.lowercase()) {
+                ValConstants.ROLE_PM.lowercase() ->
+                    workType.pm?.status == 0 && workType.admin?.status == 0
+                ValConstants.ROLE_OPS.lowercase() ->
+                    workType.ops?.status == 0 && workType.admin?.status == 0
+                ValConstants.ROLE_Admin.lowercase() -> workType.admin?.status == 0
+                else -> false
+            }
+            return eligibleToApprove &&
+                workType.status?.code in listOf(StatusCodes.WIP, StatusCodes.COMPLETED)
+        }
+    }
 }

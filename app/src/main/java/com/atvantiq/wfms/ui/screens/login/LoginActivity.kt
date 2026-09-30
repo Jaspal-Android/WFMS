@@ -195,11 +195,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         response.response?.let {
             if (it.code == 200 && it.success) {
                 showToast(this, it.message.orEmpty())
-                getOtpBottomSheet = GetOTPBottomSheetDialog(onSubmitOTP = { otp ->
-                    viewModel.verifyLoginWithOtp(otp)
-                }, onResendOTP = {
-                    viewModel.requestLoginWithOtp()
-                })
+                getOtpBottomSheet = GetOTPBottomSheetDialog().apply {
+                    onSubmitOTP = { otp -> viewModel.verifyLoginWithOtp(otp) }
+                    onResendOTP = { viewModel.requestLoginWithOtp() }
+                }
                 getOtpBottomSheet?.show(supportFragmentManager, "GetOTPBottomSheetDialog")
             } else {
                 alertDialogShow(
@@ -397,9 +396,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     }
 
     private fun requestOtp() {
-        var requestOtpBottomSheet = RequestOtpBottomSheet {
-            viewModel.userEmailId.set(it)
-            viewModel.requestLoginWithOtp()
+        val requestOtpBottomSheet = RequestOtpBottomSheet().apply {
+            onSubmitEmail = { email ->
+                viewModel.userEmailId.set(email)
+                viewModel.requestLoginWithOtp()
+            }
         }
         requestOtpBottomSheet.show(supportFragmentManager, "RequestOtpBottomSheet")
     }

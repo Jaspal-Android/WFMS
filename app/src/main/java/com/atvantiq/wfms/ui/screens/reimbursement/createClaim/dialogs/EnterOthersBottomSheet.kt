@@ -15,8 +15,13 @@ import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String, path:String)->Unit) : BaseBottomSheet() {
-	
+class EnterOthersBottomSheet : BaseBottomSheet() {
+
+	// The callback is wired by the host after construction. The no-arg constructor lets the
+	// FragmentManager re-instantiate this sheet on restore (e.g. the process is killed while the
+	// camera is open), and an unwired sheet dismisses itself.
+	var onDataSubmitted: ((category: String, amount: String, path: String) -> Unit)? = null
+
 	lateinit var binding: BottomSheetEnterOthersBinding
 	private var imagePath: String? = null
 
@@ -57,6 +62,10 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		if (onDataSubmitted == null) {
+			dismissAllowingStateLoss()
+			return
+		}
 		setImagePicker()
 		initListeners()
 	}
@@ -115,7 +124,7 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 				// Submit the raw validated string (amountRaw is smart-cast non-null here), not
 				// parsedAmount.toString(): the Double round-trip corrupted currency
 				// ("10.20"->"10.2", ">=10M"->scientific notation).
-				onDataSubmitted.invoke(categoryRaw, amountRaw, imagePath ?: "")
+				onDataSubmitted?.invoke(categoryRaw, amountRaw, imagePath ?: "")
 				dismiss()
 			}
 			binding.btnCancel.setOnClickListener {

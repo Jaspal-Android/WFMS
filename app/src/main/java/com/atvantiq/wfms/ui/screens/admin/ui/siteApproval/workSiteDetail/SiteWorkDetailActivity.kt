@@ -10,7 +10,6 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.StatusCodes
-import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivitySiteWorkDetailBinding
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailData
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
@@ -79,9 +78,15 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
     }
 
     private fun approveRejectWorkSiteType(status: Int){
+        val siteId = workSiteId ?: -1
+        val employee = employeeId.toLongOrNull() ?: -1
+        if (siteId <= 0 || employee <= 0) {
+            showToast(this, getString(R.string.something_went_wrong))
+            return
+        }
         viewModel.approveRejectWorkSite(
-            workSiteId ?: -1,
-            employeeId.toLongOrNull() ?: -1, // Type ID can be set as needed
+            siteId,
+            employee,
             status,
             if(status ==1){getString(R.string.approved_by)+" "+employeeRole}else{getString(R.string.rejected_by)+" "+employeeRole},
             itemTypeAdapter?.getSelectedTypes()
@@ -129,32 +134,10 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
         binding.tvSiteCode.text = record?.site?.siteId ?: getString(R.string.not_available)
         binding.siteStatusInteger = record?.site?.status?.code ?: -1
 
-        if (record?.workType?.isNullOrEmpty() == true) {
-            binding.showSelectAll = false
-        } else {
-            val hasOpenWorkType = record?.workType?.any { it.status?.code == StatusCodes.WIP || it.status?.code == StatusCodes.COMPLETED }
-            var eligibleToApprove = false
-            when (employeeRole.lowercase()) {
-                ValConstants.ROLE_PM.lowercase() -> {
-                    if (record?.workType?.any { it.pm?.status == 0 && it.admin?.status == 0 } == true) {
-                        eligibleToApprove = true
-                    }
-                }
-                ValConstants.ROLE_OPS.lowercase() -> {
-                    if (record?.workType?.any { it.ops?.status == 0 && it.admin?.status == 0 } == true) {
-                        eligibleToApprove = true
-                    }
-                }
-                ValConstants.ROLE_Admin.lowercase() -> {
-                    if( record?.workType?.any { it.admin?.status == 0 } == true) {
-                        eligibleToApprove = true
-                    }
-                }
-            }
-            if (hasOpenWorkType == true && eligibleToApprove) {
-                binding.showSelectAll = true
-            }
-        }
+        // Same rule the adapter uses for each row's checkbox, so "Select all" is offered only when
+        // at least one row can actually be selected.
+        binding.showSelectAll =
+            record?.workType?.any { WorkTypeAdapterAdmin.isSelectable(employeeRole, it) } == true
         itemTypeAdapter?.setData(record?.workType ?: emptyList(), false)
     }
 

@@ -14,8 +14,14 @@ import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,path:String)->Unit) : BaseBottomSheet() {
-	
+class EnterDaBottomSheet : BaseBottomSheet() {
+
+	// The title survives recreation via arguments; the callback is wired by the host. The no-arg
+	// constructor lets the FragmentManager re-instantiate this sheet on restore (e.g. the process
+	// is killed while the camera is open), and an unwired sheet dismisses itself.
+	private var title: String = ""
+	var onDataSubmitted: ((amount: String, path: String) -> Unit)? = null
+
 	lateinit var binding: BottomSheetEnterDaBinding
 	private var imagePath: String? = null
 
@@ -39,6 +45,11 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 	private lateinit var pickMediaHelper: PickMediaHelper
 
 	
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		title = arguments?.getString(ARG_TITLE).orEmpty()
+	}
+
 	override fun onCreateView(
 		inflater: LayoutInflater,
 		container: ViewGroup?,
@@ -51,6 +62,10 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		if (onDataSubmitted == null) {
+			dismissAllowingStateLoss()
+			return
+		}
 		binding.tvTitle.text = title
 		setImagePicker()
 		initListeners()
@@ -99,11 +114,21 @@ class EnterDaBottomSheet(var title:String,var onDataSubmitted:(amount:String,pat
 				// Submit the raw validated string (amountRaw is smart-cast non-null here), not
 				// parsedAmount.toString(): the Double round-trip corrupted currency
 				// ("10.20"->"10.2", ">=10M"->scientific notation).
-				onDataSubmitted.invoke(amountRaw, imagePath ?: "")
+				onDataSubmitted?.invoke(amountRaw, imagePath ?: "")
 				dismiss()
 			}
 			binding.btnCancel.setOnClickListener {
 				dismiss()
+			}
+		}
+	}
+
+	companion object {
+		private const val ARG_TITLE = "title"
+
+		fun newInstance(title: String): EnterDaBottomSheet {
+			return EnterDaBottomSheet().apply {
+				arguments = Bundle().apply { putString(ARG_TITLE, title) }
 			}
 		}
 	}

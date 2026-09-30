@@ -541,38 +541,44 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     }
 
     private fun showEnterDaBottomSheet() {
-        var dialog = EnterDaBottomSheet(getString(R.string.add_da_entery)) { amount, path ->
-            var daExpense = DAExpense(
-                selectedDaEntriesAdapter?.itemCount?.plus(1).toString(),
-                amount = amount,
-                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
-            )
-            viewModel.addDAExpense(daExpense)
+        val dialog = EnterDaBottomSheet.newInstance(getString(R.string.add_da_entery)).apply {
+            onDataSubmitted = { amount, path ->
+                val daExpense = DAExpense(
+                    selectedDaEntriesAdapter?.itemCount?.plus(1).toString(),
+                    amount = amount,
+                    receiptAttachments = if (path.isEmpty()) emptyList() else listOf(path)
+                )
+                viewModel.addDAExpense(daExpense)
+            }
         }
         dialog.show(supportFragmentManager, "EnterDaBottomSheet")
     }
 
     private fun showEnterHotelBottomSheet() {
-        var dialog = EnterDaBottomSheet(getString(R.string.add_hotel_entry)) { amount, path ->
-            var hotelExpense = HotelExpense(
-                selectedHotelEntriesAdapter?.itemCount?.plus(1).toString(),
-                amount = amount,
-                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
-            )
-            viewModel.addHotelExpense(hotelExpense)
+        val dialog = EnterDaBottomSheet.newInstance(getString(R.string.add_hotel_entry)).apply {
+            onDataSubmitted = { amount, path ->
+                val hotelExpense = HotelExpense(
+                    selectedHotelEntriesAdapter?.itemCount?.plus(1).toString(),
+                    amount = amount,
+                    receiptAttachments = if (path.isEmpty()) emptyList() else listOf(path)
+                )
+                viewModel.addHotelExpense(hotelExpense)
+            }
         }
         dialog.show(supportFragmentManager, "EnterHotelBottomSheet")
     }
 
     private fun showEnterOthersBottomSheet() {
-        var dialog = EnterOthersBottomSheet { category, amount, path ->
-            var othersExpense = OtherExpense(
-                selectedOthersEntriesAdapter?.itemCount?.plus(1).toString(),
-                category = category,
-                amount = amount,
-                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
-            )
-            viewModel.addOtherExpense(othersExpense)
+        val dialog = EnterOthersBottomSheet().apply {
+            onDataSubmitted = { category, amount, path ->
+                val othersExpense = OtherExpense(
+                    selectedOthersEntriesAdapter?.itemCount?.plus(1).toString(),
+                    category = category,
+                    amount = amount,
+                    receiptAttachments = if (path.isEmpty()) emptyList() else listOf(path)
+                )
+                viewModel.addOtherExpense(othersExpense)
+            }
         }
         dialog.show(supportFragmentManager, "EnterOtherBottomSheet")
     }
