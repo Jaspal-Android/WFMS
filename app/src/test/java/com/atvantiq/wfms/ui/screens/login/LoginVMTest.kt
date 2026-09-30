@@ -85,6 +85,31 @@ class LoginVMTest {
     }
 
     @Test
+    fun `login request keeps the password exactly as typed but trims the email`() = runTest {
+        val params = slot<JsonObject>()
+        coEvery { authRepo.loginRequest(capture(params)) } returns mockk(relaxed = true)
+
+        viewModel.userName.value = "  user@domain.com  "
+        viewModel.password.value = "  pass word  "
+        viewModel.onSubmitLoginClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("user@domain.com", params.captured.get("email").asString)
+        assertEquals("  pass word  ", params.captured.get("password").asString)
+    }
+
+    @Test
+    fun `a whitespace-only password is still rejected`() {
+        viewModel.userName.value = "user@domain.com"
+        viewModel.password.value = "   "
+
+        viewModel.onSubmitLoginClick()
+
+        assertEquals(LoginErrorHandler.EMPTY_PASSWORD, viewModel.errorHandler.value)
+        coVerify(exactly = 0) { authRepo.loginRequest(any()) }
+    }
+
+    @Test
     fun `onSubmitLoginClick with valid details calls loginRequest and updates LiveData`() = runTest {
         val response = LoginResponse(
             code = 200,
