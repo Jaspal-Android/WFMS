@@ -20,7 +20,8 @@ class AttendanceStatusVM @Inject constructor(
     fun getAttendanceDetails(month: Int, year: Int) {
         executeApiCall(
             apiCall = { attendanceRepo.attendanceDetails(month, year, true) },
-            liveData = attendanceDetailsResponse
+            liveData = attendanceDetailsResponse,
+            cancelPrevious = true // tapping through months: the last month picked must win
         )
     }
 }

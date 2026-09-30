@@ -20,6 +20,7 @@ class SitesVM @Inject constructor(application: Application, private val creation
         executeApiCall(
             apiCall = { creationRepo.siteListAll(page, limit, 1) },
             liveData = allSitesResponse,
+            cancelPrevious = true
         )
     }
 

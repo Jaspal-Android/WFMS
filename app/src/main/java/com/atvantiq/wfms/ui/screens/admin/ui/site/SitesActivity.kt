@@ -18,15 +18,14 @@ import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AllSitesAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteActivity
+import com.atvantiq.wfms.utils.PagedListState
 import retrofit2.HttpException
 
 class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
 
     private var adapter: AllSitesAdapter? = null
-    private var page: Int = 1
-    private var pageSize: Int = 10
-    private var isLoading = false
-    private var isLastPage = false
+    private val pageSize: Int = 10
+    private val paging = PagedListState(pageSize)
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_sites, SitesVM::class.java)
@@ -41,10 +40,7 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
         setSitesToolbar()
         setSitesList()
         swipeRefresh()
-        page = 1
-        isLastPage = false
-        adapter?.submitList(emptyList())
-        getSitesAll()
+        loadFirstPage()
     }
 
     private fun setSitesToolbar(){
@@ -76,12 +72,14 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
             Status.SUCCESS -> {
                 dismissProgress()
                 stopRefreshingData()
-                response.response?.let {
-                    if (it.code == 200) {
-                        handleSitesSuccess(it.data.sites)
-                    } else {
-                        handleErrorResponse(it.code, it.message)
-                    }
+                val body = response.response
+                if (body != null && body.code == 200) {
+                    handleSitesSuccess(body.data.sites)
+                } else {
+                    // Rejected or empty: release the lock so the same page is retried on scroll.
+                    paging.onRequestFailed()
+                    adapter?.removeLoadingFooter()
+                    if (body != null) handleErrorResponse(body.code, body.message)
                 }
             }
             Status.ERROR -> handleError(response.throwable)
@@ -90,22 +88,20 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
     }
 
     private fun handleSitesSuccess(records: List<Site>) {
+        // null: no page was awaited (e.g. a replayed old result), so there is nothing to apply.
+        val isFirstPage = paging.onPageReceived(records.size) ?: return
         adapter?.removeLoadingFooter() // Always remove loading footer before updating list
-        if (page == 1) {
+        if (isFirstPage) {
             adapter?.submitList(emptyList()) // Clear adapter data on refresh
         }
         if (records.isEmpty()) {
-            isLastPage = true
-            if (page == 1) emptyDataLayout() else adapter?.removeLoadingFooter()
+            if (isFirstPage) emptyDataLayout() else adapter?.removeLoadingFooter()
         } else {
             mainLayout()
-            if (page == 1) {
+            if (isFirstPage) {
                 adapter?.submitList(records)
             } else {
                 adapter?.addData(records)
-            }
-            if (records.size < pageSize) {
-                isLastPage = true
             }
         }
     }
@@ -118,7 +114,7 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
         dismissProgress()
         stopRefreshingData()
         adapter?.removeLoadingFooter()
-        isLoading = false
+        paging.onRequestFailed()
         if (throwable is HttpException && throwable.code() == 401) {
             tokenExpiresAlert()
         } else {
@@ -127,16 +123,25 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
     }
 
     private fun showLoadingIndicator() {
-        if (page == 1) showProgress() else {
+        if (paging.isLoadingFirstPage) showProgress() else {
             adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
             adapter?.addLoadingFooter()
         }
     }
 
-    private fun getSitesAll() {
-        if (isLoading || isLastPage)
-            return
-        isLoading = true
+    private fun loadNextPage() {
+        paging.startNextPage()?.let { fetchPage(it) }
+    }
+
+    // Start, refresh and "site created" all come here. It supersedes any request still in flight,
+    // and the ViewModel cancels that request, so a slow old answer can never overwrite this one.
+    private fun loadFirstPage() {
+        adapter?.removeLoadingFooter() // Remove loading footer on refresh
+        adapter?.submitList(emptyList()) // Clear adapter data on refresh
+        fetchPage(paging.restart())
+    }
+
+    private fun fetchPage(page: Int) {
         if (page != 1) {
             adapter?.addLoadingFooter() // Show loading footer only for next pages
         }
@@ -152,12 +157,11 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                 if (dy > 0) {
-                    if (!isLoading && !isLastPage) {
+                    if (!paging.isLoading && !paging.isLastPage) {
                         if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0
                         ) {
-                            page += 1
-                            getSitesAll()
+                            loadNextPage()
                         }
                     }
                 }
@@ -175,13 +179,11 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
     }
 
     private fun mainLayout() {
-        isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
         binding.isEmptySites = false
     }
 
     private fun emptyDataLayout() {
-        isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
         if (adapter?.count() ?: 0 <= 0) {
             binding.isEmptySites = true
@@ -195,11 +197,7 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
     }
 
     private fun startRefreshingData() {
-        page = 1
-        isLastPage = false // Reset last page flag
-        adapter?.removeLoadingFooter() // Remove loading footer on refresh
-        adapter?.submitList(emptyList()) // Clear adapter data on refresh
-        viewModel.getAllSites(page, pageSize)
+        loadFirstPage()
     }
 
     private fun stopRefreshingData() {

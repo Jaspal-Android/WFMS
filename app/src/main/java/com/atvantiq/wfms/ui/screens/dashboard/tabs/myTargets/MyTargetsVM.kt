@@ -30,7 +30,8 @@ class MyTargetsVM @Inject constructor(
         val monthParam = "%04d-%02d".format(selectedYear, selectedMonth)
         executeApiCall(
             apiCall = { budgetRepo.myTargets(monthParam) },
-            liveData = myTargetsResponse
+            liveData = myTargetsResponse,
+            cancelPrevious = true // tapping through months: the last month picked must win
         )
     }
 }

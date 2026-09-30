@@ -36,7 +36,8 @@ class ReimbursementViewModel @Inject constructor(
     fun getAllClaims(page: Int, pageSize: Int) {
         executeApiCall(
             apiCall = { claimRepo.allClaims(page, pageSize) },
-            liveData = allClaimsResponse
+            liveData = allClaimsResponse,
+            cancelPrevious = true
         )
     }
 

@@ -36,6 +36,7 @@ import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
+import com.atvantiq.wfms.utils.PagedListState
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.DividerItemDecoration
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -48,14 +49,12 @@ import retrofit2.HttpException
 class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
-    private var page: Int = 1
-    private var pageSize: Int = 10
-    private var isLoading = false
-    private var isLastPage = false
+    private val pageSize: Int = 10
+    private val paging = PagedListState(pageSize)
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val searchHandler = Handler(Looper.getMainLooper())
-    private val searchDebounce = Runnable { resetAndFetch() }
+    private val searchDebounce = Runnable { loadFirstPage() }
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance, AttendanceViewModel::class.java)
@@ -70,10 +69,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         setupSearch()
         setupFilterChips()
         swipeRefresh()
-        page = 1
-        isLastPage = false
-        adapter?.submitList(emptyList())
-        getWorkAssignedAll()
+        loadFirstPage()
     }
 
     override fun onDestroyView() {
@@ -136,12 +132,14 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 stopRefreshingData()
-                response.response?.let {
-                    if (it.code == 200) {
-                        handleWorkAssignedSuccess(it.data.results)
-                    } else {
-                        handleErrorResponse(it.code, it.message)
-                    }
+                val body = response.response
+                if (body != null && body.code == 200) {
+                    handleWorkAssignedSuccess(body.data.results)
+                } else {
+                    // Rejected or empty: release the lock so the same page is retried on scroll.
+                    paging.onRequestFailed()
+                    adapter?.removeLoadingFooter()
+                    if (body != null) handleErrorResponse(body.code, body.message)
                 }
             }
             Status.ERROR -> handleError(response.throwable)
@@ -150,22 +148,20 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun handleWorkAssignedSuccess(records: List<Site>) {
+        // null: no page was awaited (e.g. a replayed old result), so there is nothing to apply.
+        val isFirstPage = paging.onPageReceived(records.size) ?: return
         adapter?.removeLoadingFooter() // Always remove loading footer before updating list
-        if (page == 1) {
+        if (isFirstPage) {
             adapter?.submitList(emptyList()) // Clear adapter data on refresh
         }
         if (records.isEmpty()) {
-            isLastPage = true
-            if (page == 1) emptyDataLayout() else adapter?.removeLoadingFooter()
+            if (isFirstPage) emptyDataLayout() else adapter?.removeLoadingFooter()
         } else {
             mainLayout()
-            if (page == 1) {
+            if (isFirstPage) {
                 adapter?.submitList(records)
             } else {
                 adapter?.addData(records)
-            }
-            if (records.size < pageSize) {
-                isLastPage = true
             }
         }
     }
@@ -271,7 +267,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         dismissProgress()
         stopRefreshingData()
         adapter?.removeLoadingFooter()
-        isLoading = false
+        paging.onRequestFailed()
         if (throwable is HttpException && throwable.code() == 401) {
             tokenExpiresAlert()
         } else {
@@ -280,7 +276,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun showLoadingIndicator() {
-        if (page == 1) showProgress() else {
+        if (paging.isLoadingFirstPage) showProgress() else {
             adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
             adapter?.addLoadingFooter()
         }
@@ -292,20 +288,21 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         viewModel.checkInStatusAttendance()
     }
 
-    private fun getWorkAssignedAll() {
-        if (isLoading || isLastPage) return
-        isLoading = true
-        if (page != 1) adapter?.addLoadingFooter()
-        viewModel.getWorkAssignedAll(page, pageSize)
+    private fun loadNextPage() {
+        paging.startNextPage()?.let { fetchPage(it) }
     }
 
-    private fun resetAndFetch() {
-        page = 1
-        isLastPage = false
-        isLoading = false
+    // Start, refresh, search and filter all come here. It supersedes any request still in flight,
+    // and the ViewModel cancels that request, so a slow old answer can never overwrite this one.
+    private fun loadFirstPage() {
         adapter?.removeLoadingFooter()
         adapter?.submitList(emptyList())
-        getWorkAssignedAll()
+        fetchPage(paging.restart())
+    }
+
+    private fun fetchPage(page: Int) {
+        if (page != 1) adapter?.addLoadingFooter()
+        viewModel.getWorkAssignedAll(page, pageSize)
     }
 
     private fun setupSearch() {
@@ -337,7 +334,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 if (viewModel.activeFilter == filter) return@setOnClickListener
                 viewModel.activeFilter = filter
                 updateChipStyles(chips, filter)
-                resetAndFetch()
+                loadFirstPage()
             }
         }
     }
@@ -369,12 +366,11 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
                 if (dy > 0) {
-                    if (!isLoading && !isLastPage) {
+                    if (!paging.isLoading && !paging.isLastPage) {
                         if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                             && firstVisibleItemPosition >= 0
                         ) {
-                            page += 1
-                            getWorkAssignedAll()
+                            loadNextPage()
                         }
                     }
                 }
@@ -409,13 +405,11 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun mainLayout() {
-        isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
         binding.isEmptyAssignedTasks = false
     }
 
     private fun emptyDataLayout() {
-        isLoading = false
         adapter?.removeLoadingFooter() // Hide loading footer
         if (adapter?.count() ?: 0 <= 0) {
             binding.isEmptyAssignedTasks = true
@@ -429,7 +423,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun startRefreshingData() {
-        resetAndFetch()
+        loadFirstPage()
     }
 
     private fun stopRefreshingData() {
