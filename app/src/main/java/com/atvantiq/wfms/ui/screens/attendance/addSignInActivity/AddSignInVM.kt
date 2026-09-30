@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
-import com.atvantiq.wfms.models.activity.ActivityData
+import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.Client
@@ -27,6 +27,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 
 @HiltViewModel
@@ -51,10 +54,9 @@ class AddSignInVM @Inject constructor(
     var circles: List<CircleData> = ArrayList()
     var sites: List<SiteData> = ArrayList()
     var types: List<TypeData> = ArrayList()
-    var activities: List<ActivityData> = ArrayList()
 
     var selectedTypeIdList: ArrayList<TypeData>? = ArrayList()
-    var selectedActivityIdList: ArrayList<Long>? = ArrayList()
+    val activitySelection = TypeActivitySelection()
 
     val isClientLoading = ObservableField<Boolean>().apply { set(false) }
     val isProjectLoading = ObservableField<Boolean>().apply { set(false) }
@@ -80,7 +82,7 @@ class AddSignInVM @Inject constructor(
     var circleListByProjectResponse = MutableLiveData<ApiState<CircleListByProjectResponse>>()
     var siteListByProjectResponse = MutableLiveData<ApiState<SiteListByProjectResponse>>()
     var typeListByProjectResponse = MutableLiveData<ApiState<TypeListByProjectResponse>>()
-    var activityListByProjectTypeResponse = MutableLiveData<ApiState<com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse>>()
+    var typeActivitiesResponse = MutableLiveData<ApiState<List<TypeActivities>>>()
     var workAssignedResponse = MutableLiveData<ApiState<SelfAssignResponse>>()
 
     // API methods using executeApiCall from BaseViewModel
@@ -144,11 +146,50 @@ class AddSignInVM @Inject constructor(
         isTypeLoading.set(true)
     }
 
-    fun getActivityListByPoType(poId: Long, typeId: Long) {
+    /** The (type, type-name) pairs the activity lists are keyed by, in the order the user picked them. */
+    fun selectedTypeKeys(): List<Pair<Long, String>> =
+        selectedTypeIdList.orEmpty().map { it.id to it.name.orEmpty() }
+
+    fun clearTypes() {
+        selectedTypeIdList?.clear()
+        activitySelection.clear()
+    }
+
+    /**
+     * Applies a new type selection: activities picked for types that stay selected are kept, and
+     * activities are fetched for every selected type that has none yet.
+     */
+    fun onTypesSelected(types: Collection<TypeData>) {
+        selectedTypeIdList = ArrayList(types)
+        activitySelection.retainTypes(types.map { it.id }.toSet())
+        loadMissingActivities()
+    }
+
+    /** Fetches the activities of every selected type that has none loaded (also serves as retry). */
+    fun loadMissingActivities() {
+        val poId = selectedPoNumberId ?: return
+        val missing = selectedTypeIdList.orEmpty().filterNot { activitySelection.hasActivities(it.id) }
+        if (missing.isEmpty()) return
+
         executeApiCall(
-            apiCall = { creationRepo.activityListByPoType(poId, typeId) },
-            liveData = activityListByProjectTypeResponse,
-            onSuccess = { isActivityLoading.set(false) },
+            apiCall = {
+                coroutineScope {
+                    missing.map { type ->
+                        async { TypeActivities(type.id, creationRepo.activityListByPoType(poId, type.id)) }
+                    }.awaitAll()
+                }
+            },
+            liveData = typeActivitiesResponse,
+            onSuccess = { results ->
+                // The user may have changed the PO or the types while this was in flight.
+                if (selectedPoNumberId == poId) {
+                    val stillSelected = selectedTypeIdList.orEmpty().map { it.id }.toSet()
+                    results
+                        .filter { it.typeId in stillSelected && it.response.code == 200 }
+                        .forEach { activitySelection.setAvailable(it.typeId, it.response.data) }
+                }
+                isActivityLoading.set(false)
+            },
             onError = { isActivityLoading.set(false) }
         )
         isActivityLoading.set(true)
@@ -181,7 +222,7 @@ class AddSignInVM @Inject constructor(
                 errorHandler.value = AssignTaskError.ON_TYPE_ERROR
                 false
             }
-            selectedActivityIdList.isNullOrEmpty() -> {
+            !activitySelection.coversAll(selectedTypeIdList.orEmpty().map { it.id }) -> {
                 errorHandler.value = AssignTaskError.ON_ACTIVITY_ERROR
                 false
             }
@@ -214,13 +255,12 @@ class AddSignInVM @Inject constructor(
 
             // Type array
             val typeArray = JsonArray()
-            val selectedActivityIds = selectedActivityIdList.orEmpty().toSet()
             for (type in selectedTypeIdList ?: emptyList()) {
                 val typeObj = JsonObject()
                 typeObj.addProperty("id", type.id)
                 // Activity array inside type
                 val activityArray = JsonArray()
-                selectedActivityIds.forEach { activityId ->
+                activitySelection.selectedIds(type.id).forEach { activityId ->
                     val activityObj = JsonObject()
                     activityObj.addProperty("id", activityId)
                     activityArray.add(activityObj)
@@ -242,3 +282,7 @@ class AddSignInVM @Inject constructor(
         isSubmitting.set(false)
     }
 }
+
+
+/** The activity list the server returned for one type. */
+data class TypeActivities(val typeId: Long, val response: ActivityListByProjectTypeResponse)

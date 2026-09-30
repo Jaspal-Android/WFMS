@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityAddSignInBinding
-import com.atvantiq.wfms.models.activity.ActivityData
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.po.PoData
@@ -87,7 +86,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 binding.activitiesEt.error = getString(R.string.select_type)
                 showToast(this, getString(R.string.select_type))
             } else {
-                showActivitySelectionDialog(viewModel.activities)
+                showActivitySelectionDialog(viewModel.activitySelection.options(viewModel.selectedTypeKeys()))
             }
         }
 
@@ -106,8 +105,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         viewModel.selectedPoNumberId = null
         viewModel.selectedCircleId = null
         viewModel.selectedSiteId = null
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
+        viewModel.clearTypes()
         getProjectListByClientId(selectedClient.id)
     }
 
@@ -122,8 +120,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         viewModel.selectedPoNumberId = null
         viewModel.selectedCircleId = null
         viewModel.selectedSiteId = null
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
+        viewModel.clearTypes()
         getPoNumberListByProject(selectedProject.id)
         getCircleListByProject(selectedProject.id)
         getSiteListByProject(selectedProject.id)
@@ -134,8 +131,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         binding.poEt.setText(selectedPo.poNumber)
         binding.typeEt.setText("")
         binding.activitiesEt.setText("")
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
+        viewModel.clearTypes()
         getTypeListByPo(selectedPo.id)
     }
 
@@ -475,28 +471,16 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             }
         }
 
-        vm.activityListByProjectTypeResponse.observe(this) { response ->
+        vm.typeActivitiesResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
                     vm.isActivityLoading.set(false)
-                    when (response.response?.code) {
-                        200 -> {
-                            // Handle success
-                            val activities = response.response?.data ?: emptyList()
-                            viewModel.activities = activities
-                        }
-
-                        401 -> {
+                    val failed = response.response.orEmpty().firstOrNull { it.response.code != 200 }
+                    if (failed != null) {
+                        if (failed.response.code == 401) {
                             tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
+                        } else {
+                            alertDialogShow(this, getString(R.string.alert), failed.response.message)
                         }
                     }
                 }
@@ -732,18 +716,15 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         }
     }
 
-    private fun showActivitySelectionDialog(activities: List<ActivityData>) {
-        if (activities.isNotEmpty()) {
-            val preSelectedActivities = viewModel.selectedActivityIdList?.mapNotNull { id ->
-                activities.find { it.id == id }
-            }?.toSet() ?: emptySet()
-
+    private fun showActivitySelectionDialog(options: List<TypeActivityOption>) {
+        if (options.isNotEmpty()) {
+            val showType = viewModel.selectedTypeKeys().size > 1
             val dialog = MultiSelectBottomSheetDialog(
                 context = this,
-                items = activities,
-                preSelectedItems = preSelectedActivities,
-                bind = { view, activity, isSelected ->
-                    view.findViewById<TextView>(R.id.textView).text = activity.name
+                items = options,
+                preSelectedItems = viewModel.activitySelection.selectedOptions(viewModel.selectedTypeKeys()),
+                bind = { view, option, isSelected ->
+                    view.findViewById<TextView>(R.id.textView).text = option.label(showType)
                     view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
                 onSelectionChanged = { selectedActivities ->
@@ -754,8 +735,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     binding.activitiesEt.error = null
                     updateSelectedActivities(selectedActivities)
                 },
-                filterCondition = { activity, query ->
-                    activity.name.lowercase(Locale.getDefault())
+                filterCondition = { option, query ->
+                    option.label(showType).lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
                 },
                 title = getString(R.string.select_activities)
@@ -768,34 +749,29 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 getString(R.string.no_activities_available),
                 getString(R.string.retry),
                 okLister = DialogInterface.OnClickListener { _, _ ->
-                    getActivityListByPoType(
-                        viewModel.selectedPoNumberId ?: 0L,
-                        viewModel.selectedTypeIdList?.firstOrNull()?.id ?: 0L
-                    )
+                    viewModel.loadMissingActivities()
                 },
             )
         }
     }
 
     private fun updateSelectedTypes(selectedTypes: Set<TypeData>) {
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedTypeIdList?.addAll(selectedTypes)
-        viewModel.selectedActivityIdList?.clear()
-        binding.activitiesEt.setText("")
+        viewModel.onTypesSelected(selectedTypes)
         binding.typeEt.setText(selectedTypes.joinToString(", ") { it.name.toString() })
-        val firstTypeId = selectedTypes.firstOrNull()?.id
-        if (firstTypeId != null) {
-            getActivityListByPoType(viewModel.selectedPoNumberId ?: 0L, firstTypeId)
-        } else {
-            viewModel.activities = emptyList()
-        }
+        showSelectedActivities()
     }
 
+    private fun updateSelectedActivities(selectedActivities: Set<TypeActivityOption>) {
+        viewModel.activitySelection.select(selectedActivities)
+        showSelectedActivities()
+    }
 
-    private fun updateSelectedActivities(selectedActivities: Set<ActivityData>) {
-        viewModel.selectedActivityIdList?.clear()
-        viewModel.selectedActivityIdList?.addAll(selectedActivities.map { it.id })
-        binding.activitiesEt.setText(selectedActivities.joinToString(", ") { it.name })
+    private fun showSelectedActivities() {
+        val typeKeys = viewModel.selectedTypeKeys()
+        val showType = typeKeys.size > 1
+        binding.activitiesEt.setText(
+            viewModel.activitySelection.selectedOptions(typeKeys).joinToString(", ") { it.label(showType) }
+        )
     }
 
     private fun getClientList() {
@@ -836,12 +812,5 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     * */
     private fun getTypeListByPo(poId: Long) {
         viewModel.getTypeListByPo(poId)
-    }
-
-    /*
-    * Get Activity list by project id and type id
-    * */
-    private fun getActivityListByPoType(poId: Long, typeId: Long) {
-        viewModel.getActivityListByPoType(poId, typeId)
     }
 }
