@@ -54,6 +54,8 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private var isDayStarted = false
     private var attendanceActionInFlight = false
     private var backgroundLocationPrompted = false
+    // Tracking permission is asked automatically on resume while checked in; ask once per screen.
+    private var trackingPermissionPrompted = false
     private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -442,7 +444,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                         manageDayStartEnd()
                     } else {
                         binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                        Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+                        Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
                             permissionLauncher.launch(
                                 PermissionUtils.LOCATION_PERMISSIONS + PermissionUtils.notificationPermissions()
                             )
@@ -505,12 +507,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         startActivity(intent)
     }
 
+    // Play's Prominent Disclosure policy: the system prompt is only ever shown right after the
+    // in-app disclosure, never on its own.
     private fun checkPermissionForLiveLocation() {
         val permissions = PermissionUtils.LOCATION_PERMISSIONS
         when {
             hasAllPermissions(permissions) -> startTrackingAndAskForBackground()
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> permissionLauncherLocationTracking.launch(permissions + PermissionUtils.notificationPermissions())
+            trackingPermissionPrompted -> Unit
+            else -> {
+                trackingPermissionPrompted = true
+                Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
+                    permissionLauncherLocationTracking.launch(permissions + PermissionUtils.notificationPermissions())
+                }
+            }
         }
     }
 
@@ -565,10 +574,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (PermissionUtils.areGranted(permissions, PermissionUtils.LOCATION_PERMISSIONS)) {
-            manageDayStartEnd()
-        } else {
-            showPermissionDeniedPermanently()
+        when {
+            PermissionUtils.areGranted(permissions, PermissionUtils.LOCATION_PERMISSIONS) -> manageDayStartEnd()
+            PermissionUtils.LOCATION_PERMISSIONS.none { shouldShowRequestPermissionRationale(it) } -> showPermissionDeniedPermanently()
+            else -> showPermissionRationale()
         }
     }
 

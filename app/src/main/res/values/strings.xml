@@ -298,33 +298,15 @@
     <string name="started">Started</string>
     <string name="absent_system_generated">Absent (System Generated)</string>
     <string name="incomplete_attendance">Incomplete</string>
-    <string name="background_location_usage">Location Access for Attendance &amp; Travel Tracking</string>
-    <string name="background_location_usage_msg">This app collects location data, including background location, to support:\n\n
-        • Live location tracking during work hours for daily attendance\n
-        • Verifying start and end site locations to ensure site visits\n
-        • Calculating travel distance for reimbursement claims\n
-        • Allowing employees to share their current location with the office\n
-        • Enforcing attendance only when you are within 500 meters of the office\n\n
-        Location tracking may continue even when the app is closed or not in use during active work sessions.\n
-        Location data is used only for official work purposes and is not shared with third parties.</string>
+    <string name="attendance_location_disclosure_title">Location Use for Attendance</string>
+    <string name="attendance_location_disclosure_msg">ONAQT collects your device location to:\n\n• Mark your attendance when you start and end your day, within 500 meters of your office\n• Track your location during work hours while your day is active\n• Verify start and end site locations for site visits\n• Calculate travel distance for reimbursement claims\n\nLocation data is used only for official work purposes and is not shared with third parties.</string>
+    <string name="background_location_usage">Allow Background Location</string>
+    <string name="background_location_usage_msg">ONAQT collects location data to enable attendance tracking, site visit verification and travel distance for reimbursement claims, even when the app is closed or not in use.\n\nBackground location is collected only while your workday is active and stops when you end your day. Location data is used only for official work purposes and is not shared with third parties.\n\nOn the next screen, select \"Allow all the time\".</string>
     <string name="allow_and_continue">Allow &amp; Continue</string>
     <string name="location_permission_needed">Location Permission Needed</string>
-    <string name="start_end_work_location_permission_msg">We use your location to record Start Work and End Work activities.\n
-        • Your location is captured only when you tap Start or End Work to:\n\n
-        • Verify that you have reached the assigned work site\n
-        • Record accurate attendance time\n
-        • Calculate travel distance for reimbursement\n
-        • Your location is not tracked continuously and is not collected when the app is closed.</string>
+    <string name="start_end_work_location_permission_msg">ONAQT uses your location when you tap Start Work or End Work to:\n\n• Verify that you have reached the assigned work site\n• Record accurate work start and end times\n• Calculate travel distance for reimbursement claims\n\nLocation data is used only for official work purposes and is not shared with third parties.</string>
     <string name="share_current_location">Share Current Location</string>
-    <string name="share_location_msg">
-        We use your current location to help your organization set the office location during account creation.\n
-        This location will be shared with your organization to:\n\n
-        • Save the official office address\n
-        • Enable attendance marking within a 500-meter range of the office.\n
-        • Your location is captured only when you tap “Get Current Location”.\n
-        • We do not track your location continuously and do not collect it in the background.\n
-        • Ensure your safety while on field assignments\n
-        </string>
+    <string name="share_location_msg">ONAQT uses your current location, when you choose to share it, to:\n\n• Show your current coordinates and address\n• Help your organization save your official office location\n• Allow attendance marking within 500 meters of the office\n\nLocation data is used only for official work purposes and is not shared with third parties.</string>
 
     <string name="select_type_to_end_work">Select type to end the work</string>
     <string name="no_claims_found">No claims found</string>
