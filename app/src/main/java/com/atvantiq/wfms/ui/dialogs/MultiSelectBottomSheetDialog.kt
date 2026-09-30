@@ -1,7 +1,6 @@
 package com.atvantiq.wfms.ui.dialogs
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,20 +18,41 @@ import com.atvantiq.wfms.widgets.BaseBottomSheet
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class MultiSelectBottomSheetDialog<T>(
-    private val context: Context,
-    private val items: List<T>,
-    private val preSelectedItems: Set<T>,
-    private val bind: (View, T, Boolean) -> Unit,
-    private val onSelectionChanged: (Set<T>) -> Unit,
-    private val onSubmit: (Set<T>) -> Unit,
-    private val filterCondition: (T, String) -> Boolean ,
-    private val title: String? = null// Filter condition for search
-) : BaseBottomSheet() {
+class MultiSelectBottomSheetDialog<T>() : BaseBottomSheet() {
+
+    // Items and callbacks are wired by the host through the secondary constructor. The no-arg
+    // constructor lets the FragmentManager re-instantiate this sheet on restore (process death,
+    // recreate() on a theme change) without an InstantiationException; a sheet that comes back
+    // unwired dismisses itself instead of showing a dead list.
+    private var items: List<T> = emptyList()
+    private var bind: ((View, T, Boolean) -> Unit)? = null
+    private var onSelectionChanged: ((Set<T>) -> Unit)? = null
+    private var onSubmit: ((Set<T>) -> Unit)? = null
+    private var filterCondition: ((T, String) -> Boolean)? = null
+    private var title: String? = null
 
     private lateinit var binding: DialogMultiSelectBottomSheetBinding
-    private val selectedItems = mutableSetOf<T>().apply { addAll(preSelectedItems) } // Initialize with pre-selected items
-    private var filteredItems = items.toMutableList() // List to hold filtered items
+    private val selectedItems = mutableSetOf<T>()
+    private val filteredItems = mutableListOf<T>() // List to hold filtered items
+
+    constructor(
+        items: List<T>,
+        preSelectedItems: Set<T>,
+        bind: (View, T, Boolean) -> Unit,
+        onSelectionChanged: (Set<T>) -> Unit,
+        onSubmit: (Set<T>) -> Unit,
+        filterCondition: (T, String) -> Boolean,
+        title: String? = null
+    ) : this() {
+        this.items = items
+        this.bind = bind
+        this.onSelectionChanged = onSelectionChanged
+        this.onSubmit = onSubmit
+        this.filterCondition = filterCondition
+        this.title = title
+        selectedItems.addAll(preSelectedItems)
+        filteredItems.addAll(items)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +65,16 @@ class MultiSelectBottomSheetDialog<T>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bind = bind
+        val onSelectionChanged = onSelectionChanged
+        val onSubmit = onSubmit
+        val filterCondition = filterCondition
+        if (bind == null || onSelectionChanged == null || onSubmit == null || filterCondition == null) {
+            dismissAllowingStateLoss()
+            return
+        }
+
         if (!title.isNullOrEmpty()) {
             binding.titleTextView.visibility = View.VISIBLE
             binding.titleTextView.text = title
@@ -52,7 +82,7 @@ class MultiSelectBottomSheetDialog<T>(
             binding.titleTextView.visibility = View.GONE
         }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -116,6 +146,9 @@ class MultiSelectBottomSheetDialog<T>(
                 bind: (View, T, Boolean) -> Unit,
                 onCheckedChange: (Boolean) -> Unit
             ) {
+                // A recycled holder still carries the previous item's listener. Detach it before
+                // touching the checkbox, otherwise binding this row toggles the previous item.
+                checkBox.setOnCheckedChangeListener(null)
                 bind(itemView, item, isSelected)
                 checkBox.isChecked = isSelected
                 checkBox.setOnCheckedChangeListener { _, isChecked ->

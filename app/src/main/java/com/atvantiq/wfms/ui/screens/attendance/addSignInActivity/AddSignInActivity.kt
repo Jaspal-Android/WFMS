@@ -707,17 +707,15 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             }?.toSet() ?: emptySet()
 
             val dialog = MultiSelectBottomSheetDialog(
-                context = this,
                 items = types,
                 preSelectedItems = preSelectedTypes,
                 bind = { view, type, isSelected ->
                     view.findViewById<TextView>(R.id.textView).text = type.name
                     view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
-                onSelectionChanged = { selectedTypes ->
-                    binding.typeEt.error = null
-                    updateSelectedTypes(selectedTypes)
-                },
+                // Applying the selection clears the chosen activities and reloads them from the
+                // server, so it happens once on submit rather than for every checkbox tick.
+                onSelectionChanged = { binding.typeEt.error = null },
                 onSubmit = { selectedTypes ->
                     binding.typeEt.error = null
                     updateSelectedTypes(selectedTypes)
@@ -739,7 +737,6 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             }?.toSet() ?: emptySet()
 
             val dialog = MultiSelectBottomSheetDialog(
-                context = this,
                 items = activities,
                 preSelectedItems = preSelectedActivities,
                 bind = { view, activity, isSelected ->

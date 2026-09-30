@@ -65,6 +65,11 @@ class StartWorkBottomSheet : BottomSheetDialogFragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		// After a restore the host callback is gone; Done would silently do nothing.
+		if (onImageSelected == null) {
+			dismissAllowingStateLoss()
+			return
+		}
 		setImagePicker()
 		setLocationLatLon()
 		initListeners()

@@ -205,8 +205,7 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
     }
 
     private fun leaveApplyBottomSheet() {
-        var simpleBottomSheetDialog = SimpleBottomSheetDialog(
-            this,
+        val simpleBottomSheetDialog = SimpleBottomSheetDialog(
             leaveTypeList(),
             R.layout.item_generic_adapter,
             { view, item ->

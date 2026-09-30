@@ -235,7 +235,6 @@ abstract class BaseActivitySimple : AppCompatActivity() {
     ) {
         if (items.isNotEmpty()) {
             val dialog = GenericBottomSheetDialog(
-                context = this,
                 items = items,
                 layoutResId = layoutResId,
                 bind = bind,

@@ -10,10 +10,13 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingBottomSheetFragment
 import com.atvantiq.wfms.databinding.BottomSheetDialogGetOtpBinding
 
-class GetOTPBottomSheetDialog(
-    var onSubmitOTP: (otp: String) -> Unit,
+class GetOTPBottomSheetDialog : BaseBindingBottomSheetFragment<BottomSheetDialogGetOtpBinding>() {
+
+    // Callbacks are wired by the host after construction. The no-arg constructor lets the
+    // FragmentManager re-instantiate this sheet on restore (process death, recreate() on a theme
+    // change) without an InstantiationException; an unwired sheet dismisses itself.
+    var onSubmitOTP: ((otp: String) -> Unit)? = null
     var onResendOTP: (() -> Unit)? = null
-) : BaseBindingBottomSheetFragment<BottomSheetDialogGetOtpBinding>() {
 
     private var otpCode: String = ""
 
@@ -25,6 +28,10 @@ class GetOTPBottomSheetDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (onSubmitOTP == null) {
+            dismissAllowingStateLoss()
+            return
+        }
         if (savedInstanceState == null) {
             clearOtpInputs()
         }
@@ -134,7 +141,7 @@ class GetOTPBottomSheetDialog(
                 // Hide keyboard
                 val imm = context?.getSystemService(InputMethodManager::class.java)
                 imm?.hideSoftInputFromWindow(binding.btnSubmit.windowToken, 0)
-                onSubmitOTP.invoke(otpCode)
+                onSubmitOTP?.invoke(otpCode)
             }
         }
         binding.resendOtpText.setOnClickListener { onResendOTP?.invoke() }
