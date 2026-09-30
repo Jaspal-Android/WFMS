@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -33,6 +32,7 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceCommunic
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceStatusFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets.MyTargetsFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashboardFragment
+import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -52,6 +52,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private var isDayStarted = false
     private var attendanceActionInFlight = false
+    private var backgroundLocationPrompted = false
     private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -119,57 +120,54 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
         }
 
+        // Attendance results are consumed once instead of being gated on RESUMED: a result that
+        // lands while the screen is only STARTED (e.g. behind a permission dialog) must still be
+        // handled, otherwise tracking keeps running after checkout and the slider stays locked.
         vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> handleCheckInResponse(response.response)
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> showProgress()
-                }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckInResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
         }
 
         vm.attendanceCheckOutResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> handleCheckOutResponse(response.response)
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> showProgress()
-                }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckOutResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()){
-                when (response.status) {
-                    Status.SUCCESS -> handleCheckInStatusResponse(response.response)
-                    Status.ERROR -> handleCheckInStatusError(response.response?.message,response.throwable)
-                    Status.LOADING -> {
-                        showProgress()
-                    }
-                }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckInStatusResponse(response.response)
+                Status.ERROR -> handleCheckInStatusError(response.response?.message,response.throwable)
+                Status.LOADING -> showProgress()
             }
         }
 
         vm.attendanceRemarksResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> {
-                        dismissProgress()
-                        if (response.response?.code == ValConstants.SUCCESS_CODE) {
-                            val location = pendingCheckoutLocation
-                            if (location != null) {
-                                attendanceActionInFlight = true
-                                viewModel.checkOutAttendance(location.first, location.second, true)
-                            } else {
-                                checkInAttendanceStatus()
-                            }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> {
+                    dismissProgress()
+                    if (response.response?.code == ValConstants.SUCCESS_CODE) {
+                        val location = pendingCheckoutLocation
+                        if (location != null) {
+                            attendanceActionInFlight = true
+                            viewModel.checkOutAttendance(location.first, location.second, true)
+                        } else {
+                            checkInAttendanceStatus()
                         }
-                        showToast(requireContext(), response.response?.message ?: getString(R.string.something_went_wrong))
                     }
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> showProgress()
+                    showToast(requireContext(), response.response?.message ?: getString(R.string.something_went_wrong))
                 }
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
         }
     }
@@ -437,20 +435,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                         binding.appDashHeader.slideStartDay.setCompleted(false, true)
                         return
                     }
-                    val permissions = getRequiredPermissions()
-                    when {
-                        hasAllPermissions(permissions) -> manageDayStartEnd()
-                        permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                            binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
-                                permissionLauncher.launch(permissions)
-                            }
-                        }
-                        else -> {
-                            binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
-                                permissionLauncher.launch(permissions)
-                            }
+                    if (hasAllPermissions(PermissionUtils.LOCATION_PERMISSIONS)) {
+                        manageDayStartEnd()
+                    } else {
+                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                        Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+                            permissionLauncher.launch(
+                                PermissionUtils.LOCATION_PERMISSIONS + PermissionUtils.notificationPermissions()
+                            )
                         }
                     }
                 }
@@ -491,11 +483,17 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {
-            permissions.all { it.value } -> viewModel.startTracking()
+            PermissionUtils.areGranted(permissions, PermissionUtils.LOCATION_PERMISSIONS) -> startTrackingAndAskForBackground()
             !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
             else -> showPermissionRationale()
         }
     }
+
+    // Tracking already runs as a while-in-use foreground service, so declining background access
+    // must not undo it; the result is intentionally ignored.
+    private val permissionLauncherBackgroundLocation = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
 
 
     private fun openApplicationSettings() {
@@ -505,11 +503,26 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     private fun checkPermissionForLiveLocation() {
-        val permissions = getRequiredPermissions()
+        val permissions = PermissionUtils.LOCATION_PERMISSIONS
         when {
-            hasAllPermissions(permissions) -> viewModel.startTracking()
+            hasAllPermissions(permissions) -> startTrackingAndAskForBackground()
             permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> permissionLauncherLocationTracking.launch(permissions)
+            else -> permissionLauncherLocationTracking.launch(permissions + PermissionUtils.notificationPermissions())
+        }
+    }
+
+    private fun startTrackingAndAskForBackground() {
+        viewModel.startTracking()
+        requestBackgroundLocationIfNeeded()
+    }
+
+    // Android 11+ ignores background location when it is requested together with foreground
+    // location, so it is asked for separately, once per screen, after the disclosure.
+    private fun requestBackgroundLocationIfNeeded() {
+        if (backgroundLocationPrompted || PermissionUtils.hasBackgroundLocationPermission(requireContext())) return
+        backgroundLocationPrompted = true
+        Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+            permissionLauncherBackgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
     }
 
@@ -518,18 +531,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
-        return list.toTypedArray()
-    }
-
-    private fun getRequiredPermissions(): Array<String> {
-        val list = getForegroundRequiredPermissions().toMutableList()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            list.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            list.add(Manifest.permission.POST_NOTIFICATIONS)
-        }
         return list.toTypedArray()
     }
 
@@ -543,7 +544,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             .setTitle(R.string.permission_required)
             .setMessage(R.string.location_permission_rationale)
             .setPositiveButton(R.string.retry) { _, _ ->
-                //permissionLauncherLocationTracking.launch(getRequiredPermissions())
                 openApplicationSettings()
             }
             .setNegativeButton(R.string.cancel, null)
@@ -562,10 +562,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        when {
-            permissions.all { it.value } -> manageDayStartEnd()
-            permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
-            else -> showPermissionDeniedPermanently()
+        if (PermissionUtils.areGranted(permissions, PermissionUtils.LOCATION_PERMISSIONS)) {
+            manageDayStartEnd()
+        } else {
+            showPermissionDeniedPermanently()
         }
     }
 

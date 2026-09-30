@@ -9,6 +9,7 @@ import android.net.NetworkInfo
 import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
@@ -87,6 +88,96 @@ class DashboardViewModelTest {
         viewModel.startTracking()
         viewModel.stopTracking()
         assertEquals(false, viewModel.isTracking.value)
+    }
+
+    // --- Tracking must end with the attendance day, independent of any visible screen ---
+
+    private fun statusResponse(code: Int, checkedIn: Boolean) = CheckInStatusResponse(
+        code = code,
+        message = "",
+        data = Data(
+            checkedIn = checkedIn,
+            checkedOut = code == 400,
+            checkinTime = "",
+            checkoutTime = "",
+            attendanceId = 1L
+        ),
+        success = code == 200
+    )
+
+    private fun checkOutResponse(code: Int) = CheckInOutResponse(
+        code = code,
+        message = "",
+        success = code == 200,
+        data = CheckoutData(attendanceId = 1L, dayProgress = false)
+    )
+
+    @Test
+    fun `successful checkout stops tracking even when no screen observes the response`() = runTest {
+        coEvery { attendanceRepo.attendanceCheckOutRequest(any()) } returns checkOutResponse(200)
+        viewModel.startTracking()
+
+        viewModel.checkOutAttendance(12.34, 56.78, true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(false, viewModel.isTracking.value)
+        verify { prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false) }
+    }
+
+    @Test
+    fun `checkout blocked by no work for the day keeps tracking running`() = runTest {
+        coEvery { attendanceRepo.attendanceCheckOutRequest(any()) } returns checkOutResponse(3001)
+        viewModel.startTracking()
+
+        viewModel.checkOutAttendance(12.34, 56.78, true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(true, viewModel.isTracking.value)
+        verify(exactly = 0) { prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false) }
+    }
+
+    @Test
+    fun `status not checked in stops tracking that is still marked active`() = runTest {
+        every { prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false) } returns true
+        coEvery { attendanceRepo.attendanceCheckInStatus() } returns statusResponse(200, checkedIn = false)
+
+        viewModel.checkInStatusAttendance()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(exactly = 1) { prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false) }
+    }
+
+    @Test
+    fun `status attendance already completed stops tracking that is still marked active`() = runTest {
+        every { prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false) } returns true
+        coEvery { attendanceRepo.attendanceCheckInStatus() } returns statusResponse(400, checkedIn = true)
+
+        viewModel.checkInStatusAttendance()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(exactly = 1) { prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false) }
+    }
+
+    @Test
+    fun `status checked in leaves tracking untouched`() = runTest {
+        every { prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false) } returns true
+        coEvery { attendanceRepo.attendanceCheckInStatus() } returns statusResponse(200, checkedIn = true)
+
+        viewModel.checkInStatusAttendance()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(exactly = 0) { prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false) }
+    }
+
+    @Test
+    fun `status not checked in does not rewrite prefs when tracking is already off`() = runTest {
+        every { prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false) } returns false
+        coEvery { attendanceRepo.attendanceCheckInStatus() } returns statusResponse(200, checkedIn = false)
+
+        viewModel.checkInStatusAttendance()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(exactly = 0) { prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, any<Boolean>()) }
     }
 
     @Test
