@@ -7,12 +7,15 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -44,6 +47,13 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     var long: Double = 0.0
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var getOtpBottomSheet: GetOTPBottomSheetDialog? = null
+
+    // Push-token registration is best-effort: once the session is saved, login must finish
+    // whether or not the token could be fetched or uploaded.
+    private var loginCompleted = false
+    private var loginCompletionPending = false
+    private val notificationTokenHandler = Handler(Looper.getMainLooper())
+    private val notificationTokenTimeout = Runnable { completeLogin() }
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_login, LoginVM::class.java)
@@ -117,56 +127,79 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
 
     private fun handleSendNotificationTokenResponse(response: ApiState<UpdateNotificationTokenResponse>) {
         when (response.status) {
-            Status.SUCCESS -> {
-                dismissProgress()
-                showToast(this, getString(R.string.login_success))
-                navigateToDashboard()
-            }
+            Status.SUCCESS -> completeLogin()
 
-            Status.LOADING -> {
-                showProgress()
-            }
+            Status.LOADING -> Unit
 
             Status.ERROR -> {
-                dismissProgress()
-                alertDialogShow(
-                    this,
-                    getString(R.string.alert),
-                    response.throwable?.message.orEmpty()
-                )
+                Log.w("FCM", "Uploading FCM registration token failed", response.throwable)
+                completeLogin()
             }
         }
     }
 
     private fun handleLoginSuccess(response: ApiState<LoginResponse>) {
+        if (loginCompleted) return
+        val loginResponse = response.response
+        if (loginResponse != null && loginResponse.code == 200 && loginResponse.success) {
+            PrefMethods.saveUserToken(prefMain, loginResponse.data?.accessToken.orEmpty())
+            PrefMethods.saveUserData(prefMain, loginResponse.data?.user)
+            getOtpBottomSheet?.dismiss()
+            getOtpBottomSheet = null
+            val user = loginResponse.data?.user
+            viewModel.user = user
+            // The progress dialog stays up while the push token registers.
+            registerNotificationToken(user?.userId.toString())
+            return
+        }
         dismissProgress()
-        response.response?.let {
-            if (it.code == 200 && it.success) {
-                PrefMethods.saveUserToken(prefMain, it.data?.accessToken.orEmpty())
-                PrefMethods.saveUserData(prefMain, it.data?.user)
-                getOtpBottomSheet?.dismiss()
-                getOtpBottomSheet = null
-                val user = it.data?.user
-                viewModel.user = user
-                FirebaseMessaging.getInstance().token
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val token = task.result
-                            viewModel.sendNotificationToken(user?.userId.toString(), token)
-                        } else {
-                            Log.w("FCM", "Fetching FCM registration token failed", task.exception)
-                        }
-                    }
-            } else {
-                alertDialogShow(
-                    this,
-                    getString(R.string.alert),
-                    it.message.orEmpty()
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                }
+        loginResponse?.let {
+            alertDialogShow(
+                this,
+                getString(R.string.alert),
+                it.message.orEmpty()
+            ) { dialog, _ ->
+                dialog.dismiss()
             }
         }
+    }
+
+    private fun registerNotificationToken(userId: String) {
+        notificationTokenHandler.postDelayed(notificationTokenTimeout, NOTIFICATION_TOKEN_TIMEOUT_MS)
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    viewModel.sendNotificationToken(userId, task.result)
+                } else {
+                    Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                    completeLogin()
+                }
+            }
+    }
+
+    private fun completeLogin() {
+        if (loginCompleted || isFinishing || isDestroyed) return
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            // Starting an activity from the background is blocked; finish when we are visible again.
+            loginCompletionPending = true
+            return
+        }
+        loginCompleted = true
+        loginCompletionPending = false
+        notificationTokenHandler.removeCallbacks(notificationTokenTimeout)
+        dismissProgress()
+        showToast(this, getString(R.string.login_success))
+        navigateToDashboard()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (loginCompletionPending) completeLogin()
+    }
+
+    override fun onDestroy() {
+        notificationTokenHandler.removeCallbacks(notificationTokenTimeout)
+        super.onDestroy()
     }
 
     private fun handleRequestOtpResponse(response: ApiState<RequestOtpResponse>) {
@@ -394,6 +427,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = android.net.Uri.fromParts("package", this.packageName, null)
         startActivity(intent)
+    }
+
+    private companion object {
+        const val NOTIFICATION_TOKEN_TIMEOUT_MS = 10_000L
     }
 
     private fun requestOtp() {

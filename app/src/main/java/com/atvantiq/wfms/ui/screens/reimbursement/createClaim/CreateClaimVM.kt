@@ -391,9 +391,20 @@ class CreateClaimVM @Inject constructor(
                 else claimRepo.createClaim(dataPart, files = fileParts)
             },
             liveData = createClaimResponse,
-            onSuccess = { isSubmitting.set(false) },
+            onSuccess = { onSubmitResponse(it.code) },
             onError = { isSubmitting.set(false) }
         )
+    }
+
+    /** True when the server accepted the claim: created (201), or updated (200) in edit mode. */
+    fun isClaimSaved(code: Int?): Boolean =
+        code == ValConstants.SUCCESS_CREATION_CODE ||
+            (isEditMode.get() == true && code == ValConstants.SUCCESS_CODE)
+
+    // Once the claim is saved Submit stays locked. Releasing it on every response would let a
+    // dismissed success dialog re-send the same claim and create a duplicate.
+    fun onSubmitResponse(code: Int?) {
+        if (!isClaimSaved(code)) isSubmitting.set(false)
     }
 
     /**

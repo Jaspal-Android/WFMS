@@ -65,7 +65,7 @@ class LoginVM @Inject constructor(
     private fun loginRequest() {
         val params = JsonObject().apply {
             addProperty("email", userName.value.orEmpty().trim())
-            addProperty("password", password.value.orEmpty().trim())
+            addProperty("password", password.value.orEmpty())
         }
         isButtonEnabled.value = false
         executeApiCall(

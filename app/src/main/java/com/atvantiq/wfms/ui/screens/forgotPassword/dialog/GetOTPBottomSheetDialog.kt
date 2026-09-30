@@ -6,7 +6,6 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingBottomSheetFragment
 import com.atvantiq.wfms.databinding.BottomSheetDialogGetOtpBinding
@@ -136,7 +135,6 @@ class GetOTPBottomSheetDialog(
                 val imm = context?.getSystemService(InputMethodManager::class.java)
                 imm?.hideSoftInputFromWindow(binding.btnSubmit.windowToken, 0)
                 onSubmitOTP.invoke(otpCode)
-                Toast.makeText(context, otpCode, Toast.LENGTH_SHORT).show()
             }
         }
         binding.resendOtpText.setOnClickListener { onResendOTP?.invoke() }
