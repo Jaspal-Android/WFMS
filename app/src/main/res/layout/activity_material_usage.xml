@@ -41,6 +41,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        android:importantForAccessibility="no"
                         app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                     <EditText
@@ -76,6 +77,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="?attr/wfmsColorOnSurfaceVariant"
+                        android:contentDescription="@string/clear_search"
                         tools:visibility="visible" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -179,6 +181,7 @@
                     android:layout_height="wrap_content"
                     android:alpha="0.7"
                     android:src="@drawable/ic_warning"
+                    android:importantForAccessibility="no"
                     app:tint="?attr/wfmsColorError" />
 
                 <TextView

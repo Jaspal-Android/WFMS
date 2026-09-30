@@ -47,7 +47,7 @@
                 android:src="@drawable/arrow_back_ios_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/wfmsColorPrimary" />
+                app:tint="?attr/wfmsColorAccent" />
 
             <TextView
                 android:id="@+id/tvBack"
@@ -230,7 +230,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small_extra"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:buttonTint="?attr/wfmsColorPrimary"
+                    android:buttonTint="?attr/wfmsColorAccent"
                     android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvWorkTitle" />

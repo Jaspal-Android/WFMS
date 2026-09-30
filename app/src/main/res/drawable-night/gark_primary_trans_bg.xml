@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark mode: the translucent light-blue chip is unreadable behind accent-colored content -->
+<shape android:shape="rectangle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="?attr/wfmsColorSurfaceVariant"></solid>
+    <corners
+        android:topLeftRadius="@dimen/card_radius_small"
+        android:topRightRadius="@dimen/card_radius_small"
+        android:bottomLeftRadius="@dimen/card_radius_small"
+        android:bottomRightRadius="@dimen/card_radius_small"></corners>
+</shape>

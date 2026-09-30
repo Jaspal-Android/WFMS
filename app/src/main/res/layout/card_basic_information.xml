@@ -25,6 +25,7 @@
                 android:src="@drawable/ic_file_text"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:importantForAccessibility="no"
                 app:tint="?attr/colorPrimaryDark" />
 
             <TextView

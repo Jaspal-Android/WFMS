@@ -479,4 +479,27 @@
     <string name="filter_active">Active</string>
     <string name="filter_completed">Completed</string>
 
+
+    <!-- Accessibility: content descriptions for icon-only controls and informative images -->
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="clear_search">Clear search</string>
+    <string name="refresh">Refresh</string>
+    <string name="take_photo">Take photo</string>
+    <string name="remove_entry">Remove entry</string>
+    <string name="remove_attachment">Remove attachment</string>
+    <string name="receipt_attached">Receipt attached</string>
+    <string name="photo_preview">Selected photo preview</string>
+    <string name="toggle_password_visibility">Show or hide password</string>
+
+    <!-- Accessibility: attendance calendar, OTP entry -->
+    <string name="calendar_day_description">%1$s: %2$s</string>
+    <string name="holiday">Holiday</string>
+    <string name="status_not_marked">Not marked</string>
+    <string name="otp_digit_1">OTP digit 1 of 6</string>
+    <string name="otp_digit_2">OTP digit 2 of 6</string>
+    <string name="otp_digit_3">OTP digit 3 of 6</string>
+    <string name="otp_digit_4">OTP digit 4 of 6</string>
+    <string name="otp_digit_5">OTP digit 5 of 6</string>
+    <string name="otp_digit_6">OTP digit 6 of 6</string>
 </resources>

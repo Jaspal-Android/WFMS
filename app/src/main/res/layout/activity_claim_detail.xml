@@ -201,7 +201,7 @@
                             android:src="@drawable/ic_marker_on_24"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="?attr/wfmsColorPrimary" />
+                            app:tint="?attr/wfmsColorAccent" />
 
                         <!-- Sites & Expenses title -->
                         <TextView

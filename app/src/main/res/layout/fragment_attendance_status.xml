@@ -62,7 +62,7 @@
                             android:indeterminate="true"
                             android:backgroundTint="@android:color/transparent"
                             android:visibility="@{showCalendarProgressBar ? View.VISIBLE : View.GONE}"
-                            android:indeterminateTint="?attr/wfmsColorPrimary" />
+                            android:indeterminateTint="?attr/wfmsColorAccent" />
 
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
@@ -663,7 +663,7 @@
 
                         <ProgressBar
                             android:indeterminate="true"
-                            android:indeterminateTint="?attr/wfmsColorPrimary"
+                            android:indeterminateTint="?attr/wfmsColorAccent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

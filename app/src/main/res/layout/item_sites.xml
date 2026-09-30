@@ -99,7 +99,7 @@
                             android:paddingHorizontal="@dimen/padding_small"
                             android:paddingVertical="2dp"
                             android:text="@{itemSiteData.siteId}"
-                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textColor="?attr/wfmsColorAccent"
                             android:textStyle="bold"
                             tools:text="JIOPB003" />
                     </LinearLayout>

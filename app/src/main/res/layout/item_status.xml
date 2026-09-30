@@ -15,7 +15,7 @@
 
         <!-- FIX: buttonTint → wfmsColorPrimary -->
         <CheckBox
-            app:buttonTint="?attr/wfmsColorPrimary"
+            app:buttonTint="?attr/wfmsColorAccent"
             android:id="@+id/statusCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

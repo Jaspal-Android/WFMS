@@ -35,7 +35,7 @@
                     android:paddingTop="6dp"
                     android:paddingEnd="@dimen/padding_medium"
                     android:paddingBottom="6dp"
-                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textColor="?attr/wfmsColorAccent"
                     android:textSize="@dimen/default_medium_small_text"
                     android:textStyle="bold"
                     tools:text="May 2026" />
@@ -49,7 +49,8 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="6dp"
                     android:src="@drawable/ic_refresh_24"
-                    app:tint="?attr/wfmsColorPrimary" />
+                    android:contentDescription="@string/refresh"
+                    app:tint="?attr/wfmsColorAccent" />
 
             </RelativeLayout>
 

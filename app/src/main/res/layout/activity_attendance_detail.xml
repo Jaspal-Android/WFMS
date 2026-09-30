@@ -90,7 +90,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin_small_extra"
                                 android:contentDescription="@string/working_hours"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textSize="36sp"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"

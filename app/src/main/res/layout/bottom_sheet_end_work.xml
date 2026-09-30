@@ -27,6 +27,7 @@
             android:background="@drawable/ic_pull"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:importantForAccessibility="no"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- ── Title — FIX: CustomLargeDarkTextView + wrong string ── -->
@@ -74,7 +75,8 @@
                 android:src="@drawable/ic_marker_on_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/wfmsColorPrimary" />
+                android:importantForAccessibility="no"
+                app:tint="?attr/wfmsColorAccent" />
 
             <TextView
                 android:id="@+id/tvWorkLocationLabel"

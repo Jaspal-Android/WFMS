@@ -12,6 +12,7 @@
         <item name="wfmsColorPrimary">@color/forest_primary</item>
         <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorAccent">@color/forest_primary</item>
         <item name="wfmsColorCta">@color/forest_cta</item>
         <item name="wfmsColorBackground">@color/forest_bg</item>
         <item name="wfmsColorSurface">@color/forest_surface</item>
@@ -35,6 +36,12 @@
         <item name="colorPrimary">?attr/wfmsColorPrimary</item>
         <item name="colorPrimaryVariant">?attr/wfmsColorPrimaryDark</item>
         <item name="colorSecondary">?attr/wfmsColorCta</item>
+        <!-- Foreground accent for dialog buttons, cursors and controls (light mode: the brand color) -->
+        <item name="colorAccent">?attr/wfmsColorAccent</item>
+        <item name="android:colorAccent">?attr/wfmsColorAccent</item>
+        <item name="colorControlActivated">?attr/wfmsColorAccent</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.WFMS.MaterialAlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.WFMS.AlertDialog</item>
         <item name="colorSurface">?attr/wfmsColorSurface</item>
         <item name="colorError">?attr/wfmsColorError</item>
         <item name="android:colorBackground">?attr/wfmsColorBackground</item>
@@ -45,6 +52,16 @@
     </style>
 
     <style name="Theme.WFMS" parent="Base.Theme.WFMS" />
+
+    <!-- Dialog buttons read colorPrimary; point them at the accent so they stay readable in dark
+         mode. One overlay per dialog family: MaterialAlertDialogBuilder and AlertDialog.Builder. -->
+    <style name="ThemeOverlay.WFMS.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">?attr/wfmsColorAccent</item>
+    </style>
+
+    <style name="ThemeOverlay.WFMS.AlertDialog" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <item name="colorPrimary">?attr/wfmsColorAccent</item>
+    </style>
 
     <style name="Theme.WFMS.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -63,6 +80,7 @@
         <item name="wfmsColorPrimary">@color/forest_primary</item>
         <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorAccent">@color/forest_primary</item>
         <item name="wfmsColorCta">@color/forest_cta</item>
         <item name="wfmsColorBackground">@color/forest_bg</item>
         <item name="wfmsColorSurface">@color/forest_surface</item>
@@ -100,6 +118,7 @@
         <item name="wfmsColorPrimary">@color/ocean_primary</item>
         <item name="wfmsColorPrimaryDark">@color/ocean_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/ocean_primary_light</item>
+        <item name="wfmsColorAccent">@color/ocean_primary</item>
         <item name="wfmsColorCta">@color/ocean_cta</item>
         <item name="wfmsColorBackground">@color/ocean_bg</item>
         <item name="wfmsColorSurface">@color/ocean_surface</item>
@@ -135,6 +154,7 @@
         <item name="wfmsColorPrimary">@color/rose_primary</item>
         <item name="wfmsColorPrimaryDark">@color/rose_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/rose_primary_light</item>
+        <item name="wfmsColorAccent">@color/rose_primary</item>
         <item name="wfmsColorCta">@color/rose_cta</item>
         <item name="wfmsColorBackground">@color/rose_bg</item>
         <item name="wfmsColorSurface">@color/rose_surface</item>
@@ -170,6 +190,7 @@
         <item name="wfmsColorPrimary">@color/indigo_primary</item>
         <item name="wfmsColorPrimaryDark">@color/indigo_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/indigo_primary_light</item>
+        <item name="wfmsColorAccent">@color/indigo_primary</item>
         <item name="wfmsColorCta">@color/indigo_cta</item>
         <item name="wfmsColorBackground">@color/indigo_bg</item>
         <item name="wfmsColorSurface">@color/indigo_surface</item>
@@ -205,6 +226,7 @@
         <item name="wfmsColorPrimary">@color/amber_primary</item>
         <item name="wfmsColorPrimaryDark">@color/amber_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/amber_primary_light</item>
+        <item name="wfmsColorAccent">@color/amber_primary</item>
         <item name="wfmsColorCta">@color/amber_cta</item>
         <item name="wfmsColorBackground">@color/amber_bg</item>
         <item name="wfmsColorSurface">@color/amber_surface</item>
@@ -241,6 +263,7 @@
         <item name="wfmsColorPrimary">@color/slate_primary</item>
         <item name="wfmsColorPrimaryDark">@color/slate_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/slate_primary_light</item>
+        <item name="wfmsColorAccent">@color/slate_primary</item>
         <item name="wfmsColorCta">@color/slate_cta</item>
         <item name="wfmsColorBackground">@color/slate_bg</item>
         <item name="wfmsColorSurface">@color/slate_surface</item>
@@ -290,26 +313,26 @@
         <item name="android:textSize">@dimen/default_text</item>
     </style>
     <style name="CustomRegularDarkTextView" parent="CustomRegularTextView">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
     <style name="CustomRegularLightTextView" parent="CustomRegularTextView">
         <item name="android:textColor">@color/white</item>
     </style>
     <style name="CustomRegularPrimaryTextView" parent="CustomRegularTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
 
     <style name="CustomSmallTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_small_text</item>
     </style>
     <style name="CustomSmallDarkTextView" parent="CustomSmallTextView">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
     <style name="CustomSmallLightTextView" parent="CustomSmallTextView">
         <item name="android:textColor">@color/white</item>
     </style>
     <style name="CustomSmallDarkPrimaryTextView" parent="CustomSmallTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimaryDark</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
 
     <style name="CustomMediumTextView" parent="android:Widget.TextView">
@@ -320,24 +343,24 @@
         <item name="android:textColor">@color/white</item>
     </style>
     <style name="CustomMediumDarkTextView" parent="CustomMediumTextView">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
     <style name="CustomMediumPrimaryTextView" parent="CustomMediumTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
     <style name="CustomMediumBoldTextView" parent="CustomMediumTextView">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
 
     <style name="CustomLargeTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_large_text</item>
     </style>
     <style name="CustomLargeDarkTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
     <style name="CustomLargePrimaryTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
     <style name="CustomLargeLightTextView" parent="CustomLargeTextView">
         <item name="android:textColor">@color/white</item>
@@ -447,7 +470,7 @@
         <item name="android:background">@drawable/cancel_bt_bg</item>
     </style>
     <style name="CustomPrimaryWireButton" parent="CustomButtonStyle">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
         <item name="android:background">@drawable/primary_wire_bg</item>
     </style>
     <style name="ButtonStateSelector" parent="CustomButtonStyle">

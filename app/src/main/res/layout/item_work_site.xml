@@ -59,7 +59,7 @@
                 android:src="@drawable/rounded_location_on_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/wfmsColorPrimary" />
+                app:tint="?attr/wfmsColorAccent" />
 
             <TextView
                 android:id="@+id/tvSiteName"

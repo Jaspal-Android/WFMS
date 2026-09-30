@@ -17,7 +17,7 @@
             android:contentDescription="@string/back"
             android:padding="@dimen/padding"
             android:src="@drawable/arrow_back_ios_24"
-            app:tint="?attr/wfmsColorPrimary" />
+            app:tint="?attr/wfmsColorAccent" />
 
         <TextView
             android:id="@+id/toolbarTitle"
@@ -27,7 +27,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:text=""
-            android:textColor="?attr/wfmsColorPrimary"
+            android:textColor="?attr/wfmsColorAccent"
             android:textStyle="bold" />
     </LinearLayout>
 </layout>

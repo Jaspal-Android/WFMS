@@ -108,7 +108,7 @@
                         android:layout_height="12dp"
                         android:contentDescription="@string/date"
                         android:src="@drawable/ic_calendar_today"
-                        app:tint="?attr/wfmsColorPrimary" />
+                        app:tint="?attr/wfmsColorAccent" />
 
                     <TextView
                         android:id="@+id/tvDate"
@@ -116,7 +116,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_small"
-                        android:textColor="?attr/wfmsColorPrimary"
+                        android:textColor="?attr/wfmsColorAccent"
                         android:textStyle="bold"
                         app:formatApiDateToMonthDayYear="@{item.createdAt}"
                         tools:text="Oct 31, 2025" />
@@ -131,7 +131,7 @@
                     android:layout_weight="1"
                     android:gravity="end"
                     android:text="@{@string/total_work_hours_format(item.workHours)}"
-                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textColor="?attr/wfmsColorAccent"
                     android:textStyle="bold"
                     tools:text="Total 8 hrs" />
             </LinearLayout>
@@ -280,6 +280,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/rounded_location_on_24"
+                    android:importantForAccessibility="no"
                     app:tint="@android:color/white" />
 
                 <TextView

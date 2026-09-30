@@ -254,4 +254,15 @@
 
     <color name="your_primary_dark_color">#3700B3</color>
 
+
+    <!-- Dark-mode accent: brand hue lifted to >= 5:1 on every dark surface -->
+    <color name="forest_accent_dark">#60a673</color>
+    <color name="ocean_accent_dark">#569dde</color>
+    <color name="rose_accent_dark">#d18098</color>
+    <color name="indigo_accent_dark">#8f92d6</color>
+    <color name="amber_accent_dark">#d8851f</color>
+    <color name="slate_accent_dark">#679fbd</color>
+
+    <!-- Strong body text: near-black in light mode (values-night switches it to the light on-surface) -->
+    <color name="text_strong">@color/black</color>
 </resources>

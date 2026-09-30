@@ -50,6 +50,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tvClaimNumber"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvClaimNumber"
+                android:importantForAccessibility="no"
                 app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
             <!-- ── Divider below title ── -->

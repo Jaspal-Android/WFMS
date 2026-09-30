@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin"
+            android:importantForAccessibility="no"
             android:background="@drawable/ic_pull" />
 
         <!-- ── Title — FIX: CustomRegularDarkTextView → theme color ── -->
