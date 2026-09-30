@@ -44,6 +44,9 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: ${{ env.ANDROID_SDK_TOOLS }}
+          # v3 defaults to "tools platform-tools"; the legacy "tools" package is no longer
+          # published, so sdkmanager exits 1 and the job fails before any Gradle step.
+          packages: 'platform-tools'
 
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses || true
@@ -157,6 +160,9 @@ jobs:
         uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: ${{ env.ANDROID_SDK_TOOLS }}
+          # v3 defaults to "tools platform-tools"; the legacy "tools" package is no longer
+          # published, so sdkmanager exits 1 and the job fails before any Gradle step.
+          packages: 'platform-tools'
 
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses || true
