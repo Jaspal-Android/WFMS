@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
@@ -78,6 +79,12 @@ class DashboardViewModel @Inject constructor(
         getApplication<Application>().stopService(serviceIntent)
     }
 
+    // Tracking must end with the attendance day even if no screen is visible to react to the
+    // response, so the stop is driven from the API callback rather than from the UI observers.
+    private fun stopTrackingIfActive() {
+        if (prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false)) stopTracking()
+    }
+
     var attendanceCheckInResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
     fun checkInAttendance(latitude: Double, longitude: Double) {
         val params = JsonObject().apply {
@@ -102,7 +109,8 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             executeApiCall(
                 apiCall = { attendanceRepo.attendanceCheckOutRequest(params) },
-                liveData = attendanceCheckOutResponse
+                liveData = attendanceCheckOutResponse,
+                onSuccess = { if (it.code == ValConstants.SUCCESS_CODE) stopTracking() }
             )
         }
     }
@@ -112,10 +120,17 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             executeApiCall(
                 apiCall = { attendanceRepo.attendanceCheckInStatus() },
-                liveData = attendanceCheckInStatusResponse
+                liveData = attendanceCheckInStatusResponse,
+                onSuccess = { if (it.hasNoActiveDay()) stopTrackingIfActive() }
             )
         }
     }
+
+    // Not checked in, or the server reports the day as already completed (400): either way there
+    // is no open attendance day left to track, e.g. after a server-side auto checkout.
+    private fun CheckInStatusResponse.hasNoActiveDay(): Boolean =
+        (code == ValConstants.SUCCESS_CODE && data?.checkedIn != true) ||
+            code == ValConstants.BAD_REQUEST_CODE
 
     var attendanceRemarksResponse = MutableLiveData<ApiState<AttendanceRemarksResponse>>()
     fun setAttendanceEmpRemarks(attendanceId: Long,remarks:String) {
