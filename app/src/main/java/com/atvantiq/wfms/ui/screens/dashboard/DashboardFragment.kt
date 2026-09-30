@@ -53,9 +53,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private var isDayStarted = false
     private var attendanceActionInFlight = false
-    private var backgroundLocationPrompted = false
-    // Tracking permission is asked automatically on resume while checked in; ask once per screen.
+    // Location permission is asked automatically on resume while checked in; ask once per screen.
     private var trackingPermissionPrompted = false
+    private var backgroundLocationPrompted = false
     private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -489,13 +489,13 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     ) { permissions ->
         when {
             PermissionUtils.areGranted(permissions, PermissionUtils.LOCATION_PERMISSIONS) -> startTrackingAndAskForBackground()
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
+            PermissionUtils.LOCATION_PERMISSIONS.none { shouldShowRequestPermissionRationale(it) } -> showPermissionDeniedPermanently()
             else -> showPermissionRationale()
         }
     }
 
-    // Tracking already runs as a while-in-use foreground service, so declining background access
-    // must not undo it; the result is intentionally ignored.
+    // Tracking runs as a location foreground service, so declining background access must not
+    // undo it; the result is intentionally ignored.
     private val permissionLauncherBackgroundLocation = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
@@ -529,7 +529,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     }
 
     // Android 11+ ignores background location when it is requested together with foreground
-    // location, so it is asked for separately, once per screen, after the disclosure.
+    // location, so it is asked for separately, once per screen, after its own disclosure.
     private fun requestBackgroundLocationIfNeeded() {
         if (backgroundLocationPrompted || PermissionUtils.hasBackgroundLocationPermission(requireContext())) return
         backgroundLocationPrompted = true
