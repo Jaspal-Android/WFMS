@@ -1,6 +1,9 @@
 package com.atvantiq.wfms.di.modules
 
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.network.ApiService
+import com.atvantiq.wfms.network.AuthInterceptor
 import com.atvantiq.wfms.network.NetworkEndPoints
 import com.atvantiq.wfms.BuildConfig
 import com.facebook.stetho.okhttp3.StethoInterceptor
@@ -41,7 +44,7 @@ class NetModule() {
     
     @Provides
     @Singleton
-    fun provideOkhttpClient(): OkHttpClient {
+    fun provideOkhttpClient(prefMain: SecurePrefMain): OkHttpClient {
         val client = OkHttpClient.Builder()
         client.connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         client.readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -54,14 +57,8 @@ class NetModule() {
             }
             redactHeader("Authorization")
         }
-        client.addInterceptor { chain ->
-            val request = chain.request()
-                .newBuilder()
-                //  .addHeader("language", MApplication.language)
-                
-                .build()
-            chain.proceed(request)
-        }
+        // Registered before logging so the logged request shows the header (value is redacted).
+        client.addInterceptor(AuthInterceptor { prefMain.get(PrefKeys.LOGIN_TOKEN, "") })
         val protocols: MutableList<Protocol> = ArrayList()
         protocols.add(Protocol.HTTP_1_1)
         //protocols.add(Protocol.HTTP_2)

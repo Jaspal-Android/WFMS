@@ -1,6 +1,5 @@
 package com.atvantiq.wfms.data.repository.creation
 
-import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
@@ -12,67 +11,53 @@ import com.atvantiq.wfms.models.site.create.CreateSiteResponse
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
-import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.models.site.detail.SiteDetailResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CreationRepo @Inject constructor(private val apiService: ApiService, private val prefMain: SecurePrefMain) : ICreationRepo {
+class CreationRepo @Inject constructor(private val apiService: ApiService) : ICreationRepo {
 
-    override suspend fun clientList(): ClientListResponse = apiService.clientList(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-    )
+    override suspend fun clientList(): ClientListResponse = apiService.clientList()
 
     override suspend fun projectListByClientId(clientId: Long): ProjectListByClientResponse  = apiService.projectListByClientId(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         clientId = clientId
     )
 
     override suspend fun poNumberListByProject(projectId: Long): PoListByProjectResponse = apiService.poNumberListByProject(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
     override suspend fun circleByProject(projectId: Long): CircleListByProjectResponse  = apiService.circleByProject(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
     override suspend fun siteListByProject(projectId: Long): SiteListByProjectResponse = apiService.siteListByProject(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         projectId = projectId
     )
 
     override suspend fun typeListByPo(poId: Long): TypeListByProjectResponse = apiService.typeListByPo(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         poId = poId
     )
 
     override suspend fun activityListByPoType(poId: Long, typeId: Long)  = apiService.activityListByPoType(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         poId = poId,
         typeId = typeId
     )
 
     override suspend fun siteListAll(page: Int, limit: Int, is_active: Int): SitesListAllResponse = apiService.siteListAll(
-            token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
             page = page,
             limit = limit,
             is_active = is_active
     )
 
     override suspend fun createSite(params: JsonObject): CreateSiteResponse  = apiService.createSite(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         params = params
     )
 
-    override suspend fun allProjects(): AllProjectsResponse = apiService.allProjects(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
-    )
+    override suspend fun allProjects(): AllProjectsResponse = apiService.allProjects()
 
     override suspend fun siteById(siteId: Long): SiteDetailResponse = apiService.siteById(
-        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
         siteId = siteId
     )
 }

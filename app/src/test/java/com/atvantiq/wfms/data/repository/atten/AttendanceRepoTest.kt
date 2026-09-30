@@ -1,12 +1,10 @@
 package com.atvantiq.wfms.data.repository.atten
 
-import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
-import com.atvantiq.wfms.data.prefs.PrefKeys
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -19,17 +17,13 @@ import org.junit.Assert.*
 class AttendanceRepoTest {
 
     private lateinit var apiService: ApiService
-    private lateinit var prefMain: SecurePrefMain
     private lateinit var repo: AttendanceRepo
-    private val token = "test_token"
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
         apiService = mockk(relaxed = true)
-        prefMain = mockk(relaxed = true)
-        every { prefMain.get(PrefKeys.LOGIN_TOKEN, any<String>()) } returns token
-        repo = AttendanceRepo(apiService, prefMain)
+        repo = AttendanceRepo(apiService)
     }
 
     @After
@@ -38,51 +32,51 @@ class AttendanceRepoTest {
     }
 
     @Test
-    fun `attendanceCheckInRequest calls apiService with correct token and params`() = runTest {
+    fun `attendanceCheckInRequest calls apiService with params`() = runTest {
         val params = JsonObject()
         val expectedResponse = mockk<CheckInOutResponse>()
-        coEvery { apiService.attendanceCheckIn(any(), params) } returns expectedResponse
+        coEvery { apiService.attendanceCheckIn(params) } returns expectedResponse
 
         val result = repo.attendanceCheckInRequest(params)
 
-        coVerify { apiService.attendanceCheckIn("Bearer $token", params) }
+        coVerify { apiService.attendanceCheckIn(params) }
         assertEquals(expectedResponse, result)
     }
 
     @Test
-    fun `attendanceCheckOutRequest calls apiService with correct token and params`() = runTest {
+    fun `attendanceCheckOutRequest calls apiService with params`() = runTest {
         val params = JsonObject()
         val expectedResponse = mockk<CheckInOutResponse>()
-        coEvery { apiService.attendanceCheckOut(any(), params) } returns expectedResponse
+        coEvery { apiService.attendanceCheckOut(params) } returns expectedResponse
 
         val result = repo.attendanceCheckOutRequest(params)
 
-        coVerify { apiService.attendanceCheckOut("Bearer $token", params) }
+        coVerify { apiService.attendanceCheckOut(params) }
         assertEquals(expectedResponse, result)
     }
 
     @Test
-    fun `attendanceCheckInStatus calls apiService with correct token`() = runTest {
+    fun `attendanceCheckInStatus calls apiService `() = runTest {
         val expectedResponse = mockk<CheckInStatusResponse>()
-        coEvery { apiService.attendanceCheckInStatus(any()) } returns expectedResponse
+        coEvery { apiService.attendanceCheckInStatus() } returns expectedResponse
 
         val result = repo.attendanceCheckInStatus()
 
-        coVerify { apiService.attendanceCheckInStatus("Bearer $token") }
+        coVerify { apiService.attendanceCheckInStatus() }
         assertEquals(expectedResponse, result)
     }
 
     @Test
-    fun `attendanceDetails calls apiService with correct token, month, and year`() = runTest {
+    fun `attendanceDetails calls apiService with month, and year`() = runTest {
         val month = 6
         val year = 2024
         val flag = false
         val expectedResponse = mockk<AttendanceDetailListResponse>()
-        coEvery { apiService.attendanceDetails(any(), month, year, flag) } returns expectedResponse
+        coEvery { apiService.attendanceDetails(month, year, flag) } returns expectedResponse
 
         val result = repo.attendanceDetails(month, year, flag)
 
-        coVerify { apiService.attendanceDetails("Bearer $token", month, year, flag) }
+        coVerify { apiService.attendanceDetails(month, year, flag) }
         assertEquals(expectedResponse, result)
     }
 }
