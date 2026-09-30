@@ -34,7 +34,6 @@ import com.atvantiq.wfms.ui.screens.dashboard.DashboardViewModel
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.SessionCleanup
-import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.utils.setAccessibleAction
 import com.google.android.gms.location.FusedLocationProviderClient
