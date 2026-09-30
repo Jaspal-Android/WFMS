@@ -119,9 +119,9 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingStart="@dimen/padding_medium"
-                        android:paddingTop="10dp"
-                        android:paddingEnd="@dimen/padding"
-                        android:paddingBottom="10dp">
+                        android:paddingTop="6dp"
+                        android:paddingEnd="@dimen/padding_x_small"
+                        android:paddingBottom="6dp">
 
                         <ImageView
                             android:layout_width="20dp"
@@ -136,6 +136,7 @@
                             android:layout_marginStart="@dimen/margin_small"
                             android:layout_weight="1"
                             android:background="@null"
+                            android:minHeight="@dimen/min_touch_target"
                             android:hint="@string/search_by_site_or_project"
                             android:imeOptions="actionSearch"
                             android:inputType="text"
@@ -146,8 +147,9 @@
 
                         <ImageView
                             android:id="@+id/ivClearSearch"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="@dimen/min_touch_target"
+                            android:layout_height="@dimen/min_touch_target"
+                            android:padding="14dp"
                             android:src="@drawable/ic_close_16"
                             android:visibility="gone"
                             app:tint="?attr/wfmsColorOnSurfaceVariant" />
