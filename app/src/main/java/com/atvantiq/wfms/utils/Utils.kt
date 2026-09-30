@@ -8,6 +8,8 @@ import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.Bundle
 import android.provider.Settings
 import android.text.method.HideReturnsTransformationMethod
@@ -29,6 +31,8 @@ import java.text.DecimalFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 
 object Utils {
@@ -335,6 +339,18 @@ object Utils {
     /*
     * Write function with code and logic to convert lat and long to address
     * */
+    private val geocodeExecutor: Executor =
+        Executors.newSingleThreadExecutor { runnable -> Thread(runnable, "geocoder").apply { isDaemon = true } }
+
+    private val mainThreadExecutor: Executor by lazy {
+        val handler = Handler(Looper.getMainLooper())
+        Executor { handler.post(it) }
+    }
+
+    /**
+     * Looks up the address for a location. Never blocks the caller, and always calls [onResult] on
+     * the main thread with either the address or the "address not found" text.
+     */
     @Suppress("DEPRECATION")
     fun getAddressFromLatLong(
         context: Context,
@@ -342,33 +358,28 @@ object Utils {
         longitude: Double,
         onResult: (String) -> Unit
     ) {
-        val geocoder = Geocoder(context, Locale.getDefault())
+        val appContext = context.applicationContext
+        val notFound = appContext.getString(R.string.address_not_found)
+        val geocoder = Geocoder(appContext, Locale.getDefault())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(latitude, longitude, 1, object : Geocoder.GeocodeListener {
                 override fun onGeocode(addresses: MutableList<Address>) {
-                    if (addresses.isNotEmpty()) {
-                        onResult(formatAddress(addresses[0]))
-                    } else {
-                        onResult(context.getString(R.string.address_not_found))
-                    }
+                    val address = addresses.firstOrNull()?.let { formatAddress(it) } ?: notFound
+                    mainThreadExecutor.execute { onResult(address) }
                 }
 
                 override fun onError(errorMessage: String?) {
-                    onResult(context.getString(R.string.address_not_found))
+                    mainThreadExecutor.execute { onResult(notFound) }
                 }
             })
         } else {
-            try {
-                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-                if (!addresses.isNullOrEmpty()) {
-                    onResult(formatAddress(addresses[0]))
-                } else {
-                    onResult(context.getString(R.string.address_not_found))
-                }
-            } catch (e: Exception) {
-                onResult(context.getString(R.string.address_not_found))
-            }
+            AddressResolver(
+                geocode = { lat, lon -> geocoder.getFromLocation(lat, lon, 1)?.firstOrNull()?.let { formatAddress(it) } },
+                background = geocodeExecutor,
+                mainThread = mainThreadExecutor,
+                notFound = notFound
+            ).resolve(latitude, longitude, onResult)
         }
     }
 
