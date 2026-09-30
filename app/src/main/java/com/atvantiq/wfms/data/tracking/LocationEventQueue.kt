@@ -3,15 +3,17 @@ package com.atvantiq.wfms.data.tracking
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.gson.JsonParser
+import com.google.gson.annotations.SerializedName
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// Persisted as JSON, so the names must not depend on what R8 renames the fields to.
 data class QueuedLocationEvent(
-    val latitude: Double,
-    val longitude: Double,
-    val recordedAtMillis: Long,
-    val accuracyMeters: Float?
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("recordedAtMillis") val recordedAtMillis: Long,
+    @SerializedName("accuracyMeters") val accuracyMeters: Float?
 )
 
 @Singleton
@@ -19,7 +21,6 @@ class LocationEventQueue @Inject constructor(
     private val prefMain: SecurePrefMain
 ) {
     private val gson = Gson()
-    private val queueType = object : TypeToken<List<QueuedLocationEvent>>() {}.type
 
     @Synchronized
     fun enqueue(event: QueuedLocationEvent) {
@@ -45,7 +46,13 @@ class LocationEventQueue @Inject constructor(
         val raw = prefMain.get(PrefKeys.LOCATION_EVENT_QUEUE, null).orEmpty()
         if (raw.isBlank()) return emptyList()
         return runCatching {
-            gson.fromJson<List<QueuedLocationEvent>>(raw, queueType).orEmpty()
+            // Entries written by releases that predate @SerializedName carry R8-obfuscated keys.
+            // Gson would decode those as (0.0, 0.0), which must never be uploaded as a location,
+            // so anything without the real keys is dropped.
+            JsonParser.parseString(raw).asJsonArray
+                .map { it.asJsonObject }
+                .filter { it.has("latitude") && it.has("longitude") && it.has("recordedAtMillis") }
+                .map { gson.fromJson(it, QueuedLocationEvent::class.java) }
         }.getOrElse {
             emptyList()
         }
