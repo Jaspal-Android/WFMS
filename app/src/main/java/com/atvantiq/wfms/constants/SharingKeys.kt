@@ -17,5 +17,6 @@ object SharingKeys {
     const val SITE_PURPOSE = "SITE_PURPOSE"
     const val TRAVELING_DETAILS = "TRAVELING_DETAILS"
     const val CLAIM_ID = "CLAIM_ID"
+    const val EDIT_CLAIM_ID = "EDIT_CLAIM_ID"
     const val USED_MATERIALS="used_materials"
 }

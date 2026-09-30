@@ -13,6 +13,7 @@ import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
 import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.models.site.detail.SiteDetailResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -68,5 +69,10 @@ class CreationRepo @Inject constructor(private val apiService: ApiService, priva
 
     override suspend fun allProjects(): AllProjectsResponse = apiService.allProjects(
         token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+    )
+
+    override suspend fun siteById(siteId: Long): SiteDetailResponse = apiService.siteById(
+        token = "Bearer " + prefMain.get(PrefKeys.LOGIN_TOKEN,""),
+        siteId = siteId
     )
 }

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentProjectDashboardBinding
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.ProjectBudgetAdapter
@@ -41,6 +42,13 @@ class ProjectDashboardFragment : BaseFragment<FragmentProjectDashboardBinding, P
                 Status.LOADING -> showLoading(true)
                 Status.SUCCESS -> {
                     showLoading(false)
+                    // The API reports auth failures in the body (HTTP 200 + code 401), so an
+                    // expired session lands here and must route to login like every other screen.
+                    if (state.response?.code == ValConstants.UNAUTHORIZED_CODE) {
+                        binding.rvProjects.visibility = View.GONE
+                        tokenExpiresAlert()
+                        return@observe
+                    }
                     val list = state.response?.data?.items
                     if (!list.isNullOrEmpty()) {
                         binding.rvProjects.visibility = View.VISIBLE

@@ -153,7 +153,7 @@
                         style="@style/CustomRegularTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{userData.circle != null ? userData.circle : @string/default_value}"
+                        android:text="@{userData.circleDisplay.isEmpty() ? @string/default_value : userData.circleDisplay}"
                         android:textColor="?attr/wfmsColorOnSurface"
                         android:textStyle="bold"
                         tools:text="CHD" />

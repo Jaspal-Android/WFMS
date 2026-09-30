@@ -27,6 +27,7 @@ import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.CheckoutData
+import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.empDetail.AccessLevel
 import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
@@ -229,7 +230,7 @@ class DashboardViewModelTest {
                     )
                 ),
                 team = null,
-                circle = "CH",
+                circle = listOf(CircleData(code = "CH", id = 1L, name = "chandigarh")),
                 designation = "Eng",
                 reportingManager = ReportingManager(
                     id = 45608697,
