@@ -25,7 +25,6 @@ import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.workSiteByDate.Site
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaType
@@ -378,7 +377,7 @@ class CreateClaimVM @Inject constructor(
         if (isEditMode.get() == true && lockedHeader == null) return
         if (!validateCreateClaim()) return
         if (!Utils.isInternet(getApplication())) {
-            createClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            createClaimResponse.value = ApiState.error(noInternetError())
             return
         }
         isSubmitting.set(true)

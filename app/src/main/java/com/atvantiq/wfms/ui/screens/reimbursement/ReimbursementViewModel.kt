@@ -12,7 +12,6 @@ import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
-import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -55,10 +54,9 @@ class ReimbursementViewModel @Inject constructor(
     private var isDeleting = false
     fun deleteClaim(claimId: Long) {
         if (isDeleting) return
-        // executeApiCall does not invoke onError when offline, so check first; otherwise
-        // isDeleting would stay set and block every later delete on this screen.
+        // Fail before taking the lock, so an offline attempt cannot leave isDeleting set.
         if (!Utils.isInternet(getApplication())) {
-            deleteClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            deleteClaimResponse.value = ApiState.error(noInternetError())
             return
         }
         isDeleting = true

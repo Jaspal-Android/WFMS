@@ -21,6 +21,7 @@ import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.ThemeManager
+import com.atvantiq.wfms.utils.isUnauthorized
 import com.atvantiq.wfms.utils.Utils
 import com.facebook.stetho.common.Util
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -210,16 +211,41 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         finish()
     }
 
+    private var sessionExpiredDialog: AlertDialog? = null
+
+    /**
+     * Several requests can fail with 401 at once. Show one dialog, and make it the only way
+     * forward: dismissing it would leave the user on a screen whose every request now fails.
+     */
     fun tokenExpiresAlert() {
-        alertDialogShow(
-            this,
-            getString(R.string.alert),
-            getString(R.string.unauthorized_access),
-            getString(R.string.login),
-            DialogInterface.OnClickListener() { dialog, which ->
+        if (sessionExpiredDialog?.isShowing == true || isFinishing || isDestroyed) return
+        sessionExpiredDialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.alert)
+            .setMessage(R.string.session_expired_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.login) { dialog, _ ->
                 dialog.dismiss()
                 performGlobalLogout()
-            })
+            }
+            .show()
+    }
+
+    /**
+     * Reports a failed request: the session-expired dialog for a 401, otherwise the user-facing
+     * message that [com.atvantiq.wfms.base.BaseViewModel] put on the error.
+     */
+    fun handleApiFailure(throwable: Throwable?) {
+        if (throwable.isUnauthorized()) {
+            tokenExpiresAlert()
+        } else {
+            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    override fun onDestroy() {
+        sessionExpiredDialog?.dismiss()
+        sessionExpiredDialog = null
+        super.onDestroy()
     }
 
     fun <T> showSelectionDialog(

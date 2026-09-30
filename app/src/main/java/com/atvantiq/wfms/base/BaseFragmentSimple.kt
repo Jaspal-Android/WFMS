@@ -229,14 +229,28 @@ open class BaseFragmentSimple : Fragment() {
 		requireActivity().finish()
 	}
 
+	private var sessionExpiredDialog: AlertDialog? = null
+
+	/**
+	 * Several requests can fail with 401 at once. Show one dialog, and make it the only way
+	 * forward: dismissing it would leave the user on a screen whose every request now fails.
+	 */
 	fun tokenExpiresAlert() {
-		alertDialogShow(
-			requireContext(),
-			getString(R.string.alert),
-			getString(R.string.unauthorized_access),
-			getString(R.string.login),
-			DialogInterface.OnClickListener() { dialog, which ->
+		if (!isAdded || sessionExpiredDialog?.isShowing == true) return
+		sessionExpiredDialog = MaterialAlertDialogBuilder(requireContext())
+			.setTitle(R.string.alert)
+			.setMessage(R.string.session_expired_message)
+			.setCancelable(false)
+			.setPositiveButton(R.string.login) { dialog, _ ->
+				dialog.dismiss()
 				performLogout()
-			})
+			}
+			.show()
+	}
+
+	override fun onDestroyView() {
+		sessionExpiredDialog?.dismiss()
+		sessionExpiredDialog = null
+		super.onDestroyView()
 	}
 }

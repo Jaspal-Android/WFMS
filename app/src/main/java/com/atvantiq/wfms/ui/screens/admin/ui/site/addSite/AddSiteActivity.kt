@@ -115,17 +115,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
                 Status.ERROR -> {
                     dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-                            tokenExpiresAlert()
-                        }
-                    }else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -162,17 +152,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
                 Status.ERROR -> {
                     vm.isProjectLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -208,17 +188,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
                 Status.ERROR -> {
                     vm.isCircleLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -260,17 +230,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
                 Status.ERROR -> {
                     dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {

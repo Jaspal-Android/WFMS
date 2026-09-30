@@ -43,8 +43,9 @@ class NetModule() {
     @Singleton
     fun provideOkhttpClient(): OkHttpClient {
         val client = OkHttpClient.Builder()
-        client.readTimeout(TIME_OUT, TimeUnit.MINUTES)
-        client.connectTimeout(TIME_OUT, TimeUnit.MINUTES)
+        client.connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        client.readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        client.writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         val logging = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
@@ -88,6 +89,10 @@ class NetModule() {
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
     companion object {
-        const val TIME_OUT: Long = 2
+        // Connecting fails fast so a dead connection does not leave a spinner up for minutes.
+        // Read/write stay generous because claims and work photos are uploaded as multipart bodies.
+        const val CONNECT_TIMEOUT_SECONDS: Long = 15
+        const val READ_TIMEOUT_SECONDS: Long = 60
+        const val WRITE_TIMEOUT_SECONDS: Long = 60
     }
 }

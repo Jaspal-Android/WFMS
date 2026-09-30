@@ -184,7 +184,7 @@ class AddTravelingDetailActivity :
             if (throwable.code() == 401) {
                 tokenExpiresAlert()
             } else {
-                showToast(this, throwable.message())
+                showToast(this, throwable.message ?: getString(R.string.something_went_wrong))
             }
         } else {
             showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))

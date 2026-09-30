@@ -21,7 +21,6 @@ import com.atvantiq.wfms.models.type.TypeData
 import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -194,7 +193,7 @@ class AddSignInVM @Inject constructor(
         if (isSubmitting.get() == true) return
         if (!validateAssignTaskFields()) return
         if (!Utils.isInternet(getApplication())) {
-            workAssignedResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            workAssignedResponse.value = ApiState.error(noInternetError())
             return
         }
         isSubmitting.set(true)
