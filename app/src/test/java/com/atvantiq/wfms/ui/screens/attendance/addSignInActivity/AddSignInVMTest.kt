@@ -327,34 +327,49 @@ class AddSignInVMTest {
 */
 
     @Test
-    fun `getActivityListByPoType calls creationRepo and updates LiveData`() = runTest {
-        val response = ActivityListByProjectTypeResponse(
-            code = 200,
-            message = "Activities fetched successfully.",
-            success = true,
-            data = listOf(
-                ActivityData(
-                    id = 505948895718,
-                    name = "recharge"
-                )
-            )
-        )
-        coEvery { creationRepo.activityListByPoType(any(), any()) } returns response
+    fun `onTypesSelected loads activities for every selected type`() = runTest {
+        coEvery { creationRepo.activityListByPoType(1L, 10L) } returns activityResponse(ActivityData(1L, "Survey"))
+        coEvery { creationRepo.activityListByPoType(1L, 20L) } returns activityResponse(ActivityData(2L, "Install"))
+        viewModel.selectedPoNumberId = 1L
 
-        viewModel.getActivityListByPoType(1L, 2L)
+        viewModel.onTypesSelected(listOf(type(10L, "A"), type(20L, "B")))
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify(exactly = 1) { creationRepo.activityListByPoType(1L, 2L) }
-        assertNotNull(viewModel.activityListByProjectTypeResponse.value)
-        assertEquals(Status.SUCCESS, viewModel.activityListByProjectTypeResponse.value?.status)
-        assertEquals(response, viewModel.activityListByProjectTypeResponse.value?.response)
+        coVerify(exactly = 1) { creationRepo.activityListByPoType(1L, 10L) }
+        coVerify(exactly = 1) { creationRepo.activityListByPoType(1L, 20L) }
+        assertEquals(Status.SUCCESS, viewModel.typeActivitiesResponse.value?.status)
+        assertEquals(
+            listOf("Survey", "Install"),
+            viewModel.activitySelection.options(viewModel.selectedTypeKeys()).map { it.activity.name }
+        )
     }
 
     @Test
-    fun `onSaveClick does not call workRepo if validation fails`() = runTest {
-        viewModel.selectedClient = null // validation fails
-        viewModel.onSaveClick()
-        coVerify(exactly = 0) { workRepo.workSelfAssign(any()) }
+    fun `onTypesSelected keeps picks of types that stay selected and does not refetch them`() = runTest {
+        coEvery { creationRepo.activityListByPoType(1L, 10L) } returns activityResponse(ActivityData(1L, "Survey"))
+        coEvery { creationRepo.activityListByPoType(1L, 20L) } returns activityResponse(ActivityData(2L, "Install"))
+        viewModel.selectedPoNumberId = 1L
+        viewModel.onTypesSelected(listOf(type(10L, "A")))
+        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.activitySelection.select(viewModel.activitySelection.options(viewModel.selectedTypeKeys()).toSet())
+
+        viewModel.onTypesSelected(listOf(type(10L, "A"), type(20L, "B")))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 1) { creationRepo.activityListByPoType(1L, 10L) }
+        assertEquals(setOf(1L), viewModel.activitySelection.selectedIds(10L))
+    }
+
+    @Test
+    fun `activities that arrive after the type was deselected are ignored`() = runTest {
+        coEvery { creationRepo.activityListByPoType(1L, 10L) } returns activityResponse(ActivityData(1L, "Survey"))
+        viewModel.selectedPoNumberId = 1L
+        viewModel.onTypesSelected(listOf(type(10L, "A")))
+
+        viewModel.onTypesSelected(emptyList())
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.activitySelection.options(listOf(10L to "A")).isEmpty())
     }
 
     @Test
@@ -382,7 +397,18 @@ class AddSignInVMTest {
                 name = "Type"
             )
         )
-        viewModel.selectedActivityIdList = arrayListOf()
+
+        assertFalse(viewModel.validateAssignTaskFields())
+        assertEquals(AssignTaskError.ON_ACTIVITY_ERROR, viewModel.errorHandler.value)
+    }
+
+    @Test
+    fun `validateAssignTaskFields requires an activity for every selected type`() {
+        fillCommonFields()
+        viewModel.selectedTypeIdList = arrayListOf(type(10L, "A"), type(20L, "B"))
+        viewModel.activitySelection.setAvailable(10L, listOf(ActivityData(1L, "Survey")))
+        viewModel.activitySelection.setAvailable(20L, listOf(ActivityData(2L, "Install")))
+        viewModel.activitySelection.select(setOf(TypeActivityOption(10L, "A", ActivityData(1L, "Survey"))))
 
         assertFalse(viewModel.validateAssignTaskFields())
         assertEquals(AssignTaskError.ON_ACTIVITY_ERROR, viewModel.errorHandler.value)
@@ -393,33 +419,17 @@ class AddSignInVMTest {
         val response = mockk<SelfAssignResponse>(relaxed = true)
         val params = slot<JsonObject>()
         coEvery { workRepo.workSelfAssign(capture(params)) } returns response
-
-        viewModel.selectedClient = Client(
-            id = 11L,
-            companyName = "Client",
-            displayName = "Client",
-            gstNumber = "GST",
-            state = "State",
-            address = "Address",
-            alternateAddress = "Alt",
-            isActive = 1,
-            addedBy = AddedBy(id = 1L, name = "Admin"),
-            createdAt = "2026-01-01"
+        fillCommonFields()
+        viewModel.selectedTypeIdList = arrayListOf(type(66L, "Type"))
+        viewModel.activitySelection.setAvailable(
+            66L, listOf(ActivityData(77L, "One"), ActivityData(88L, "Two"), ActivityData(99L, "Not selected"))
         )
-        viewModel.selectedProjectId = 22L
-        viewModel.selectedPoNumberId = 33L
-        viewModel.selectedCircleId = 44L
-        viewModel.selectedSiteId = 55L
-        viewModel.selectedTypeIdList = arrayListOf(
-            com.atvantiq.wfms.models.type.TypeData(
-                activities = listOf(
-                    com.atvantiq.wfms.models.type.Activity(id = 999L, name = "Not selected")
-                ),
-                id = 66L,
-                name = "Type"
+        viewModel.activitySelection.select(
+            setOf(
+                TypeActivityOption(66L, "Type", ActivityData(77L, "One")),
+                TypeActivityOption(66L, "Type", ActivityData(88L, "Two"))
             )
         )
-        viewModel.selectedActivityIdList = arrayListOf(77L, 88L)
 
         viewModel.onSaveClick()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -431,6 +441,31 @@ class AddSignInVMTest {
             .asJsonObject
             .getAsJsonArray("activity")
         assertEquals(listOf(77L, 88L), activityArray.map { it.asJsonObject.get("id").asLong })
+    }
+
+    @Test
+    fun `onSaveClick sends each type only its own activities`() = runTest {
+        val params = slot<JsonObject>()
+        coEvery { workRepo.workSelfAssign(capture(params)) } returns mockk<SelfAssignResponse>(relaxed = true)
+        fillCommonFields()
+        viewModel.selectedTypeIdList = arrayListOf(type(10L, "A"), type(20L, "B"))
+        viewModel.activitySelection.setAvailable(10L, listOf(ActivityData(1L, "Survey"), ActivityData(3L, "Audit")))
+        viewModel.activitySelection.setAvailable(20L, listOf(ActivityData(2L, "Install")))
+        viewModel.activitySelection.select(
+            setOf(
+                TypeActivityOption(10L, "A", ActivityData(1L, "Survey")),
+                TypeActivityOption(20L, "B", ActivityData(2L, "Install"))
+            )
+        )
+
+        viewModel.onSaveClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val byType = params.captured.getAsJsonArray("type").associate { typeJson ->
+            val obj = typeJson.asJsonObject
+            obj.get("id").asLong to obj.getAsJsonArray("activity").map { it.asJsonObject.get("id").asLong }
+        }
+        assertEquals(mapOf(10L to listOf(1L), 20L to listOf(2L)), byType)
     }
 
    /* @Test
@@ -511,4 +546,33 @@ class AddSignInVMTest {
         assertEquals(Status.SUCCESS, viewModel.workAssignedResponse.value?.status)
         assertEquals(response, viewModel.workAssignedResponse.value?.response)
     }*/
+
+    private fun type(id: Long, name: String) =
+        com.atvantiq.wfms.models.type.TypeData(activities = emptyList(), id = id, name = name)
+
+    private fun activityResponse(vararg activities: ActivityData) = ActivityListByProjectTypeResponse(
+        code = 200,
+        message = "Activities fetched successfully.",
+        success = true,
+        data = activities.toList()
+    )
+
+    private fun fillCommonFields() {
+        viewModel.selectedClient = Client(
+            id = 11L,
+            companyName = "Client",
+            displayName = "Client",
+            gstNumber = "GST",
+            state = "State",
+            address = "Address",
+            alternateAddress = "Alt",
+            isActive = 1,
+            addedBy = AddedBy(id = 1L, name = "Admin"),
+            createdAt = "2026-01-01"
+        )
+        viewModel.selectedProjectId = 22L
+        viewModel.selectedPoNumberId = 33L
+        viewModel.selectedCircleId = 44L
+        viewModel.selectedSiteId = 55L
+    }
 }
