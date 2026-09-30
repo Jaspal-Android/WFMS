@@ -58,9 +58,9 @@
 
             <ImageButton
                 android:id="@+id/btnRemove"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="@drawable/ic_circular_bg"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
+                android:background="@drawable/bg_circle_touch_target"
                 android:src="@drawable/ic_close_16"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
