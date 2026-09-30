@@ -168,12 +168,12 @@ class DashboardViewModelTest {
             success = true,
             data = EmpData(
                 employeeId = 39580123,
-                employeeCode = "ATQ/87/402",
-                name = "Happy Singh",
-                shortName = "Happy",
-                dob = "2000-06-06",
+                employeeCode = "EMP/001",
+                name = "Test Employee",
+                shortName = "Test",
+                dob = "2000-01-01",
                 gender = "male",
-                email = "employee@atvantiq.com",
+                email = "employee@example.com",
                 role = "Employee",
                 permissions = listOf(
                     Permission(

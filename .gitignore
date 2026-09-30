@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Secrets and release artifacts must never be committed. Local builds read secrets.properties;
+# CI supplies the same values through environment variables (see secrets.properties.example).
+secrets.properties
+*.jks
+*.keystore
+*.aab
+*.apk

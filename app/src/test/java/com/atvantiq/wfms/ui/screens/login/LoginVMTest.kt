@@ -90,33 +90,33 @@ class LoginVMTest {
             code = 200,
             message = "Login successful",
             data = Data(
-                accessToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6InZ2SWRHZHkxanpUQVZEUm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2VtY2tmZmJncnh3aWZ3eW1oaWt2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNWY3M2MwNC01YTQwLTQ3N2YtOGY0My1mYWFiMzRiNjNlN2QiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY0MDY4ODIwLCJpYXQiOjE3NjM0NjQwMjAsImVtYWlsIjoiamFzcGFsMDA2QHlvcG1haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjM0NjQwMjB9XSwic2Vzc2lvbl9pZCI6IjBlOTljMDNiLTYxMDItNGM4My1iYTc3LTczZmUwZjU5YWM4ZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.G2658-GyjlBNiRGkVsejNp2QQlX3N-BpvelPY-RjeAg",
-                refreshToken = "iptpjd5rgnpv",
+                accessToken = "test-access-token",
+                refreshToken = "test-refresh-token",
                 user = User(
-                    userId = 324475492436,
-                    email = "jaspal006@yopmail.com",
-                    firstName = "Jaspal",
-                    lastName = "Kumar",
-                    shortName = "Jaspal Kumar",
+                    userId = 1L,
+                    email = "employee@example.com",
+                    firstName = "Test",
+                    lastName = "Employee",
+                    shortName = "Test Employee",
                     role = "Employee",
-                    roleId = 199427269040,
+                    roleId = 2L,
                     officialLocation = OfficialLocation(
-                        latitude = 30.7149239,
-                        longitude = 76.7033976
+                        latitude = 10.0,
+                        longitude = 20.0
                     ),
                     permissions = listOf(
                         Permission(
-                            featureId = 976896675679,
+                            featureId = 3L,
                             featureName = "Employee Deck",
                             accessLevels = listOf(
-                                AccessLevel( "Full Access",851659960058),
+                                AccessLevel("Full Access", 5L),
                             )
                         ),
                         Permission(
-                            featureId = 751345906091,
+                            featureId = 4L,
                             featureName = "Type Activity",
                             accessLevels = listOf(
-                                AccessLevel( "Full Access",851659960058),
+                                AccessLevel("Full Access", 5L),
                             )
                         )
                     )

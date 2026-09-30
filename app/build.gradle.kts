@@ -11,10 +11,26 @@ plugins {
     id("kotlin-parcelize")
 }
 
-// Load the secrets.properties file
+// Local builds read the git-ignored secrets.properties; CI supplies the same names as
+// environment variables. See secrets.properties.example.
 val secrets = Properties()
 file("../secrets.properties").takeIf { it.exists() }?.apply {
     secrets.load(inputStream())
+}
+
+val mapsApiKey: String? = System.getenv("GOOGLE_MAPS_API_KEY")?.takeIf { it.isNotBlank() }
+    ?: secrets.getProperty("GOOGLE_MAPS_API_KEY")?.takeIf { it.isNotBlank() }
+
+// Debug, test and lint builds work without the key (maps just do not render). A release must
+// never ship with a blank one, so fail it here instead of at runtime.
+val requestsRelease = gradle.startParameter.taskNames.any {
+    it.substringAfterLast(':').matches(Regex("(assemble|bundle)([A-Za-z]*Release)?"))
+}
+if (requestsRelease && mapsApiKey == null) {
+    throw GradleException(
+        "GOOGLE_MAPS_API_KEY is not set. Add it to secrets.properties (see " +
+            "secrets.properties.example) or export it as an environment variable."
+    )
 }
 
 val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
@@ -41,9 +57,9 @@ android {
         versionCode = ciVersionCode ?: 21
         versionName = ciVersionName ?: "1.1.5"
 
-        manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
-        buildConfigField("String","GOOGLE_MAPS_API_KEY","\"" + secrets.getProperty("GOOGLE_MAPS_API_KEY") + "\"")
-        buildConfigField("String","PAYMENT_KEY","\"" + secrets.getProperty("PAYMENT_KEY") + "\"")
+        // Only the manifest needs the key (the Maps SDK reads it from there); it is deliberately
+        // not exposed as a BuildConfig constant.
+        manifestPlaceholders["googleMapsApiKey"] = mapsApiKey.orEmpty()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
