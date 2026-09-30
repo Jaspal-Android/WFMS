@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
@@ -74,15 +75,19 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
             object : PickMediaHelper.Callback {
                 override fun onImagePicked(path: String, request: Int) {
                     if (!path.isNullOrBlank()) {
-                        viewModel.leaveAttachmentPath.set(pickMediaHelper.compressImageTo1MB(path))
-                        binding.hasPreviewImage = true
-                        var bitmap = pickMediaHelper.decodeBitmap(path)
-                        binding.capturedImagePreview.setImageBitmap(bitmap)
+                        // The attachment is always the processed file. It used to be set to null
+                        // when compression failed, so the leave went in without its certificate.
+                        pickMediaHelper.prepareImage(path, lifecycleScope) { prepared ->
+                            viewModel.leaveAttachmentPath.set(prepared.uploadPath)
+                            binding.hasPreviewImage = true
+                            binding.capturedImagePreview.setImageBitmap(prepared.preview)
+                        }
                     }
                 }
 
                 override fun onError(message: String) {
                     binding.hasPreviewImage = false
+                    showToast(this@ApplyLeaveActivity, message)
                 }
             })
         pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
