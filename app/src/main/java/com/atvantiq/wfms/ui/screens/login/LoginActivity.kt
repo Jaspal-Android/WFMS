@@ -245,22 +245,20 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     }
 
     /**
-     * Foreground (fine/coarse) is requested first. Background is requested only after disclosure
-     * + foreground granted (Android 10+).
+     * Only foreground (fine/coarse) location is needed here. Play's Prominent Disclosure policy
+     * applies on every Android version, so the disclosure always precedes the system prompt.
      */
-
     private fun startLocationPermission() {
-        val continueFlow = { startLocationPermissionFlow() }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Utils.showBackgroundLocationDisclosureDialog(
-                this,
-                getString(R.string.share_current_location),
-                getString(R.string.share_location_msg),
-                onAllowAndContinue = continueFlow
-            )
-        } else {
-            continueFlow()
+        if (hasAllPermissions(getForegroundLocationPermissions())) {
+            startLocationPermissionFlow()
+            return
         }
+        Utils.showBackgroundLocationDisclosureDialog(
+            this,
+            getString(R.string.share_current_location),
+            getString(R.string.share_location_msg),
+            onAllowAndContinue = { startLocationPermissionFlow() }
+        )
     }
 
     private fun startLocationPermissionFlow() {

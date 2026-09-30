@@ -434,11 +434,8 @@ class AssignedTaskDetailActivity :
                 showPermissionDeniedPermanently()
             }
 
-            else -> {
-                pendingLocationPermissionAction = null
-                finishWorkAction()
-                showPermissionRationale()
-            }
+            // Keep the pending action and the buttons locked: "Retry" resumes it, "Cancel" releases both.
+            else -> showPermissionRationale()
         }
     }
 
@@ -448,23 +445,25 @@ class AssignedTaskDetailActivity :
         startActivity(intent)
     }
 
-    private fun handleLocationPermissions(
-        onPermissionsGranted: () -> Unit,
-        onPermissionsDenied: () -> Unit = { showPermissionRationale() }
-    ) {
-        val permissions = getRequiredPermissions()
-        when {
-            hasAllPermissions(permissions) -> onPermissionsGranted()
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                pendingLocationPermissionAction = onPermissionsGranted
-                onPermissionsDenied()
-            }
-            else ->{
-                pendingLocationPermissionAction = onPermissionsGranted
-                Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.location_permission_needed),getString(R.string.start_end_work_location_permission_msg)){
-                    permissionLauncher.launch(permissions)
-                }
-            }
+    private fun handleLocationPermissions(onPermissionsGranted: () -> Unit) {
+        if (hasAllPermissions(getRequiredPermissions())) {
+            onPermissionsGranted()
+            return
+        }
+        pendingLocationPermissionAction = onPermissionsGranted
+        requestLocationWithDisclosure()
+    }
+
+    // Play's Prominent Disclosure policy: the system prompt is only ever shown right after the
+    // in-app disclosure, never on its own.
+    private fun requestLocationWithDisclosure() {
+        Utils.showBackgroundLocationDisclosureDialog(
+            this,
+            getString(R.string.location_permission_needed),
+            getString(R.string.start_end_work_location_permission_msg),
+            onCancel = ::abandonPendingLocationAction
+        ) {
+            permissionLauncher.launch(getRequiredPermissions())
         }
     }
 
@@ -487,15 +486,15 @@ class AssignedTaskDetailActivity :
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.permission_required)
             .setMessage(R.string.location_permission_rationale)
-            .setPositiveButton(R.string.retry) { _, _ ->
-                // Launch permission request after showing rationale
-                permissionLauncher.launch(getRequiredPermissions())
-            }
-            .setNegativeButton(R.string.cancel) { _, _ ->
-                pendingLocationPermissionAction = null
-                finishWorkAction()
-            }
+            .setPositiveButton(R.string.retry) { _, _ -> requestLocationWithDisclosure() }
+            .setNegativeButton(R.string.cancel) { _, _ -> abandonPendingLocationAction() }
+            .setOnCancelListener { abandonPendingLocationAction() }
             .show()
+    }
+
+    private fun abandonPendingLocationAction() {
+        pendingLocationPermissionAction = null
+        finishWorkAction()
     }
 
     private fun showPermissionDeniedPermanently() {

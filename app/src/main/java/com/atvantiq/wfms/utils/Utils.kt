@@ -387,10 +387,15 @@ object Utils {
         }.trim().trimEnd(',')
     }
 
+    /**
+     * Play's Prominent Disclosure: shown immediately before every location permission request.
+     * Not cancelable by tapping outside; the user must choose. [onCancel] runs when they decline.
+     */
     fun showBackgroundLocationDisclosureDialog(
         context: Context,
         title: String,
         message: String,
+        onCancel: () -> Unit = {},
         onAllowAndContinue: () -> Unit
     ) {
         MaterialAlertDialogBuilder(context)
@@ -403,6 +408,7 @@ object Utils {
             }
             .setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
                 dialog.dismiss()
+                onCancel()
             }
             .show()
     }
