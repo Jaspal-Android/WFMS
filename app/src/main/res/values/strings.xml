@@ -116,6 +116,16 @@
     <string name="tab_layout_desc">Dashboard tabs</string>
     <string name="unauthorized_access">Unauthorized access</string>
     <string name="something_went_wrong">Something went wrong</string>
+
+    <!-- Network errors: shown wherever a failed request is reported (see ApiErrorMapper) -->
+    <string name="error_no_internet">Unable to connect. Check your internet connection and try again.</string>
+    <string name="error_timeout">The server took too long to respond. Check your connection and try again.</string>
+    <string name="error_unauthorized">Authentication failed. Please log in again.</string>
+    <string name="error_forbidden">You don\'t have permission to do this.</string>
+    <string name="error_client">We couldn\'t complete this request. Please check the details and try again.</string>
+    <string name="error_server">The server ran into a problem. Please try again in a moment.</string>
+    <string name="error_malformed">We received an unexpected response from the server. Please try again.</string>
+    <string name="session_expired_message">Your session has expired. Please log in again.</string>
     <string name="self_assigned_work">Self Assigned Work</string>
     <string name="assign_work">Assign Work</string>
     <string name="no_attendance_data">No Attendance Data</string>

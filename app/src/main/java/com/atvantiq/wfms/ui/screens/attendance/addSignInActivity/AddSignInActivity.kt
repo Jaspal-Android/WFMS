@@ -222,17 +222,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.ERROR -> {
                     vm.onSubmitCompleted()
                     dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -269,17 +259,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     vm.isProjectLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -316,17 +296,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     vm.isPoLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -362,17 +332,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     vm.isCircleLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -409,17 +369,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     vm.isSiteLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -456,17 +406,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     vm.isTypeLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -503,17 +443,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     vm.isActivityLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -555,17 +485,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
                 Status.ERROR -> {
                     dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
