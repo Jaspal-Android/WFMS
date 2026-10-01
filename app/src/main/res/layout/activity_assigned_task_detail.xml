@@ -20,9 +20,7 @@
         android:background="?attr/wfmsColorBackground">
 
         <!-- ══════════════════════════════════════
-             GRADIENT HEADER
-             Gradient applied in code via applyToolbarGradient()
-             same pattern as DashboardActivity
+             HEADER: the shared screen header, then the site name and code
         ══════════════════════════════════════ -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutHeader"
@@ -30,30 +28,14 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Back button -->
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/custom_toolbar"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="@dimen/padding"
-                android:src="@drawable/arrow_back_ios_24"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="@string/back"
-                 />
-
-            <!-- Back label -->
-            <TextView
-                android:id="@+id/tvBack"
-                style="@style/CustomRegularTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/back"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/btnBack"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintTop_toTopOf="@id/btnBack" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Site name -->
             <TextView
@@ -69,7 +51,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnBack" />
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
             <!-- Site code subtitle -->
             <TextView

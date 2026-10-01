@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Header of every screen opened from a tab, as on iOS: the screen's background, a round raised
+     back button on the left and the title centred. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="@dimen/elevation"
-        android:orientation="horizontal">
+        android:layout_height="@dimen/screen_header_height"
+        android:background="?attr/wfmsColorBackground">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/toolbarBackButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="@dimen/screen_header_back_size"
+            android:layout_height="@dimen/screen_header_back_size"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="@dimen/margin"
+            android:background="@drawable/bg_circle_surface"
             android:contentDescription="@string/back"
-            android:padding="@dimen/padding"
+            android:elevation="@dimen/elevation_small"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
             android:src="@drawable/arrow_back_ios_24"
-            app:tint="?attr/wfmsColorAccent" />
+            app:tint="?attr/wfmsColorOnSurface" />
 
         <TextView
             android:id="@+id/toolbarTitle"
-            style="@style/CustomRegularTextView"
-            android:layout_width="0dp"
+            style="@style/CustomLargeTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:text=""
-            android:textColor="?attr/wfmsColorAccent"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="@dimen/screen_header_title_inset"
+            android:accessibilityHeading="true"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            tools:text="Work Approval" />
+    </FrameLayout>
 </layout>

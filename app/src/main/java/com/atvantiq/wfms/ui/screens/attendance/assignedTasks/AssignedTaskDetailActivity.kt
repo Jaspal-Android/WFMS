@@ -69,10 +69,10 @@ class AssignedTaskDetailActivity :
     }
 
     private fun setToolbar() {
-        binding.btnBack.setOnClickListener {
+        binding.toolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        binding.tvBack.text = getString(R.string.details)
+        binding.toolbar.toolbarTitle.text = getString(R.string.details)
     }
 
     private fun initListeners() {

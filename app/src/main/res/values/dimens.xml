@@ -121,6 +121,10 @@
 
     <!-- Lottie "no data" animation shown by empty lists -->
     <dimen name="empty_state_animation_size">150dp</dimen>
+    <!-- Header of a screen opened from a tab: round back button, centred title -->
+    <dimen name="screen_header_height">64dp</dimen>
+    <dimen name="screen_header_back_size">44dp</dimen>
+    <dimen name="screen_header_title_inset">72dp</dimen>
     <!-- Opacity of a row that can't be acted on (Material's disabled emphasis) -->
     <item name="alpha_enabled" format="float" type="dimen">1.0</item>
     <item name="alpha_disabled" format="float" type="dimen">0.38</item>
