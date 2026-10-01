@@ -47,7 +47,7 @@
                         <TextView
                             android:layout_width="@dimen/avatar_size"
                             android:layout_height="@dimen/avatar_size"
-                            android:background="@drawable/bg_avatar_initials"
+                            android:background="@drawable/bg_circle_primary"
                             android:gravity="center"
                             android:importantForAccessibility="no"
                             android:textColor="@color/white"

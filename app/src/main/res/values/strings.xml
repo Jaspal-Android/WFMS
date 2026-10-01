@@ -550,9 +550,12 @@
     <string name="shift_notification_paused_text">Resumes at %1$s</string>
     <string name="continue_label">Continue</string>
     <!-- Admin tabs: Sites and the Approvals hub -->
-    <string name="add_site_subtitle">Register a new site under a client, project and circle</string>
+    <string name="add_site_subtitle">Create a new site for a project circle.</string>
+    <string name="site_active">Active</string>
+    <string name="site_inactive">Inactive</string>
     <string name="no_sites_found">No sites found.</string>
     <string name="available">Available</string>
     <string name="work_approval">Work Approval</string>
-    <string name="work_approval_subtitle">Review employees\' work sites and approve or reject work types</string>
+    <string name="work_approval_subtitle">Review completed site work and work types.</string>
+    <string name="approvals_intro">Select an approval category to review submitted employee activity.</string>
 </resources>

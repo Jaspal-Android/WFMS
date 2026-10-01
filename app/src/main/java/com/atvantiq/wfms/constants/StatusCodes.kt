@@ -14,4 +14,7 @@ object StatusCodes {
     const val REMOVED = 8
     const val APPROVE = 1
     const val REJECT = 2
+
+    /** `is_active` of an active site (0 = inactive); also the Sites list filter. */
+    const val SITE_ACTIVE = 1
 }
