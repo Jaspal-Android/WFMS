@@ -25,8 +25,10 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.tracking.ITrackingRepo
 import com.atvantiq.wfms.data.tracking.LocationEventQueue
 import com.atvantiq.wfms.data.tracking.QueuedLocationEvent
+import com.atvantiq.wfms.data.tracking.SamplingMode
 import com.atvantiq.wfms.data.tracking.ShiftTracker
 import com.atvantiq.wfms.data.tracking.TrackPoint
+import com.atvantiq.wfms.data.tracking.TripModePolicy
 import com.atvantiq.wfms.network.ApiService
 import com.atvantiq.wfms.ui.screens.SplashActivity
 import com.atvantiq.wfms.utils.DateUtils
@@ -54,7 +56,12 @@ class LocationTrackingService : Service() {
     companion object {
         const val CHANNEL_ID = "location_service_channel_v2"
         const val NOTIFICATION_ID = 12345
-        private const val LOCATION_UPDATE_INTERVAL = 15 * 60 * 1000L
+        /** Rest mode: balanced power, a fix every 15 minutes. */
+        private const val REST_INTERVAL_MILLIS = 15 * 60 * 1000L
+
+        /** Trip mode: high accuracy, about every 10 s, at least 50 m apart. */
+        private const val TRIP_INTERVAL_MILLIS = 10 * 1000L
+        private const val TRIP_MIN_DISTANCE_METERS = 50f
 
         /** Pause 15 min / Resume, from the notification or the dashboard card. */
         const val ACTION_PAUSE = "com.atvantiq.wfms.action.PAUSE_TRACKING"
@@ -72,7 +79,15 @@ class LocationTrackingService : Service() {
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private var locationCallback: LocationCallback? = null
     private var isServiceRunning = false
-    private var isUpdatingLocation = false
+
+    /** Rest or trip sampling; only touched under [syncMutex]. */
+    private val tripModePolicy = TripModePolicy()
+
+    /** The mode location updates are currently requested in; main thread only. */
+    private var requestedMode: SamplingMode? = null
+
+    /** When the queue was last uploaded; under [syncMutex]. */
+    private var lastUploadMillis = 0L
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     // Serializes enqueue + flush so overlapping location callbacks can't re-send the
@@ -95,6 +110,18 @@ class LocationTrackingService : Service() {
     lateinit var shiftTracker: ShiftTracker
 
     private val mainHandler = Handler(Looper.getMainLooper())
+
+    /** In trip mode a still phone sends no fixes: this checks whether the trip has ended. */
+    private val stillCheck = Runnable {
+        serviceScope.launch {
+            val mode = syncMutex.withLock {
+                tripModePolicy.onStillTimeout(System.currentTimeMillis()).also {
+                    if (it == SamplingMode.REST) uploadQueue()
+                }
+            }
+            mainHandler.post { applySamplingMode(mode) }
+        }
+    }
 
     /** Ends the pause when its 15 minutes are up, even if no fix arrives. */
     private val autoResume = Runnable {
@@ -247,28 +274,46 @@ class LocationTrackingService : Service() {
 
 
     private fun startLocationUpdates() {
-        if (!isServiceRunning || isUpdatingLocation) return
+        if (!isServiceRunning || requestedMode != null) return
+        applySamplingMode(tripModePolicy.mode)
+    }
 
-        val locationRequest = LocationRequest.Builder(LOCATION_UPDATE_INTERVAL)
-            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-            .build()
-
-        if (checkLocationPermission()) {
-            try {
-                fusedLocationClient?.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback ?: return,
-                    Looper.getMainLooper()
-                )
-                isUpdatingLocation = true
-            } catch (e: SecurityException) {
-                Log.e("LocationService", "Security exception: ${e.message}")
-                stopSelf()
-            }
-        } else {
+    /**
+     * Requests location for [mode] (main thread). Rest: balanced power every 15 min. Trip: high
+     * accuracy every ~10 s with a 50 m filter. In trip mode the still timer is (re)armed.
+     */
+    private fun applySamplingMode(mode: SamplingMode) {
+        if (!isServiceRunning) return
+        scheduleStillCheck()
+        if (mode == requestedMode) return
+        val callback = locationCallback ?: return
+        if (!checkLocationPermission()) {
             Log.e("LocationService", "Location permission not granted")
             stopSelf()
+            return
         }
+        val request = when (mode) {
+            SamplingMode.REST -> LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, REST_INTERVAL_MILLIS).build()
+            SamplingMode.TRIP -> LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, TRIP_INTERVAL_MILLIS)
+                .setMinUpdateDistanceMeters(TRIP_MIN_DISTANCE_METERS)
+                .build()
+        }
+        try {
+            fusedLocationClient?.removeLocationUpdates(callback)
+            fusedLocationClient?.requestLocationUpdates(request, callback, Looper.getMainLooper())
+            requestedMode = mode
+            if (BuildConfig.DEBUG) Log.d("LocationService", "Sampling in $mode mode")
+        } catch (e: SecurityException) {
+            Log.e("LocationService", "Security exception: ${e.message}")
+            stopSelf()
+        }
+    }
+
+    private fun scheduleStillCheck() {
+        mainHandler.removeCallbacks(stillCheck)
+        val lastMove = tripModePolicy.lastMoveMillis ?: return
+        val delay = lastMove + TripModePolicy.STILL_MILLIS - System.currentTimeMillis()
+        mainHandler.postDelayed(stillCheck, delay.coerceAtLeast(0L))
     }
 
     private fun checkLocationPermission(): Boolean {
@@ -292,17 +337,26 @@ class LocationTrackingService : Service() {
                     recordedAtMillis = location.time.takeIf { it > 0 } ?: System.currentTimeMillis(),
                     accuracyMeters = if (location.hasAccuracy()) location.accuracy else null
                 )
+                val point = TrackPoint(event.latitude, event.longitude, event.recordedAtMillis, event.accuracyMeters?.toDouble())
+                val mode = tripModePolicy.onFix(point)
                 // During a pause fixes are discarded (not queued, not uploaded); the service keeps running.
-                val accepted = shiftTracker.recordFix(
-                    TrackPoint(event.latitude, event.longitude, event.recordedAtMillis, event.accuracyMeters?.toDouble())
-                )
-                if (accepted) {
+                if (shiftTracker.recordFix(point)) {
                     locationEventQueue.enqueue(event)
-                    flushQueuedLocations()
+                    val now = System.currentTimeMillis()
+                    if (TripModePolicy.shouldUpload(mode, locationEventQueue.peekAll().size, lastUploadMillis, now)) {
+                        uploadQueue()
+                    }
                 }
                 updateNotification()
+                mainHandler.post { applySamplingMode(mode) }
             }
         }
+    }
+
+    /** Uploads everything queued; call under [syncMutex]. */
+    private suspend fun uploadQueue() {
+        lastUploadMillis = System.currentTimeMillis()
+        flushQueuedLocations()
     }
 
     private suspend fun flushQueuedLocations() {
@@ -334,8 +388,9 @@ class LocationTrackingService : Service() {
 
     override fun onDestroy() {
         mainHandler.removeCallbacks(autoResume)
+        mainHandler.removeCallbacks(stillCheck)
         isServiceRunning = false
-        isUpdatingLocation = false
+        requestedMode = null
         try {
             locationCallback?.let { callback ->
                 fusedLocationClient?.removeLocationUpdates(callback)
