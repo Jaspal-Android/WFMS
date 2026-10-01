@@ -554,7 +554,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                         manageDayStartEnd()
                     } else {
                         binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                        Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
+                        Utils.showLocationDisclosureDialog(requireContext(),getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
                             permissionLauncher.launch(
                                 PermissionUtils.LOCATION_PERMISSIONS + PermissionUtils.notificationPermissions()
                             )
@@ -623,7 +623,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             trackingPermissionPrompted -> Unit
             else -> {
                 trackingPermissionPrompted = true
-                Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
+                Utils.showLocationDisclosureDialog(requireContext(),getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
                     permissionLauncherLocationTracking.launch(permissions + PermissionUtils.notificationPermissions())
                 }
             }
@@ -646,7 +646,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     /** Disclosure, then the "Allow all the time" request (also the card's Fix button). */
     private fun requestBackgroundLocation() {
-        Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+        Utils.showLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
             permissionLauncherBackgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
     }
@@ -702,7 +702,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
             foreground.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
             else -> {
-                Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
+                Utils.showLocationDisclosureDialog(requireContext(),getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
                     permissionLauncherCurrentLocation.launch(foreground)
                 }
             }

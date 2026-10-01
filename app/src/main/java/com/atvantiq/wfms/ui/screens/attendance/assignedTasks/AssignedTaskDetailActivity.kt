@@ -457,11 +457,10 @@ class AssignedTaskDetailActivity :
     // Play's Prominent Disclosure policy: the system prompt is only ever shown right after the
     // in-app disclosure, never on its own.
     private fun requestLocationWithDisclosure() {
-        Utils.showBackgroundLocationDisclosureDialog(
+        Utils.showLocationDisclosureDialog(
             this,
             getString(R.string.location_permission_needed),
-            getString(R.string.start_end_work_location_permission_msg),
-            onCancel = ::abandonPendingLocationAction
+            getString(R.string.start_end_work_location_permission_msg)
         ) {
             permissionLauncher.launch(getRequiredPermissions())
         }

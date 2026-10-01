@@ -289,11 +289,10 @@
     <string name="started">Started</string>
     <string name="absent_system_generated">Absent (System Generated)</string>
     <string name="incomplete_attendance">Incomplete</string>
-    <string name="attendance_location_disclosure_title">Location Use for Attendance</string>
-    <string name="attendance_location_disclosure_msg">ONAQT collects your device location to:\n\n• Mark your attendance when you start and end your day, within 500 meters of your office\n• Track your location during work hours while your day is active\n• Verify start and end site locations for site visits\n• Calculate travel distance for reimbursement claims\n\nLocation data is used only for official work purposes and is not shared with third parties.</string>
-    <string name="background_location_usage">Allow Background Location</string>
-    <string name="background_location_usage_msg">ONAQT collects location data to enable attendance tracking, site visit verification and travel distance for reimbursement claims, even when the app is closed or not in use.\n\nBackground location is collected only while your workday is active and stops when you end your day. Location data is used only for official work purposes and is not shared with third parties.\n\nOn the next screen, select \"Allow all the time\".</string>
-    <string name="allow_and_continue">Allow &amp; Continue</string>
+    <string name="attendance_location_disclosure_title">Allow location for attendance</string>
+    <string name="attendance_location_disclosure_msg">ONAQT uses your location to verify check-in and check-out, and to record your route while your shift is active. Location is used only for official work purposes and is never shared with third parties.</string>
+    <string name="background_location_usage">Allow background location?</string>
+    <string name="background_location_usage_msg">While your shift is active, ONAQT records your location in the background, even when the app is closed or not in use, to build your My Day route and calculate travel distance for claims. It stops automatically when you end your day or sign out. You can pause it for a short break from the dashboard. Only you and your organisation\'s managers can see it; it is never used for advertising.</string>
     <string name="location_permission_needed">Location Permission Needed</string>
     <string name="start_end_work_location_permission_msg">ONAQT uses your location when you tap Start Work or End Work to:\n\n• Verify that you have reached the assigned work site\n• Record accurate work start and end times\n• Calculate travel distance for reimbursement claims\n\nLocation data is used only for official work purposes and is not shared with third parties.</string>
     <string name="share_current_location">Share Current Location</string>
@@ -553,4 +552,5 @@
         <item quantity="other">%d locations</item>
     </plurals>
     <string name="shift_notification_paused_text">Resumes at %1$s</string>
+    <string name="continue_label">Continue</string>
 </resources>

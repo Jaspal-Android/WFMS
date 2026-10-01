@@ -371,7 +371,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                         manageDayStartEnd()
                     } else {
                         binding.slideStartDay.setCompleted(false, true)
-                        Utils.showBackgroundLocationDisclosureDialog(this@SharedDashboardActivity,getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
+                        Utils.showLocationDisclosureDialog(this@SharedDashboardActivity,getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
                             permissionLauncher.launch(
                                 PermissionUtils.LOCATION_PERMISSIONS + PermissionUtils.notificationPermissions()
                             )
@@ -498,7 +498,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
             trackingPermissionPrompted -> Unit
             else -> {
                 trackingPermissionPrompted = true
-                Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
+                Utils.showLocationDisclosureDialog(this,getString(R.string.attendance_location_disclosure_title),getString(R.string.attendance_location_disclosure_msg)) {
                     permissionLauncherLocationTracking.launch(permissions + PermissionUtils.notificationPermissions())
                 }
             }
@@ -515,7 +515,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
     private fun requestBackgroundLocationIfNeeded() {
         if (backgroundLocationPrompted || PermissionUtils.hasBackgroundLocationPermission(this)) return
         backgroundLocationPrompted = true
-        Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
+        Utils.showLocationDisclosureDialog(this,getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
             permissionLauncherBackgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
     }
@@ -597,7 +597,7 @@ class SharedDashboardActivity : BaseActivity<ActivitySharedDashboardBinding,Dash
                 }
             }
             permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
+            else -> Utils.showLocationDisclosureDialog(this,getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
                 permissionLauncherCurrentLatLon.launch(permissions)
             }
         }
