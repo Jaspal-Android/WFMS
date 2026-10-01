@@ -54,6 +54,8 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
         binding.vm = vm
 
         vm.allSitesResponse.observe(this) { response ->
+            // Skip the previous activity's last result replayed after recreation (see PagedListState).
+            if (!response.consumeOnce()) return@observe
             handleSiteAllResponse(response)
         }
 
@@ -123,9 +125,13 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
     }
 
     private fun showLoadingIndicator() {
-        if (paging.isLoadingFirstPage) showProgress() else {
-            adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
-            adapter?.addLoadingFooter()
+        when {
+            paging.isLoadingFirstPage -> showProgress()
+            // Only while a later page is actually awaited; otherwise nothing would remove it.
+            paging.isLoading -> {
+                adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
+                adapter?.addLoadingFooter()
+            }
         }
     }
 

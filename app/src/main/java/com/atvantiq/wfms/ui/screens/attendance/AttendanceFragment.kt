@@ -88,6 +88,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
         vm.workAssignedAllResponse.observe(viewLifecycleOwner) { response ->
             if (!isLifeCycleStarted()) return@observe
+            // Skip the previous view's last result replayed to this observer (see PagedListState).
+            if (!response.consumeOnce()) return@observe
             handleWorkAssignedResponse(response)
         }
 
@@ -276,9 +278,13 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun showLoadingIndicator() {
-        if (paging.isLoadingFirstPage) showProgress() else {
-            adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
-            adapter?.addLoadingFooter()
+        when {
+            paging.isLoadingFirstPage -> showProgress()
+            // Only while a later page is actually awaited; otherwise nothing would remove it.
+            paging.isLoading -> {
+                adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
+                adapter?.addLoadingFooter()
+            }
         }
     }
 

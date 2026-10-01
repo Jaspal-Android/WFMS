@@ -12,6 +12,10 @@ package com.atvantiq.wfms.utils
  * Here the counter moves only when a page arrives, every failure path releases the lock, and a
  * response that nobody is waiting for is ignored. The screen still owns the adapter; it also
  * cancels the superseded request (see `cancelPrevious` in `BaseViewModel.executeApiCall`).
+ *
+ * The list LiveData lives in a ViewModel that outlives the view, so a new observer is handed the
+ * previous view's last result. Screens must drop it (`ApiState.consumeOnce()`); otherwise it is
+ * taken as the answer to the new first-page request and the real answer is then ignored.
  */
 class PagedListState(private val pageSize: Int) {
 
