@@ -21,13 +21,16 @@
         android:layout_height="match_parent"
         android:background="?attr/wfmsColorBackground"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/padding"
         android:paddingTop="@dimen/padding"
         tools:context=".ui.screens.admin.ui.site.SitesFragment">
 
         <include
             android:id="@+id/addSiteCard"
             layout="@layout/layout_action_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin_small"
             app:icon="@{@drawable/ic_add_white_24}"
             app:onClick="@{() -> vm.onAddSiteClick()}"
             app:subtitle="@{@string/add_site_subtitle}"
@@ -47,6 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
+                    android:paddingHorizontal="@dimen/margin_small"
                     android:paddingBottom="@dimen/margin"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"
