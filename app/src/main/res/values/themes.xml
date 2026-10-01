@@ -345,15 +345,29 @@
         <item name="tint">?attr/wfmsColorPrimaryLight</item>
     </style>
 
-    <!-- Floating bottom bar: labels always shown, pill indicator behind the selected tab. -->
+    <!-- Native full-width bottom bar: card surface, labels always shown, the selected tab's icon
+         and label in the brand colour (label bold) with a pill behind the icon. -->
     <style name="Widget.WFMS.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
-        <item name="android:background">@drawable/bg_bottom_nav</item>
-        <item name="backgroundTint">@null</item>
-        <item name="elevation">@dimen/elevation_small</item>
+        <item name="backgroundTint">?attr/wfmsColorSurface</item>
+        <item name="elevation">@dimen/elevation</item>
         <item name="labelVisibilityMode">labeled</item>
         <item name="itemIconTint">@color/bottom_nav_item</item>
         <item name="itemTextColor">@color/bottom_nav_item</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.WFMS.BottomNavigation.Active</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.WFMS.BottomNavigation</item>
         <item name="itemActiveIndicatorStyle">@style/Widget.WFMS.BottomNavigation.Indicator</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.WFMS.BottomNavigation</item>
+    </style>
+
+    <!-- Keep the bar the plain card colour: no Material3 tonal (brand-tinted) elevation. -->
+    <style name="ThemeOverlay.WFMS.BottomNavigation" parent="">
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+
+    <style name="TextAppearance.WFMS.BottomNavigation" parent="TextAppearance.Material3.LabelMedium" />
+
+    <style name="TextAppearance.WFMS.BottomNavigation.Active">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Widget.WFMS.BottomNavigation.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">

@@ -2,12 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Employee shell: tab content above a floating bottom bar (Dashboard · Work · Claims · More). -->
+    <!-- Employee shell, edge to edge: the header runs under the status bar and the bottom bar
+         (Dashboard · Work · Claims · More) under the gesture area; tab content sits between. -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/wfmsColorBackground"
-        android:fitsSystemWindows="true">
+        android:background="?attr/wfmsColorBackground">
 
         <include
             android:id="@+id/app_bar_dashboard"
@@ -22,9 +22,6 @@
             style="@style/Widget.WFMS.BottomNavigation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin"
-            android:layout_marginEnd="@dimen/margin"
-            android:layout_marginBottom="@dimen/margin_small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
