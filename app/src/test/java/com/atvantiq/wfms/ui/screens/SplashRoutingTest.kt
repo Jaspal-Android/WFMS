@@ -23,21 +23,9 @@ class SplashRoutingTest {
     }
 
     @Test
-    fun `an employee opens the employee dashboard whatever the casing`() {
-        assertEquals(SplashTarget.EMPLOYEE_DASHBOARD, SplashRouting.targetFor("token", user("Employee")))
-        assertEquals(SplashTarget.EMPLOYEE_DASHBOARD, SplashRouting.targetFor("token", user("employee")))
-        assertEquals(SplashTarget.EMPLOYEE_DASHBOARD, SplashRouting.targetFor("token", user("EMPLOYEE")))
-    }
-
-    @Test
-    fun `every other role opens the shared admin dashboard`() {
-        listOf("pm", "ops", "admin", "Manager").forEach {
-            assertEquals(it, SplashTarget.ADMIN_DASHBOARD, SplashRouting.targetFor("token", user(it)))
+    fun `every role opens the same dashboard, which picks its own tabs`() {
+        listOf("Employee", "employee", "pm", "ops", "admin", "Manager", null).forEach {
+            assertEquals(it, SplashTarget.DASHBOARD, SplashRouting.targetFor("token", user(it)))
         }
-    }
-
-    @Test
-    fun `a user with no role is treated as a non-employee, as before`() {
-        assertEquals(SplashTarget.ADMIN_DASHBOARD, SplashRouting.targetFor("token", user(null)))
     }
 }

@@ -205,6 +205,32 @@ class LoginVMTest {
     }
 
     @Test
+    fun `an accepted login caches the profile before completing, so the dashboard opens with the right tabs`() = runTest {
+        mockkObject(com.ssas.jibli.data.prefs.PrefMethods)
+        val profile = mockk<com.atvantiq.wfms.models.empDetail.EmpData>(relaxed = true)
+        coEvery { authRepo.empDetails() } returns mockk(relaxed = true) {
+            every { code } returns 200
+            every { data } returns profile
+        }
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify { com.ssas.jibli.data.prefs.PrefMethods.saveEmpDetailResponse(prefMain, profile) }
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login still completes when the profile cannot be fetched`() = runTest {
+        coEvery { authRepo.empDetails() } throws java.io.IOException("offline")
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
     fun `login still completes when the push token cannot be fetched`() = runTest {
         viewModel.fetchPushToken = { throw IllegalStateException("no token") }
 

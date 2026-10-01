@@ -23,8 +23,8 @@ import com.atvantiq.wfms.databinding.FragmentDashboardBinding
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpData
-import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.Status
+import com.atvantiq.wfms.ui.screens.DashboardTabs
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
 import com.atvantiq.wfms.ui.screens.announcements.AnnouncementsActivity
 import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
@@ -32,6 +32,7 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceCommunic
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceStatusFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets.MyTargetsFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashboardFragment
+import com.atvantiq.wfms.ui.screens.more.ProfileVM
 import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.utils.setAccessibleAction
@@ -44,7 +45,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ncorti.slidetoact.SlideToActView
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import com.atvantiq.wfms.utils.navigateToTab
@@ -68,6 +68,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
 
+    /** The shell's profile and tabs, refreshed from `GET /employee/me` by the activity. */
+    private val profileViewModel: ProfileVM by activityViewModels()
+
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_dashboard, DashboardViewModel::class.java)
 
@@ -89,14 +92,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         setupTabBar()
         setupSwipeButton()
         binding.appDashHeader.slideStartDay.let { it.setAccessibleAction(it.text) }
-
-        PrefMethods.getEmpDetailResponse(prefMain)?.let {
-            setupUserData(it)
-        } ?: viewModel.getEmpDetails()
     }
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
+
+        profileViewModel.profile.observe(viewLifecycleOwner) { profile -> setupUserData(profile) }
 
         // Pause / Resume from the card or the notification, and the end of a pause.
         vm.shiftState.observe(viewLifecycleOwner) { renderTrackingCard() }
@@ -109,28 +110,10 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
                     startCurrentLocationPermissionFlow()
                 }
-                DashboardClickEvents.OPEN_SITES_CLICK,
-                DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK,
-                DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK,
-                DashboardClickEvents.OPEN_PROFILE_CLICK,
-                DashboardClickEvents.CHANGE_THEME_CLICK -> {
-                    showToast(requireContext(), getString(R.string.under_development))
-                }
-                DashboardClickEvents.LOGOUT_CLICK -> logoutUser()
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(requireContext(), ApplyLeaveActivity::class.java)
                 }
                 null -> Unit
-            }
-        }
-
-        vm.empDetailsResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> handleEmpDetailsResponse(response.response)
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> { /* showProgress() if needed */ }
-                }
             }
         }
 
@@ -196,32 +179,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     override fun onDestroyView() {
         view?.removeCallbacks(trackingCardRefresh)
         super.onDestroyView()
-    }
-
-    private fun logoutUser() {
-        alertDialogShow(
-            requireContext(),
-            getString(R.string.logout),
-            getString(R.string.logout_confirmation),
-            getString(R.string.yes),
-            { dialog, _ ->
-                dialog.dismiss()
-                performLogout()
-            },
-            { dialog, _ -> dialog.dismiss() }
-        )
-    }
-
-    private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
-        dismissProgress() // Ensure progress is dismissed before showing any message
-        when (empDetailResponse?.code) {
-            ValConstants.SUCCESS_CODE -> {
-                PrefMethods.saveEmpDetailResponse(prefMain, empDetailResponse.data)
-                setupUserData(empDetailResponse.data)
-            }
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(requireContext(), getString(R.string.alert), empDetailResponse?.message ?: getString(R.string.something_went_wrong))
-        }
     }
 
     private fun handleCheckInResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
@@ -323,7 +280,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             getString(R.string.enter_work_details),
             DialogInterface.OnClickListener { dialog, _ ->
                 dialog.dismiss()
-                findNavController().navigateToTab(R.id.nav_attendance)
+                // Work for employees; Approvals, or Sites, for admins.
+                DashboardTabs.workEntryTab(profileViewModel.tabs.value.orEmpty())
+                    ?.let { findNavController().navigateToTab(it.destinationId) }
             },
             getString(R.string.mark_idle),
             DialogInterface.OnClickListener { _, _ ->

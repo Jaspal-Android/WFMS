@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
-import com.atvantiq.wfms.models.loginResponse.Permission
 import com.atvantiq.wfms.models.loginResponse.User
 import com.ssas.jibli.data.prefs.PrefMethods
 import io.mockk.every
@@ -58,9 +57,8 @@ class SplashVMTest {
         every { PrefMethods.getUserData(prefMain) } returns user
     }
 
-    private fun user(role: String, permissions: List<Permission>): User = mockk(relaxed = true) {
+    private fun user(role: String): User = mockk(relaxed = true) {
         every { this@mockk.role } returns role
-        every { this@mockk.permissions } returns permissions
     }
 
     @Test
@@ -70,18 +68,23 @@ class SplashVMTest {
         viewModel.resolve(minVisibleMs = 0)
         dispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(SplashTarget.LOGIN, viewModel.destination.value?.target)
+        assertEquals(SplashTarget.LOGIN, viewModel.destination.value)
     }
 
     @Test
-    fun `an employee session opens the employee dashboard with its permissions`() {
-        val permission = mockk<Permission>(relaxed = true)
-        session(token = "t", user = user(ValConstants.ROLE_EMPLOYEE, listOf(permission)))
+    fun `a saved session opens the dashboard for every role`() {
+        listOf(ValConstants.ROLE_EMPLOYEE, ValConstants.ROLE_PM).forEach { role ->
+            session(token = "t", user = user(role))
+            val splash = SplashVM(mockk<Application>(relaxed = true), prefMain).apply {
+                ioDispatcher = dispatcher
+                now = { dispatcher.scheduler.currentTime }
+            }
 
-        viewModel.resolve(minVisibleMs = 0)
-        dispatcher.scheduler.advanceUntilIdle()
+            splash.resolve(minVisibleMs = 0)
+            dispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(SplashDestination(SplashTarget.EMPLOYEE_DASHBOARD, listOf(permission)), viewModel.destination.value)
+            assertEquals(role, SplashTarget.DASHBOARD, splash.destination.value)
+        }
     }
 
     @Test
@@ -91,7 +94,7 @@ class SplashVMTest {
         viewModel.resolve(minVisibleMs = 0)
         dispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(SplashTarget.LOGIN, viewModel.destination.value?.target)
+        assertEquals(SplashTarget.LOGIN, viewModel.destination.value)
     }
 
     @Test
@@ -105,7 +108,7 @@ class SplashVMTest {
 
         dispatcher.scheduler.advanceTimeBy(2)
         dispatcher.scheduler.runCurrent()
-        assertEquals(SplashTarget.LOGIN, viewModel.destination.value?.target)
+        assertEquals(SplashTarget.LOGIN, viewModel.destination.value)
     }
 
     @Test
@@ -117,6 +120,6 @@ class SplashVMTest {
         viewModel.resolve(minVisibleMs = 0)
         dispatcher.scheduler.runCurrent()
 
-        assertEquals(SplashTarget.LOGIN, viewModel.destination.value?.target)
+        assertEquals(SplashTarget.LOGIN, viewModel.destination.value)
     }
 }

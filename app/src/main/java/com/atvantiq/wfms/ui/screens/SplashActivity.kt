@@ -8,9 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
-import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivitySplashBinding
-import com.atvantiq.wfms.ui.screens.admin.SharedDashboardActivity
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,22 +59,14 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashVM>() {
         return intent?.action in setOf(ACTION_LOCATION_NOTIFICATION, ACTION_PUSH_NOTIFICATION)
     }
 
-    private fun open(destination: SplashDestination) {
+    private fun open(destination: SplashTarget) {
         if (routed) return
         routed = true
-
-        val target = when (destination.target) {
-            SplashTarget.LOGIN -> {
-                Utils.jumpActivity(this, LoginActivity::class.java)
-                finish()
-                return
-            }
-            SplashTarget.EMPLOYEE_DASHBOARD -> DashboardActivity::class.java
-            SplashTarget.ADMIN_DASHBOARD -> SharedDashboardActivity::class.java
+        val screen = when (destination) {
+            SplashTarget.LOGIN -> LoginActivity::class.java
+            SplashTarget.DASHBOARD -> DashboardActivity::class.java
         }
-        Utils.jumpActivityWithData(this, target, Bundle().apply {
-            putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, ArrayList(destination.permissions))
-        })
+        Utils.jumpActivity(this, screen)
         finish()
     }
 }

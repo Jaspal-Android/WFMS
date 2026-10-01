@@ -21,6 +21,16 @@
         android:label="@string/tab_claims"
         tools:layout="@layout/fragment_reimbursement" />
     <fragment
+        android:id="@+id/nav_sites"
+        android:name="com.atvantiq.wfms.ui.screens.admin.ui.site.SitesFragment"
+        android:label="@string/sites"
+        tools:layout="@layout/fragment_sites" />
+    <fragment
+        android:id="@+id/nav_approvals"
+        android:name="com.atvantiq.wfms.ui.screens.admin.ui.approvals.ApprovalsFragment"
+        android:label="@string/approvals"
+        tools:layout="@layout/fragment_approvals" />
+    <fragment
         android:id="@+id/nav_more"
         android:name="com.atvantiq.wfms.ui.screens.more.MoreFragment"
         android:label="@string/tab_more"

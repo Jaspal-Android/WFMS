@@ -74,16 +74,9 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity
-            android:name=".ui.screens.admin.ui.site.SitesActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.screens.more.ProfileActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.admin.SharedDashboardActivity"
-            android:exported="false"
-            android:theme="@style/Theme.WFMS" />
         <activity
             android:name=".ui.screens.dashboard.tabs.attendance.detail.AttendanceDetailActivity"
             android:exported="false"

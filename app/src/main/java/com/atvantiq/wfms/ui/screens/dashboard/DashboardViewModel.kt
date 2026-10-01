@@ -13,16 +13,13 @@ import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
-import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.data.tracking.ShiftState
 import com.atvantiq.wfms.data.tracking.ShiftTracker
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
-import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
-import com.atvantiq.wfms.ui.screens.admin.SharedDashClickEvents
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
@@ -40,7 +37,6 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     application: Application,
     private val attendanceRepo: IAttendanceRepo,
-    private val authRepo: IAuthRepo,
     private val prefMain: SecurePrefMain,
     private val shiftTracker: ShiftTracker
 ) : BaseViewModel(application) {
@@ -172,41 +168,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    var empDetailsResponse = MutableLiveData<ApiState<EmpDetailResponse>>()
-    fun getEmpDetails() {
-        viewModelScope.launch {
-            executeApiCall(
-                apiCall = { authRepo.empDetails() },
-                liveData = empDetailsResponse
-            )
-        }
-    }
-
-    fun onLogoutClick(){
-        clickEvents.value = DashboardClickEvents.LOGOUT_CLICK
-    }
-
-    fun onSitesClick(){
-        clickEvents.value = DashboardClickEvents.OPEN_SITES_CLICK
-    }
-
-    fun onSitesApprovalsClick(){
-        clickEvents.value = DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK
-    }
-
-    fun onClaimApprovalsClick(){
-        clickEvents.value = DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK
-    }
-
-    fun onProfileClick(){
-        clickEvents.value = DashboardClickEvents.OPEN_PROFILE_CLICK
-    }
-
     fun onApplyLeaveClick(){
         clickEvents.value = DashboardClickEvents.APPLY_LEAVE_CLICK
-    }
-
-    fun onChangeThemeClick() {
-        clickEvents.value = DashboardClickEvents.CHANGE_THEME_CLICK
     }
 }

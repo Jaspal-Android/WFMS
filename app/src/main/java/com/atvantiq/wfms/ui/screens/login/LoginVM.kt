@@ -19,6 +19,7 @@ import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
@@ -46,8 +47,8 @@ class LoginVM @Inject constructor(
     val loginResponse = MutableLiveData<ApiState<LoginResponse>>()
 
     /**
-     * True once an accepted login is saved and push-token registration has finished, failed or
-     * timed out. LiveData only delivers it while the screen is visible, so a login that completes
+     * True once an accepted login is saved and both the profile fetch and push-token registration
+     * have finished, failed or timed out. LiveData only delivers it while the screen is visible, so a login that completes
      * in the background opens the dashboard when the user comes back.
      */
     val loginCompleted = MutableLiveData<Boolean>()
@@ -102,7 +103,10 @@ class LoginVM @Inject constructor(
     fun isAccepted(response: LoginResponse?): Boolean =
         response != null && response.code == ValConstants.SUCCESS_CODE && response.success
 
-    /** Saves an accepted session, registers the push token (best-effort), then completes. */
+    /**
+     * Saves an accepted session, then (both best-effort, side by side) caches the profile, whose
+     * role and permissions pick the dashboard tabs, and registers the push token; then completes.
+     */
     private fun onLoginAnswered(response: LoginResponse) {
         if (!isAccepted(response) || isCompletingLogin) return
         isCompletingLogin = true
@@ -110,8 +114,32 @@ class LoginVM @Inject constructor(
         PrefMethods.saveUserData(prefMain, response.data?.user)
         user = response.data?.user
         viewModelScope.launch {
-            registerPushToken(user?.userId.toString())
+            coroutineScope {
+                launch { cacheProfile() }
+                launch { registerPushToken(user?.userId.toString()) }
+            }
             loginCompleted.value = true
+        }
+    }
+
+    /**
+     * `GET /employee/me` right after login, so the dashboard opens with the right tabs. If it fails
+     * the dashboard refreshes the profile itself.
+     */
+    private suspend fun cacheProfile() {
+        try {
+            withTimeout(PROFILE_TIMEOUT_MS) {
+                val response = authRepo.empDetails()
+                if (response.code == ValConstants.SUCCESS_CODE) {
+                    PrefMethods.saveEmpDetailResponse(prefMain, response.data)
+                }
+            }
+        } catch (e: TimeoutCancellationException) {
+            Log.w(TAG, "Profile fetch after login timed out", e)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Profile fetch after login failed", e)
         }
     }
 
@@ -170,5 +198,6 @@ class LoginVM @Inject constructor(
     private companion object {
         const val TAG = "LoginVM"
         const val NOTIFICATION_TOKEN_TIMEOUT_MS = 10_000L
+        const val PROFILE_TIMEOUT_MS = 10_000L
     }
 }

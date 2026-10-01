@@ -11,7 +11,6 @@ object SharingKeys {
     const val WORK_POSITION = "WORK_POSITION"
     const val WORK_ID = "WORK_ID"
     const val REFRESH_ASSIGN_TASK = "2001"
-    const val ROLE_PERMISSIONS = "ROLE_PERMISSIONS"
     const val UPDATED_STATUS = "UPDATED_STATUS"
     const val SITE_ID = "SITE_ID"
     const val SITE_PURPOSE = "SITE_PURPOSE"

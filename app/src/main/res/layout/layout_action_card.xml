@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A tappable card that opens a screen: icon box, title (with an optional chip), subtitle and a
+     chevron. Used by the Sites tab's Add Site card and the Approvals hub. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="icon"
+            type="android.graphics.drawable.Drawable" />
+        <variable
+            name="title"
+            type="String" />
+        <variable
+            name="subtitle"
+            type="String" />
+        <!-- Optional chip beside the title; hidden when null. -->
+        <variable
+            name="badge"
+            type="String" />
+        <variable
+            name="onClick"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small">
+
+        <LinearLayout
+            style="@style/CustomMoreRow"
+            android:onClick="@{onClick}">
+
+            <ImageView
+                style="@style/CustomMoreRowIcon"
+                android:background="@drawable/icon_box_bg"
+                android:importantForAccessibility="no"
+                android:src="@{icon}"
+                app:tint="?attr/wfmsColorPrimary"
+                tools:src="@drawable/ic_tab_sites" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/CustomMoreRowTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{title}"
+                        tools:text="@string/add_site" />
+
+                    <TextView
+                        style="@style/CustomSmallTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:background="@drawable/info_chip_bg"
+                        android:paddingHorizontal="@dimen/padding_small"
+                        android:paddingVertical="@dimen/padding_x_small"
+                        android:text="@{badge}"
+                        android:textColor="?attr/wfmsColorAccent"
+                        android:textStyle="bold"
+                        android:visibility="@{badge == null ? View.GONE : View.VISIBLE}"
+                        tools:text="@string/available" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomMoreRowSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="@{subtitle}"
+                    tools:text="@string/add_site_subtitle" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/forward_arrow_right_24"
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
