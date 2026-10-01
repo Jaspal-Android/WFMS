@@ -2,6 +2,7 @@ package com.atvantiq.wfms.models.attendance.attendanceDetails
 
 
 import android.os.Parcelable
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -28,7 +29,14 @@ data class AttendanceRecord(
     @SerializedName("logs")
     val logs: Logs?,
     @SerializedName("status")
+    @JsonAdapter(StatusCodeDeserializer::class)
     val status: Int?,
     @SerializedName("work_hours")
-    val workHours: String?
+    val workHours: String?,
+    @SerializedName("site")
+    val site: NamedRef? = null,
+    @SerializedName("project")
+    val project: NamedRef? = null,
+    @SerializedName("circle")
+    val circle: NamedRef? = null
 ):Parcelable

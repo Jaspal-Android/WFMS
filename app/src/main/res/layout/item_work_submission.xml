@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A Work Approval row: one employee-day with its status, date, total work, site and a Review link. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.text.TextUtils" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="item"
+            type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
+
+        <variable
+            name="dateLabel"
+            type="String" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <!-- Employee + status -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <include
+                    layout="@layout/layout_employee_identity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:code="@{item.employee.code}"
+                    app:name="@{item.employee.name}" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="@dimen/padding_x_small"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingBottom="@dimen/padding_x_small"
+                    android:textStyle="bold"
+                    app:workSubmissionStatus="@{item.action}"
+                    tools:text="@string/submitted" />
+            </LinearLayout>
+
+            <!-- Date · total work -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_calendar_today"
+                    app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="@{dateLabel ?? @string/not_available_value}"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    tools:text="22 Sep 2026" />
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:layout_marginStart="@dimen/margin"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_clock_16"
+                    android:visibility="@{TextUtils.isEmpty(item.workHours) ? View.GONE : View.VISIBLE}"
+                    app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="@{@string/total_work_format(item.workHours)}"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    android:visibility="@{TextUtils.isEmpty(item.workHours) ? View.GONE : View.VISIBLE}"
+                    tools:text="Total work: 02:33" />
+            </LinearLayout>
+
+            <!-- Site · project · circle, and Review -->
+            <LinearLayout
+                android:id="@+id/reviewRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/min_touch_target"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_location_on"
+                    app:tint="?attr/wfmsColorPrimary" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{item.site.name ?? @string/not_available_value}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="Not available" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{@string/project_circle_format(item.project.name ?? @string/not_available_value, item.circle.name ?? @string/not_available_value)}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="Project: Not available  •  Circle: Not available" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="@string/review"
+                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/forward_arrow_right_24"
+                    app:tint="?attr/wfmsColorPrimary" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

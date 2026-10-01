@@ -1,260 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- A site on Work Sites: name and work status, Site ID / Project / Circle, then Review site details. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="android.view.View" />
-
         <variable
             name="item"
             type="com.atvantiq.wfms.models.workSites.workSites.WorkSite" />
-
-        <variable
-            name="timeRangeString"
-            type="String" />
-
-        <variable
-            name="isPending"
-            type="Boolean" />
-
-        <variable
-            name="approverString"
-            type="String" />
-
-        <variable
-            name="showPmStatus"
-            type="Boolean" />
     </data>
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_small"
-        android:layout_marginVertical="@dimen/margin_small_extra"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
+        android:layout_marginTop="@dimen/margin_medium"
         app:cardBackgroundColor="?attr/wfmsColorSurface"
         app:cardCornerRadius="@dimen/card_radius"
         app:cardElevation="0dp"
-        app:cardPreventCornerOverlap="true"
         app:strokeColor="?attr/wfmsColorOutline"
         app:strokeWidth="@dimen/border_width_1dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="@dimen/padding">
 
-            <!-- ════════════════════════════════════
-                 HEADER ROW: icon | name + id | status
-            ════════════════════════════════════ -->
-            <ImageView
-                android:id="@+id/ivSiteIcon"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/site"
-                android:src="@drawable/rounded_location_on_24"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/wfmsColorAccent" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvSiteName"
-                style="@style/CustomRegularTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{item.site.name}"
-                android:textColor="?attr/wfmsColorOnSurface"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/tvStatus"
-                app:layout_constraintStart_toEndOf="@id/ivSiteIcon"
-                app:layout_constraintTop_toTopOf="@id/ivSiteIcon"
-                tools:text="Chandigarh site" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvStatus"
-                style="@style/CustomSmallTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/status_gray_bg"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:textStyle="bold"
-                app:assignedSiteStatus="@{item.status.code}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Approved"
-                tools:visibility="visible" />
+                    <TextView
+                        style="@style/CustomSectionCaption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="0dp"
+                        android:text="@string/site_caption" />
 
-            <TextView
-                android:id="@+id/tvSiteId"
-                style="@style/CustomMediumTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small_extra"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{item.site.siteId}"
-                android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                app:layout_constraintEnd_toStartOf="@id/tvStatus"
-                app:layout_constraintStart_toStartOf="@id/tvSiteName"
-                app:layout_constraintTop_toBottomOf="@id/tvSiteName"
-                tools:text="CHD-345-POWN-234" />
+                    <TextView
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{item.site.name ?? @string/not_available_value}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="South Chandigahr" />
+                </LinearLayout>
 
-            <!-- ════════════════════════════════════
-                 DIVIDER
-            ════════════════════════════════════ -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomSectionCaption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="0dp"
+                        android:text="@string/work_status_caption" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_small_extra"
+                        android:paddingStart="@dimen/padding_medium"
+                        android:paddingTop="@dimen/padding_x_small"
+                        android:paddingEnd="@dimen/padding_medium"
+                        android:paddingBottom="@dimen/padding_x_small"
+                        android:textStyle="bold"
+                        app:workSiteStatus="@{item.status}"
+                        tools:text="@string/completed_label" />
+                </LinearLayout>
+            </LinearLayout>
+
             <View
-                android:id="@+id/divider1"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/border_width_1dp"
+                android:layout_marginVertical="@dimen/margin_medium"
+                android:background="?attr/wfmsColorOutline" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CustomFactLabel"
+                    android:text="@string/site_code" />
+
+                <TextView
+                    style="@style/CustomFactValue"
+                    android:text="@{item.site.siteId ?? @string/not_available_value}"
+                    tools:text="CHD-555" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small"
-                android:background="?attr/wfmsColorOutline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvSiteId" />
+                android:orientation="horizontal">
 
-            <!-- ════════════════════════════════════
-                 META ROWS (project / circle / date+time)
-            ════════════════════════════════════ -->
-            <ImageView
-                android:id="@+id/imgForwardArrow"
-                android:layout_width="wrap_content"
+                <TextView
+                    style="@style/CustomFactLabel"
+                    android:text="@string/project" />
+
+                <TextView
+                    style="@style/CustomFactValue"
+                    android:text="@{item.project.name ?? @string/not_available_value}"
+                    tools:text="shivam testing project" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/view_details"
-                android:src="@drawable/forward_arrow_right_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/barrier"
-                app:tint="?attr/wfmsColorOnSurfaceVariant" />
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="start"
-                app:constraint_referenced_ids="imgForwardArrow" />
-
-            <!-- Project -->
-            <ImageView
-                android:id="@+id/ivProjectIcon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
                 android:layout_marginTop="@dimen/margin_small"
-                android:contentDescription="@string/project"
-                android:src="@drawable/ic_briefcase_16"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider1"
-                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvProjectName"
-                style="@style/CustomMediumTextView"
-                android:layout_width="0dp"
+                <TextView
+                    style="@style/CustomFactLabel"
+                    android:text="@string/circle" />
+
+                <TextView
+                    style="@style/CustomFactValue"
+                    android:text="@{item.circle.name ?? @string/not_available_value}"
+                    tools:text="Chandigarh" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/reviewRow"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{item.project.name}"
-                android:textColor="?attr/wfmsColorOnSurface"
-                app:layout_constraintBottom_toBottomOf="@id/ivProjectIcon"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                app:layout_constraintStart_toEndOf="@id/ivProjectIcon"
-                app:layout_constraintTop_toTopOf="@id/ivProjectIcon"
-                tools:text="ERRICSON-TOWER-110" />
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/min_touch_target"
+                android:orientation="horizontal">
 
-            <!-- Circle -->
-            <ImageView
-                android:id="@+id/ivCircleIcon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginTop="@dimen/margin_small_extra"
-                android:contentDescription="@string/circle"
-                android:src="@drawable/ic_circle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvProjectName"
-                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/review_site_details"
+                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvCircleName"
-                style="@style/CustomMediumTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{item.circle.name}"
-                android:textColor="?attr/wfmsColorOnSurface"
-                app:layout_constraintBottom_toBottomOf="@id/ivCircleIcon"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                app:layout_constraintStart_toEndOf="@id/ivCircleIcon"
-                app:layout_constraintTop_toTopOf="@id/ivCircleIcon"
-                tools:text="Haryana" />
-
-            <!-- Date + Time range -->
-            <ImageView
-                android:id="@+id/ivClockIcon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginTop="@dimen/margin_small_extra"
-                android:contentDescription="@string/date"
-                android:src="@drawable/ic_clock_16"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvCircleName"
-                app:tint="?attr/wfmsColorOnSurfaceVariant" />
-
-            <TextView
-                android:id="@+id/tvDate"
-                style="@style/CustomMediumTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                app:formatApiDateToMonthDayYear="@{item.startTime}"
-                app:layout_constraintBottom_toBottomOf="@id/ivClockIcon"
-                app:layout_constraintStart_toEndOf="@id/ivClockIcon"
-                app:layout_constraintTop_toTopOf="@id/ivClockIcon"
-                tools:text="Oct 14, 2025" />
-
-            <TextView
-                android:id="@+id/tvBullet1"
-                style="@style/CustomMediumTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:text="•"
-                android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                app:layout_constraintBottom_toBottomOf="@id/tvDate"
-                app:layout_constraintStart_toEndOf="@id/tvDate"
-                app:layout_constraintTop_toTopOf="@id/tvDate" />
-
-            <TextView
-                android:id="@+id/tvTimeRange"
-                style="@style/CustomMediumTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{timeRangeString}"
-                android:textColor="?attr/wfmsColorOnSurface"
-                app:layout_constraintBottom_toBottomOf="@id/tvDate"
-                app:layout_constraintEnd_toStartOf="@+id/barrier"
-                app:layout_constraintStart_toEndOf="@id/tvBullet1"
-                app:layout_constraintTop_toTopOf="@id/tvDate"
-                tools:text="07:05 AM - 07:13 AM" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/forward_arrow_right_24"
+                    app:tint="?attr/wfmsColorPrimary" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

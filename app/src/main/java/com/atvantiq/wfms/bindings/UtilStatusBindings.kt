@@ -8,6 +8,8 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.ApprovalStatusCodes
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.models.attendance.attendanceDetails.WorkSubmissionStatus
+import com.atvantiq.wfms.models.workSites.workSites.Status as WorkSiteStatus
 
 /**
  * UtilStatusBindings
@@ -186,6 +188,39 @@ object UtilStatusBindings {
         } else {
             textView.text = textView.context.getString(R.string.site_inactive)
             textView.applyStatus(R.color.status_unmarked_bg, R.color.status_unmarked_text)
+        }
+    }
+
+    // ──────────────────────────────────────────────────────
+    // Work Approval row  (attendance record `action`)
+    // ──────────────────────────────────────────────────────
+    @JvmStatic
+    @BindingAdapter(value = ["workSubmissionStatus"])
+    fun workSubmissionStatus(textView: TextView, action: String?) {
+        val status = WorkSubmissionStatus.from(action)
+        textView.text = status.labelRes?.let { textView.context.getString(it) } ?: action.orEmpty()
+        textView.applyStatus(status.backgroundRes, status.textRes)
+    }
+
+    // ──────────────────────────────────────────────────────
+    // Work Sites card  (work status {code, label})
+    // ──────────────────────────────────────────────────────
+    @JvmStatic
+    @BindingAdapter(value = ["workSiteStatus"])
+    fun workSiteStatus(textView: TextView, status: WorkSiteStatus?) {
+        when (status?.code) {
+            StatusCodes.WIP -> {
+                textView.text = textView.context.getString(R.string.in_progress)
+                textView.applyStatus(R.color.status_leave_bg, R.color.status_leave_text)
+            }
+            StatusCodes.COMPLETED -> {
+                textView.text = textView.context.getString(R.string.completed_label)
+                textView.applyStatus(R.color.status_present_bg, R.color.status_present_text)
+            }
+            else -> {
+                textView.text = status?.label ?: textView.context.getString(R.string.not_available_value)
+                textView.applyStatus(R.color.status_unmarked_bg, R.color.status_unmarked_text)
+            }
         }
     }
 }

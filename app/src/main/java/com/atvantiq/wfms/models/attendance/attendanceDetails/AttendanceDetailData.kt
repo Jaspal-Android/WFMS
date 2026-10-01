@@ -9,5 +9,9 @@ data class AttendanceDetailData(
     @SerializedName("page_size")
     val pageSize: Int?,
     @SerializedName("records")
-    val records: List<AttendanceRecord>?
+    val records: List<AttendanceRecord>?,
+    @SerializedName("total_records")
+    val totalRecords: Int? = null,
+    @SerializedName("total_pages")
+    val totalPages: Int? = null
 )

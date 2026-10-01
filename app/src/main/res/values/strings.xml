@@ -393,7 +393,7 @@
     <string name="check_out">Check out</string>
     <string name="view_sites_visited">View sites visited</string>
     <string name="total_work_hours_format">Total %1$s hrs</string>
-    <string name="no_work_sites_found">No work sites found</string>
+    <string name="no_work_sites_found">No work sites found for this employee and date.</string>
     <string name="view_details">View details</string>
 
     <!--Material Usage Strings-->
@@ -550,6 +550,25 @@
     <!-- Admin tabs: Sites and the Approvals hub -->
     <string name="add_site_subtitle">Create a new site for a project circle.</string>
     <string name="site_active">Active</string>
+    <string name="submitted">Submitted</string>
+    <string name="review">Review</string>
+    <string name="not_available_value">Not available</string>
+    <string name="employee_id_format">Employee ID: %1$s</string>
+    <string name="total_work_format">Total work: %1$s</string>
+    <string name="project_circle_format">Project: %1$s  •  Circle: %2$s</string>
+    <string name="role_format">Role: %1$s</string>
+    <string name="work_sites_title">Work Sites</string>
+    <string name="site_caption">SITE</string>
+    <string name="work_status_caption">WORK STATUS</string>
+    <string name="in_progress">In Progress</string>
+    <string name="completed_label">Completed</string>
+    <string name="site_code">Site Code</string>
+    <string name="review_site_details">Review site details</string>
+    <string name="no_attendance_records_for_approval">No attendance records found for approval.</string>
+    <plurals name="submissions_count">
+        <item quantity="one">%d submission</item>
+        <item quantity="other">%d submissions</item>
+    </plurals>
     <string name="client">Client</string>
     <string name="not_selected">Not selected</string>
     <string name="site_id_label">Site ID</string>

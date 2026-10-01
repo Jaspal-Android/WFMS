@@ -83,7 +83,7 @@
                     android:layout_width="@dimen/icon_size_small"
                     android:layout_height="@dimen/icon_size_small"
                     android:importantForAccessibility="no"
-                    android:src="@drawable/ic_pin_drop"
+                    android:src="@drawable/ic_location_on"
                     app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                 <TextView

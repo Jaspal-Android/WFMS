@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ◀ Month ▶ with a count under it, at the top of the approval lists. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="title"
+            type="String" />
+        <variable
+            name="subtitle"
+            type="String" />
+        <variable
+            name="onPrevious"
+            type="android.view.View.OnClickListener" />
+        <variable
+            name="onNext"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_small">
+
+            <ImageButton
+                style="@style/CustomIconButton"
+                android:contentDescription="@string/previous_month"
+                android:onClick="@{onPrevious}"
+                android:src="@drawable/arrow_back_ios_24"
+                app:tint="?attr/wfmsColorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/CustomBigTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{title}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="September 2026" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{subtitle}"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    android:textStyle="bold"
+                    tools:text="3 submissions" />
+            </LinearLayout>
+
+            <ImageButton
+                style="@style/CustomIconButton"
+                android:contentDescription="@string/next_month"
+                android:onClick="@{onNext}"
+                android:src="@drawable/arrow_forward_ios_24"
+                app:tint="?attr/wfmsColorPrimary" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

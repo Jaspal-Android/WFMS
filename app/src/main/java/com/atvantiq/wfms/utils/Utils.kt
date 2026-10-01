@@ -446,10 +446,15 @@ object Utils {
         view.background = gd
     }
 
-    /** Up to two initials for an avatar: "kamal sharma" → "KS", "Kamal" → "K". */
-    fun nameInitials(name: String?): String =
-        name.orEmpty().trim().split(Regex("\\s+"))
-            .filter { it.isNotEmpty() }
-            .let { words -> listOfNotNull(words.firstOrNull(), words.drop(1).lastOrNull()) }
-            .joinToString("") { it.first().uppercase() }
+    /** Two initials for an avatar, as on iOS: "kamal sharma" → "KS", a single name "Jaspal" → "JA". */
+    fun nameInitials(name: String?): String {
+        val words = name.orEmpty().trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when (words.size) {
+            0 -> ""
+            1 -> words.first().take(INITIALS_LENGTH).uppercase()
+            else -> "${words.first().first()}${words.last().first()}".uppercase()
+        }
+    }
+
+    private const val INITIALS_LENGTH = 2
 }

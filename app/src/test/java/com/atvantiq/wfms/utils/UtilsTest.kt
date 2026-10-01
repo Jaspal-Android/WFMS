@@ -72,7 +72,8 @@ class UtilsTest {
     fun `name initials take the first and last word`() {
         assertEquals("KS", Utils.nameInitials("kamal sharma"))
         assertEquals("KS", Utils.nameInitials("  Kamal  Kumar   Sharma "))
-        assertEquals("K", Utils.nameInitials("kamal"))
+        assertEquals("KA", Utils.nameInitials("kamal"))
+        assertEquals("J", Utils.nameInitials("J"))
         assertEquals("", Utils.nameInitials(null))
         assertEquals("", Utils.nameInitials("   "))
     }

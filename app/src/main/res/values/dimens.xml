@@ -121,4 +121,8 @@
 
     <!-- Lottie "no data" animation shown by empty lists -->
     <dimen name="empty_state_animation_size">150dp</dimen>
+    <!-- Initials avatar on an employee-day row (approvals) -->
+    <dimen name="employee_avatar_size">40dp</dimen>
+    <!-- Icon over an approval list's empty-state text -->
+    <dimen name="empty_state_icon_size">36dp</dimen>
 </resources>
