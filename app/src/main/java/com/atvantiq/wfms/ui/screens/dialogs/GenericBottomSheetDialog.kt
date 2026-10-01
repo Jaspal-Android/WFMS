@@ -8,9 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.DialogGenericBottomSheetBinding
 import com.atvantiq.wfms.widgets.BaseBottomSheet
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Locale
+import com.atvantiq.wfms.utils.dismissRestoredWithoutCallbacks
 
 class GenericBottomSheetDialog<T>() : BaseBottomSheet() {
 
@@ -61,7 +60,7 @@ class GenericBottomSheetDialog<T>() : BaseBottomSheet() {
         val bind = bind
         val onItemSelected = onItemSelected
         if (bind == null || onItemSelected == null || filterCondition == null) {
-            dismissAllowingStateLoss()
+            dismissRestoredWithoutCallbacks()
             return
         }
 

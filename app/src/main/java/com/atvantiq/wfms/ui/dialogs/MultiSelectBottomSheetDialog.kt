@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.DialogMultiSelectBottomSheetBinding
 import com.atvantiq.wfms.widgets.BaseBottomSheet
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.utils.dismissRestoredWithoutCallbacks
 
 class MultiSelectBottomSheetDialog<T>() : BaseBottomSheet() {
 
@@ -71,7 +70,7 @@ class MultiSelectBottomSheetDialog<T>() : BaseBottomSheet() {
         val onSubmit = onSubmit
         val filterCondition = filterCondition
         if (bind == null || onSelectionChanged == null || onSubmit == null || filterCondition == null) {
-            dismissAllowingStateLoss()
+            dismissRestoredWithoutCallbacks()
             return
         }
 

@@ -2,17 +2,16 @@ package com.atvantiq.wfms.ui.screens.dialogs
 
 
 import RecyclerViewGenericAdapter
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.DialogGenericBottomSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.utils.dismissRestoredWithoutCallbacks
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 
 
-class SimpleBottomSheetDialog<T>() : BottomSheetDialogFragment() {
+class SimpleBottomSheetDialog<T>() : BaseBottomSheet() {
 
     // Items and callbacks are wired by the host through the secondary constructor. The no-arg
     // constructor lets the FragmentManager re-instantiate this sheet on restore (process death,
@@ -41,8 +40,9 @@ class SimpleBottomSheetDialog<T>() : BottomSheetDialogFragment() {
         this.title = title
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BottomSheetDialog(requireContext(), R.style.AppBottomSheetDialogTheme)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
     }
 
     override fun onCreateView(
@@ -60,7 +60,7 @@ class SimpleBottomSheetDialog<T>() : BottomSheetDialogFragment() {
         val bind = bind
         val onItemSelected = onItemSelected
         if (bind == null || onItemSelected == null) {
-            dismissAllowingStateLoss()
+            dismissRestoredWithoutCallbacks()
             return
         }
 

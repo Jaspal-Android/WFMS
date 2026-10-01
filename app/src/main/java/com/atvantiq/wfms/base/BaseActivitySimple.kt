@@ -101,11 +101,21 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         context: Context,
         title: String,
         message: String,
-        okLister: DialogInterface.OnClickListener,
+        okLister: DialogInterface.OnClickListener
+    ) = alertDialogShow(context, title, message, cancelable = true, okLister = okLister)
+
+    /** @param cancelable false when OK must be the only way out (e.g. the screen finishes on OK). */
+    fun alertDialogShow(
+        context: Context,
+        title: String,
+        message: String,
+        cancelable: Boolean,
+        okLister: DialogInterface.OnClickListener
     ) {
         val builder = AlertDialog.Builder(context)
         builder.setMessage(message)
         builder.setTitle(title)
+        builder.setCancelable(cancelable)
         builder.setPositiveButton(getString(R.string.ok), okLister)
         val alertDialog = builder.create()
         alertDialog.show()

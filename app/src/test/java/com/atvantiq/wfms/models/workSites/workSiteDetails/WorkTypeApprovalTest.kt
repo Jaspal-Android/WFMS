@@ -1,17 +1,13 @@
-package com.atvantiq.wfms.ui.screens.adapters
+package com.atvantiq.wfms.models.workSites.workSiteDetails
 
 import com.atvantiq.wfms.constants.StatusCodes
-import com.atvantiq.wfms.models.workSites.workSiteDetails.Admin
-import com.atvantiq.wfms.models.workSites.workSiteDetails.Ops
-import com.atvantiq.wfms.models.workSites.workSiteDetails.Pm
-import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.models.workSites.workSites.Status
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class WorkTypeAdapterAdminTest {
+class WorkTypeApprovalTest {
 
     private fun workType(
         id: Long,
@@ -35,37 +31,37 @@ class WorkTypeAdapterAdminTest {
     @Test
     fun `a pm can act on an in-progress type nobody has actioned`() {
         assertTrue(
-            WorkTypeAdapterAdmin.isSelectable("PM", workType(1, StatusCodes.WIP))
+            workType(1, StatusCodes.WIP).isApprovableBy("PM")
         )
     }
 
     @Test
     fun `a pm cannot act on a type it already actioned`() {
         assertFalse(
-            WorkTypeAdapterAdmin.isSelectable("pm", workType(1, StatusCodes.WIP, pm = 1))
+            workType(1, StatusCodes.WIP, pm = 1).isApprovableBy("pm")
         )
     }
 
     @Test
     fun `a type that is neither in progress nor completed is never selectable`() {
         assertFalse(
-            WorkTypeAdapterAdmin.isSelectable("admin", workType(1, StatusCodes.ACCEPTED))
+            workType(1, StatusCodes.ACCEPTED).isApprovableBy("admin")
         )
-        assertFalse(WorkTypeAdapterAdmin.isSelectable("admin", workType(1, null)))
+        assertFalse(workType(1, null).isApprovableBy("admin"))
     }
 
     @Test
     fun `an ops user needs the ops and admin slots to be open`() {
-        assertTrue(WorkTypeAdapterAdmin.isSelectable("ops", workType(1, StatusCodes.COMPLETED)))
+        assertTrue(workType(1, StatusCodes.COMPLETED).isApprovableBy("ops"))
         assertFalse(
-            WorkTypeAdapterAdmin.isSelectable("ops", workType(1, StatusCodes.COMPLETED, admin = 1))
+            workType(1, StatusCodes.COMPLETED, admin = 1).isApprovableBy("ops")
         )
     }
 
     @Test
     fun `an unknown role can never approve`() {
         assertFalse(
-            WorkTypeAdapterAdmin.isSelectable("employee", workType(1, StatusCodes.WIP))
+            workType(1, StatusCodes.WIP).isApprovableBy("employee")
         )
     }
 
@@ -75,18 +71,15 @@ class WorkTypeAdapterAdminTest {
         val alreadyActioned = workType(2, StatusCodes.WIP, pm = 1)
         val notStarted = workType(3, StatusCodes.ACCEPTED)
 
-        val picked = WorkTypeAdapterAdmin.selectableTypes(
-            "pm", listOf(selectable, alreadyActioned, notStarted)
-        )
+        val picked = listOf(selectable, alreadyActioned, notStarted).approvableBy("pm")
 
         assertEquals(listOf(selectable), picked)
     }
 
     @Test
     fun `select all picks nothing when no row is actionable`() {
-        val picked = WorkTypeAdapterAdmin.selectableTypes(
-            "pm", listOf(workType(1, StatusCodes.WIP, pm = 1), workType(2, StatusCodes.OPEN))
-        )
+        val picked = listOf(workType(1, StatusCodes.WIP, pm = 1), workType(2, StatusCodes.OPEN))
+            .approvableBy("pm")
 
         assertTrue(picked.isEmpty())
     }

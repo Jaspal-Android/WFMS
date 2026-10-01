@@ -8,6 +8,7 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailLis
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
+import com.atvantiq.wfms.models.workSites.workSiteDetails.isApprovableBy
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiState
 import com.google.gson.JsonArray
@@ -81,4 +82,8 @@ class SiteApprovalVM @Inject constructor(
             onError = { isApproving = false }
         )
     }
+
+    /** "Select all" is offered only when at least one type can be actioned by [role]. */
+    fun hasApprovableTypes(role: String, workTypes: List<WorkType>?): Boolean =
+        workTypes.orEmpty().any { it.isApprovableBy(role) }
 }

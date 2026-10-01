@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingBottomSheetFragment
 import com.atvantiq.wfms.databinding.BottomSheetDialogGetOtpBinding
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
 class GetOTPBottomSheetDialog : BaseBindingBottomSheetFragment<BottomSheetDialogGetOtpBinding>() {
 
@@ -28,10 +29,7 @@ class GetOTPBottomSheetDialog : BaseBindingBottomSheetFragment<BottomSheetDialog
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (onSubmitOTP == null) {
-            dismissAllowingStateLoss()
-            return
-        }
+        if (dismissIfCallbacksMissing(onSubmitOTP)) return
         if (savedInstanceState == null) {
             clearOtpInputs()
         }

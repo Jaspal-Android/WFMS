@@ -9,7 +9,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetRequestOtpBinding
 import com.atvantiq.wfms.utils.ValidatorUtils
 import com.atvantiq.wfms.widgets.BaseBottomSheet
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
 class RequestOtpBottomSheet : BaseBottomSheet() {
 
@@ -32,10 +32,7 @@ class RequestOtpBottomSheet : BaseBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (onSubmitEmail == null) {
-            dismissAllowingStateLoss()
-            return
-        }
+        if (dismissIfCallbacksMissing(onSubmitEmail)) return
         initListeners()
     }
     private fun initListeners() {
