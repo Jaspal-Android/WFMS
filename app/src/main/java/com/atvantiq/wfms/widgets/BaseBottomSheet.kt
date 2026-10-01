@@ -20,7 +20,7 @@ abstract class BaseBottomSheet : BottomSheetDialogFragment() {
                 val surfaceColor = MaterialColors.getColor(
                     requireContext(), R.attr.wfmsColorSurface, Color.WHITE
                 )
-                val radius = resources.getDimension(R.dimen.card_radius_max)
+                val radius = resources.getDimension(R.dimen.card_radius)
                 sheet?.background = GradientDrawable().apply {
                     setColor(surfaceColor)
                     cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)

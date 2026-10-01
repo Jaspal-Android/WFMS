@@ -49,6 +49,19 @@
         <item name="android:textColorSecondary">?attr/wfmsColorOnSurfaceVariant</item>
         <item name="android:statusBarColor">@color/forest_primary_dark</item>
 
+        <!-- One corner radius for every Material component (cards, text fields, dialogs, menus,
+             sheets). Fully rounded components (chips, FABs) keep shapeAppearanceCornerFull. -->
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.WFMS.Standard</item>
+
+    </style>
+
+    <style name="ShapeAppearance.WFMS.Standard" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_radius</item>
     </style>
 
     <style name="Theme.WFMS" parent="Base.Theme.WFMS" />

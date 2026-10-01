@@ -37,7 +37,7 @@
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_marginEnd="@dimen/margin_small"
                     app:cardBackgroundColor="?attr/wfmsColorSurface"
-                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardCornerRadius="@dimen/card_radius"
                     app:cardElevation="@dimen/elevation_small"
                     app:cardUseCompatPadding="true">
 
@@ -75,7 +75,7 @@
                     android:layout_marginEnd="@dimen/margin_small_extra"
                     android:layout_marginBottom="@dimen/margin_small"
                     app:cardBackgroundColor="?attr/wfmsColorSurface"
-                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardCornerRadius="@dimen/card_radius"
                     app:cardElevation="@dimen/elevation_small"
                     app:cardUseCompatPadding="true">
 

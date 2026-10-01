@@ -58,7 +58,7 @@
                         android:layout_marginEnd="@dimen/margin"
                         android:layout_marginBottom="@dimen/margin_small"
                         app:cardBackgroundColor="?attr/wfmsColorSurface"
-                        app:cardCornerRadius="@dimen/card_radius_max"
+                        app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small"
                         app:layout_collapseMode="parallax">
 

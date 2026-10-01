@@ -19,147 +19,91 @@
         android:background="?attr/wfmsColorBackground"
         tools:context=".ui.screens.attendance.AttendanceFragment">
 
-        <androidx.core.widget.NestedScrollView
+        <!-- Header (search, add, filters) stays put; only the list scrolls. -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="@dimen/padding">
+            android:orientation="vertical"
+            android:paddingStart="@dimen/padding"
+            android:paddingTop="@dimen/padding"
+            android:paddingEnd="@dimen/padding">
 
                 <!-- ══════════════════════════════════════
-                     SELF WORK ASSIGN CARD
+                     SEARCH + SELF WORK ASSIGN
                 ══════════════════════════════════════ -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin"
-                    app:cardBackgroundColor="?attr/wfmsColorSurface"
-                    app:cardCornerRadius="@dimen/card_radius"
-                    app:cardElevation="@dimen/elevation_small">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
-                        android:onClick="@{()->vm.onSignInClick()}"
-                        android:padding="@dimen/padding">
-
-                        <!-- Icon box -->
-                        <ImageView
-                            android:padding="@dimen/padding_small"
-                            android:id="@+id/iconSelfAssign"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/icon_box_bg"
-                            android:src="@drawable/round_add_box_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:importantForAccessibility="no"
-                            app:tint="?attr/wfmsColorPrimary" />
-
-                        <!-- Title + subtitle -->
-                        <TextView
-                            android:id="@+id/signInText"
-                            style="@style/CustomRegularTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_small"
-                            android:text="@string/self_work_assign"
-                            android:textAllCaps="true"
-                            android:textColor="?attr/wfmsColorAccent"
-                            android:textStyle="bold"
-                            app:layout_constraintEnd_toStartOf="@+id/arrowSelfAssign"
-                            app:layout_constraintStart_toEndOf="@+id/iconSelfAssign"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            style="@style/CustomSmallTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_small"
-                            android:layout_marginTop="@dimen/margin_small_extra"
-                            android:text="@string/create_new_work_assignment"
-                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                            app:layout_constraintEnd_toStartOf="@+id/arrowSelfAssign"
-                            app:layout_constraintStart_toEndOf="@+id/iconSelfAssign"
-                            app:layout_constraintTop_toBottomOf="@+id/signInText" />
-
-                        <!-- Forward arrow -->
-                        <ImageView
-                            android:id="@+id/arrowSelfAssign"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/forward_arrow_right_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:importantForAccessibility="no"
-                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- ══════════════════════════════════════
-                     SEARCH BAR
-                ══════════════════════════════════════ -->
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/margin_small"
-                    app:cardBackgroundColor="?attr/wfmsColorSurface"
-                    app:cardCornerRadius="@dimen/card_radius_large"
-                    app:cardElevation="@dimen/elevation_small">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="@dimen/padding_medium"
-                        android:paddingTop="6dp"
-                        android:paddingEnd="@dimen/padding_x_small"
-                        android:paddingBottom="6dp">
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_touch_target"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="?attr/wfmsColorSurface"
+                        app:cardCornerRadius="@dimen/card_radius"
+                        app:cardElevation="@dimen/elevation_small">
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_search"
-                            android:importantForAccessibility="no"
-                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="@dimen/padding_medium"
+                            android:paddingEnd="@dimen/padding_x_small">
 
-                        <EditText
-                            android:id="@+id/etSearch"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_small"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:minHeight="@dimen/min_touch_target"
-                            android:hint="@string/search_by_site_or_project"
-                            android:imeOptions="actionSearch"
-                            android:inputType="text"
-                            android:maxLines="1"
-                            android:textColor="?attr/wfmsColorOnSurface"
-                            android:textColorHint="?attr/wfmsColorOnSurfaceVariant"
-                            android:textSize="@dimen/default_medium_small_text" />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_search"
+                                app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
-                        <ImageView
-                            android:id="@+id/ivClearSearch"
-                            android:layout_width="@dimen/min_touch_target"
-                            android:layout_height="@dimen/min_touch_target"
-                            android:padding="14dp"
-                            android:src="@drawable/ic_close_16"
-                            android:visibility="gone"
-                            android:contentDescription="@string/clear_search"
-                            app:tint="?attr/wfmsColorOnSurfaceVariant" />
+                            <EditText
+                                android:id="@+id/etSearch"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/margin_small"
+                                android:layout_weight="1"
+                                android:background="@null"
+                                android:hint="@string/search_by_site_or_project"
+                                android:imeOptions="actionSearch"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textColorHint="?attr/wfmsColorOnSurfaceVariant"
+                                android:textSize="@dimen/default_medium_small_text" />
 
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                            <ImageView
+                                android:id="@+id/ivClearSearch"
+                                android:layout_width="@dimen/min_touch_target"
+                                android:layout_height="@dimen/min_touch_target"
+                                android:contentDescription="@string/clear_search"
+                                android:padding="14dp"
+                                android:src="@drawable/ic_close_16"
+                                android:visibility="gone"
+                                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Self work assign -->
+                    <ImageButton
+                        android:id="@+id/btnSelfAssign"
+                        android:layout_width="@dimen/min_touch_target"
+                        android:layout_height="@dimen/min_touch_target"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:background="@drawable/btn_primary_gradient"
+                        android:contentDescription="@string/self_work_assign"
+                        android:elevation="@dimen/elevation_small"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:onClick="@{()->vm.onSignInClick()}"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/white" />
+
+                </LinearLayout>
 
                 <!-- ══════════════════════════════════════
                      FILTER CHIPS
@@ -244,7 +188,8 @@
                 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                     android:id="@+id/swipeRefreshLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -295,8 +240,7 @@
                     </RelativeLayout>
                 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
 
     </FrameLayout>
 </layout>

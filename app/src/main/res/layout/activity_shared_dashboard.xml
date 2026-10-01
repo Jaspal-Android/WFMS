@@ -293,7 +293,7 @@
                                 android:layout_width="@dimen/card_dashboard_height"
                                 android:layout_height="@dimen/card_dashboard_height"
                                 app:cardBackgroundColor="?attr/wfmsCard1Color"
-                                app:cardCornerRadius="@dimen/card_radius_small"
+                                app:cardCornerRadius="@dimen/card_radius"
                                 app:cardElevation="0dp">
 
                                 <ImageView
@@ -343,7 +343,7 @@
                                 android:layout_width="@dimen/card_dashboard_height"
                                 android:layout_height="@dimen/card_dashboard_height"
                                 app:cardBackgroundColor="?attr/wfmsCard2Color"
-                                app:cardCornerRadius="@dimen/card_radius_small"
+                                app:cardCornerRadius="@dimen/card_radius"
                                 app:cardElevation="0dp">
 
                                 <ImageView
@@ -393,7 +393,7 @@
                                 android:layout_width="@dimen/card_dashboard_height"
                                 android:layout_height="@dimen/card_dashboard_height"
                                 app:cardBackgroundColor="?attr/wfmsCard4Color"
-                                app:cardCornerRadius="@dimen/card_radius_small"
+                                app:cardCornerRadius="@dimen/card_radius"
                                 app:cardElevation="0dp">
 
                                 <ImageView

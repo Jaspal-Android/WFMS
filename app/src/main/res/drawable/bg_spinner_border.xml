@@ -6,7 +6,7 @@
         android:width="1dp"
         android:color="#CCCCCC" />
 
-    <corners android:radius="6dp" />
+    <corners android:radius="@dimen/card_radius" />
 
     <solid android:color="@android:color/white" />
 
