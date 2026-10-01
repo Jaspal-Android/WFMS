@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
@@ -15,7 +14,6 @@ import com.atvantiq.wfms.databinding.BottomSheetEnterOthersBinding
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class EnterOthersBottomSheet : BaseBottomSheet() {
 
@@ -86,7 +84,7 @@ class EnterOthersBottomSheet : BaseBottomSheet() {
 
 			override fun onError(message: String) {
 				binding.hasPreviewImage = false
-				Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+				showToast(requireContext(), message)
 			}
 		})
 		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)

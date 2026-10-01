@@ -69,10 +69,4 @@ class TypeActivitySelectionTest {
         assertTrue(s.coversAll(listOf(10L)))
     }
 
-    @Test
-    fun `label names the type only when several types are selected`() {
-        val option = TypeActivityOption(10L, "A", survey)
-        assertEquals("Survey", option.label(showType = false))
-        assertEquals("Survey (A)", option.label(showType = true))
-    }
 }

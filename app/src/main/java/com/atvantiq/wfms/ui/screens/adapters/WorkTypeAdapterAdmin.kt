@@ -11,6 +11,7 @@ import com.atvantiq.wfms.databinding.ItemWorkTypeBinding
 import com.atvantiq.wfms.models.work.workDetail.Type
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.utils.DateUtils
+import com.atvantiq.wfms.constants.ApprovalStatusCodes
 
 class WorkTypeAdapterAdmin(
     private var employeeRole:String,
@@ -100,10 +101,10 @@ class WorkTypeAdapterAdmin(
         fun isSelectable(employeeRole: String, workType: WorkType): Boolean {
             val eligibleToApprove = when (employeeRole.lowercase()) {
                 ValConstants.ROLE_PM.lowercase() ->
-                    workType.pm?.status == 0 && workType.admin?.status == 0
+                    workType.pm?.status == ApprovalStatusCodes.OPEN && workType.admin?.status == ApprovalStatusCodes.OPEN
                 ValConstants.ROLE_OPS.lowercase() ->
-                    workType.ops?.status == 0 && workType.admin?.status == 0
-                ValConstants.ROLE_Admin.lowercase() -> workType.admin?.status == 0
+                    workType.ops?.status == ApprovalStatusCodes.OPEN && workType.admin?.status == ApprovalStatusCodes.OPEN
+                ValConstants.ROLE_Admin.lowercase() -> workType.admin?.status == ApprovalStatusCodes.OPEN
                 else -> false
             }
             return eligibleToApprove &&

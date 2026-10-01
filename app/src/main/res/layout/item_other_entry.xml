@@ -18,15 +18,10 @@
         <!-- Remove button — anchored first -->
         <ImageView
             android:id="@+id/btnRemove"
-            android:layout_width="@dimen/min_touch_target"
-            android:layout_height="@dimen/min_touch_target"
-            android:background="@drawable/bg_circle_touch_target"
-            android:src="@drawable/ic_close_16"
-            android:scaleType="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            style="@style/CustomRemoveButton"
             android:contentDescription="@string/remove_entry"
-            app:tint="?attr/wfmsColorPrimaryLight" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Attachment icon -->
         <ImageView

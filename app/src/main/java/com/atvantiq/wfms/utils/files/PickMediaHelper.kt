@@ -153,7 +153,7 @@ class PickMediaHelper(
         }
 
         if (!isCorrectFileSize(file)) {
-            callback.onError(context.getString(R.string.image_size_error))
+            callback.onError(context.getString(R.string.image_size_error, MAX_SOURCE_MB))
             return
         }
 
@@ -245,6 +245,7 @@ class PickMediaHelper(
 
     companion object {
         const val TAG = "PickMediaHelper"
-        private const val MAX_SOURCE_BYTES = 25L * 1024 * 1024
+        private const val MAX_SOURCE_MB = 25
+        private const val MAX_SOURCE_BYTES = MAX_SOURCE_MB * 1024L * 1024L
     }
 }

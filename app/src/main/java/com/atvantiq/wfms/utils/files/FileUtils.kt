@@ -3,7 +3,6 @@ package com.atvantiq.wfms.utils.files
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -75,58 +74,5 @@ object FileUtils {
             Log.e("FileUtils", "Error copying file: ${e.localizedMessage}")
         }
         return null
-    }
-
-    fun createFileFromBitmap(context: Context, bitmap: Bitmap?): File? {
-        return try {
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "WFMS_$timeStamp.jpg"
-            val file = File(context.cacheDir, fileName)
-            FileOutputStream(file).use { fos ->
-                bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            }
-            file
-        } catch (e: IOException) {
-            Log.e("FileUtils", "Error creating file from bitmap: ${e.localizedMessage}")
-            null
-        }
-    }
-
-    fun decodeImageFromFile(path: String?): Bitmap? {
-        if (path.isNullOrEmpty()) return null
-
-        val options = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true
-        }
-        BitmapFactory.decodeFile(path, options)
-
-        val scale = calculateInSampleSize(options, 150, 150)
-
-        val scaledOptions = BitmapFactory.Options().apply {
-            inSampleSize = scale
-        }
-        return BitmapFactory.decodeFile(path, scaledOptions)
-    }
-
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        val (height: Int, width: Int) = options.run { outHeight to outWidth }
-        var inSampleSize = 1
-
-        if (height > reqHeight || width > reqWidth) {
-            val halfHeight: Int = height / 2
-            val halfWidth: Int = width / 2
-
-            while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-                inSampleSize *= 2
-            }
-        }
-        return inSampleSize
-    }
-
-    fun decodeAndResizeImage(path: String, targetWidth: Int): Bitmap? {
-        val bitmap = BitmapFactory.decodeFile(path) ?: return null
-        val aspectRatio = bitmap.width.toFloat() / bitmap.height
-        val targetHeight = (targetWidth / aspectRatio).toInt()
-        return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false)
     }
 }

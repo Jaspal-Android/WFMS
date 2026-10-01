@@ -7,11 +7,7 @@ data class TypeActivityOption(
     val typeId: Long,
     val typeName: String,
     val activity: ActivityData
-) {
-    /** Names the type only when several types are selected, so the user can tell same-named activities apart. */
-    fun label(showType: Boolean): String =
-        if (showType && typeName.isNotBlank()) "${activity.name} ($typeName)" else activity.name
-}
+)
 
 /**
  * Activities are defined per type, so the ones a user picks must stay attached to the type they

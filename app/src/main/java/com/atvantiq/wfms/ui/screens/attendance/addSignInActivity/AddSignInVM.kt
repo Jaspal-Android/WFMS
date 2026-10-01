@@ -29,6 +29,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import com.atvantiq.wfms.constants.ValConstants
 
 
 @HiltViewModel
@@ -184,7 +185,7 @@ class AddSignInVM @Inject constructor(
                 if (selectedPoNumberId == poId) {
                     val stillSelected = selectedTypeIdList.orEmpty().map { it.id }.toSet()
                     results
-                        .filter { it.typeId in stillSelected && it.response.code == 200 }
+                        .filter { it.typeId in stillSelected && it.response.code == ValConstants.SUCCESS_CODE }
                         .forEach { activitySelection.setAvailable(it.typeId, it.response.data) }
                 }
                 isActivityLoading.set(false)

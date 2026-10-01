@@ -315,7 +315,7 @@ object DateUtils {
      */
     fun formatSpokenDate(date: String, locale: Locale = Locale.getDefault()): String =
         runCatching {
-            val parsed = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date) ?: return date
+            val parsed = SimpleDateFormat(DATE_FORMAT, Locale.US).parse(date) ?: return date
             java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, locale).format(parsed)
         }.getOrDefault(date)
 }

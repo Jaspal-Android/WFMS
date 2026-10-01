@@ -60,7 +60,7 @@
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
                 android:maxLength="1"
-                android:contentDescription="@string/otp_digit_1"
+                android:contentDescription="@{@string/otp_digit_description(1, @integer/otp_length)}"
                 android:importantForAutofill="no"
                 tools:text="1" />
 
@@ -76,7 +76,7 @@
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
-                android:contentDescription="@string/otp_digit_2"
+                android:contentDescription="@{@string/otp_digit_description(2, @integer/otp_length)}"
                 android:importantForAutofill="no"
                 android:maxLength="1" />
 
@@ -92,7 +92,7 @@
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
-                android:contentDescription="@string/otp_digit_3"
+                android:contentDescription="@{@string/otp_digit_description(3, @integer/otp_length)}"
                 android:importantForAutofill="no"
                 android:maxLength="1" />
 
@@ -108,7 +108,7 @@
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
-                android:contentDescription="@string/otp_digit_4"
+                android:contentDescription="@{@string/otp_digit_description(4, @integer/otp_length)}"
                 android:importantForAutofill="no"
                 android:maxLength="1" />
 
@@ -124,7 +124,7 @@
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
-                android:contentDescription="@string/otp_digit_5"
+                android:contentDescription="@{@string/otp_digit_description(5, @integer/otp_length)}"
                 android:importantForAutofill="no"
                 android:maxLength="1" />
 
@@ -140,7 +140,7 @@
                 android:gravity="center"
                 android:imeOptions="actionDone"
                 android:inputType="numberPassword"
-                android:contentDescription="@string/otp_digit_6"
+                android:contentDescription="@{@string/otp_digit_description(6, @integer/otp_length)}"
                 android:importantForAutofill="no"
                 android:maxLength="1" />
 

@@ -255,11 +255,9 @@
                             <!-- FIX: @color/red → ?attr/wfmsColorError -->
                             <ImageView
                                 android:id="@+id/cancelImageBt"
-                                android:layout_width="@dimen/min_touch_target"
-                                android:layout_height="@dimen/min_touch_target"
+                                style="@style/CustomIconButton"
                                 android:layout_alignParentEnd="true"
                                 android:onClick="@{()->vm.onClickCancelUploadImage()}"
-                                android:padding="12dp"
                                 android:src="@drawable/baseline_cancel_24"
                                 android:contentDescription="@string/remove_attachment"
                                 app:tint="?attr/wfmsColorError" />

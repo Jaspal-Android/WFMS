@@ -2,7 +2,7 @@
 <!-- A 24dp filled circle centred in a 48dp touch target (the minimum recommended tap size). -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/ic_circular_bg"
-    android:insetBottom="12dp"
-    android:insetLeft="12dp"
-    android:insetRight="12dp"
-    android:insetTop="12dp" />
+    android:insetBottom="@dimen/icon_touch_inset"
+    android:insetLeft="@dimen/icon_touch_inset"
+    android:insetRight="@dimen/icon_touch_inset"
+    android:insetTop="@dimen/icon_touch_inset" />

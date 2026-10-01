@@ -15,6 +15,11 @@
     <dimen name="small_button_height">40dp</dimen>
     <!-- Minimum recommended tap target (Material / WCAG 2.5.8). -->
     <dimen name="min_touch_target">48dp</dimen>
+    <!-- Padding that centres a 24dp icon in a 48dp touch target -->
+    <dimen name="icon_touch_inset">12dp</dimen>
+    <!-- Small (20dp) icons, and the padding that centres one in a 48dp touch target -->
+    <dimen name="icon_size_small">20dp</dimen>
+    <dimen name="icon_touch_inset_small">14dp</dimen>
     <dimen name="switch_button_height">45dp</dimen>
 
     <!--padding-->

@@ -321,6 +321,30 @@
         <item name="android:background">@drawable/top_corner_white_bg</item>
     </style>
 
+    <!-- Icon-only button with a 48dp touch target and a borderless ripple; set src, tint and
+         contentDescription per use. -->
+    <style name="CustomIconButton">
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">@dimen/icon_touch_inset</item>
+    </style>
+
+    <!-- Same, for 20dp icons -->
+    <style name="CustomIconButton.Small">
+        <item name="android:padding">@dimen/icon_touch_inset_small</item>
+    </style>
+
+    <!-- Circular "x" that removes an entry from a list; set contentDescription per use -->
+    <style name="CustomRemoveButton">
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:background">@drawable/bg_circle_touch_target</item>
+        <item name="android:src">@drawable/ic_close_16</item>
+        <item name="android:scaleType">center</item>
+        <item name="tint">?attr/wfmsColorPrimaryLight</item>
+    </style>
+
     <!--Text View Styles-->
     <style name="CustomRegularTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_text</item>

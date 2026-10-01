@@ -1,10 +1,12 @@
 package com.atvantiq.wfms.widgets
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import com.atvantiq.wfms.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -27,5 +29,9 @@ abstract class BaseBottomSheet : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }

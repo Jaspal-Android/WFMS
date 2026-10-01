@@ -55,7 +55,7 @@ class NetModule() {
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }
-            redactHeader("Authorization")
+            redactHeader(AuthInterceptor.AUTHORIZATION)
         }
         // Registered before logging so the logged request shows the header (value is redacted).
         client.addInterceptor(AuthInterceptor { prefMain.get(PrefKeys.LOGIN_TOKEN, "") })
