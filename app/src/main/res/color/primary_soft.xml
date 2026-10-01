@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Pill behind the selected tab: the brand colour at 12%. -->
+<!-- The brand colour at 12%: selected-tab pill, "Shift active" pill. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:alpha="0.12" android:color="?attr/wfmsColorPrimary" />
 </selector>

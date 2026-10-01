@@ -357,7 +357,7 @@
     </style>
 
     <style name="Widget.WFMS.BottomNavigation.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/bottom_nav_indicator</item>
+        <item name="android:color">@color/primary_soft</item>
         <item name="shapeAppearance">@style/ShapeAppearance.WFMS.Pill</item>
     </style>
 

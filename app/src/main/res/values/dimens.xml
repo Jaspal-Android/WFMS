@@ -16,6 +16,18 @@
     <dimen name="min_touch_target">48dp</dimen>
     <!-- Profile initials avatar: More card and My Profile header -->
     <dimen name="avatar_size">64dp</dimen>
+    <!-- My Day -->
+    <dimen name="my_day_map_height">240dp</dimen>
+    <dimen name="my_day_pill_height">30dp</dimen>
+    <dimen name="timeline_icon_size">24dp</dimen>
+    <dimen name="timeline_icon_padding">5dp</dimen>
+    <dimen name="timeline_connector_width">2dp</dimen>
+    <dimen name="map_pin_size">26dp</dimen>
+    <dimen name="map_pin_ring">2dp</dimen>
+    <dimen name="map_route_width">4dp</dimen>
+    <dimen name="text_caption_tiny">9sp</dimen>
+    <dimen name="text_distance">22sp</dimen>
+    <dimen name="text_timeline_title">14sp</dimen>
     <dimen name="avatar_size_large">80dp</dimen>
     <!-- Padding that centres a 24dp icon in a 48dp touch target -->
     <dimen name="icon_touch_inset">12dp</dimen>

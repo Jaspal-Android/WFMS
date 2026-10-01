@@ -48,6 +48,7 @@ import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import com.atvantiq.wfms.utils.navigateToTab
+import com.atvantiq.wfms.ui.screens.dashboard.tabs.myDay.MyDayFragment
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
@@ -458,17 +459,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun setupTabBar() {
         val pages = listOf(
             DashboardPagerAdapter.Page(key = "attendance") { AttendanceStatusFragment() },
+            DashboardPagerAdapter.Page(key = "myDay") { MyDayFragment() },
             DashboardPagerAdapter.Page(key = "targets") { MyTargetsFragment() },
             DashboardPagerAdapter.Page(key = "projects") { ProjectDashboardFragment() }
         )
+        val titles = listOf(R.string.attendance, R.string.my_day, R.string.my_targets, R.string.projects)
         binding.viewPager.adapter = DashboardPagerAdapter(requireActivity(), pages)
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.attendance)
-                1 -> getString(R.string.my_targets)
-                2 -> getString(R.string.projects)
-                else -> getString(R.string.attendance)
-            }
+            tab.text = getString(titles[position])
         }.attach()
     }
 

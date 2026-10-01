@@ -13,7 +13,7 @@
     <string name="cancel">Cancel</string>
     <string name="atvantiq_networks">Atvantiq Networks Pvt Ltd.</string>
     <string name="attendance_status">Attendance Status</string>
-    <string name="my_targets">My Targets</string>
+    <string name="my_targets">Targets</string>
     <string name="projects">Projects</string>
     <string name="announcements">Announcements</string>
     <string name="view_all">View all</string>
@@ -507,4 +507,34 @@
     <string name="label_date_of_joining">Date of Joining</string>
     <!-- Shown for a profile field the server did not send -->
     <string name="value_missing">—</string>
+    <!-- My Day tab -->
+    <string name="my_day">My Day</string>
+    <string name="previous_day">Previous day</string>
+    <string name="next_day">Next day</string>
+    <string name="distance_today">Distance today</string>
+    <string name="distance_on_day">Distance</string>
+    <string name="distance_value">%1$.1f</string>
+    <string name="distance_value_estimate">≈ %1$.1f</string>
+    <string name="unit_km">km</string>
+    <string name="shift_active">Shift active</string>
+    <string name="shift_ended">Shift ended</string>
+    <string name="checked_in">Checked in</string>
+    <string name="checked_out">Checked out</string>
+    <string name="time_moving">Time moving</string>
+    <string name="locations_recorded">Locations recorded</string>
+    <string name="minutes_value">%1$d min</string>
+    <string name="timeline">Timeline</string>
+    <string name="timeline_started_day">Started day</string>
+    <string name="timeline_started_work">Started work</string>
+    <string name="timeline_completed_work">Completed work</string>
+    <string name="timeline_ended_day">Ended day</string>
+    <string name="timeline_submitted_claim">Submitted claim</string>
+    <string name="timeline_travel">Travel</string>
+    <string name="trip_route">%1$s → %2$s</string>
+    <string name="trip_time">%1$s – %2$s</string>
+    <string name="trip_distance">%1$.1f km</string>
+    <string name="my_day_loading">Loading your day…</string>
+    <string name="my_day_empty_today">Start your day to see your route and timeline here.</string>
+    <string name="my_day_empty_past">No activity was recorded on this day.</string>
+    <string name="my_day_privacy">Only you and your organisation\'s managers can see this. Location is recorded only while your shift is active and stops when you end your day.</string>
 </resources>
