@@ -5,8 +5,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
+import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.models.work.workAssigned.Site
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
-import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.Utils
 import io.mockk.coEvery
 import io.mockk.every
@@ -22,7 +23,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,22 +59,27 @@ class SupersededListRequestsTest {
 
     @Test
     fun `the answer to the latest search wins even when an older search answers last`() {
+        val oldSite = mockk<Site>(relaxed = true)
+        val newSite = mockk<Site>(relaxed = true)
         val oldAnswer = CompletableDeferred<WorkAssignedResponse>()
-        val newAnswer: WorkAssignedResponse = mockk(relaxed = true)
         coEvery { workRepo.workAssignedAll(1, 10, "ab", any()) } coAnswers { oldAnswer.await() }
-        coEvery { workRepo.workAssignedAll(1, 10, "abc", any()) } returns newAnswer
+        coEvery { workRepo.workAssignedAll(1, 10, "abc", any()) } returns answerWith(newSite)
 
         viewModel.searchQuery = "ab"
-        viewModel.getWorkAssignedAll(1, 10)
+        viewModel.workList.reload()
         testDispatcher.scheduler.advanceUntilIdle()
         viewModel.searchQuery = "abc"
-        viewModel.getWorkAssignedAll(1, 10)
+        viewModel.workList.reload()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        oldAnswer.complete(mockk(relaxed = true)) // the slow "ab" answer arrives after "abc"
+        oldAnswer.complete(answerWith(oldSite)) // the slow "ab" answer arrives after "abc"
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(Status.SUCCESS, viewModel.workAssignedAllResponse.value?.status)
-        assertSame(newAnswer, viewModel.workAssignedAllResponse.value?.response)
+        assertEquals(listOf(newSite), viewModel.workList.state.value?.items)
+    }
+
+    private fun answerWith(site: Site): WorkAssignedResponse = mockk(relaxed = true) {
+        every { code } returns ValConstants.SUCCESS_CODE
+        every { data.results } returns listOf(site)
     }
 }

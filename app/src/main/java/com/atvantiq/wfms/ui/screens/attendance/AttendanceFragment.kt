@@ -16,10 +16,9 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
+import com.atvantiq.wfms.base.PagedListUiState
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentAttendanceBinding
@@ -36,25 +35,23 @@ import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
-import com.atvantiq.wfms.utils.PagedListState
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.DividerItemDecoration
+import com.atvantiq.wfms.widgets.PaginationScrollListener
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 
 @AndroidEntryPoint
 class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
-    private val pageSize: Int = ValConstants.DEFAULT_PAGE_SIZE
-    private val paging = PagedListState(pageSize)
+    private var isProgressShown = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val searchHandler = Handler(Looper.getMainLooper())
-    private val searchDebounce = Runnable { loadFirstPage() }
+    private val searchDebounce = Runnable { viewModel.workList.reload() }
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance, AttendanceViewModel::class.java)
@@ -69,7 +66,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         setupSearch()
         setupFilterChips()
         swipeRefresh()
-        loadFirstPage()
+        // Shows the work already loaded (if any) and refreshes it in the background.
+        viewModel.workList.open()
     }
 
     override fun onDestroyView() {
@@ -86,11 +84,11 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             handleClickEvents(event)
 
         }
-        vm.workAssignedAllResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleStarted()) return@observe
-            // Skip the previous view's last result replayed to this observer (see PagedListState).
-            if (!response.consumeOnce()) return@observe
-            handleWorkAssignedResponse(response)
+        vm.workList.state.observe(viewLifecycleOwner) { state -> renderWorkList(state) }
+
+        vm.workList.failure.observe(viewLifecycleOwner) { failure ->
+            if (!failure.consumeOnce()) return@observe
+            handleWorkListFailure(failure)
         }
 
         vm.workAcceptResponse.observe(viewLifecycleOwner) { response ->
@@ -129,42 +127,26 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
 
-    private fun handleWorkAssignedResponse(response: ApiState<WorkAssignedResponse>) {
-        when (response.status) {
-            Status.SUCCESS -> {
-                dismissProgress()
-                stopRefreshingData()
-                val body = response.response
-                if (body != null && body.code == ValConstants.SUCCESS_CODE) {
-                    handleWorkAssignedSuccess(body.data.results)
-                } else {
-                    // Rejected or empty: release the lock so the same page is retried on scroll.
-                    paging.onRequestFailed()
-                    adapter?.removeLoadingFooter()
-                    if (body != null) handleErrorResponse(body.code, body.message)
-                }
-            }
-            Status.ERROR -> handleError(response.throwable)
-            Status.LOADING -> showLoadingIndicator()
-        }
+    private fun renderWorkList(state: PagedListUiState<Site>) {
+        showFirstPageProgress(state.isLoadingFirstPage)
+        if (!state.isLoadingFirstPage && !state.isRefreshing) stopRefreshingData()
+        adapter?.submitList(state.items)
+        adapter?.showLoadingFooter(state.isLoadingMore)
+        binding.isEmptyAssignedTasks = state.isEmpty
     }
 
-    private fun handleWorkAssignedSuccess(records: List<Site>) {
-        // null: no page was awaited (e.g. a replayed old result), so there is nothing to apply.
-        val isFirstPage = paging.onPageReceived(records.size) ?: return
-        adapter?.removeLoadingFooter() // Always remove loading footer before updating list
-        if (isFirstPage) {
-            adapter?.submitList(emptyList()) // Clear adapter data on refresh
-        }
-        if (records.isEmpty()) {
-            if (isFirstPage) emptyDataLayout() else adapter?.removeLoadingFooter()
+    private fun showFirstPageProgress(show: Boolean) {
+        if (show == isProgressShown) return
+        isProgressShown = show
+        if (show) showProgress() else dismissProgress()
+    }
+
+    private fun handleWorkListFailure(failure: ApiState<WorkAssignedResponse>) {
+        if (failure.status == Status.SUCCESS) {
+            // The server rejected the page.
+            failure.response?.let { handleRejectedResponse(it.code, it.message) }
         } else {
-            mainLayout()
-            if (isFirstPage) {
-                adapter?.submitList(records)
-            } else {
-                adapter?.addData(records)
-            }
+            handleApiFailure(failure.throwable)
         }
     }
 
@@ -177,12 +159,12 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(requireContext(), it.message ?: getString(successMessage))
                         //adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
                         viewModel.itemPosition.value = -1
                     } else {
-                        //handleErrorResponse(it.code, it.message)
+                        //handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -200,12 +182,12 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(requireContext(), it.message ?: getString(successMessage))
                         //adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
                         viewModel.itemPosition.value = -1
                     } else {
-                        it.code?.let { it1 -> handleErrorResponse(it1, it.message) }
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -219,7 +201,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(requireContext(), it.message ?: getString(R.string.work_ended))
                         /*adapter?.setUpdateStatus(
                             viewModel.itemPosition.value ?: -1,
@@ -227,7 +209,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                         )*/
                         viewModel.itemPosition.value = -1
                     } else {
-                        it.code?.let { it1 -> handleErrorResponse(it1, it.message) }
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -241,7 +223,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200 && it.data?.checkedIn == true) {
+                    if (it.code == ValConstants.SUCCESS_CODE && it.data?.checkedIn == true) {
                         startWorkWithLocationPermissions(viewModel.currentWorkId ?: -1, viewModel.itemPosition.value ?: -1)
                     } else {
                         alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.please_check_in_first), okLister = DialogInterface.OnClickListener { dialog, _ ->
@@ -261,31 +243,9 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
 
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(requireContext(), getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
-    }
-
     private fun handleError(throwable: Throwable?) {
         dismissProgress()
-        stopRefreshingData()
-        adapter?.removeLoadingFooter()
-        paging.onRequestFailed()
-        if (throwable is HttpException && throwable.code() == 401) {
-            tokenExpiresAlert()
-        } else {
-            showToast(requireContext(), throwable?.message ?: getString(R.string.something_went_wrong))
-        }
-    }
-
-    private fun showLoadingIndicator() {
-        when {
-            paging.isLoadingFirstPage -> showProgress()
-            // Only while a later page is actually awaited; otherwise nothing would remove it.
-            paging.isLoading -> {
-                adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
-                adapter?.addLoadingFooter()
-            }
-        }
+        handleApiFailure(throwable)
     }
 
     private fun checkAttendanceStatus(id: Long, position: Int) {
@@ -294,24 +254,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         viewModel.checkInStatusAttendance()
     }
 
-    private fun loadNextPage() {
-        paging.startNextPage()?.let { fetchPage(it) }
-    }
-
-    // Start, refresh, search and filter all come here. It supersedes any request still in flight,
-    // and the ViewModel cancels that request, so a slow old answer can never overwrite this one.
-    private fun loadFirstPage() {
-        adapter?.removeLoadingFooter()
-        adapter?.submitList(emptyList())
-        fetchPage(paging.restart())
-    }
-
-    private fun fetchPage(page: Int) {
-        if (page != 1) adapter?.addLoadingFooter()
-        viewModel.getWorkAssignedAll(page, pageSize)
-    }
-
     private fun setupSearch() {
+        // A recreated view shows the kept list, so show the query it was filtered by.
+        binding.etSearch.setText(viewModel.searchQuery)
+        binding.ivClearSearch.visibility = if (viewModel.searchQuery.isNotBlank()) View.VISIBLE else View.GONE
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -340,9 +286,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 if (viewModel.activeFilter == filter) return@setOnClickListener
                 viewModel.activeFilter = filter
                 updateChipStyles(chips, filter)
-                loadFirstPage()
+                viewModel.workList.reload()
             }
         }
+        updateChipStyles(chips, viewModel.activeFilter)
     }
 
     private fun updateChipStyles(chips: Map<TextView, WorkFilter>, selected: WorkFilter) {
@@ -364,24 +311,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun setUpWorkAssignmentList() {
-        binding.rvAssignedTasks.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                if (dy > 0) {
-                    if (!paging.isLoading && !paging.isLastPage) {
-                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                            && firstVisibleItemPosition >= 0
-                        ) {
-                            loadNextPage()
-                        }
-                    }
-                }
-            }
-        })
+        binding.rvAssignedTasks.addOnScrollListener(PaginationScrollListener { viewModel.workList.loadNextPage() })
 
         adapter = AssignedTasksListAdapter(false,
             onViewAssignedTask = { assignedTask, position ->
@@ -410,26 +340,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         binding.rvAssignedTasks.adapter = adapter
     }
 
-    private fun mainLayout() {
-        adapter?.removeLoadingFooter() // Hide loading footer
-        binding.isEmptyAssignedTasks = false
-    }
-
-    private fun emptyDataLayout() {
-        adapter?.removeLoadingFooter() // Hide loading footer
-        if (adapter?.count() ?: 0 <= 0) {
-            binding.isEmptyAssignedTasks = true
-        }
-    }
-
     private fun swipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            startRefreshingData()
+            viewModel.workList.refresh()
         }
-    }
-
-    private fun startRefreshingData() {
-        loadFirstPage()
     }
 
     private fun stopRefreshingData() {
@@ -551,7 +465,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     private val assignTaskLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                startRefreshingData()
+                viewModel.workList.refresh()
             }
         }
 
@@ -560,8 +474,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             if (result.resultCode == Activity.RESULT_OK) {
                 val position = result.data?.getIntExtra(SharingKeys.WORK_POSITION, -1) ?: -1
                 val updatedStatus = result.data?.getIntExtra(SharingKeys.UPDATED_STATUS,-1) ?: -1
-                if (position != -1 && updatedStatus != null) {
-                    adapter?.setUpdateStatus(position, updatedStatus)
+                if (position != -1 && updatedStatus != -1) {
+                    viewModel.workList.updateItem(position) { it.status?.code = updatedStatus }
                 }
             }
 

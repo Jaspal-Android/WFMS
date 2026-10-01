@@ -66,6 +66,12 @@ abstract class FooterRecyclerView : RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /** Shows or hides the loading footer; safe to call with the same value repeatedly. */
+    fun showLoadingFooter(visible: Boolean) {
+        if (visible == isLoadingAdded) return
+        if (visible) addLoadingFooter() else removeLoadingFooter()
+    }
+
 
 
     internal inner class FooterHolder(view: View) : RecyclerView.ViewHolder(view) {
