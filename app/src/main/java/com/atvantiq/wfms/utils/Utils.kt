@@ -399,27 +399,24 @@ object Utils {
     }
 
     /**
-     * Play's Prominent Disclosure: shown immediately before every location permission request.
-     * Not cancelable by tapping outside; the user must choose. [onCancel] runs when they decline.
+     * The prominent disclosure shown immediately before every location permission request (Google
+     * Play's prominent-disclosure policy). One button, Continue, which always goes straight to
+     * the system request: Apple rejected a Cancel button here (Guideline 5.1.1(iv)), and the system
+     * prompt is where the user allows or declines. Not cancelable by tapping outside or Back.
      */
-    fun showBackgroundLocationDisclosureDialog(
+    fun showLocationDisclosureDialog(
         context: Context,
         title: String,
         message: String,
-        onCancel: () -> Unit = {},
-        onAllowAndContinue: () -> Unit
+        onContinue: () -> Unit
     ) {
         MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(context.getString(R.string.allow_and_continue)) { dialog, _ ->
+            .setPositiveButton(context.getString(R.string.continue_label)) { dialog, _ ->
                 dialog.dismiss()
-                onAllowAndContinue()
-            }
-            .setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
-                onCancel()
+                onContinue()
             }
             .show()
     }

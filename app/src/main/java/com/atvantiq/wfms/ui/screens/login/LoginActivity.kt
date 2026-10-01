@@ -215,11 +215,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             startLocationPermissionFlow()
             return
         }
-        Utils.showBackgroundLocationDisclosureDialog(
+        Utils.showLocationDisclosureDialog(
             this,
             getString(R.string.share_current_location),
             getString(R.string.share_location_msg),
-            onAllowAndContinue = { startLocationPermissionFlow() }
+            onContinue = { startLocationPermissionFlow() }
         )
     }
 
