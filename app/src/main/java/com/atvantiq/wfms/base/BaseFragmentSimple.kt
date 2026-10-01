@@ -73,10 +73,20 @@ open class BaseFragmentSimple : Fragment() {
 		title: String,
 		message: String,
 		okLister: DialogInterface.OnClickListener
+	) = alertDialogShow(context, title, message, cancelable = true, okLister = okLister)
+
+	/** @param cancelable false when OK must be the only way out (e.g. the screen finishes on OK). */
+	fun alertDialogShow(
+		context: Context,
+		title: String,
+		message: String,
+		cancelable: Boolean,
+		okLister: DialogInterface.OnClickListener
 	) {
 		val builder = AlertDialog.Builder(context)
 		builder.setTitle(title)
 		builder.setMessage(message)
+		builder.setCancelable(cancelable)
 		builder.setPositiveButton(getString(R.string.ok), okLister)
 		val alertDialog = builder.create()
 		alertDialog.show()

@@ -12,6 +12,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
 class StartWorkBottomSheet : BaseBottomSheet() {
 
@@ -67,10 +68,7 @@ class StartWorkBottomSheet : BaseBottomSheet() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		// After a restore the host callback is gone; Done would silently do nothing.
-		if (onImageSelected == null) {
-			dismissAllowingStateLoss()
-			return
-		}
+		if (dismissIfCallbacksMissing(onImageSelected)) return
 		setImagePicker()
 		setLocationLatLon()
 		initListeners()

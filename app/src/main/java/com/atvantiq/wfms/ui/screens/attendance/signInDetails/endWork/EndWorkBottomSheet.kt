@@ -18,10 +18,11 @@ import com.atvantiq.wfms.models.inventory.UsedMaterial
 import com.atvantiq.wfms.ui.screens.adapters.StatusAdapter
 import com.atvantiq.wfms.ui.screens.intentory.MaterialUsageActivity
 import com.atvantiq.wfms.widgets.DividerItemDecoration
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 
 
-class EndWorkBottomSheet : BottomSheetDialogFragment() {
+class EndWorkBottomSheet : BaseBottomSheet() {
 
     private var latitude: String? = null
     private var longitude: String? = null
@@ -74,10 +75,7 @@ class EndWorkBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // After a restore the host callbacks are gone; Done would silently never end the work.
-        if (onSubmitDetails == null || onMaterialFlowCompleted == null) {
-            dismissAllowingStateLoss()
-            return
-        }
+        if (dismissIfCallbacksMissing(onSubmitDetails, onMaterialFlowCompleted)) return
         setLocationLatLon()
         initListeners()
         initStatusList()

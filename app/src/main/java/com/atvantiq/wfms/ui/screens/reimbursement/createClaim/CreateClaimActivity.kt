@@ -42,7 +42,6 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterDaBot
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterOthersBottomSheet
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.serverMessage
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
@@ -328,17 +327,15 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                         // The claim now exists on the server, so Submit stays locked and the
                         // dialog cannot be dismissed without leaving the screen.
                         setResult(RESULT_OK)
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle(getString(R.string.success))
-                            .setMessage(
-                                response.response?.message ?: getString(
-                                    if (isEdit) R.string.claim_updated_successfully
-                                    else R.string.claim_submitted_successfully
-                                )
-                            )
-                            .setCancelable(false)
-                            .setPositiveButton(getString(R.string.ok)) { _, _ -> finish() }
-                            .show()
+                        alertDialogShow(
+                            this,
+                            getString(R.string.success),
+                            response.response?.message ?: getString(
+                                if (isEdit) R.string.claim_updated_successfully
+                                else R.string.claim_submitted_successfully
+                            ),
+                            cancelable = false
+                        ) { _, _ -> finish() }
                     }
 
                     else -> {

@@ -14,6 +14,7 @@ import com.atvantiq.wfms.databinding.BottomSheetEnterOthersBinding
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
 class EnterOthersBottomSheet : BaseBottomSheet() {
 
@@ -62,10 +63,7 @@ class EnterOthersBottomSheet : BaseBottomSheet() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		if (onDataSubmitted == null) {
-			dismissAllowingStateLoss()
-			return
-		}
+		if (dismissIfCallbacksMissing(onDataSubmitted)) return
 		setImagePicker()
 		initListeners()
 	}

@@ -13,6 +13,7 @@ import com.atvantiq.wfms.databinding.BottomSheetEnterDaBinding
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
 class EnterDaBottomSheet : BaseBottomSheet() {
 
@@ -62,10 +63,7 @@ class EnterDaBottomSheet : BaseBottomSheet() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		if (onDataSubmitted == null) {
-			dismissAllowingStateLoss()
-			return
-		}
+		if (dismissIfCallbacksMissing(onDataSubmitted)) return
 		binding.tvTitle.text = title
 		setImagePicker()
 		initListeners()

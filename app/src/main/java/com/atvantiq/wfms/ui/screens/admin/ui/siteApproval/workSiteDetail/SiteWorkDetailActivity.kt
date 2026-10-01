@@ -134,10 +134,8 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
         binding.tvSiteCode.text = record?.site?.siteId ?: getString(R.string.not_available)
         binding.siteStatusInteger = record?.site?.status?.code ?: -1
 
-        // Same rule the adapter uses for each row's checkbox, so "Select all" is offered only when
-        // at least one row can actually be selected.
-        binding.showSelectAll =
-            record?.workType?.any { WorkTypeAdapterAdmin.isSelectable(employeeRole, it) } == true
+        // Same rule the adapter uses for each row's checkbox.
+        binding.showSelectAll = viewModel.hasApprovableTypes(employeeRole, record?.workType)
         itemTypeAdapter?.setData(record?.workType ?: emptyList(), false)
     }
 

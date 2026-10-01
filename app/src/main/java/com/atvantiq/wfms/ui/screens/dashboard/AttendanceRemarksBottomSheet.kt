@@ -8,9 +8,10 @@ import androidx.databinding.DataBindingUtil
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetAttendanceRemarksBinding
 import com.atvantiq.wfms.models.StatusOption
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
+import com.atvantiq.wfms.widgets.BaseBottomSheet
 
-class AttendanceRemarksBottomSheet : BottomSheetDialogFragment() {
+class AttendanceRemarksBottomSheet : BaseBottomSheet() {
 
     // Callback is wired by the host after construction. Keeping a no-arg constructor
     // lets the FragmentManager re-instantiate this sheet on process-death/config-change
@@ -38,10 +39,7 @@ class AttendanceRemarksBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // After a restore the host callback is gone; Done would silently drop the remarks.
-        if (onSubmitDetails == null) {
-            dismissAllowingStateLoss()
-            return
-        }
+        if (dismissIfCallbacksMissing(onSubmitDetails)) return
         initListeners()
     }
 
