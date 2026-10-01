@@ -1,12 +1,11 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -22,6 +21,7 @@ import com.atvantiq.wfms.ui.screens.adapters.WorkSubmissionsAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /** Work Approval: the month's employee-days, each opening that day's Work Sites. */
 @AndroidEntryPoint
@@ -35,11 +35,7 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()
         setUpList()
         binding.swipeRefreshLayout.setOnRefreshListener { viewModel.records.refresh() }

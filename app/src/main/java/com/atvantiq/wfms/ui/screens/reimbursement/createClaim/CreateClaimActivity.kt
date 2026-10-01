@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
+import android.view.View
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
@@ -8,8 +9,6 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -45,6 +44,7 @@ import com.atvantiq.wfms.utils.serverMessage
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaimVM>() {
@@ -60,11 +60,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()
         setUpSelectedSitesRecycler()
         setUpSelectedTravelingEntriesRecycler()

@@ -1,11 +1,10 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.claimApproval
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -19,6 +18,7 @@ import com.atvantiq.wfms.models.reimbursement.review.ExpenseDecisionInput
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Claim Approval (spec 8.2): confirm an approved amount for every expense and submit once. The
@@ -34,11 +34,7 @@ class ClaimApprovalDetailActivity : BaseActivity<ActivityClaimApprovalDetailBind
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         binding.toolbar.toolbarTitle.text = getString(R.string.claim_approval)
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         claimId = intent.getLongExtra(SharingKeys.CLAIM_ID, NO_ID)

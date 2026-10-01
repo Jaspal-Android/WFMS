@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.cab.add
 
+import android.view.View
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
@@ -9,8 +10,6 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityAddCabFareBinding
@@ -25,6 +24,7 @@ import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class AddCabFareActivity : BaseActivity<ActivityAddCabFareBinding,CabViewModel>() {
 
@@ -72,11 +72,7 @@ class AddCabFareActivity : BaseActivity<ActivityAddCabFareBinding,CabViewModel>(
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()
         setUpPlaceLocations()
         setDateTimeAttendance()

@@ -1,13 +1,12 @@
 package com.atvantiq.wfms.ui.screens.attendance.applyLeave
 
+import android.view.View
 import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.ValConstants
@@ -18,6 +17,7 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.dialogs.SimpleBottomSheetDialog
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.files.PickMediaHelper
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>() {
 
@@ -50,11 +50,7 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         setImagePicker()
     }

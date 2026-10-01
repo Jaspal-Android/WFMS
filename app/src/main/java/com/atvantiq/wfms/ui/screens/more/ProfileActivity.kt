@@ -2,13 +2,12 @@ package com.atvantiq.wfms.ui.screens.more
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityProfileBinding
 import com.atvantiq.wfms.utils.isSessionLost
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /** My Profile: the employee's personal and employment details from `GET /employee/me`. */
 @AndroidEntryPoint
@@ -19,11 +18,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding, ProfileVM>() {
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding.main.applySystemBarsAndImePadding()
         binding.toolbar.toolbarTitle.text = getString(R.string.my_profile)
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         viewModel.refresh()

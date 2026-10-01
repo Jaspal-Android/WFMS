@@ -1,9 +1,8 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSiteDetail
 
+import android.view.View
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.AppRole
@@ -20,6 +19,7 @@ import com.atvantiq.wfms.ui.screens.adapters.WorkTypeAdapterAdmin
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.SiteApprovalVM
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Site Work Detail (spec 7.3): the work types at one site, where the role approves or rejects the
@@ -42,11 +42,7 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         role = PrefMethods.getAppRole(prefMain)
         binding.toolbar.toolbarTitle.text = getString(R.string.site_work_detail)
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }

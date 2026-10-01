@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -8,8 +9,6 @@ import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +30,7 @@ import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 
 @AndroidEntryPoint
@@ -47,11 +47,7 @@ class AttendanceDetailActivity :
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         setWorkList()
         fetchAttendanceDetailFromBundle()

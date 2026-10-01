@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -24,6 +22,7 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivit
 import com.atvantiq.wfms.utils.serverMessage
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,ReimbursementViewModel>() {
@@ -36,11 +35,7 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         handleToolbar()
         setupSitesRecycler()
         setupActions()

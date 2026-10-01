@@ -3,8 +3,6 @@ package com.atvantiq.wfms.ui.screens
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -12,6 +10,7 @@ import com.atvantiq.wfms.databinding.ActivitySplashBinding
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity<ActivitySplashBinding, SplashVM>() {
@@ -32,11 +31,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashVM>() {
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding.main.applySystemBarsAndImePadding()
         binding.versionText.text = getString(R.string.version_label, BuildConfig.VERSION_NAME)
         // A tapped notification goes straight through; a normal launch keeps the brand visible
         // for a moment.

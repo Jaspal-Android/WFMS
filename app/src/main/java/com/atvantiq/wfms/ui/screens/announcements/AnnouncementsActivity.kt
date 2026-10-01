@@ -1,10 +1,9 @@
 package com.atvantiq.wfms.ui.screens.announcements
 
+import android.view.View
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
@@ -13,6 +12,7 @@ import com.atvantiq.wfms.databinding.ActivityAnnouncementsBinding
 import com.atvantiq.wfms.ui.screens.adapters.AnnouncementAdapter
 import com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter
 import com.atvantiq.wfms.widgets.DividerItemDecoration
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class AnnouncementsActivity : BaseBindingActivity<ActivityAnnouncementsBinding>() {
 
@@ -21,11 +21,7 @@ class AnnouncementsActivity : BaseBindingActivity<ActivityAnnouncementsBinding>(
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         initAnnouncementList()
     }

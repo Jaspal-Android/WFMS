@@ -1,10 +1,9 @@
 package com.atvantiq.wfms.ui.screens.vendor.viewAllActivities
 
+import android.view.View
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -14,6 +13,7 @@ import com.atvantiq.wfms.ui.screens.adapters.VendorViewAllListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.approvals.ApprovalsVM
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.DividerItemDecoration
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class ViewAllVendorActivity : BaseActivity<ActivityViewAllVendorBinding,ViewAllVendorVM>() {
 
@@ -24,11 +24,7 @@ class ViewAllVendorActivity : BaseActivity<ActivityViewAllVendorBinding,ViewAllV
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-             insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         setVendorViewAllList()
     }
