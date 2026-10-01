@@ -263,10 +263,13 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val query = s?.toString() ?: ""
-                viewModel.searchQuery = query
                 binding.ivClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
+                // The text the view restores after recreation is the query already applied; only a
+                // real change reloads (a reload clears the kept list).
+                if (query == viewModel.searchQuery) return
+                viewModel.searchQuery = query
                 searchHandler.removeCallbacks(searchDebounce)
-                searchHandler.postDelayed(searchDebounce, 500L)
+                searchHandler.postDelayed(searchDebounce, SEARCH_DEBOUNCE_MS)
             }
         })
         binding.ivClearSearch.setOnClickListener {
@@ -492,4 +495,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         assignedTaskDetailLauncher.launch(intent)
     }
 
+    private companion object {
+        /** Wait for typing to pause before searching. */
+        const val SEARCH_DEBOUNCE_MS = 500L
+    }
 }
