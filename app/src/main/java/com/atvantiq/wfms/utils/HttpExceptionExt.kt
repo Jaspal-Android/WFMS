@@ -2,6 +2,8 @@ package com.atvantiq.wfms.utils
 
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.network.ApiHttpException
+import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.network.Status
 import com.google.gson.JsonParser
 import retrofit2.HttpException
 
@@ -28,3 +30,13 @@ fun HttpException.serverMessage(): String? {
 /** True for an HTTP 401, i.e. the session is no longer valid. */
 fun Throwable?.isUnauthorized(): Boolean =
     this is HttpException && code() == ValConstants.UNAUTHORIZED_CODE
+
+/**
+ * True when a request ended because the session is gone: an HTTP 401, or an HTTP 200 whose body
+ * carries code 401. [bodyCode] reads that code from the response body.
+ */
+fun <T> ApiState<T>.isSessionLost(bodyCode: (T) -> Int?): Boolean = when (status) {
+    Status.ERROR -> throwable.isUnauthorized()
+    Status.SUCCESS -> response?.let(bodyCode) == ValConstants.UNAUTHORIZED_CODE
+    Status.LOADING -> false
+}

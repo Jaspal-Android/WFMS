@@ -47,6 +47,7 @@ import com.ncorti.slidetoact.SlideToActView
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.navigateToTab
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
@@ -306,7 +307,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             getString(R.string.enter_work_details),
             DialogInterface.OnClickListener { dialog, _ ->
                 dialog.dismiss()
-                findNavController().navigate(R.id.nav_attendance)
+                findNavController().navigateToTab(R.id.nav_attendance)
             },
             getString(R.string.mark_idle),
             DialogInterface.OnClickListener { _, _ ->

@@ -48,4 +48,11 @@ data class EmpData(
             .map { it.code }
             .filter { it.isNotBlank() }
             .joinToString(", ")
+
+    /** Circle names joined for the profile's Work Location, e.g. "Chandigarh, Delhi". */
+    val circleNames: String
+        get() = circle.orEmpty()
+            .map { it.name }
+            .filter { it.isNotBlank() }
+            .joinToString(", ")
 }

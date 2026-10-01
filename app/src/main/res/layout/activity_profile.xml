@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="profile"
+            type="com.atvantiq.wfms.models.empDetail.EmpData" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        android:orientation="vertical"
+        tools:context=".ui.screens.more.ProfileActivity">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/custom_toolbar" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
+
+                <!-- Header -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding">
+
+                        <TextView
+                            android:layout_width="@dimen/avatar_size_large"
+                            android:layout_height="@dimen/avatar_size_large"
+                            android:background="@drawable/bg_avatar_initials"
+                            android:gravity="center"
+                            android:importantForAccessibility="no"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/default_extra_big_text"
+                            android:textStyle="bold"
+                            app:initials="@{profile.name}" />
+
+                        <TextView
+                            style="@style/CustomLargeTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:text="@{profile.name}"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textStyle="bold"
+                            tools:text="kamal sharma" />
+
+                        <TextView
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                            app:valueOrMissing="@{profile.designation}"
+                            tools:text="Software Engineer" />
+
+                        <TextView
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:background="@drawable/bg_type_item"
+                            android:fontFamily="monospace"
+                            android:paddingStart="@dimen/padding_medium"
+                            android:paddingTop="@dimen/padding_x_small"
+                            android:paddingEnd="@dimen/padding_medium"
+                            android:paddingBottom="@dimen/padding_x_small"
+                            android:text="@{profile.employeeCode}"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            tools:text="kamal23" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    style="@style/CustomSectionCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/personal_information" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding">
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/email}"
+                            app:value="@{profile.email}" />
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/label_date_of_birth}"
+                            app:value="@{profile.dob}" />
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/label_gender}"
+                            app:value="@{profile.gender}" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    style="@style/CustomSectionCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/employment" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="@dimen/elevation_small">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding">
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/label_employee_id}"
+                            app:value="@{profile.employeeCode}" />
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/label_designation}"
+                            app:value="@{profile.designation}" />
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/reporting_manager_label}"
+                            app:value="@{profile.reportingManager.name}" />
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/label_date_of_joining}"
+                            app:value="@{profile.dateOfJoining}" />
+
+                        <include
+                            layout="@layout/item_profile_row"
+                            app:label="@{@string/work_location}"
+                            app:value="@{profile.circleNames}" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</layout>

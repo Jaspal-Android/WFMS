@@ -449,5 +449,10 @@ object Utils {
         view.background = gd
     }
 
-
+    /** Up to two initials for an avatar: "kamal sharma" → "KS", "Kamal" → "K". */
+    fun nameInitials(name: String?): String =
+        name.orEmpty().trim().split(Regex("\\s+"))
+            .filter { it.isNotEmpty() }
+            .let { words -> listOfNotNull(words.firstOrNull(), words.drop(1).lastOrNull()) }
+            .joinToString("") { it.first().uppercase() }
 }
