@@ -132,4 +132,25 @@ class AddSiteVMTest {
         assertEquals(30.71, bodies[1].get("latitude").asDouble, 0.0)
         assertEquals(76.70, bodies[1].get("longitude").asDouble, 0.0)
     }
+
+    @Test
+    fun `no message on a fresh form, then the first failing check once filling starts`() {
+        assertNull(viewModel.validationError.get())
+
+        viewModel.selectClient(client(1, "Jio"))
+
+        assertEquals(com.atvantiq.wfms.R.string.add_site_select_project, viewModel.validationError.get())
+    }
+
+    @Test
+    fun `an out-of-range latitude keeps Create Site greyed and sends nothing`() {
+        fillSite()
+        viewModel.siteLatitude.set("91")
+
+        assertFalse(viewModel.canCreate.get())
+        assertEquals(com.atvantiq.wfms.R.string.add_site_invalid_latitude, viewModel.validationError.get())
+        viewModel.onSaveClick()
+        dispatcher.scheduler.advanceUntilIdle()
+        io.mockk.coVerify(exactly = 0) { creationRepo.createSite(any()) }
+    }
 }

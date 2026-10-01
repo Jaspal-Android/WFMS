@@ -203,9 +203,6 @@
     <string name="Address">Address</string>
     <string name="sites">Sites</string>
     <string name="add_site">Add Site</string>
-    <string name="siteNameHint">Enter Site Name</string>
-    <string name="siteIdHint">Enter Site ID</string>
-    <string name="siteAddressHint">Enter Site Address</string>
     <string name="site_created_successfully">Site created successfully</string>
     <string name="site">Site</string>
     <string name="approve_site">Approve Site</string>
@@ -646,6 +643,15 @@
     <string name="latitude_optional">Latitude (Optional)</string>
     <string name="longitude_optional">Longitude (Optional)</string>
     <string name="create_site">Create Site</string>
+    <string name="add_site_select_client">Select a client.</string>
+    <string name="add_site_select_project">Select a project.</string>
+    <string name="add_site_select_circle">Select a circle.</string>
+    <string name="add_site_enter_site_id">Enter a site ID.</string>
+    <string name="add_site_enter_name">Enter a site name.</string>
+    <string name="add_site_enter_address">Enter a site address.</string>
+    <string name="add_site_invalid_latitude">Enter a valid latitude between -90 and 90.</string>
+    <string name="add_site_invalid_longitude">Enter a valid longitude between -180 and 180.</string>
+    <string name="no_options_found">No options found.</string>
     <string name="site_inactive">Inactive</string>
     <string name="no_sites_found">No sites found.</string>
     <string name="available">Available</string>

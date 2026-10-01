@@ -3,6 +3,7 @@ import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.models.attendance.approve.AttendanceApproveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
@@ -122,8 +123,12 @@ interface ApiService {
 	@POST(NetworkEndPoints.workSelfAssign)
 	suspend fun workSelfAssign(@Body params: JsonObject): SelfAssignResponse
 
+	/** Clients for the pickers; one large page, as the default page of 10 would drop clients. */
 	@GET(NetworkEndPoints.clientList)
-	suspend fun clientList(): ClientListResponse
+	suspend fun clientList(
+		@Query("page") page: Int = 1,
+		@Query("page_size") pageSize: Int = ValConstants.CLIENT_PICKER_PAGE_SIZE
+	): ClientListResponse
 
 	@GET(NetworkEndPoints.projectListByClientId)
 	suspend fun projectListByClientId(@Path("client_id") clientId: Long, ): ProjectListByClientResponse

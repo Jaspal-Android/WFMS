@@ -118,5 +118,6 @@ class GenericBottomSheetDialog<T>() : BaseBottomSheet() {
         val condition = filterCondition ?: return
         filteredItems.addAll(items.filter { condition(it, query) })
         adapter.notifyDataSetChanged()
+        binding.emptyView.visibility = if (filteredItems.isEmpty()) View.VISIBLE else View.GONE
     }
 }

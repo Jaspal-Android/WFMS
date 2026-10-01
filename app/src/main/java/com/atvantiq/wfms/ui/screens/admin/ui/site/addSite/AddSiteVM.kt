@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.site.addSite
 
 import android.app.Application
+import androidx.databinding.Observable
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
@@ -23,8 +24,6 @@ import javax.inject.Inject
 class AddSiteVM @Inject constructor(
     application: Application,
     private val creationRepo: ICreationRepo) : BaseViewModel(application) {
-
-    var errorHandler = MutableLiveData<AddSiteErrorHandler>()
 
     var selectedClient: Client? = null
         private set
@@ -52,12 +51,49 @@ class AddSiteVM @Inject constructor(
     var siteLatitude = ObservableField<String>().apply { set("") }
     var siteLongitude = ObservableField<String>().apply { set("") }
 
-    /** Create Site is enabled once the circle and every required field are filled. */
-    val canCreate = object : ObservableBoolean(circleName, siteId, siteName, siteAddress) {
-        override fun get(): Boolean = circleName.get() != null &&
-            !siteId.get().isNullOrBlank() &&
-            !siteName.get().isNullOrBlank() &&
-            !siteAddress.get().isNullOrBlank()
+    /** The first failing check (spec order), shown under the form once the user has started. */
+    val validationError = ObservableField<Int?>()
+
+    /** Create Site is greyed out until the form is valid, and while it is being sent. */
+    val canCreate = ObservableBoolean(false)
+
+    private var isSubmitting = false
+    private var hasStarted = false
+    private val formFields = listOf(
+        clientName, projectName, circleName, siteId, siteName, siteAddress, siteLatitude, siteLongitude
+    )
+    private val revalidate = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+            hasStarted = true
+            validate()
+        }
+    }
+
+    init {
+        formFields.forEach { it.addOnPropertyChangedCallback(revalidate) }
+        validate()
+    }
+
+    private fun firstError(): Int? = AddSiteValidation.firstError(
+        hasClient = selectedClient != null,
+        hasProject = selectedProjectId != null,
+        hasCircle = selectedCircleId != null,
+        siteId = siteId.get(),
+        name = siteName.get(),
+        address = siteAddress.get(),
+        latitude = siteLatitude.get(),
+        longitude = siteLongitude.get()
+    )
+
+    private fun validate() {
+        val error = firstError()
+        validationError.set(if (hasStarted) error else null)
+        canCreate.set(error == null && !isSubmitting)
+    }
+
+    override fun onCleared() {
+        formFields.forEach { it.removeOnPropertyChangedCallback(revalidate) }
+        super.onCleared()
     }
 
     fun onSaveClick() = createSite()
@@ -134,39 +170,13 @@ class AddSiteVM @Inject constructor(
         isCircleLoading.set(true)
     }
 
-    fun validateAssignTaskFields(): Boolean {
-        return when {
-            selectedClient == null -> {
-                errorHandler.value = AddSiteErrorHandler.ON_CLIENT_ERROR
-                false
-            }
-            selectedProjectId == null -> {
-                errorHandler.value = AddSiteErrorHandler.ON_PROJECT_ERROR
-                false
-            }
-            selectedCircleId == null -> {
-                errorHandler.value = AddSiteErrorHandler.ON_CIRCLE_ERROR
-                false
-            }
-            siteId.get().isNullOrBlank() -> {
-                errorHandler.value = AddSiteErrorHandler.ON_SITE_ID_ERROR
-                false
-            }
-            siteName.get().isNullOrBlank() -> {
-                errorHandler.value = AddSiteErrorHandler.ON_SITE_NAME_ERROR
-                false
-            }
-            siteAddress.get().isNullOrBlank() -> {
-                errorHandler.value = AddSiteErrorHandler.ON_SITE_ADDRESS_ERROR
-                false
-            }
-            else -> true
-        }
-    }
-
     /** `POST /site/create`. Latitude and longitude are optional and left out when empty. */
     private fun createSite() {
-        if (!validateAssignTaskFields()) return
+        hasStarted = true
+        if (isSubmitting || firstError() != null) {
+            validate()
+            return
+        }
         val params = JsonObject().apply {
             addProperty("project_id", selectedProjectId)
             addProperty("circle_id", selectedCircleId)
@@ -176,9 +186,18 @@ class AddSiteVM @Inject constructor(
             siteLatitude.get()?.trim()?.toDoubleOrNull()?.let { addProperty("latitude", it) }
             siteLongitude.get()?.trim()?.toDoubleOrNull()?.let { addProperty("longitude", it) }
         }
+        isSubmitting = true
+        validate()
         executeApiCall(
             apiCall = { creationRepo.createSite(params) },
-            liveData = createSiteResponse
+            liveData = createSiteResponse,
+            onSuccess = { finishSubmitting() },
+            onError = { finishSubmitting() }
         )
+    }
+
+    private fun finishSubmitting() {
+        isSubmitting = false
+        validate()
     }
 }

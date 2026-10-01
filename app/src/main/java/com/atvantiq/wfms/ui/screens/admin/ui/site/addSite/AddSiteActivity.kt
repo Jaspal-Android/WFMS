@@ -2,7 +2,10 @@ package com.atvantiq.wfms.ui.screens.admin.ui.site.addSite
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -14,7 +17,6 @@ import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.project.ProjectData
 import com.atvantiq.wfms.network.Status
-import java.util.Locale
 
 class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
@@ -42,39 +44,6 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
     override fun subscribeToEvents(vm: AddSiteVM) {
         binding.vm = vm
-
-        vm.errorHandler.observe(this) { error ->
-            when (error) {
-                AddSiteErrorHandler.ON_CLIENT_ERROR -> {
-                    binding.clientEt.error = getString(R.string.select_client)
-                    showToast(this, getString(R.string.select_client))
-                }
-
-                AddSiteErrorHandler.ON_PROJECT_ERROR -> {
-                    binding.projectEt.error = getString(R.string.select_project)
-                    showToast(this, getString(R.string.select_project))
-                }
-
-                AddSiteErrorHandler.ON_CIRCLE_ERROR -> {
-                    binding.circleEt.error = getString(R.string.select_circle)
-                    showToast(this, getString(R.string.select_circle))
-                }
-
-                AddSiteErrorHandler.ON_SITE_ID_ERROR -> {
-                    binding.siteIdEt.error = getString(R.string.siteIdHint)
-                    showToast(this, getString(R.string.siteIdHint))
-                }
-                AddSiteErrorHandler.ON_SITE_NAME_ERROR ->{
-                    binding.siteNameEt.error = getString(R.string.siteNameHint)
-                    showToast(this, getString(R.string.siteNameHint))
-                }
-                AddSiteErrorHandler.ON_SITE_ADDRESS_ERROR -> {
-                    binding.siteAddressEt.error = getString(R.string.siteAddressHint)
-                    showToast(this, getString(R.string.siteAddressHint))
-                }
-
-            }
-        }
 
         vm.clientListResponse.observe(this) { response ->
             when (response.status) {
@@ -246,17 +215,12 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
         showSelectionDialog(
             items = clients,
             title = getString(R.string.select_client),
-            layoutResId = R.layout.item_generic_adapter,
+            layoutResId = R.layout.item_picker_option,
             bind = { view, client ->
-                view.findViewById<TextView>(R.id.text1).text = client.companyName
+                bindOption(view, client.companyName, client.displayName, client.id == viewModel.selectedClient?.id)
             },
-            onItemSelected = {
-                binding.clientEt.error = null
-                viewModel.selectClient(it)
-            },
-            filterCondition = { client, query ->
-                client.companyName.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
-            },
+            onItemSelected = { viewModel.selectClient(it) },
+            filterCondition = { client, query -> matches(query, client.companyName, client.displayName) },
             emptyMessage = getString(R.string.no_clients_available),
             retryAction = { getClientList() },
             tag = "ClientSelectionDialog"
@@ -267,17 +231,10 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
         showSelectionDialog(
             items = projects,
             title = getString(R.string.select_project),
-            layoutResId = R.layout.item_generic_adapter,
-            bind = { view, project ->
-                view.findViewById<TextView>(R.id.text1).text = project.name
-            },
-            onItemSelected = {
-                binding.projectEt.error = null
-                viewModel.selectProject(it)
-            },
-            filterCondition = { project, query ->
-                project.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
-            },
+            layoutResId = R.layout.item_picker_option,
+            bind = { view, project -> bindOption(view, project.name, null, project.id == viewModel.selectedProjectId) },
+            onItemSelected = { viewModel.selectProject(it) },
+            filterCondition = { project, query -> matches(query, project.name) },
             emptyMessage = getString(R.string.no_projects_available),
             retryAction = { getProjectListByClientId(viewModel.selectedClient?.id ?: 0L) },
             tag = "ProjectSelectionDialog"
@@ -288,22 +245,31 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
         showSelectionDialog(
             items = circles,
             title = getString(R.string.select_circle),
-            layoutResId = R.layout.item_generic_adapter,
-            bind = { view, circle ->
-                view.findViewById<TextView>(R.id.text1).text = circle.name
-            },
-            onItemSelected = {
-                binding.circleEt.error = null
-                viewModel.selectCircle(it)
-            },
-            filterCondition = { circle, query ->
-                circle.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
-            },
+            layoutResId = R.layout.item_picker_option,
+            bind = { view, circle -> bindOption(view, circle.name, circle.code, circle.id == viewModel.selectedCircleId) },
+            onItemSelected = { viewModel.selectCircle(it) },
+            filterCondition = { circle, query -> matches(query, circle.name, circle.code) },
             emptyMessage = getString(R.string.no_circles_available),
             retryAction = { getCircleListByProject(viewModel.selectedProjectId ?: 0L) },
             tag = "CircleSelectionDialog"
         )
     }
+
+    /** A picker row: the name in bold, an optional grey second line, and a radio for the current choice. */
+    private fun bindOption(view: View, title: String?, subtitle: String?, selected: Boolean) {
+        view.findViewById<TextView>(R.id.optionTitle).text = title
+        view.findViewById<TextView>(R.id.optionSubtitle).apply {
+            text = subtitle
+            isVisible = !subtitle.isNullOrBlank()
+        }
+        view.findViewById<ImageView>(R.id.optionRadio)
+            .setImageResource(if (selected) R.drawable.ic_check_circle else R.drawable.ic_radio_unchecked)
+        view.isSelected = selected
+    }
+
+    /** The search filters on the device, on any of [fields], ignoring case. */
+    private fun matches(query: String, vararg fields: String?): Boolean =
+        fields.any { it.orEmpty().contains(query.trim(), ignoreCase = true) }
 
     private fun getClientList() {
         viewModel.getClientList()
