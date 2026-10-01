@@ -433,6 +433,23 @@
         <item name="endIconTint">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
 
+    <!-- Label / value pair on a detail card: grey label on the left, value on the right. -->
+    <style name="CustomFactLabel" parent="CustomRegularTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <style name="CustomFactValue" parent="CustomRegularTextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">@dimen/margin</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <!-- Small pill tag on a card (a site's circle and added-by). Grey by default. -->
     <style name="CustomTagChip" parent="CustomSmallTextView">
         <item name="android:layout_width">wrap_content</item>

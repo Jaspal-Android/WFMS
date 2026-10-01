@@ -4,13 +4,16 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.models.workSites.workSiteDetails.isApprovableBy
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.utils.MonthYear
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,13 +27,37 @@ class SiteApprovalVM @Inject constructor(
 
     var itemPosition = MutableLiveData<Int>().apply { value = -1 }
 
-    var attendanceDetailsResponse = MutableLiveData<ApiState<AttendanceDetailListResponse>>()
-    fun getAttendanceDetails(month: Int, year: Int) {
+    /** The month the Work Approval list shows; ◀ ▶ step it and reload from page 1. */
+    val month = MutableLiveData(MonthYear.current())
 
-        executeApiCall(
-            apiCall = { attendanceRepo.attendanceDetails(month, year,true) },
-            liveData = attendanceDetailsResponse
-        )
+    /** Records in [month] (`total_records`, which is per month), for "N submissions". */
+    val monthCount = MutableLiveData<Int?>()
+
+    /** Work Approval: one employee-day per record. Records with no employee can't be reviewed. */
+    val submissions = PagedList<AttendanceDetailListResponse, AttendanceRecord>(
+        pageSize = ValConstants.APPROVAL_PAGE_SIZE,
+        fetch = { page, pageSize ->
+            val shown = month.value ?: MonthYear.current()
+            attendanceRepo.attendanceForApproval(page, pageSize, shown.month, shown.year)
+        },
+        pageItems = { response ->
+            if (response.code == ValConstants.SUCCESS_CODE) {
+                monthCount.value = response.data?.totalRecords
+                response.data?.records.orEmpty().filter { it.employee?.id != null }
+            } else {
+                null
+            }
+        }
+    )
+
+    fun showPreviousMonth() = showMonth(month.value?.previous())
+
+    fun showNextMonth() = showMonth(month.value?.next())
+
+    private fun showMonth(target: MonthYear?) {
+        month.value = target ?: return
+        monthCount.value = null
+        submissions.reload()
     }
 
     var workSites  = MutableLiveData<ApiState<WorkSitesResponse>>()

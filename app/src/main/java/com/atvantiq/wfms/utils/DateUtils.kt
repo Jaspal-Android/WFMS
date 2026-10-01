@@ -27,6 +27,7 @@ object DateUtils {
     private const val DAY_LABEL_FORMAT = "EEEE, d MMM"
     private const val SHORT_TIME_FORMAT = "h:mm a"
     private const val ISO_BASE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+    private const val DAY_MONTH_YEAR_FORMAT = "d MMM yyyy"
     private val ISO_TIMESTAMP = Regex("""^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})?$""")
 
 
@@ -254,6 +255,12 @@ object DateUtils {
         val minutes = digits.drop(2).toLongOrNull() ?: 0L
         return sign * (hours * 60 + minutes) * 60_000L
     }
+
+    /** A yyyy-MM-dd day as "23 Sep 2026", or null when it isn't one. */
+    fun formatYmdLabel(ymd: String?): String? = runCatching {
+        SimpleDateFormat(DATE_FORMAT, Locale.US).apply { isLenient = false }.parse(ymd.orEmpty())
+            ?.let { SimpleDateFormat(DAY_MONTH_YEAR_FORMAT, Locale.getDefault()).format(it) }
+    }.getOrNull()
 
     /** [millis] as an ISO 8601 UTC timestamp, e.g. 2026-09-18T04:32:10Z (the API's time format). */
     fun formatUtcIso(millis: Long): String =

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Initials avatar, name and employee ID: the head of an employee-day row. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="name"
+            type="String" />
+        <variable
+            name="code"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/employee_avatar_size"
+            android:layout_height="@dimen/employee_avatar_size"
+            android:background="@drawable/bg_circle_primary"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:textColor="@color/white"
+            android:textSize="@dimen/default_text"
+            android:textStyle="bold"
+            app:initials="@{name}"
+            tools:text="JA" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/CustomLargeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{name}"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                tools:text="Jaspal" />
+
+            <TextView
+                style="@style/CustomRegularTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{@string/employee_id_format(code)}"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                tools:text="Employee ID: JAXX029" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

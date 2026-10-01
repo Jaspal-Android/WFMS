@@ -1,26 +1,34 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.base.PagedListUiState
 import com.atvantiq.wfms.constants.SharingKeys
-import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityWorkSitesApprovalBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
+import com.atvantiq.wfms.models.attendance.attendanceDetails.day
+import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.ui.screens.adapters.AttendanceListAdapter
+import com.atvantiq.wfms.ui.screens.adapters.WorkSubmissionsAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity
-import com.atvantiq.wfms.utils.DateUtils
-import com.atvantiq.wfms.utils.Utils
-import retrofit2.HttpException
+import com.atvantiq.wfms.widgets.PaginationScrollListener
+import dagger.hilt.android.AndroidEntryPoint
 
+/** Work Approval: the month's employee-days, each opening that day's Work Sites. */
+@AndroidEntryPoint
 class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding, SiteApprovalVM>() {
-    private var monthYear: Pair<Int, Int>? = null
-    private var attendanceListAdapter: AttendanceListAdapter? = null
+
+    private var adapter: WorkSubmissionsAdapter? = null
+    private var isProgressShown = false
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_work_sites_approval, SiteApprovalVM::class.java)
@@ -32,31 +40,13 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        setUpToolbarTitle()
-        setUpAttendanceListAdapter()
-        swipeRefresh()
-        monthYear = DateUtils.getCurrentMonthAndYear()
-        if (monthYear != null) {
-            getAttendanceDetails()
-        }
-
-        binding.monthSelctorLayout.setOnClickListener {
-            DateUtils.showMonthYearPickerDialog(
-                this,
-                monthYear?.first,
-                monthYear?.second
-            ) { selectedMonth, selectedYear ->
-                Log.e(
-                    "MonthYearPicker",
-                    "Selected Month: $selectedMonth, Selected Year: $selectedYear"
-                )
-                monthYear = Pair(selectedMonth, selectedYear)
-                getAttendanceDetails()
-            }
-        }
+        setUpToolbar()
+        setUpList()
+        binding.swipeRefreshLayout.setOnRefreshListener { viewModel.submissions.refresh() }
+        viewModel.submissions.open()
     }
 
-    private fun setUpToolbarTitle() {
+    private fun setUpToolbar() {
         binding.siteApprovalToolbar.toolbarTitle.text = getString(R.string.work_approval)
         binding.siteApprovalToolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -64,99 +54,57 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
     }
 
     override fun subscribeToEvents(vm: SiteApprovalVM) {
-        vm.attendanceDetailsResponse.observe(this) { response ->
-            when (response.status) {
-                Status.SUCCESS -> handleSuccessResponse(response.response)
-                Status.ERROR -> handleErrorResponse(response.throwable)
-                Status.LOADING -> showProgress()
-            }
+        binding.vm = vm
+        vm.month.observe(this) { month -> binding.monthTitle = month.label }
+        vm.monthCount.observe(this) { count ->
+            binding.monthSubtitle = count?.let { resources.getQuantityString(R.plurals.submissions_count, it, it) }
+        }
+        vm.submissions.state.observe(this) { state -> renderSubmissions(state) }
+        vm.submissions.failure.observe(this) { failure ->
+            if (!failure.consumeOnce()) return@observe
+            handleFailure(failure)
         }
     }
 
-    private fun setUpAttendanceListAdapter() {
-        if (attendanceListAdapter == null) {
-            attendanceListAdapter = AttendanceListAdapter { employeeId, date ->
-                Utils.jumpActivityWithData(
-                    this,
-                    WorkSitesActivity::class.java,
-                    Bundle().apply {
-                        putString(SharingKeys.EMPLOYEE_ID, employeeId)
-                        putString(SharingKeys.DATE, date)
-                    }
-                )
-            }
-            binding.rvAttendance.adapter = attendanceListAdapter
-        }
+    private fun setUpList() {
+        adapter = WorkSubmissionsAdapter(onReview = ::openWorkSites)
+        binding.rvSubmissions.adapter = adapter
+        binding.rvSubmissions.addOnScrollListener(PaginationScrollListener { viewModel.submissions.loadNextPage() })
     }
 
-    private fun getAttendanceDetails() {
-        stopRefreshingData()
-        if (monthYear != null) {
-            if (monthYear?.first != null || monthYear?.second != null) {
-                viewModel?.getAttendanceDetails(monthYear!!.first, monthYear!!.second)
-            }
-        }
+    private fun renderSubmissions(state: PagedListUiState<AttendanceRecord>) {
+        showFirstPageProgress(state.isLoadingFirstPage)
+        if (!state.isLoadingFirstPage && !state.isRefreshing) binding.swipeRefreshLayout.isRefreshing = false
+        adapter?.submitList(state.items)
+        adapter?.showLoadingFooter(state.isLoadingMore)
+        binding.emptyState.root.isVisible = state.isEmpty
     }
 
-    private fun handleSuccessResponse(response: AttendanceDetailListResponse?) {
-        dismissProgress()
-        stopRefreshingData()
-        when (response?.code) {
-            ValConstants.SUCCESS_CODE -> {
-                mainLayout()
-                if (response.data?.records.isNullOrEmpty()) {
-                    emptyDataLayout()
-                }
-                attendanceListAdapter?.submitData(response.data?.records ?: emptyList())
-            }
-
-            ValConstants.UNAUTHORIZED_CODE -> {
-                tokenExpiresAlert()
-                emptyDataLayout()
-            }
-            else -> {
-                alertDialogShow(
-                    this, getString(R.string.alert),
-                    response?.message ?: getString(R.string.something_went_wrong)
-                )
-                emptyDataLayout()
-            }
-        }
+    private fun showFirstPageProgress(show: Boolean) {
+        if (show == isProgressShown) return
+        isProgressShown = show
+        if (show) showProgress() else dismissProgress()
     }
 
-    private fun handleErrorResponse(throwable: Throwable?) {
-        dismissProgress()
-        stopRefreshingData()
-        emptyDataLayout()
-        if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-            tokenExpiresAlert()
+    private fun handleFailure(failure: ApiState<AttendanceDetailListResponse>) {
+        if (failure.status == Status.SUCCESS) {
+            failure.response?.let { handleRejectedResponse(it.code, it.message) }
         } else {
-            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
+            handleApiFailure(failure.throwable)
         }
     }
 
-    private fun swipeRefresh() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            startRefreshingData()
+    private fun openWorkSites(record: AttendanceRecord) {
+        val intent = Intent(this, WorkSitesActivity::class.java).apply {
+            putExtra(SharingKeys.EMPLOYEE_ID, record.employee?.id.toString())
+            putExtra(SharingKeys.DATE, record.day.orEmpty())
         }
+        workSitesLauncher.launch(intent)
     }
 
-    private fun startRefreshingData() {
-        getAttendanceDetails()
-    }
-
-    private fun stopRefreshingData() {
-        if (binding.swipeRefreshLayout.isRefreshing) {
-            binding.swipeRefreshLayout.isRefreshing = false
+    /** Work was approved or rejected on that day: its status comes back from the server. */
+    private val workSitesLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) viewModel.submissions.refresh()
         }
-    }
-
-    private fun mainLayout() {
-        binding.isEmptyAttendanceList = false
-    }
-
-    private fun emptyDataLayout() {
-        binding.isEmptyAttendanceList = true
-    }
-
 }

@@ -3,6 +3,7 @@ package com.atvantiq.wfms.ui.screens.admin.siteApproval
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.network.Status
@@ -140,5 +141,26 @@ class SiteApprovalVMTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify(exactly = 2) { attendanceRepo.approveWorkSite(any()) }
+    }
+
+    @Test
+    fun `Work Approval pages the shown month, counts it and drops records with no employee`() {
+        val withEmployee = mockk<AttendanceRecord>(relaxed = true) { every { employee?.id } returns 7L }
+        val withoutEmployee = mockk<AttendanceRecord>(relaxed = true) { every { employee } returns null }
+        coEvery { attendanceRepo.attendanceForApproval(any(), any(), any(), any()) } returns mockk(relaxed = true) {
+            every { code } returns 200
+            every { data?.totalRecords } returns 3
+            every { data?.records } returns listOf(withEmployee, withoutEmployee)
+        }
+        val start = viewModel.month.value!!
+
+        viewModel.submissions.open()
+        viewModel.showPreviousMonth()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val shown = start.previous()
+        coVerify { attendanceRepo.attendanceForApproval(1, 25, shown.month, shown.year) }
+        assertEquals(listOf(withEmployee), viewModel.submissions.state.value?.items)
+        assertEquals(3, viewModel.monthCount.value)
     }
 }

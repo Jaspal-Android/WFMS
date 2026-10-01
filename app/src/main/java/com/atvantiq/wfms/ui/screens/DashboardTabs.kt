@@ -18,7 +18,7 @@ enum class DashboardTab(
     DASHBOARD(R.id.nav_dashboard, R.string.menu_dashboard, R.drawable.ic_tab_home),
     WORK(R.id.nav_attendance, R.string.tab_work, R.drawable.ic_tab_work),
     CLAIMS(R.id.nav_reimbursement, R.string.tab_claims, R.drawable.ic_tab_claims),
-    SITES(R.id.nav_sites, R.string.sites, R.drawable.ic_pin_drop),
+    SITES(R.id.nav_sites, R.string.sites, R.drawable.ic_location_on),
     APPROVALS(R.id.nav_approvals, R.string.approvals, R.drawable.ic_tab_approvals),
     MORE(R.id.nav_more, R.string.tab_more, R.drawable.ic_tab_more)
 }

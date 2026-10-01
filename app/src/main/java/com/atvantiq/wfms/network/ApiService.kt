@@ -76,6 +76,17 @@ interface ApiService {
 	@GET(NetworkEndPoints.attendanceDetails)
 	suspend fun attendanceDetails(@Query("month") month: Int,@Query("year") year: Int,@Query("is_export") flag: Boolean ): AttendanceDetailListResponse
 
+	/** The attendance records a PM / OPS / admin reviews for a month, page by page. */
+	@GET(NetworkEndPoints.attendanceDetails)
+	suspend fun attendanceForApproval(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("month") month: Int,
+		@Query("year") year: Int,
+		@Query("is_all") isAll: Boolean = false,
+		@Query("is_export") isExport: Boolean = false
+	): AttendanceDetailListResponse
+
 	@GET(NetworkEndPoints.workAssignedAll)
 	suspend fun workAssignedAll(
 		@Query("page") page: Int,

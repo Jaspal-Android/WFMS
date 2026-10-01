@@ -28,6 +28,8 @@ interface IAttendanceRepo {
 
     suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean): AttendanceDetailListResponse
 
+    suspend fun attendanceForApproval(page: Int, pageSize: Int, month: Int, year: Int): AttendanceDetailListResponse
+
     suspend fun workSites(employeeId: String,date: String): WorkSitesResponse
 
     suspend fun workSiteDetailsAdmin(workSiteId: Long, employeeId: String, date: String): WorkSiteDetailResponse
