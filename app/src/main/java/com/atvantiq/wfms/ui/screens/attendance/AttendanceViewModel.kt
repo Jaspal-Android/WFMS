@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
@@ -13,6 +14,7 @@ import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.ui.screens.attendance.WorkFilter
 import com.atvantiq.wfms.models.inventory.UsedMaterial
+import com.atvantiq.wfms.models.work.workAssigned.Site
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.Type
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
@@ -49,8 +51,13 @@ class AttendanceViewModel @Inject constructor(
     private val _isTracking = MutableLiveData<Boolean>(false)
     val isTracking: LiveData<Boolean> get() = _isTracking
 
+    /** Work Management list: filtered by [searchQuery] and [activeFilter]. */
+    val workList = PagedList<WorkAssignedResponse, Site>(
+        fetch = { page, pageSize -> workRepo.workAssignedAll(page, pageSize, searchQuery, activeFilter.statusParam) },
+        pageItems = { if (it.code == ValConstants.SUCCESS_CODE) it.data.results else null }
+    )
+
     // Common LiveData for API responses
-    val workAssignedAllResponse = MutableLiveData<ApiState<WorkAssignedResponse>>()
     val workByIdResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
     val workDetailsByDateResponse = MutableLiveData<ApiState<WorkDetailsByDateResponse>>()
     val workAcceptResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
@@ -94,14 +101,6 @@ class AttendanceViewModel @Inject constructor(
         getApplication<Application>().stopService(serviceIntent)
     }
 
-    fun getWorkAssignedAll(page: Int, pageSize: Int) {
-        executeApiCall(
-            apiCall = { workRepo.workAssignedAll(page, pageSize, searchQuery, activeFilter.statusParam) },
-            liveData = workAssignedAllResponse,
-            cancelPrevious = true
-        )
-    }
-
     fun workById(workId: Long) {
         executeApiCall(
             apiCall = { workRepo.workById(workId) },
@@ -122,7 +121,7 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workAccept(workSiteId) },
             liveData = workAcceptResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                if (response.code == ValConstants.SUCCESS_CODE) itemPosition.postValue(position) else itemPosition.postValue(
                     -1
                 )
             },
@@ -150,7 +149,7 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workStart(workIdBody, latitudeBody, longitudeBody, photoPart) },
             liveData = workStartResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                if (response.code == ValConstants.SUCCESS_CODE) itemPosition.postValue(position) else itemPosition.postValue(
                     -1
                 )
             },
@@ -201,7 +200,7 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workEnd(params) },
             liveData = workEndResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                if (response.code == ValConstants.SUCCESS_CODE) itemPosition.postValue(position) else itemPosition.postValue(
                     -1
                 )
             },

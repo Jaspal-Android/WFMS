@@ -5,10 +5,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.network.ApiErrorKind
 import com.atvantiq.wfms.network.ApiErrorMapper
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.NoInternetException
+import com.atvantiq.wfms.utils.PagedListState
 import com.atvantiq.wfms.utils.Utils
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.CancellationException
@@ -113,5 +115,98 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
      */
     protected open fun reportUnexpectedError(error: Exception) {
         runCatching { FirebaseCrashlytics.getInstance().recordException(error) }
+    }
+
+    /**
+     * A list loaded page by page and kept in the ViewModel. The screen observes [state], forwards
+     * scroll-to-end, refresh and query changes, and shows [failure].
+     *
+     * @param fetch requests one page.
+     * @param pageItems the items of a successful page, or null when the server rejected it
+     * (e.g. a non-success `code`); a rejected page is reported through [failure] and retried.
+     */
+    inner class PagedList<R, T>(
+        private val pageSize: Int = ValConstants.DEFAULT_PAGE_SIZE,
+        private val fetch: suspend (page: Int, pageSize: Int) -> R,
+        private val pageItems: (R) -> List<T>?
+    ) {
+        private val paging = PagedListState(pageSize)
+        private val items = mutableListOf<T>()
+
+        // Carries the page requests so a newer one cancels the one still running (cancelPrevious).
+        private val pageResponse = MutableLiveData<ApiState<R>>()
+
+        val state = MutableLiveData(PagedListUiState<T>())
+
+        /**
+         * A page that failed (ERROR) or that the server rejected (SUCCESS with the rejected body).
+         * One-shot: observers gate on [ApiState.consumeOnce].
+         */
+        val failure = MutableLiveData<ApiState<R>>()
+
+        /** Screen shown: keep what is already loaded on screen and refresh page 1 behind it. */
+        fun open() = loadFirstPage(keepItems = true)
+
+        /** Pull-to-refresh, or the list changed elsewhere (item created, edited, deleted). */
+        fun refresh() = loadFirstPage(keepItems = true)
+
+        /** The query changed (search, filter): the old items no longer apply. */
+        fun reload() = loadFirstPage(keepItems = false)
+
+        /** Scrolled to the end. Ignored while a page is loading or after the last page. */
+        fun loadNextPage() {
+            paging.startNextPage()?.let { request(it) }
+        }
+
+        /** Applies a change made elsewhere (e.g. a status updated on a detail screen). */
+        fun updateItem(position: Int, change: (T) -> Unit) {
+            items.getOrNull(position)?.let(change) ?: return
+            publish()
+        }
+
+        private fun loadFirstPage(keepItems: Boolean) {
+            if (!keepItems) items.clear()
+            request(paging.restart())
+        }
+
+        private fun request(page: Int) {
+            publish()
+            executeApiCall(
+                apiCall = { fetch(page, pageSize) },
+                liveData = pageResponse,
+                onSuccess = { response -> onPageArrived(response) },
+                onError = { error ->
+                    paging.onRequestFailed()
+                    publish()
+                    failure.value = ApiState.error(error)
+                },
+                cancelPrevious = true
+            )
+        }
+
+        private fun onPageArrived(response: R) {
+            val pageList = pageItems(response)
+            if (pageList == null) {
+                paging.onRequestFailed()
+                publish()
+                failure.value = ApiState.success(response)
+                return
+            }
+            val isFirstPage = paging.onPageReceived(pageList.size) ?: return
+            if (isFirstPage) items.clear()
+            items.addAll(pageList)
+            publish()
+        }
+
+        private fun publish() {
+            val loadingFirst = paging.isLoadingFirstPage
+            state.value = PagedListUiState(
+                items = items.toList(),
+                isLoadingFirstPage = loadingFirst && items.isEmpty(),
+                isRefreshing = loadingFirst && items.isNotEmpty(),
+                isLoadingMore = paging.isLoading && !loadingFirst,
+                isEmpty = !paging.isLoading && paging.loadedPage > 0 && items.isEmpty()
+            )
+        }
     }
 }

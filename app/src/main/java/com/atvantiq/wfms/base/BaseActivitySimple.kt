@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.base
 
+import com.atvantiq.wfms.constants.ValConstants
 import GenericBottomSheetDialog
 import android.app.Activity
 import android.content.Context
@@ -239,6 +240,15 @@ abstract class BaseActivitySimple : AppCompatActivity() {
             tokenExpiresAlert()
         } else {
             showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    /** Reports a response the server answered with a non-success `code`. */
+    fun handleRejectedResponse(code: Int?, message: String?) {
+        if (code == ValConstants.UNAUTHORIZED_CODE) {
+            tokenExpiresAlert()
+        } else {
+            alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
         }
     }
 

@@ -1,5 +1,7 @@
 package com.atvantiq.wfms.base
 
+import com.atvantiq.wfms.utils.isUnauthorized
+import com.atvantiq.wfms.constants.ValConstants
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -246,6 +248,27 @@ open class BaseFragmentSimple : Fragment() {
 				performLogout()
 			}
 			.show()
+	}
+
+	/**
+	 * Reports a failed request: the session-expired dialog for a 401, otherwise the user-facing
+	 * message that [com.atvantiq.wfms.base.BaseViewModel] put on the error.
+	 */
+	fun handleApiFailure(throwable: Throwable?) {
+		if (throwable.isUnauthorized()) {
+			tokenExpiresAlert()
+		} else {
+			showToast(requireContext(), throwable?.message ?: getString(R.string.something_went_wrong))
+		}
+	}
+
+	/** Reports a response the server answered with a non-success `code`. */
+	fun handleRejectedResponse(code: Int?, message: String?) {
+		if (code == ValConstants.UNAUTHORIZED_CODE) {
+			tokenExpiresAlert()
+		} else {
+			alertDialogShow(requireContext(), getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+		}
 	}
 
 	override fun onDestroyView() {

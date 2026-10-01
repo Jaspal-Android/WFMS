@@ -5,9 +5,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.allClaims.Record
 import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
@@ -31,15 +33,11 @@ class ReimbursementViewModel @Inject constructor(
     fun onCreateClaimClick() = postClickEvent(ReimbursementClickEvents.ON_CLICK_CREATE_CLAIM)
 
 
-    /*Get all claims*/
-    var allClaimsResponse = MutableLiveData<ApiState<AllClaimsResponse>>()
-    fun getAllClaims(page: Int, pageSize: Int) {
-        executeApiCall(
-            apiCall = { claimRepo.allClaims(page, pageSize) },
-            liveData = allClaimsResponse,
-            cancelPrevious = true
-        )
-    }
+    /*All claims*/
+    val claims = PagedList<AllClaimsResponse, Record>(
+        fetch = { page, pageSize -> claimRepo.allClaims(page, pageSize) },
+        pageItems = { if (it.code == ValConstants.SUCCESS_CODE) it.data?.records.orEmpty() else null }
+    )
 
     /*Get Claim by ID */
     var claimByIdResponse = MutableLiveData<ApiState<ClaimDetailResponse>>()
