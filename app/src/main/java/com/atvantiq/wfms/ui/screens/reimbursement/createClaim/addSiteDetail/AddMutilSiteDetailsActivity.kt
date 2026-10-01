@@ -1,14 +1,14 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addSiteDetail
 
+import android.view.View
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingActivity
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivityAddMutilSiteDetailsBinding
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class AddMutilSiteDetailsActivity : BaseBindingActivity<ActivityAddMutilSiteDetailsBinding>() {
 
@@ -19,11 +19,7 @@ class AddMutilSiteDetailsActivity : BaseBindingActivity<ActivityAddMutilSiteDeta
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         handleToolbar()
         initListeners()
     }

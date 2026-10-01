@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.attendance.assignedTasks
 
+import android.view.View
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.DialogInterface
@@ -9,8 +10,6 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -34,6 +33,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class AssignedTaskDetailActivity :
@@ -55,11 +55,7 @@ class AssignedTaskDetailActivity :
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         initListeners()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

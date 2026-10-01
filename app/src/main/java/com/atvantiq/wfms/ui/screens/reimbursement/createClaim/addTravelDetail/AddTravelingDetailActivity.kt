@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +8,6 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.AppListData
@@ -23,6 +22,7 @@ import com.atvantiq.wfms.utils.files.PickMediaHelper
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class AddTravelingDetailActivity :
@@ -57,11 +57,7 @@ class AddTravelingDetailActivity :
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         handleToolbar()
 
         setImagePicker()

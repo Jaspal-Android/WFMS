@@ -1,12 +1,11 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.attendanceApproval
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.atvantiq.wfms.R
@@ -22,6 +21,7 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceApprovalAdapter
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Attendance Approval (spec 6.1): the month's records. "Mark attendance" opens the decision sheet,
@@ -38,11 +38,7 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         binding.toolbar.toolbarTitle.text = getString(R.string.attendance_approval)
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setUpList()

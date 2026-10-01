@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityAddSignInBinding
@@ -24,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
 import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 
 @AndroidEntryPoint
@@ -34,11 +33,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding.main.applySystemBarsAndImePadding()
         setUpToolbar()
         setDateTimeAttendance()
         getClientList()

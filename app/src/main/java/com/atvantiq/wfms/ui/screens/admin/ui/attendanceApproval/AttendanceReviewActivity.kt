@@ -1,12 +1,11 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.attendanceApproval
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.databinding.Observable
 import com.atvantiq.wfms.R
@@ -17,6 +16,7 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceDecisionStatusAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Attendance Review (spec 6.3), opened from a row's Details: the record read-only, then the same
@@ -38,11 +38,7 @@ class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, A
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         binding.toolbar.toolbarTitle.text = getString(R.string.attendance_review)
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
 

@@ -1,13 +1,12 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.claimApproval
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.atvantiq.wfms.R
@@ -22,6 +21,7 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.ClaimReviewAdapter
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Claims Approval (spec 8.1): the claims to review. Search runs on the keyboard's Search key;
@@ -38,11 +38,7 @@ class ClaimApprovalActivity : BaseActivity<ActivityClaimApprovalBinding, ClaimAp
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         binding.toolbar.toolbarTitle.text = getString(R.string.claims_approval)
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setUpSearch()

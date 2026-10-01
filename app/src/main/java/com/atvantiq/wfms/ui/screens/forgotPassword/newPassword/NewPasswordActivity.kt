@@ -1,9 +1,8 @@
 package com.atvantiq.wfms.ui.screens.forgotPassword.newPassword
 
+import android.view.View
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -12,6 +11,7 @@ import com.atvantiq.wfms.ui.screens.forgotPassword.newPassword.vm.CreatePassClic
 import com.atvantiq.wfms.ui.screens.forgotPassword.newPassword.vm.CreatePassErrorHandler
 import com.atvantiq.wfms.ui.screens.forgotPassword.newPassword.vm.CreatePasswordVM
 import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class NewPasswordActivity : BaseActivity<ActivityNewPasswordBinding, CreatePasswordVM>() {
 
@@ -20,11 +20,7 @@ class NewPasswordActivity : BaseActivity<ActivityNewPasswordBinding, CreatePassw
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         initToolbar()
     }
 

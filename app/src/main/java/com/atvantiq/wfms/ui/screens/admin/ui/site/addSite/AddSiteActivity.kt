@@ -7,8 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.ValConstants
@@ -17,6 +15,7 @@ import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.project.ProjectData
 import com.atvantiq.wfms.network.Status
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
@@ -25,11 +24,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()
         getClientList()
         initListeners()

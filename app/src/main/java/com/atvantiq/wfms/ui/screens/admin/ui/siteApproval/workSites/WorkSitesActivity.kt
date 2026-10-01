@@ -1,12 +1,11 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSites
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -21,6 +20,7 @@ import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.SiteApprovalVM
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSiteDetail.SiteWorkDetailActivity
 import com.atvantiq.wfms.utils.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Work Sites: the sites one employee worked on one day. Returns RESULT_OK when work was approved
@@ -38,11 +38,7 @@ class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         employeeId = intent?.getStringExtra(SharingKeys.EMPLOYEE_ID).orEmpty()
         date = intent?.getStringExtra(SharingKeys.DATE).orEmpty()
         binding.dateLabel = DateUtils.formatYmdLabel(date)
