@@ -1,6 +1,9 @@
 package com.atvantiq.wfms.ui.screens
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -53,6 +56,8 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
         get() = ActivityBinding(R.layout.activity_dashboard)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        // Light status-bar icons over the green header, which is drawn behind the status bar.
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         setSupportActionBar(binding.appBarDashboard.toolbar)
         setupBottomNavigation()
         batterOptimizationCheck()
