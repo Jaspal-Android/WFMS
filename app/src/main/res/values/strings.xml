@@ -558,6 +558,33 @@
     <string name="project_circle_format">Project: %1$s  •  Circle: %2$s</string>
     <string name="role_format">Role: %1$s</string>
     <string name="work_sites_title">Work Sites</string>
+    <!-- Attendance Approval (spec 6) -->
+    <string name="attendance_approval">Attendance Approval</string>
+    <string name="attendance_approval_subtitle">Review submitted employee attendance entries.</string>
+    <string name="no_attendance_entries_for_approval">No attendance entries found for approval.</string>
+    <string name="attendance_status_caption">Attendance status</string>
+    <string name="attendance_review">Attendance Review</string>
+    <string name="mark_attendance">Mark attendance</string>
+    <string name="attendance_decision">Attendance Decision</string>
+    <string name="attendance_decision_help">Select the attendance status that should be recorded for this employee.</string>
+    <string name="approval_remarks">Approval remarks</string>
+    <string name="approval_remarks_help">Add or update the note that will be saved with this decision.</string>
+    <string name="attendance_reviewed_by">Attendance reviewed by %1$s</string>
+    <string name="approved_by_format">Approved by %1$s</string>
+    <string name="submit_attendance_decision">Submit Attendance Decision</string>
+    <string name="attendance_decision_submitted">Attendance decision submitted successfully.</string>
+    <string name="attendance_approval_not_permitted">You do not have permission to approve attendance.</string>
+    <string name="attendance_not_waiting">This attendance entry is not waiting for your approval.</string>
+    <string name="select_attendance_status">Select an attendance status.</string>
+    <string name="attendance_id_missing">Attendance ID is missing. Refresh and try again.</string>
+    <string name="attendance_work_off">Work off</string>
+    <string name="attendance_absent_by_system">Absent by system</string>
+    <string name="time_range_format">%1$s – %2$s</string>
+    <string name="close">Close</string>
+    <plurals name="attendance_entries_count">
+        <item quantity="one">%d attendance entry</item>
+        <item quantity="other">%d attendance entries</item>
+    </plurals>
     <string name="site_caption">SITE</string>
     <string name="work_status_caption">WORK STATUS</string>
     <string name="in_progress">In Progress</string>

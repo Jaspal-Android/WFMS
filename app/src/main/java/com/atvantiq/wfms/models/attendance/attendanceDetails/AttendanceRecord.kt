@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class AttendanceRecord(
     @SerializedName("action")
-    val action: String?,
+    var action: String?,
     @SerializedName("approval_status")
     val approvalStatus: Int?,
     @SerializedName("can_hr_mark_attendance")
@@ -30,7 +30,7 @@ data class AttendanceRecord(
     val logs: Logs?,
     @SerializedName("status")
     @JsonAdapter(StatusCodeDeserializer::class)
-    val status: Int?,
+    var status: Int?,
     @SerializedName("work_hours")
     val workHours: String?,
     @SerializedName("site")

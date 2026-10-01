@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One radio tile of the Attendance Decision grid; the adapter styles the selected one green with
+     a check. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_small_extra"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/min_touch_target"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding_medium">
+
+            <ImageView
+                android:id="@+id/radio"
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="@dimen/icon_size_small"
+                android:importantForAccessibility="no"
+                tools:src="@drawable/ic_check_circle" />
+
+            <TextView
+                android:id="@+id/label"
+                style="@style/CustomRegularTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:textStyle="bold"
+                tools:text="@string/present" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

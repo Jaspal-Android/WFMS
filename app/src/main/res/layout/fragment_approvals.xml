@@ -31,6 +31,15 @@
                 android:textSize="@dimen/default_large_text" />
 
             <include
+                android:id="@+id/attendanceApprovalCard"
+                layout="@layout/layout_category_card"
+                app:badge="@{@string/available}"
+                app:icon="@{@drawable/ic_event_available}"
+                app:onClick="@{() -> vm.onAttendanceApprovalClick()}"
+                app:subtitle="@{@string/attendance_approval_subtitle}"
+                app:title="@{@string/attendance_approval}" />
+
+            <include
                 android:id="@+id/workApprovalCard"
                 layout="@layout/layout_category_card"
                 app:badge="@{@string/available}"

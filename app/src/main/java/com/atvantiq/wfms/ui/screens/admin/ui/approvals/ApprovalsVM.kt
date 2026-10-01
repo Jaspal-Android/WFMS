@@ -12,6 +12,10 @@ class ApprovalsVM @Inject constructor(application: Application) : BaseViewModel(
 
     val clickEvents = MutableLiveData<ApprovalsClickEvents>()
 
+    fun onAttendanceApprovalClick() {
+        clickEvents.value = ApprovalsClickEvents.ATTENDANCE_APPROVAL
+    }
+
     fun onWorkApprovalClick() {
         clickEvents.value = ApprovalsClickEvents.WORK_APPROVAL
     }

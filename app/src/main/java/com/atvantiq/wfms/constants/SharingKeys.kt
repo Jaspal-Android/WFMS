@@ -8,6 +8,9 @@ object SharingKeys {
     const val DATE = "DATE"
     const val WORK_DATE = "workDate"
     const val attendanceRecord = "attendanceRecord"
+    /** The attendance decision a review screen hands back to its list. */
+    const val ATTENDANCE_ID = "ATTENDANCE_ID"
+    const val ATTENDANCE_STATUS = "ATTENDANCE_STATUS"
     const val WORK_POSITION = "WORK_POSITION"
     const val WORK_ID = "WORK_ID"
     const val REFRESH_ASSIGN_TASK = "2001"

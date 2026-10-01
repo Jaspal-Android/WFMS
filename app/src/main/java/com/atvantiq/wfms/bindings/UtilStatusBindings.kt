@@ -8,6 +8,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.ApprovalStatusCodes
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceApprovalStatus
 import com.atvantiq.wfms.models.attendance.attendanceDetails.WorkSubmissionStatus
 import com.atvantiq.wfms.models.workSites.workSites.Status as WorkSiteStatus
 
@@ -222,5 +223,16 @@ object UtilStatusBindings {
                 textView.applyStatus(R.color.status_unmarked_bg, R.color.status_unmarked_text)
             }
         }
+    }
+
+    // ──────────────────────────────────────────────────────
+    // Attendance Approval chip  (status 0-8, spec 6.1)
+    // ──────────────────────────────────────────────────────
+    @JvmStatic
+    @BindingAdapter(value = ["attendanceApprovalStatus"])
+    fun attendanceApprovalStatus(textView: TextView, code: Int?) {
+        val status = AttendanceApprovalStatus.from(code)
+        textView.text = textView.context.getString(status.labelRes)
+        textView.applyStatus(status.backgroundRes, status.textRes)
     }
 }

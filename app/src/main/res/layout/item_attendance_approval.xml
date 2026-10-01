@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An Attendance Approval row. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_medium">
+
+        <include
+            android:id="@+id/card"
+            layout="@layout/layout_attendance_record_card" />
+    </FrameLayout>
+</layout>
