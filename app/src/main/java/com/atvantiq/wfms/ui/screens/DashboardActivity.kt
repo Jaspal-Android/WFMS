@@ -12,31 +12,20 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.core.view.GravityCompat
-import androidx.navigation.ui.NavigationUI
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingActivity
 import com.atvantiq.wfms.databinding.ActivityDashboardBinding
-import com.atvantiq.wfms.databinding.NavHeaderDashboardBinding
-import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
-import com.atvantiq.wfms.ui.screens.login.LoginActivity
-import com.atvantiq.wfms.utils.SessionCleanup
-import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.firebase.messaging.FirebaseMessaging
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.play.core.appupdate.*
 import com.google.android.play.core.install.model.AppUpdateType
@@ -65,10 +54,7 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         setSupportActionBar(binding.appBarDashboard.toolbar)
-        setupNavigationDrawer()
-
-        var userData = PrefMethods.getUserData(prefMain)
-        setupDataDrawerHeader(userData)
+        setupBottomNavigation()
         batterOptimizationCheck()
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
@@ -124,111 +110,20 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
         }
     }
 
-    private fun setupDataDrawerHeader(userData: User?) {
-        if (userData == null)
-            return
-        val headerView = binding.navView.getHeaderView(0)
-        val navHeaderBinding = NavHeaderDashboardBinding.bind(headerView)
-        navHeaderBinding.textView.text = userData?.email
-        navHeaderBinding.appNameText.text = getString(R.string.app_name)
-    }
-
-    private fun setupNavigationDrawer() {
-        val navView: NavigationView = binding.navView
-        //val navController = findNavController(R.id.nav_host_fragment_content_dashboard)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+    /**
+     * Employee tabs: Dashboard · Work · Claims · More. Each tab keeps its own back stack; Back from
+     * another tab returns to Dashboard, and Back on Dashboard leaves the app.
+     */
+    private fun setupBottomNavigation() {
         appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_dashboard,
-                R.id.nav_attendance,
-                R.id.nav_reimbursement,
-                R.id.nav_vendor,
-                R.id.nav_cab,
-                R.id.nav_material_reco,
-                R.id.nav_about,
-                R.id.nav_feedback
-            ), binding.drawerLayout
+            setOf(R.id.nav_dashboard, R.id.nav_attendance, R.id.nav_reimbursement, R.id.nav_more)
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.changeTheme -> {
-                    // Implement your change theme logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
-                    true
-                }
-                R.id.logout -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,
-                        getString(R.string.logout),
-                        getString(R.string.logout_confirmation),
-                        getString(R.string.yes),
-                        { dialog, which ->
-                            dialog.dismiss()
-                            performLogout()
-                        },
-                        { dialog, which ->
-                           dialog.dismiss()
-                        })
-                    true
-                }
-                R.id.nav_feedback -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_about -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_material_reco -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_cab -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_vendor -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this, getString(R.string.under_development))
-                    true
-                }
-
-                else -> {
-                    // Handle other menu items with the navController
-                    val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    if (handled) {
-                        binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    }
-                    handled
-                }
-            }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.appBarDashboard.toolbarTitle.text = destination.label
         }
-    }
-
-    private fun performLogout() {
-        FirebaseMessaging.getInstance().deleteToken()
-        SessionCleanup.clearForLogout(this, prefMain)
-        Utils.jumpActivityClearTask(this, LoginActivity::class.java)
-        finish()
+        binding.bottomNav.setupWithNavController(navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {

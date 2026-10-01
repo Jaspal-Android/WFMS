@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Employee tabs. Item ids are the navigation graph destinations. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@drawable/ic_tab_home"
+        android:title="@string/menu_dashboard" />
+    <item
+        android:id="@+id/nav_attendance"
+        android:icon="@drawable/ic_tab_work"
+        android:title="@string/tab_work" />
+    <item
+        android:id="@+id/nav_reimbursement"
+        android:icon="@drawable/ic_tab_claims"
+        android:title="@string/tab_claims" />
+    <item
+        android:id="@+id/nav_more"
+        android:icon="@drawable/ic_tab_more"
+        android:title="@string/tab_more" />
+</menu>

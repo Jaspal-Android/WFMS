@@ -15,7 +15,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.base.PagedListUiState
@@ -36,6 +36,7 @@ import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivit
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
 import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.utils.navigateToTab
 import com.atvantiq.wfms.widgets.DividerItemDecoration
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -238,8 +239,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
     private fun navigateToDashboard() {
-        val navController = requireActivity().findNavController(R.id.nav_host_fragment_content_dashboard)
-        navController.navigate(R.id.nav_dashboard)
+        findNavController().navigateToTab(R.id.nav_dashboard)
     }
 
 

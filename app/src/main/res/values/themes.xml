@@ -345,6 +345,62 @@
         <item name="tint">?attr/wfmsColorPrimaryLight</item>
     </style>
 
+    <!-- Floating bottom bar: labels always shown, pill indicator behind the selected tab. -->
+    <style name="Widget.WFMS.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">@drawable/bg_bottom_nav</item>
+        <item name="backgroundTint">@null</item>
+        <item name="elevation">@dimen/elevation_small</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemIconTint">@color/bottom_nav_item</item>
+        <item name="itemTextColor">@color/bottom_nav_item</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.WFMS.BottomNavigation.Indicator</item>
+    </style>
+
+    <style name="Widget.WFMS.BottomNavigation.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/bottom_nav_indicator</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.WFMS.Pill</item>
+    </style>
+
+    <style name="ShapeAppearance.WFMS.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- More tab settings rows: icon, title + subtitle, chevron -->
+    <style name="CustomMoreRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding</item>
+    </style>
+
+    <style name="CustomMoreRowIcon">
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:padding">@dimen/icon_touch_inset</item>
+    </style>
+
+    <style name="CustomMoreRowTitle" parent="CustomRegularTextView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
+    </style>
+
+    <style name="CustomMoreRowSubtitle" parent="CustomRegularTextView">
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Uppercase section caption above a card (SETTINGS, PERSONAL INFORMATION) -->
+    <style name="CustomSectionCaption" parent="CustomRegularTextView">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+        <item name="android:layout_marginTop">@dimen/margin</item>
+        <item name="android:layout_marginBottom">@dimen/margin_small</item>
+    </style>
+
     <!--Text View Styles-->
     <style name="CustomRegularTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_text</item>

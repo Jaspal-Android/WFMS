@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Floating bottom bar: a card-coloured pill, as on iOS. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/wfmsColorSurface" />
+    <stroke
+        android:width="@dimen/border_width_1dp"
+        android:color="?attr/wfmsColorOutline" />
+    <corners android:radius="@dimen/radius_pill" />
+</shape>

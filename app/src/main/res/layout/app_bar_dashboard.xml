@@ -19,6 +19,16 @@
                 android:background="?attr/colorPrimary"
                 app:popupTheme="@style/Theme.WFMS.PopupOverlay">
 
+                <!-- Current tab's name, centred as on iOS -->
+                <TextView
+                    android:id="@+id/toolbarTitle"
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
                 <ImageView
                     android:visibility="invisible"
                     android:id="@+id/notification_icon"

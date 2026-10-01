@@ -67,4 +67,13 @@ class UtilsTest {
         method.isAccessible = true
         return method.invoke(Utils, address) as String
     }
+
+    @Test
+    fun `name initials take the first and last word`() {
+        assertEquals("KS", Utils.nameInitials("kamal sharma"))
+        assertEquals("KS", Utils.nameInitials("  Kamal  Kumar   Sharma "))
+        assertEquals("K", Utils.nameInitials("kamal"))
+        assertEquals("", Utils.nameInitials(null))
+        assertEquals("", Utils.nameInitials("   "))
+    }
 }
