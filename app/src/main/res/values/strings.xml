@@ -492,4 +492,7 @@
     <string name="otp_digit_description">OTP digit %1$d of %2$d</string>
     <!-- Activity name with its type, used when activities from several types are listed together -->
     <string name="activity_with_type">%1$s (%2$s)</string>
+    <!-- Shown after "Get my current latitude and longitude" on the login screen -->
+    <string name="current_location_details">Latitude: %1$s\nLongitude: %2$s\n\nAddress: %3$s</string>
+    <string name="version_label">V%1$s</string>
 </resources>

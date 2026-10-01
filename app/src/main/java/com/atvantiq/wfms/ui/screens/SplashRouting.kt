@@ -1,9 +1,13 @@
 package com.atvantiq.wfms.ui.screens
 
 import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.models.loginResponse.Permission
 import com.atvantiq.wfms.models.loginResponse.User
 
 enum class SplashTarget { LOGIN, EMPLOYEE_DASHBOARD, ADMIN_DASHBOARD }
+
+/** The screen to open and the permissions it is opened with. */
+data class SplashDestination(val target: SplashTarget, val permissions: List<Permission>)
 
 /** Where the app opens, decided from the saved session. Kept free of Android so it is unit tested. */
 object SplashRouting {
