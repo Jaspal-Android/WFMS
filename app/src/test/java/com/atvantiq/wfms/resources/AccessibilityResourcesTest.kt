@@ -66,8 +66,12 @@ class AccessibilityResourcesTest {
         val boxes = elements(file).filter { it.getAttributeNS(android, "id").startsWith("@+id/otp_box_") }
 
         assertEquals(6, boxes.size)
-        boxes.forEach {
-            assertTrue(it.getAttributeNS(android, "id"), it.getAttributeNS(android, "contentDescription").startsWith("@string/otp_digit_"))
+        boxes.forEachIndexed { index, box ->
+            assertEquals(
+                box.getAttributeNS(android, "id"),
+                "@{@string/otp_digit_description(${index + 1}, @integer/otp_length)}",
+                box.getAttributeNS(android, "contentDescription")
+            )
         }
     }
 }

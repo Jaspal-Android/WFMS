@@ -49,7 +49,7 @@ import retrofit2.HttpException
 class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
-    private val pageSize: Int = 10
+    private val pageSize: Int = ValConstants.DEFAULT_PAGE_SIZE
     private val paging = PagedListState(pageSize)
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -135,7 +135,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 dismissProgress()
                 stopRefreshingData()
                 val body = response.response
-                if (body != null && body.code == 200) {
+                if (body != null && body.code == ValConstants.SUCCESS_CODE) {
                     handleWorkAssignedSuccess(body.data.results)
                 } else {
                     // Rejected or empty: release the lock so the same page is retried on scroll.

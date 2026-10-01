@@ -10,8 +10,6 @@ import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.utils.NoInternetException
-import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,12 +60,6 @@ class SiteApprovalVM @Inject constructor(
         if (isApproving) return
         // Never send an approval with a sentinel id or nothing selected.
         if (workSiteId <= 0 || employeeId <= 0 || selectedTypes.isNullOrEmpty()) return
-        // executeApiCall does not invoke onError when offline, so check first; otherwise
-        // isApproving would stay set and block every later approval on this screen.
-        if (!Utils.isInternet(getApplication())) {
-            approveWorkSiteResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
-            return
-        }
         isApproving = true
         val paramsArray = JsonArray()
         selectedTypes?.forEach { workType ->

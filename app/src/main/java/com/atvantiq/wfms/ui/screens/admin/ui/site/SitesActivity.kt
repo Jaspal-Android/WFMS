@@ -20,11 +20,12 @@ import com.atvantiq.wfms.ui.screens.adapters.AllSitesAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteActivity
 import com.atvantiq.wfms.utils.PagedListState
 import retrofit2.HttpException
+import com.atvantiq.wfms.constants.ValConstants
 
 class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
 
     private var adapter: AllSitesAdapter? = null
-    private val pageSize: Int = 10
+    private val pageSize: Int = ValConstants.DEFAULT_PAGE_SIZE
     private val paging = PagedListState(pageSize)
 
     override val bindingActivity: ActivityBinding
@@ -75,7 +76,7 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
                 dismissProgress()
                 stopRefreshingData()
                 val body = response.response
-                if (body != null && body.code == 200) {
+                if (body != null && body.code == ValConstants.SUCCESS_CODE) {
                     handleSitesSuccess(body.data.sites)
                 } else {
                     // Rejected or empty: release the lock so the same page is retried on scroll.

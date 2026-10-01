@@ -22,11 +22,12 @@ import com.atvantiq.wfms.widgets.DividerItemDecoration
 import com.atvantiq.wfms.utils.PagedListState
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.constants.ValConstants
 
 @AndroidEntryPoint
 class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, ReimbursementViewModel>() {
     private var adapter: AllClaimsAdapter? = null
-    private val pageSize: Int = 10
+    private val pageSize: Int = ValConstants.DEFAULT_PAGE_SIZE
     private val paging = PagedListState(pageSize)
 
     override val fragmentBinding: FragmentBinding
@@ -86,7 +87,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
                 dismissProgress()
                 stopRefreshingData()
                 val body = response.response
-                if (body != null && body.code == 200) {
+                if (body != null && body.code == ValConstants.SUCCESS_CODE) {
                     handleAllClaimsSuccess(body.data?.records ?: emptyList())
                 } else {
                     // Rejected or empty: release the lock so the same page is retried on scroll.

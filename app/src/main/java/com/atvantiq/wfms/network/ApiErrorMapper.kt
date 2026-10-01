@@ -10,6 +10,7 @@ import retrofit2.HttpException
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InterruptedIOException
+import com.atvantiq.wfms.constants.ValConstants
 
 /** What went wrong with a request, in terms a user (not a developer) can act on. */
 enum class ApiErrorKind(@StringRes val messageRes: Int) {
@@ -68,12 +69,15 @@ object ApiErrorMapper {
         else -> ApiErrorKind.UNKNOWN
     }
 
+    private val CLIENT_ERROR_CODES = ValConstants.BAD_REQUEST_CODE until ValConstants.SERVER_ERROR_CODE
+    private val SERVER_ERROR_CODES = ValConstants.SERVER_ERROR_CODE..ValConstants.LAST_HTTP_STATUS_CODE
+
     private fun kindOfStatus(code: Int): ApiErrorKind = when (code) {
-        401 -> ApiErrorKind.UNAUTHORIZED
-        403 -> ApiErrorKind.FORBIDDEN
-        408 -> ApiErrorKind.TIMEOUT
-        in 400..499 -> ApiErrorKind.CLIENT
-        in 500..599 -> ApiErrorKind.SERVER
+        ValConstants.UNAUTHORIZED_CODE -> ApiErrorKind.UNAUTHORIZED
+        ValConstants.FORBIDDEN_CODE -> ApiErrorKind.FORBIDDEN
+        ValConstants.REQUEST_TIMEOUT_CODE -> ApiErrorKind.TIMEOUT
+        in CLIENT_ERROR_CODES -> ApiErrorKind.CLIENT
+        in SERVER_ERROR_CODES -> ApiErrorKind.SERVER
         else -> ApiErrorKind.UNKNOWN
     }
 
@@ -89,7 +93,7 @@ object ApiErrorMapper {
         val kind = kindOf(throwable)
         if (throwable is HttpException) {
             val serverMessage = throwable.serverMessage()
-            val message = if (throwable.code() in 400..499 && serverMessage != null) {
+            val message = if (throwable.code() in CLIENT_ERROR_CODES && serverMessage != null) {
                 serverMessage
             } else {
                 messageFor(kind)

@@ -23,6 +23,7 @@ import com.atvantiq.wfms.utils.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
+import com.atvantiq.wfms.constants.ValConstants
 
 
 @AndroidEntryPoint
@@ -415,9 +416,9 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             when (response.status) {
                 Status.SUCCESS -> {
                     vm.isActivityLoading.set(false)
-                    val failed = response.response.orEmpty().firstOrNull { it.response.code != 200 }
+                    val failed = response.response.orEmpty().firstOrNull { it.response.code != ValConstants.SUCCESS_CODE }
                     if (failed != null) {
-                        if (failed.response.code == 401) {
+                        if (failed.response.code == ValConstants.UNAUTHORIZED_CODE) {
                             tokenExpiresAlert()
                         } else {
                             alertDialogShow(this, getString(R.string.alert), failed.response.message)
@@ -641,7 +642,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 items = options,
                 preSelectedItems = viewModel.activitySelection.selectedOptions(viewModel.selectedTypeKeys()),
                 bind = { view, option, isSelected ->
-                    view.findViewById<TextView>(R.id.textView).text = option.label(showType)
+                    view.findViewById<TextView>(R.id.textView).text = activityLabel(option, showType)
                     view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
                 onSelectionChanged = { selectedActivities ->
@@ -653,7 +654,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     updateSelectedActivities(selectedActivities)
                 },
                 filterCondition = { option, query ->
-                    option.label(showType).lowercase(Locale.getDefault())
+                    activityLabel(option, showType).lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
                 },
                 title = getString(R.string.select_activities)
@@ -683,11 +684,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         showSelectedActivities()
     }
 
+    /** Names the type only when several types are selected, so same-named activities can be told apart. */
+    private fun activityLabel(option: TypeActivityOption, showType: Boolean): String =
+        if (showType && option.typeName.isNotBlank()) {
+            getString(R.string.activity_with_type, option.activity.name, option.typeName)
+        } else {
+            option.activity.name
+        }
+
     private fun showSelectedActivities() {
         val typeKeys = viewModel.selectedTypeKeys()
         val showType = typeKeys.size > 1
         binding.activitiesEt.setText(
-            viewModel.activitySelection.selectedOptions(typeKeys).joinToString(", ") { it.label(showType) }
+            viewModel.activitySelection.selectedOptions(typeKeys).joinToString(", ") { activityLabel(it, showType) }
         )
     }
 

@@ -141,7 +141,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     private fun handleLoginSuccess(response: ApiState<LoginResponse>) {
         if (loginCompleted) return
         val loginResponse = response.response
-        if (loginResponse != null && loginResponse.code == 200 && loginResponse.success) {
+        if (loginResponse != null && loginResponse.code == ValConstants.SUCCESS_CODE && loginResponse.success) {
             PrefMethods.saveUserToken(prefMain, loginResponse.data?.accessToken.orEmpty())
             PrefMethods.saveUserData(prefMain, loginResponse.data?.user)
             getOtpBottomSheet?.dismiss()
