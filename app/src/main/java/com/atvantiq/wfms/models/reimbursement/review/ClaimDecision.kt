@@ -15,7 +15,8 @@ data class ExpenseDecisionInput(
     val expenseType: String?,
     val claimed: Double,
     var amountText: String,
-    var remarks: String = ""
+    var remarks: String = "",
+    val siteAmount: Double? = null
 ) {
     /** The typed amount, or null when it isn't a number. */
     val amount: Double? get() = amountText.trim().toDoubleOrNull()
@@ -46,7 +47,8 @@ sealed class ClaimDecision {
                         expenseId = expense.expenseId,
                         expenseType = expense.expenseType,
                         claimed = claimed,
-                        amountText = claimed.toString()
+                        amountText = claimed.toBigDecimal().stripTrailingZeros().toPlainString(),
+                        siteAmount = site.amountSite
                     )
                 }
             }

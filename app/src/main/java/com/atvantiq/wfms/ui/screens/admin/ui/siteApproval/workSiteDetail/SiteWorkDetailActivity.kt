@@ -1,18 +1,16 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSiteDetail
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.constants.AppRole
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.StatusCodes
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivitySiteWorkDetailBinding
-import com.atvantiq.wfms.models.work.workDetail.WorkDetailData
-import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.Data
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
@@ -22,24 +20,25 @@ import com.atvantiq.wfms.ui.screens.adapters.WorkTypeAdapterAdmin
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.SiteApprovalVM
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 
+/**
+ * Site Work Detail (spec 7.3): the work types at one site, where the role approves or rejects the
+ * ones still waiting for it. RESULT_OK tells Work Sites that something changed.
+ */
 @AndroidEntryPoint
 class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteApprovalVM>() {
 
-    private var workSiteId: Long? = null
+    private var workSiteId: Long = NO_ID
     private var employeeId: String = ""
     private var date: String = ""
-    private var employeeRole:String = ""
-
-    private var itemPosition: Int = -1
+    private lateinit var role: AppRole
     private var itemTypeAdapter: WorkTypeAdapterAdmin? = null
 
+    /** The role as the work-type rules spell it. */
+    private val roleKey: String get() = role.approverTag.orEmpty()
+
     override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(
-            R.layout.activity_site_work_detail,
-            SiteApprovalVM::class.java
-        )
+        get() = ActivityBinding(R.layout.activity_site_work_detail, SiteApprovalVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -48,180 +47,104 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        getUserDetails()
-        setToolbar()
-        initListeners()
-        setupWokTypeRecyclerView()
-        setupSelectAllCheckbox()
-        fetchIntentData()
+        role = PrefMethods.getAppRole(prefMain)
+        binding.toolbar.toolbarTitle.text = getString(R.string.site_work_detail)
+        binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        setUpWorkTypes()
+        binding.btnSelectAll.setOnClickListener { itemTypeAdapter?.toggleSelectAll() }
+        binding.btnApprove.setOnClickListener { decide(StatusCodes.APPROVE) }
+        binding.btnReject.setOnClickListener { decide(StatusCodes.REJECT) }
+
+        workSiteId = intent.getLongExtra(SharingKeys.WORK_ID, NO_ID)
+        employeeId = intent.getStringExtra(SharingKeys.EMPLOYEE_ID).orEmpty()
+        date = intent.getStringExtra(SharingKeys.WORK_DATE).orEmpty()
+        viewModel.itemPosition.value = intent.getIntExtra(SharingKeys.WORK_POSITION, NO_ID.toInt())
+        loadWorkSite()
     }
 
-    private fun setToolbar() {
-        binding.btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+    private fun loadWorkSite() = viewModel.getWorkSiteDetails(workSiteId, employeeId, date)
+
+    private fun setUpWorkTypes() {
+        itemTypeAdapter = WorkTypeAdapterAdmin(roleKey) { selected -> binding.hasSelection = selected.isNotEmpty() }
+        binding.rvWorkTypes.adapter = itemTypeAdapter
+    }
+
+    /** Approve (1) or reject (2) every ticked type; remarks "Approved by pm" / "Rejected by pm". */
+    private fun decide(status: Int) {
+        val selected = itemTypeAdapter?.getSelectedTypes().orEmpty()
+        val employee = employeeId.toLongOrNull()
+        when {
+            selected.isEmpty() -> return showToast(this, getString(R.string.select_eligible_work_type))
+            employee == null || employee <= 0 || workSiteId <= 0 -> return showToast(this, getString(R.string.employee_id_invalid))
         }
-        binding.tvBack.text = getString(R.string.details)
+        val tag = roleKey.lowercase()
+        val remarks = getString(if (status == StatusCodes.APPROVE) R.string.approved_by_format else R.string.rejected_by_format, tag)
+        viewModel.approveRejectWorkSite(workSiteId, employee ?: return, status, remarks, selected)
     }
 
-    private fun initListeners() {
-        binding.btnApprove.setOnClickListener {
-            approveRejectWorkSiteType(StatusCodes.APPROVE)
+    private fun render(data: Data?) {
+        binding.site = data
+        val types = data?.workType.orEmpty()
+        val waiting = viewModel.hasApprovableTypes(roleKey, types)
+        binding.showSelectAll = waiting
+        binding.emptyMessage = when {
+            data == null -> getString(R.string.work_progress_unavailable)
+            types.isEmpty() -> getString(R.string.no_work_types_found)
+            !role.canApprove -> getString(R.string.cannot_approve_work_types)
+            !waiting -> getString(R.string.no_work_types_waiting)
+            else -> null
         }
-        binding.btnReject.setOnClickListener {
-            approveRejectWorkSiteType(StatusCodes.REJECT)
-        }
+        itemTypeAdapter?.setData(types)
     }
-
-    private fun getUserDetails() {
-        var userData = PrefMethods.getUserData(prefMain)
-        employeeRole = userData?.role?:""
-    }
-
-    private fun approveRejectWorkSiteType(status: Int){
-        val siteId = workSiteId ?: -1
-        val employee = employeeId.toLongOrNull() ?: -1
-        if (siteId <= 0 || employee <= 0) {
-            showToast(this, getString(R.string.something_went_wrong))
-            return
-        }
-        viewModel.approveRejectWorkSite(
-            siteId,
-            employee,
-            status,
-            if(status ==1){getString(R.string.approved_by)+" "+employeeRole}else{getString(R.string.rejected_by)+" "+employeeRole},
-            itemTypeAdapter?.getSelectedTypes()
-        )
-    }
-
-    private fun fetchIntentData() {
-        itemPosition = intent.getIntExtra(SharingKeys.WORK_POSITION, -1)
-        workSiteId = intent.getLongExtra(SharingKeys.WORK_ID, -1)
-        employeeId = intent.getStringExtra(SharingKeys.EMPLOYEE_ID) ?: ""
-        date = intent.getStringExtra(SharingKeys.WORK_DATE) ?: ""
-        viewModel.itemPosition.value = itemPosition
-        getWorkSiteDetails()
-    }
-
-    private fun getWorkSiteDetails() {
-        viewModel.getWorkSiteDetails(workSiteId ?: -1, employeeId, date)
-    }
-
-    private fun setupWokTypeRecyclerView() {
-        itemTypeAdapter = WorkTypeAdapterAdmin(employeeRole) { allSelected ->
-            binding.cbSelectAllWorkTypes.setOnCheckedChangeListener(null)
-            binding.cbSelectAllWorkTypes.isChecked = allSelected.isNullOrEmpty().not()
-            binding.hideButtons = allSelected.isNullOrEmpty()
-            binding.cbSelectAllWorkTypes.setOnCheckedChangeListener { _, isChecked ->
-                itemTypeAdapter?.setAllSelected(isChecked)
-            }
-        }
-        binding.rvWorkTypes.apply {
-            layoutManager = LinearLayoutManager(this@SiteWorkDetailActivity)
-            adapter = itemTypeAdapter
-        }
-    }
-
-    private fun setupSelectAllCheckbox() {
-        binding.cbSelectAllWorkTypes.setOnCheckedChangeListener { _, isChecked ->
-            itemTypeAdapter?.setAllSelected(isChecked)
-        }
-    }
-
-    private fun setupUI(record: Data?) {
-        binding.tvProject.text = record?.project?.name ?: getString(R.string.not_available)
-        binding.tvCircle.text = record?.circle?.name ?: getString(R.string.not_available)
-        binding.tvSiteName.text = record?.site?.name ?: getString(R.string.not_available)
-        binding.tvSiteCode.text = record?.site?.siteId ?: getString(R.string.not_available)
-        binding.siteStatusInteger = record?.site?.status?.code ?: -1
-
-        // Same rule the adapter uses for each row's checkbox.
-        binding.showSelectAll = viewModel.hasApprovableTypes(employeeRole, record?.workType)
-        itemTypeAdapter?.setData(record?.workType ?: emptyList(), false)
-    }
-
 
     override fun subscribeToEvents(vm: SiteApprovalVM) {
-        vm.workSiteDetails.observe(this) { response ->
-            handleWorkSiteDetails(response)
-        }
-
-        vm.approveWorkSiteResponse.observe(this) { response ->
-            handleWorkSiteStatusResponse(
-                response,
-                R.string.work_site_approval_successful
-            )
-        }
+        vm.workSiteDetails.observe(this) { response -> handleWorkSiteDetails(response) }
+        vm.approveWorkSiteResponse.observe(this) { response -> handleDecision(response) }
     }
 
     private fun handleWorkSiteDetails(response: ApiState<WorkSiteDetailResponse>) {
         when (response.status) {
+            Status.LOADING -> showProgress()
             Status.SUCCESS -> {
                 dismissProgress()
-                response.response?.let {
-                    if (it.code == 200) {
-                        setupUI(it.data)
-                    } else {
-                        handleErrorResponse(it.code, it.message)
-                    }
+                val answer = response.response
+                if (answer?.code == ValConstants.SUCCESS_CODE) render(answer.data) else {
+                    render(null)
+                    handleRejectedResponse(answer?.code, answer?.message)
                 }
             }
-
-            Status.ERROR -> handleError(response.throwable)
-            Status.LOADING -> showProgress()
+            Status.ERROR -> {
+                dismissProgress()
+                render(null)
+                handleApiFailure(response.throwable)
+            }
         }
-
     }
 
-
-    private fun handleWorkSiteStatusResponse(
-        response: ApiState<ApproveWorkSiteTypeResponse>,
-        successMessage: Int,
-    ) {
+    /** After a decision the server's steps are reloaded and the selection cleared. */
+    private fun handleDecision(response: ApiState<ApproveWorkSiteTypeResponse>) {
+        if (!response.consumeOnce()) return
         when (response.status) {
+            Status.LOADING -> showProgress()
             Status.SUCCESS -> {
                 dismissProgress()
-                response.response?.let {
-                    if (it.code == 200) {
-                        showToast(this, it.message ?: getString(successMessage))
-                        getWorkSiteDetails()
-                        setResult(RESULT_OK)
-                    } else {
-                        handleErrorResponse(it.code, it.message)
-                    }
+                val answer = response.response
+                if (answer?.code == ValConstants.SUCCESS_CODE) {
+                    showToast(this, answer.message ?: getString(R.string.work_site_approval_successful))
+                    setResult(RESULT_OK)
+                    loadWorkSite()
+                } else {
+                    handleRejectedResponse(answer?.code, answer?.message)
                 }
             }
-
-            Status.ERROR -> handleError(response.throwable)
-            Status.LOADING -> showProgress()
+            Status.ERROR -> {
+                dismissProgress()
+                handleApiFailure(response.throwable)
+            }
         }
     }
 
-    private fun handleStatusUpdateResponse(data: WorkDetailData?) {
-        //setupUI(data)
-        val resultIntent = Intent().apply {
-            putExtra(SharingKeys.WORK_POSITION, viewModel.itemPosition.value)
-            putExtra(
-                SharingKeys.UPDATED_STATUS,
-                data?.status?.code
-            ) // Add any other updated data as needed
-        }
-        setResult(RESULT_OK, resultIntent)
-    }
-
-    private fun handleErrorResponse(code: Int?, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
-    }
-
-    private fun handleError(throwable: Throwable?) {
-        dismissProgress()
-        if (throwable is HttpException && throwable.code() == 401) {
-            tokenExpiresAlert()
-        } else {
-            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
-        }
+    private companion object {
+        const val NO_ID = -1L
     }
 }

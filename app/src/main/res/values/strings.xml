@@ -590,9 +590,9 @@
     <string name="claim_id_format">Claim ID: %1$d</string>
     <string name="claim_id_missing">This claim cannot be opened because its identifier is missing.</string>
     <string name="claim_approval">Claim Approval</string>
-    <string name="amount_label">Amount</string>
     <string name="approval_total">Approval Total</string>
     <string name="travel_route">Travel Route</string>
+    <string name="unknown_value">Unknown</string>
     <string name="travel_route_format">%1$s to %2$s</string>
     <string name="expense_decision">Expense decision</string>
     <string name="expense_decision_help">Confirm the approved amount for every expense. Add a note only when clarification is useful.</string>
@@ -606,10 +606,6 @@
     <string name="no_valid_expenses">No valid expenses are available for approval.</string>
     <string name="enter_valid_approved_amounts">Enter a valid approved amount for every expense.</string>
     <string name="approved_amount_exceeds_claimed">An approved amount cannot exceed its claimed amount.</string>
-    <string name="date_label">Date</string>
-    <string name="category_label">Category</string>
-    <string name="purpose_label">Purpose</string>
-    <string name="site_number_format">%1$d. %2$s</string>
     <plurals name="claims_count">
         <item quantity="one">%d claim</item>
         <item quantity="other">%d claims</item>
@@ -625,6 +621,18 @@
     <string name="completed_label">Completed</string>
     <string name="site_code">Site Code</string>
     <string name="review_site_details">Review site details</string>
+    <string name="site_work_detail">Site Work Detail</string>
+    <string name="approval_step_format">%1$s: %2$d</string>
+    <string name="approver_pm" translatable="false">PM</string>
+    <string name="approver_ops" translatable="false">OPS</string>
+    <string name="approver_admin" translatable="false">ADMIN</string>
+    <string name="rejected_by_format">Rejected by %1$s</string>
+    <string name="work_progress_unavailable">Work-site progress is unavailable.</string>
+    <string name="no_work_types_found">No work types found.</string>
+    <string name="no_work_types_waiting">No work types are waiting for your approval.</string>
+    <string name="cannot_approve_work_types">You cannot approve these work types.</string>
+    <string name="select_eligible_work_type">Select at least one eligible work type.</string>
+    <string name="employee_id_invalid">Employee ID is invalid.</string>
     <string name="no_attendance_records_for_approval">No attendance records found for approval.</string>
     <plurals name="submissions_count">
         <item quantity="one">%d submission</item>

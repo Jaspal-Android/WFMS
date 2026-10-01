@@ -42,6 +42,8 @@
                 style="@style/CustomLargeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@{name}"
                 android:textColor="?attr/wfmsColorOnSurface"
                 android:textStyle="bold"

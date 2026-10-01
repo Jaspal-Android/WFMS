@@ -1,208 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- A work type on Site Work Detail: checkbox and name, the status and PM / OPS / ADMIN step tags,
+     and the started date. A type this role can't act on is shown dimmed. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="android.view.View" />
+        <variable
+            name="item"
+            type="com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType" />
 
         <variable
-            name="typeStatusInteger"
-            type="Integer" />
-
-        <variable
-            name="assignedDate"
+            name="startedLabel"
             type="String" />
-
-        <variable
-            name="showSelectableOption"
-            type="Boolean" />
-
-        <variable
-            name="pmStatus"
-            type="Integer" />
-
-        <variable
-            name="opsStatus"
-            type="Integer" />
-
-        <variable
-            name="adminStatus"
-            type="Integer" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_small"
+        android:layout_marginTop="@dimen/margin_medium"
         app:cardBackgroundColor="?attr/wfmsColorSurface"
         app:cardCornerRadius="@dimen/card_radius"
-        app:cardElevation="@dimen/elevation_small"
-        app:strokeWidth="1dp">
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/padding_medium"
-            android:paddingEnd="@dimen/padding">
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_small">
 
-            <!-- Work Type Name -->
-            <TextView
-                android:id="@+id/tvTypeName"
-                style="@style/CustomRegularDarkTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:text="Vivo"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/tvTypeStatus"
-                app:layout_constraintStart_toEndOf="@id/cbWorkType"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- Work Type Checkbox -->
-
-            <!-- Status -->
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/cbWorkType"
-                style="@style/CustomCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_small"
-                android:visibility='@{showSelectableOption ? View.VISIBLE : View.GONE}'
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvTypeStatus"
-                style="@style/CustomSmallTextView"
-                assignedSiteStatus="@{typeStatusInteger}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/status_green_bg"
-                android:paddingHorizontal="@dimen/padding_small"
-                android:paddingVertical="@dimen/padding_x_small"
-                android:textColor="?attr/wfmsColorSuccess"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="OPEN" />
-
-            <!-- Work Type ID -->
-            <TextView
-                android:drawableTint="@color/darkGray"
-                android:drawablePadding="@dimen/margin_small"
-                android:drawableStart="@drawable/ic_clock_16"
-                android:id="@+id/tvTypeId"
-                style="@style/CustomMediumTextView"
-                android:text="@{assignedDate}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_small_extra"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/tvTypeName"
-                app:layout_constraintTop_toBottomOf="@id/tvTypeName"
-                tools:text="12-12-2026" />
+                android:contentDescription="@{item.name}"
+                app:buttonTint="?attr/wfmsColorPrimary" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin"
-                android:layout_marginTop="@dimen/margin_small"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTypeId">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/padding_small"
+                android:paddingEnd="@dimen/padding_small"
+                android:paddingBottom="@dimen/padding_small">
 
-                <!-- PM Approval -->
-                <LinearLayout
-                    android:id="@+id/llPmApproval"
-                    android:layout_width="0dp"
+                <TextView
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_small"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_approval_pending"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:paddingVertical="@dimen/padding_x_small">
+                    android:text="@{item.name ?? @string/not_available_value}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="I&amp;C,Integration" />
 
-                    <TextView
-                        style="@style/CustomSmallTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pm"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        style="@style/CustomSmallTextView"
-                        workApprovalStatus="@{pmStatus}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Approved"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <!-- OPS Approval -->
-                <LinearLayout
-                    android:id="@+id/llOpsApproval"
-                    android:layout_width="0dp"
+                <com.google.android.flexbox.FlexboxLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_small"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_approval_pending"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:paddingVertical="@dimen/padding_x_small">
-
+                    app:flexWrap="wrap">
 
                     <TextView
-                        style="@style/CustomSmallTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ops"
-                        android:textStyle="bold" />
+                        style="@style/CustomTagChip"
+                        android:text="@{item.status.label ?? @string/not_available_value}"
+                        tools:text="WIP" />
 
                     <TextView
-                        style="@style/CustomSmallTextView"
-                        workApprovalStatus="@{opsStatus}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pending"
-                        android:textStyle="bold" />
+                        style="@style/CustomStatusChip"
+                        app:approvalStep="@{item.pm.status}"
+                        app:approvalStepLabel="@{@string/approver_pm}"
+                        tools:text="PM: 0" />
 
-                </LinearLayout>
+                    <TextView
+                        style="@style/CustomStatusChip"
+                        app:approvalStep="@{item.ops.status}"
+                        app:approvalStepLabel="@{@string/approver_ops}"
+                        tools:text="OPS: 0" />
 
-                <!-- Admin Approval -->
-                <LinearLayout
-                    android:id="@+id/llAdminApproval"
-                    android:layout_width="0dp"
+                    <TextView
+                        style="@style/CustomStatusChip"
+                        app:approvalStep="@{item.admin.status}"
+                        app:approvalStepLabel="@{@string/approver_admin}"
+                        tools:text="ADMIN: 0" />
+                </com.google.android.flexbox.FlexboxLayout>
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_approval_pending"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:paddingVertical="@dimen/padding_x_small">
-
-
-                    <TextView
-                        style="@style/CustomSmallTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/admin"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        style="@style/CustomSmallTextView"
-                        workApprovalStatus="@{adminStatus}"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pending"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@{startedLabel ?? @string/not_available_value}"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                    tools:text="1 Oct 2026" />
             </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

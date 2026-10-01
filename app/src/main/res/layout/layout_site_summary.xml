@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A worked site: pin tile, SITE + name, WORK STATUS + chip, then Site ID | Project | Circle.
+     Shared by the Work Sites cards and the Site Work Detail summary. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="siteName"
+            type="String" />
+
+        <variable
+            name="statusCode"
+            type="Integer" />
+
+        <variable
+            name="statusLabel"
+            type="String" />
+
+        <variable
+            name="siteId"
+            type="String" />
+
+        <variable
+            name="project"
+            type="String" />
+
+        <variable
+            name="circle"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/employee_avatar_size"
+                android:layout_height="@dimen/employee_avatar_size"
+                android:background="@drawable/info_chip_bg"
+                android:importantForAccessibility="no"
+                android:padding="@dimen/padding_small"
+                android:src="@drawable/ic_location_on"
+                app:tint="?attr/wfmsColorPrimary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/CustomFactColumnLabel"
+                    android:text="@string/site_caption" />
+
+                <TextView
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{siteName ?? @string/not_available_value}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="Geeta Bhavan" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/CustomFactColumnLabel"
+                    android:layout_width="wrap_content"
+                    android:text="@string/work_status_caption" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="@dimen/padding_x_small"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingBottom="@dimen/padding_x_small"
+                    android:textStyle="bold"
+                    app:workStatusCode="@{statusCode}"
+                    app:workStatusLabel="@{statusLabel}"
+                    tools:text="@string/completed_label" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/border_width_1dp"
+            android:layout_marginVertical="@dimen/margin_medium"
+            android:background="?attr/wfmsColorOutline" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingEnd="@dimen/padding_small">
+
+                <TextView
+                    style="@style/CustomFactColumnLabel"
+                    android:text="@string/site_id_label" />
+
+                <TextView
+                    style="@style/CustomFactColumnValue"
+                    android:text="@{siteId ?? @string/not_available_value}"
+                    tools:text="IND-MP-GEE-T4-CR…" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/border_width_1dp"
+                android:layout_height="match_parent"
+                android:background="?attr/wfmsColorOutline" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/padding_small">
+
+                <TextView
+                    style="@style/CustomFactColumnLabel"
+                    android:text="@string/project" />
+
+                <TextView
+                    style="@style/CustomFactColumnValue"
+                    android:text="@{project ?? @string/not_available_value}"
+                    tools:text="TCTS-MH-CISCO-P…" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="@dimen/border_width_1dp"
+                android:layout_height="match_parent"
+                android:background="?attr/wfmsColorOutline" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/padding_small">
+
+                <TextView
+                    style="@style/CustomFactColumnLabel"
+                    android:text="@string/circle" />
+
+                <TextView
+                    style="@style/CustomFactColumnValue"
+                    android:text="@{circle ?? @string/not_available_value}"
+                    tools:text="Madhya Pradesh" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

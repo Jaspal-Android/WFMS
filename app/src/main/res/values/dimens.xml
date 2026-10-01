@@ -124,6 +124,8 @@
     <!-- Opacity of a row that can't be acted on (Material's disabled emphasis) -->
     <item name="alpha_enabled" format="float" type="dimen">1.0</item>
     <item name="alpha_disabled" format="float" type="dimen">0.38</item>
+    <!-- A work type this role can't act on, on Site Work Detail (spec 7.3) -->
+    <item name="alpha_ineligible" format="float" type="dimen">0.7</item>
     <!-- Initials avatar on an employee-day row (approvals) -->
     <dimen name="employee_avatar_size">40dp</dimen>
     <!-- Icon over an approval list's empty-state text -->

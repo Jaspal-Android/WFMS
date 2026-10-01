@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Claim Approval (spec 8.2): header, facts with the live approval total, a card per site with
-     an approved amount per expense, and the submit bar (or why this role can't act). -->
+<!-- Claim Approval (spec 8.2): header with claim amount / live approval total / date tiles, Basic
+     Information, a card per site with an approved amount per expense, and the submit bar (or why
+     this role can't act). -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -31,6 +32,10 @@
 
         <variable
             name="category"
+            type="String" />
+
+        <variable
+            name="purpose"
             type="String" />
 
         <variable
@@ -75,7 +80,7 @@
                 android:paddingBottom="@dimen/margin"
                 android:visibility="@{claim == null ? View.INVISIBLE : View.VISIBLE}">
 
-                <!-- Header -->
+                <!-- Header: name, status, claim id, then claim amount | approval total | date -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -88,50 +93,103 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:padding="@dimen/padding">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/CustomLargeTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{claim.employee.employeeName}"
+                                    android:textColor="?attr/wfmsColorOnSurface"
+                                    android:textStyle="bold"
+                                    tools:text="Kunal Paswan" />
+
+                                <TextView
+                                    style="@style/CustomRegularTextView"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@{claimIdLabel}"
+                                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                    tools:text="Claim ID: 191509550675" />
+                            </LinearLayout>
 
                             <TextView
-                                style="@style/CustomLargeTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@{claim.employee.employeeName}"
-                                android:textColor="?attr/wfmsColorOnSurface"
-                                android:textStyle="bold"
-                                tools:text="Jaspal" />
-
-                            <TextView
-                                style="@style/CustomRegularTextView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@{claimIdLabel}"
-                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                                tools:text="Claim ID: 627890811548" />
+                                style="@style/CustomStatusChip"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginEnd="0dp"
+                                android:layout_marginStart="@dimen/margin_small"
+                                app:claimStatus="@{claim.status}"
+                                tools:text="@string/submitted" />
                         </LinearLayout>
 
-                        <TextView
-                            style="@style/CustomRegularTextView"
-                            android:layout_width="wrap_content"
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/border_width_1dp"
+                            android:layout_marginVertical="@dimen/margin_medium"
+                            android:background="?attr/wfmsColorOutline" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_small"
-                            android:paddingStart="@dimen/padding_medium"
-                            android:paddingTop="@dimen/padding_x_small"
-                            android:paddingEnd="@dimen/padding_medium"
-                            android:paddingBottom="@dimen/padding_x_small"
-                            android:textStyle="bold"
-                            app:approvalTextStatus="@{claim.status}"
-                            tools:text="@string/submitted" />
+                            android:orientation="horizontal">
+
+                            <LinearLayout style="@style/CustomFactTile">
+
+                                <TextView
+                                    style="@style/CustomFactTileLabel"
+                                    android:text="@string/claim_amount" />
+
+                                <TextView
+                                    style="@style/CustomFactColumnValue"
+                                    android:text="@{amount}"
+                                    tools:text="₹ 200.00" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                style="@style/CustomFactTile"
+                                android:layout_marginHorizontal="@dimen/margin_small"
+                                android:background="@drawable/bg_fact_tile_positive">
+
+                                <TextView
+                                    style="@style/CustomFactTileLabel"
+                                    android:text="@string/approval_total"
+                                    android:textColor="@color/status_present_text" />
+
+                                <TextView
+                                    style="@style/CustomFactColumnValue"
+                                    android:text="@{approvalTotal}"
+                                    android:textColor="@color/status_present_text"
+                                    tools:text="₹ 200.00" />
+                            </LinearLayout>
+
+                            <LinearLayout style="@style/CustomFactTile">
+
+                                <TextView
+                                    style="@style/CustomFactTileLabel"
+                                    android:text="@string/date" />
+
+                                <TextView
+                                    style="@style/CustomFactColumnValue"
+                                    android:text="@{dateLabel}"
+                                    tools:text="1 Oct 2026" />
+                            </LinearLayout>
+                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Facts -->
+                <!-- Basic Information -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -151,16 +209,24 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <TextView
-                                style="@style/CustomFactLabel"
-                                android:text="@string/amount_label" />
+                            <ImageView
+                                android:layout_width="@dimen/icon_size_small"
+                                android:layout_height="@dimen/icon_size_small"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_description"
+                                app:tint="?attr/wfmsColorOnSurface" />
 
                             <TextView
-                                style="@style/CustomFactValue"
-                                android:text="@{amount}"
-                                tools:text="₹ 920.00" />
+                                style="@style/CustomLargeTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/margin_small"
+                                android:text="@string/basic_information"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -171,45 +237,12 @@
 
                             <TextView
                                 style="@style/CustomFactLabel"
-                                android:text="@string/approval_total" />
-
-                            <TextView
-                                style="@style/CustomFactValue"
-                                android:text="@{approvalTotal}"
-                                android:textColor="?attr/wfmsColorPrimary"
-                                tools:text="₹ 920.00" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                style="@style/CustomFactLabel"
-                                android:text="@string/date_label" />
-
-                            <TextView
-                                style="@style/CustomFactValue"
-                                android:text="@{dateLabel}"
-                                tools:text="25 Sep 2026" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_small"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                style="@style/CustomFactLabel"
-                                android:text="@string/category_label" />
+                                android:text="@string/category" />
 
                             <TextView
                                 style="@style/CustomFactValue"
                                 android:text="@{category}"
-                                tools:text="Local" />
+                                tools:text="local" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -220,20 +253,19 @@
 
                             <TextView
                                 style="@style/CustomFactLabel"
-                                android:text="@string/purpose_label" />
+                                android:text="@string/purpose" />
 
                             <TextView
                                 style="@style/CustomFactValue"
-                                android:text="@{claim.claimPurpose ?? @string/not_available_value}"
-                                tools:text="Site visit" />
+                                android:text="@{purpose}"
+                                tools:text="Unknown" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_small"
-                            android:orientation="horizontal"
-                            android:visibility="@{route == null ? View.GONE : View.VISIBLE}">
+                            android:orientation="horizontal">
 
                             <TextView
                                 style="@style/CustomFactLabel"
@@ -242,19 +274,18 @@
                             <TextView
                                 style="@style/CustomFactValue"
                                 android:text="@{route}"
-                                tools:text="Testing 4 to Check-out location" />
+                                tools:text="ATQ OFFICE to BALONGI" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <TextView
-                    style="@style/CustomLargeTextView"
+                    style="@style/CustomSectionCaption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin"
-                    android:text="@string/expense_decision"
-                    android:textColor="?attr/wfmsColorOnSurface"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="0dp"
+                    android:text="@string/expense_decision" />
 
                 <TextView
                     style="@style/CustomMoreRowSubtitle"
