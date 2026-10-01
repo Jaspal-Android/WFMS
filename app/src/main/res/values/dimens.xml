@@ -37,10 +37,12 @@
 
 
     <!--redius-->
+    <!-- The one corner radius for cards, buttons, inputs, search fields, dialogs and sheets. -->
     <dimen name="card_radius">8dp</dimen>
-    <dimen name="card_radius_small">4dp</dimen>
-    <dimen name="card_radius_max">16dp</dimen>
-    <dimen name="card_radius_large">28dp</dimen>
+    <!-- Fully rounded ends for chips, status badges and progress tracks (clamped to half the height). -->
+    <dimen name="radius_pill">999dp</dimen>
+    <!-- Splash logo tile keeps the launcher-icon shape. -->
+    <dimen name="splash_logo_radius">28dp</dimen>
 
     <!--elevation-->
     <dimen name="elevation">4dp</dimen>

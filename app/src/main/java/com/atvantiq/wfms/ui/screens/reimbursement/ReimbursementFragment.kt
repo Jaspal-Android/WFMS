@@ -53,6 +53,10 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
 
         vm.allClaimsResponse.observe(viewLifecycleOwner) { response ->
             if (!isLifeCycleStarted()) return@observe
+            // The ViewModel outlives the view (back stack, drawer re-entry), so a new observer is
+            // handed the previous visit's last result. Applying it as this visit's first page
+            // made the real page look unrequested and left the loading footer spinning.
+            if (!response.consumeOnce()) return@observe
             handleAllClaimsResponse(response)
         }
     }
@@ -132,9 +136,13 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     }
 
     private fun showLoadingIndicator() {
-        if (paging.isLoadingFirstPage) showProgress() else {
-            adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
-            adapter?.addLoadingFooter()
+        when {
+            paging.isLoadingFirstPage -> showProgress()
+            // Only while a later page is actually awaited; otherwise nothing would remove it.
+            paging.isLoading -> {
+                adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
+                adapter?.addLoadingFooter()
+            }
         }
     }
 

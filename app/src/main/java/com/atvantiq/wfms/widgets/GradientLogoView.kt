@@ -40,7 +40,7 @@ class GradientLogoView @JvmOverloads constructor(
     private fun applyGradient() {
         val startColor = MaterialColors.getColor(this, R.attr.wfmsColorGradientEnd)
         val endColor   = MaterialColors.getColor(this, R.attr.wfmsColorPrimaryDark)
-        val radius     = resources.getDimension(R.dimen.card_radius_max)
+        val radius     = resources.getDimension(R.dimen.card_radius)
 
         background = GradientDrawable(
             GradientDrawable.Orientation.TL_BR,
