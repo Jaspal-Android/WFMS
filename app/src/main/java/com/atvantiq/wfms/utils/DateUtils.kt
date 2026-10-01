@@ -211,6 +211,12 @@ object DateUtils {
         fun onTimeSelected(time: String, formatTime: String)
     }
 
+    /** [millis] as an ISO 8601 UTC timestamp, e.g. 2026-09-18T04:32:10Z (the API's time format). */
+    fun formatUtcIso(millis: Long): String =
+        SimpleDateFormat(API_ISO_FORMAT, Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }.format(Date(millis))
+
     fun formatApiDateToYMD(apiDate: String?): String? {
         return try {
             val trimmed = apiDate?.substringBefore(".")?.plus("Z")
