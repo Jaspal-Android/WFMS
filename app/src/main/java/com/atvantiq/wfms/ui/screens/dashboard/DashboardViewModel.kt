@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.constants.ValConstants
@@ -13,6 +14,8 @@ import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
+import com.atvantiq.wfms.data.tracking.ShiftState
+import com.atvantiq.wfms.data.tracking.ShiftTracker
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -20,6 +23,7 @@ import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
 import com.atvantiq.wfms.ui.screens.admin.SharedDashClickEvents
+import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
@@ -37,8 +41,18 @@ class DashboardViewModel @Inject constructor(
     application: Application,
     private val attendanceRepo: IAttendanceRepo,
     private val authRepo: IAuthRepo,
-    private val prefMain: SecurePrefMain
+    private val prefMain: SecurePrefMain,
+    private val shiftTracker: ShiftTracker
 ) : BaseViewModel(application) {
+
+    /** Pause state and totals of the current shift, shared with the service and its notification. */
+    val shiftState: LiveData<ShiftState> = shiftTracker.state.asLiveData()
+
+    /** When today's day started, from the check-in status or a successful Start Day. */
+    private var checkInMillis: Long? = null
+
+    /** Whether tracking was started for the active day. */
+    val isTrackingStarted: Boolean get() = prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false)
 
     var clickEvents = MutableLiveData<DashboardClickEvents>()
 
@@ -63,6 +77,7 @@ class DashboardViewModel @Inject constructor(
 
     fun startTracking() {
         _isTracking.value = true
+        shiftTracker.startShift(checkInMillis ?: System.currentTimeMillis())
         prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, true)
         val serviceIntent = Intent(getApplication(), LocationTrackingService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -74,10 +89,17 @@ class DashboardViewModel @Inject constructor(
 
     fun stopTracking() {
         _isTracking.value = false
+        shiftTracker.endShift()
         prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false)
         val serviceIntent = Intent(getApplication(), LocationTrackingService::class.java)
         getApplication<Application>().stopService(serviceIntent)
     }
+
+    /** Pause 15 min; the same path as the notification's action. */
+    fun pauseTracking() = LocationTrackingService.sendAction(getApplication(), LocationTrackingService.ACTION_PAUSE)
+
+    /** Resume early; the same path as the notification's action. */
+    fun resumeTracking() = LocationTrackingService.sendAction(getApplication(), LocationTrackingService.ACTION_RESUME)
 
     // Tracking must end with the attendance day even if no screen is visible to react to the
     // response, so the stop is driven from the API callback rather than from the UI observers.
@@ -94,7 +116,9 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             executeApiCall(
                 apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
-                liveData = attendanceCheckInResponse
+                liveData = attendanceCheckInResponse,
+                // The day starts now; tracking (started next) counts the shift from here.
+                onSuccess = { if (it.code == ValConstants.SUCCESS_CODE) checkInMillis = System.currentTimeMillis() }
             )
         }
     }
@@ -121,7 +145,10 @@ class DashboardViewModel @Inject constructor(
             executeApiCall(
                 apiCall = { attendanceRepo.attendanceCheckInStatus() },
                 liveData = attendanceCheckInStatusResponse,
-                onSuccess = { if (it.hasNoActiveDay()) stopTrackingIfActive() }
+                onSuccess = {
+                    if (it.hasNoActiveDay()) stopTrackingIfActive()
+                    else checkInMillis = DateUtils.parseUtcIso(it.data?.checkinTime)
+                }
             )
         }
     }

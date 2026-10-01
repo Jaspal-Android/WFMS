@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.data.tracking
 
+import com.google.gson.annotations.SerializedName
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.pow
@@ -9,10 +10,10 @@ import kotlin.math.sqrt
 
 /** One recorded location, independent of where it came from (server trail or offline queue). */
 data class TrackPoint(
-    val latitude: Double,
-    val longitude: Double,
-    val recordedAtMillis: Long,
-    val accuracyMeters: Double?
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("recordedAtMillis") val recordedAtMillis: Long,
+    @SerializedName("accuracyMeters") val accuracyMeters: Double?
 )
 
 /**
@@ -38,13 +39,20 @@ object TrackMath {
     fun countable(points: List<TrackPoint>): List<TrackPoint> {
         val kept = mutableListOf<TrackPoint>()
         points.sortedBy { it.recordedAtMillis }
-            .filter { it.hasCoordinates() && (it.accuracyMeters ?: 0.0) <= MAX_ACCURACY_METERS }
+            .filter { isCountable(it) }
             .forEach { point ->
                 val previous = kept.lastOrNull()
-                if (previous == null || speedKmh(previous, point) <= MAX_SPEED_KMH) kept += point
+                if (previous == null || !isJump(previous, point)) kept += point
             }
         return kept
     }
+
+    /** Accurate enough and with real coordinates. */
+    fun isCountable(point: TrackPoint): Boolean =
+        point.hasCoordinates() && (point.accuracyMeters ?: 0.0) <= MAX_ACCURACY_METERS
+
+    /** Faster than a vehicle could go from [previous]: a GPS jump. */
+    fun isJump(previous: TrackPoint, point: TrackPoint): Boolean = speedKmh(previous, point) > MAX_SPEED_KMH
 
     /** Haversine distance over the countable points, rounded to one decimal km. */
     fun distanceKm(points: List<TrackPoint>): Double {

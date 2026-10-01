@@ -62,7 +62,7 @@ class DashboardViewModelTest {
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
 
-        viewModel = DashboardViewModel(application, attendanceRepo, authRepo, prefMain)
+        viewModel = DashboardViewModel(application, attendanceRepo, authRepo, prefMain, mockk(relaxed = true))
     }
 
     @After
