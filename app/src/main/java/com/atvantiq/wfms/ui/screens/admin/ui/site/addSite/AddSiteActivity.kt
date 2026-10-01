@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
@@ -15,9 +14,6 @@ import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.project.ProjectData
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInClickEvents
-import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AssignTaskError
-import retrofit2.HttpException
 import java.util.Locale
 
 class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
@@ -46,14 +42,6 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
 
     override fun subscribeToEvents(vm: AddSiteVM) {
         binding.vm = vm
-
-        vm.clickEvents.observe(this) {
-            when (it) {
-                AddSiteClickEvents.ON_CANCEL_CLICK -> {
-                    finish()
-                }
-            }
-        }
 
         vm.errorHandler.observe(this) { error ->
             when (error) {
@@ -254,22 +242,6 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
         }
     }
 
-    private fun onClientSelected(selectedClient: Client) {
-        viewModel.selectedClient = selectedClient
-        binding.clientEt.setText(selectedClient.companyName)
-        binding.projectEt.setText("")
-        viewModel.selectedProjectId = null
-        getProjectListByClientId(selectedClient.id)
-    }
-
-    private fun onProjectSelected(selectedProject: ProjectData) {
-        viewModel.selectedProjectId = selectedProject.id
-        binding.projectEt.setText(selectedProject.name)
-        binding.circleEt.setText("")
-        viewModel.selectedCircleId = null
-        getCircleListByProject(selectedProject.id)
-    }
-
     private fun showClientSelectionDialog(clients: List<Client>) {
         showSelectionDialog(
             items = clients,
@@ -280,7 +252,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
             },
             onItemSelected = {
                 binding.clientEt.error = null
-                onClientSelected(it)
+                viewModel.selectClient(it)
             },
             filterCondition = { client, query ->
                 client.companyName.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
@@ -301,7 +273,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
             },
             onItemSelected = {
                 binding.projectEt.error = null
-                onProjectSelected(it)
+                viewModel.selectProject(it)
             },
             filterCondition = { project, query ->
                 project.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))
@@ -322,8 +294,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
             },
             onItemSelected = {
                 binding.circleEt.error = null
-                viewModel.selectedCircleId = it.id
-                binding.circleEt.setText(it.name)
+                viewModel.selectCircle(it)
             },
             filterCondition = { circle, query ->
                 circle.name.lowercase(Locale.getDefault()).contains(query.lowercase(Locale.getDefault()))

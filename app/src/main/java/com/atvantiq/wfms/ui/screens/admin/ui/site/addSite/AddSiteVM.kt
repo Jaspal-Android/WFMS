@@ -1,48 +1,42 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.site.addSite
 
 import android.app.Application
-import android.util.Log
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
-import com.atvantiq.wfms.data.repository.work.IWorkRepo
-import com.atvantiq.wfms.models.activity.ActivityData
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.client.ClientListResponse
-import com.atvantiq.wfms.models.po.PoData
-import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectData
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
-import com.atvantiq.wfms.models.site.SiteData
-import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.create.CreateSiteResponse
-import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AssignTaskError
-import com.atvantiq.wfms.utils.NoInternetException
-import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+/** Add Site: Client → Project → Circle, each choice unlocking (and resetting) the next. */
 @HiltViewModel
 class AddSiteVM @Inject constructor(
     application: Application,
     private val creationRepo: ICreationRepo) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<AddSiteClickEvents>()
     var errorHandler = MutableLiveData<AddSiteErrorHandler>()
 
     var selectedClient: Client? = null
+        private set
     var selectedProjectId: Long? = null
+        private set
     var selectedCircleId: Long? = null
+        private set
+
+    /** Names shown in the pickers; null means "Not selected". */
+    val clientName = ObservableField<String?>()
+    val projectName = ObservableField<String?>()
+    val circleName = ObservableField<String?>()
 
     var clients: List<Client> = ArrayList()
     var projects: List<ProjectData> = ArrayList()
@@ -58,15 +52,15 @@ class AddSiteVM @Inject constructor(
     var siteLatitude = ObservableField<String>().apply { set("") }
     var siteLongitude = ObservableField<String>().apply { set("") }
 
-
-    // Click event handlers
-    fun onSaveClick() = createSite()
-
-    fun onCancelClick() = postClickEvent(AddSiteClickEvents.ON_CANCEL_CLICK)
-
-    private fun postClickEvent(event: AddSiteClickEvents) {
-        clickEvents.value = event
+    /** Create Site is enabled once the circle and every required field are filled. */
+    val canCreate = object : ObservableBoolean(circleName, siteId, siteName, siteAddress) {
+        override fun get(): Boolean = circleName.get() != null &&
+            !siteId.get().isNullOrBlank() &&
+            !siteName.get().isNullOrBlank() &&
+            !siteAddress.get().isNullOrBlank()
     }
+
+    fun onSaveClick() = createSite()
 
     // API LiveData
     var clientListResponse = MutableLiveData<ApiState<ClientListResponse>>()
@@ -74,7 +68,40 @@ class AddSiteVM @Inject constructor(
     var circleListByProjectResponse = MutableLiveData<ApiState<CircleListByProjectResponse>>()
     var createSiteResponse = MutableLiveData<ApiState<CreateSiteResponse>>()
 
-    // API methods using executeApiCall from BaseViewModel
+    /** A new client clears the project and circle chosen for the previous one. */
+    fun selectClient(client: Client) {
+        selectedClient = client
+        clientName.set(client.companyName)
+        clearProject()
+        getProjectListByClientId(client.id)
+    }
+
+    /** A new project clears the circle chosen for the previous one. */
+    fun selectProject(project: ProjectData) {
+        selectedProjectId = project.id
+        projectName.set(project.name)
+        clearCircle()
+        getCircleListByProject(project.id)
+    }
+
+    fun selectCircle(circle: CircleData) {
+        selectedCircleId = circle.id
+        circleName.set(circle.name)
+    }
+
+    private fun clearProject() {
+        selectedProjectId = null
+        projectName.set(null)
+        projects = emptyList()
+        clearCircle()
+    }
+
+    private fun clearCircle() {
+        selectedCircleId = null
+        circleName.set(null)
+        circles = emptyList()
+    }
+
     fun getClientList() {
         executeApiCall(
             apiCall = { creationRepo.clientList() },
@@ -90,7 +117,8 @@ class AddSiteVM @Inject constructor(
             apiCall = { creationRepo.projectListByClientId(clientId) },
             liveData = projectListByClientResponse,
             onSuccess = { isProjectLoading.set(false) },
-            onError = { isProjectLoading.set(false) }
+            onError = { isProjectLoading.set(false) },
+            cancelPrevious = true // switching clients quickly: the last client picked must win
         )
         isProjectLoading.set(true)
     }
@@ -100,12 +128,12 @@ class AddSiteVM @Inject constructor(
             apiCall = { creationRepo.circleByProject(projectId) },
             liveData = circleListByProjectResponse,
             onSuccess = { isCircleLoading.set(false) },
-            onError = { isCircleLoading.set(false) }
+            onError = { isCircleLoading.set(false) },
+            cancelPrevious = true
         )
         isCircleLoading.set(true)
     }
 
-    // Validation logic
     fun validateAssignTaskFields(): Boolean {
         return when {
             selectedClient == null -> {
@@ -120,15 +148,15 @@ class AddSiteVM @Inject constructor(
                 errorHandler.value = AddSiteErrorHandler.ON_CIRCLE_ERROR
                 false
             }
-            siteId.get().isNullOrEmpty() -> {
+            siteId.get().isNullOrBlank() -> {
                 errorHandler.value = AddSiteErrorHandler.ON_SITE_ID_ERROR
                 false
             }
-            siteName.get().isNullOrEmpty() -> {
+            siteName.get().isNullOrBlank() -> {
                 errorHandler.value = AddSiteErrorHandler.ON_SITE_NAME_ERROR
                 false
             }
-            siteAddress.get().isNullOrEmpty() -> {
+            siteAddress.get().isNullOrBlank() -> {
                 errorHandler.value = AddSiteErrorHandler.ON_SITE_ADDRESS_ERROR
                 false
             }
@@ -136,17 +164,17 @@ class AddSiteVM @Inject constructor(
         }
     }
 
-    // Create site API using executeApiCall
+    /** `POST /site/create`. Latitude and longitude are optional and left out when empty. */
     private fun createSite() {
         if (!validateAssignTaskFields()) return
         val params = JsonObject().apply {
             addProperty("project_id", selectedProjectId)
             addProperty("circle_id", selectedCircleId)
-            addProperty("site_id", siteId.get().toString().trim())
-            addProperty("name", siteName.get().toString().trim())
-            addProperty("address", siteAddress.get().toString().trim())
-            addProperty("latitude", siteLatitude.get().toString().trim().ifEmpty { "0" })
-            addProperty("longitude", siteLongitude.get().toString().trim().ifEmpty { "0" })
+            addProperty("site_id", siteId.get().orEmpty().trim())
+            addProperty("name", siteName.get().orEmpty().trim())
+            addProperty("address", siteAddress.get().orEmpty().trim())
+            siteLatitude.get()?.trim()?.toDoubleOrNull()?.let { addProperty("latitude", it) }
+            siteLongitude.get()?.trim()?.toDoubleOrNull()?.let { addProperty("longitude", it) }
         }
         executeApiCall(
             apiCall = { creationRepo.createSite(params) },

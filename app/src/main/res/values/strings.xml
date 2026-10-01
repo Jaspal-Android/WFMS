@@ -206,8 +206,6 @@
     <string name="siteNameHint">Enter Site Name</string>
     <string name="siteIdHint">Enter Site ID</string>
     <string name="siteAddressHint">Enter Site Address</string>
-    <string name="siteLatitudeHint">Enter Site Latitude</string>
-    <string name="siteLongitudeHint">Enter Site Longitude</string>
     <string name="site_created_successfully">Site created successfully</string>
     <string name="site">Site</string>
     <string name="approve_site">Approve Site</string>
@@ -552,6 +550,14 @@
     <!-- Admin tabs: Sites and the Approvals hub -->
     <string name="add_site_subtitle">Create a new site for a project circle.</string>
     <string name="site_active">Active</string>
+    <string name="client">Client</string>
+    <string name="not_selected">Not selected</string>
+    <string name="site_id_label">Site ID</string>
+    <string name="site_name_label">Site name</string>
+    <string name="site_address_label">Site address</string>
+    <string name="latitude_optional">Latitude (Optional)</string>
+    <string name="longitude_optional">Longitude (Optional)</string>
+    <string name="create_site">Create Site</string>
     <string name="site_inactive">Inactive</string>
     <string name="no_sites_found">No sites found.</string>
     <string name="available">Available</string>

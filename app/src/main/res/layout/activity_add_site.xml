@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Add Site: Client → Project → Circle (each unlocks the next), then the site's fields. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -6,22 +7,6 @@
     <data>
 
         <import type="android.view.View" />
-
-        <variable
-            name="dateString"
-            type="String" />
-
-        <variable
-            name="timeString"
-            type="String" />
-
-        <variable
-            name="locationString"
-            type="String" />
-
-        <variable
-            name="hasPreviewImage"
-            type="Boolean" />
 
         <variable
             name="vm"
@@ -37,7 +22,6 @@
         android:orientation="vertical"
         tools:context=".ui.screens.admin.ui.site.addSite.AddSiteActivity">
 
-        <!-- Toolbar — stays fixed at top -->
         <include
             android:id="@+id/addSiteToolbar"
             layout="@layout/custom_toolbar" />
@@ -55,259 +39,181 @@
                 android:orientation="vertical"
                 android:padding="@dimen/padding">
 
-                <!-- ── Select Client ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <!-- Client → Project → Circle -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/select_client"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom"
-                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="0dp"
+                    app:strokeColor="?attr/wfmsColorOutline"
+                    app:strokeWidth="@dimen/border_width_1dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/client_et"
-                        style="@style/CustomSelectableTextInputEditStyle"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:orientation="vertical"
+                        android:paddingHorizontal="@dimen/padding"
+                        android:paddingBottom="@dimen/padding">
 
-                <!-- ── Select Project ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/CustomOutlinedField.Picker"
+                            android:hint="@string/client"
+                            app:placeholderText="@string/not_selected">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/client_et"
+                                style="@style/CustomSelectableTextInputEditStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="@{!vm.isClientLoading}"
+                                android:padding="@dimen/padding"
+                                android:singleLine="true"
+                                android:text="@{vm.clientName}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/CustomOutlinedField.Picker"
+                            android:enabled="@{vm.clientName != null &amp;&amp; !vm.isProjectLoading}"
+                            android:hint="@string/project"
+                            app:placeholderText="@string/not_selected">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/project_et"
+                                style="@style/CustomSelectableTextInputEditStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="@{vm.clientName != null &amp;&amp; !vm.isProjectLoading}"
+                                android:padding="@dimen/padding"
+                                android:singleLine="true"
+                                android:text="@{vm.projectName}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/CustomOutlinedField.Picker"
+                            android:enabled="@{vm.projectName != null &amp;&amp; !vm.isCircleLoading}"
+                            android:hint="@string/circle"
+                            app:placeholderText="@string/not_selected">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/circle_et"
+                                style="@style/CustomSelectableTextInputEditStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:enabled="@{vm.projectName != null &amp;&amp; !vm.isCircleLoading}"
+                                android:padding="@dimen/padding"
+                                android:singleLine="true"
+                                android:text="@{vm.circleName}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Site fields -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/select_project"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom"
-                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+                    android:layout_marginTop="@dimen/margin"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="0dp"
+                    app:strokeColor="?attr/wfmsColorOutline"
+                    app:strokeWidth="@dimen/border_width_1dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/project_et"
-                        style="@style/CustomSelectableTextInputEditStyle"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:enabled="@{!vm.isProjectLoading}"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        android:orientation="vertical"
+                        android:paddingHorizontal="@dimen/padding"
+                        android:paddingBottom="@dimen/padding">
 
-                    <ProgressBar
-                        android:id="@+id/project_progress"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="?attr/wfmsColorAccent"
-                        android:visibility="@{vm.isProjectLoading ? View.VISIBLE : View.GONE}"
-                        tools:visibility="gone" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/site_id_layout"
+                            style="@style/CustomOutlinedField"
+                            android:hint="@string/site_id_label">
 
-                <!-- ── Select Circle ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/select_circle"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:endIconDrawable="@drawable/ic_arrow_down_24"
-                    app:endIconMode="custom"
-                    app:endIconTint="?attr/wfmsColorOnSurfaceVariant"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/site_id_et"
+                                style="@style/CustomEditInputTextRegularStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionNext"
+                                android:inputType="textCapCharacters"
+                                android:singleLine="true"
+                                android:text="@={vm.siteId}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/circle_et"
-                        style="@style/CustomSelectableTextInputEditStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="1"
-                        android:ellipsize="start"
-                        android:enabled="@{!vm.isCircleLoading}"
-                        android:padding="@dimen/padding"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true" />
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/site_name_layout"
+                            style="@style/CustomOutlinedField"
+                            android:hint="@string/site_name_label">
 
-                    <ProgressBar
-                        android:id="@+id/circle_progress"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="end|center_vertical"
-                        android:indeterminateTint="?attr/wfmsColorAccent"
-                        android:visibility="@{vm.isCircleLoading ? View.VISIBLE : View.GONE}"
-                        tools:visibility="gone" />
-                </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/site_name_et"
+                                style="@style/CustomEditInputTextRegularStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionNext"
+                                android:inputType="textCapWords"
+                                android:singleLine="true"
+                                android:text="@={vm.siteName}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- ── Site ID ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/siteIdHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/site_address_layout"
+                            style="@style/CustomOutlinedField"
+                            android:hint="@string/site_address_label">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/site_id_et"
-                        style="@style/CustomEditInputTextRegularStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:imeOptions="actionNext"
-                        android:inputType="textCapCharacters"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="@={vm.siteId}" />
-                </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/site_address_et"
+                                style="@style/CustomEditInputTextRegularStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionNext"
+                                android:inputType="textPostalAddress"
+                                android:singleLine="true"
+                                android:text="@={vm.siteAddress}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- ── Site Name ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/siteNameHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/CustomOutlinedField"
+                            android:hint="@string/latitude_optional">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/site_name_et"
-                        style="@style/CustomEditInputTextRegularStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:imeOptions="actionNext"
-                        android:inputType="textCapWords"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="@={vm.siteName}" />
-                </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/CustomEditInputTextRegularStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionNext"
+                                android:inputType="numberDecimal|numberSigned"
+                                android:singleLine="true"
+                                android:text="@={vm.siteLatitude}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- ── Site Address ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/siteAddressHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/CustomOutlinedField"
+                            android:hint="@string/longitude_optional">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/site_address_et"
-                        style="@style/CustomEditInputTextRegularStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:imeOptions="actionNext"
-                        android:inputType="textPostalAddress"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="@={vm.siteAddress}" />
-                </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/CustomEditInputTextRegularStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionDone"
+                                android:inputType="numberDecimal|numberSigned"
+                                android:singleLine="true"
+                                android:text="@={vm.siteLongitude}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                <!-- ── Latitude ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/siteLatitudeHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/site_latitude_et"
-                        style="@style/CustomEditInputTextRegularStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:imeOptions="actionNext"
-                        android:inputType="numberDecimal|numberSigned"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="@={vm.siteLatitude}" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- ── Longitude ── -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
-                    android:hint="@string/siteLongitudeHint"
-                    android:minHeight="@dimen/text_input_edit_text_min_height"
-                    app:boxStrokeColor="?attr/wfmsColorOutline"
-                    app:boxStrokeWidthFocused="2dp"
-                    app:hintTextColor="?attr/wfmsColorOnSurfaceVariant">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/site_longitude_et"
-                        style="@style/CustomEditInputTextRegularStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:imeOptions="actionDone"
-                        android:inputType="numberDecimal|numberSigned"
-                        android:scrollHorizontally="true"
-                        android:singleLine="true"
-                        android:text="@={vm.siteLongitude}" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- ── Divider ── -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:layout_marginBottom="@dimen/margin"
-                    android:alpha="0.15"
-                    android:background="?attr/wfmsColorOnSurface" />
-
-                <!-- ── Add Site — gradient button ── -->
                 <com.atvantiq.wfms.widgets.GradientButton
                     style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="@{()->vm.onSaveClick()}"
-                    android:text="@string/add_site"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-                <!-- ── Cancel — primary wire (outlined) ── -->
-                <androidx.appcompat.widget.AppCompatButton
-                    style="@style/CustomPrimaryWireButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_marginTop="@dimen/margin"
                     android:layout_marginBottom="@dimen/margin"
-                    android:onClick="@{()->vm.onCancelClick()}"
-                    android:text="@string/cancel"
+                    android:enabled="@{vm.canCreate}"
+                    android:onClick="@{() -> vm.onSaveClick()}"
+                    android:text="@string/create_site"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
 
             </LinearLayout>
