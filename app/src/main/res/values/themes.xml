@@ -415,6 +415,37 @@
         <item name="android:layout_marginBottom">@dimen/margin_small</item>
     </style>
 
+    <!-- Small pill tag on a card (a site's circle and added-by). Grey by default. -->
+    <style name="CustomTagChip" parent="CustomSmallTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_small</item>
+        <item name="android:layout_marginEnd">@dimen/margin_small</item>
+        <item name="android:background">@drawable/bg_tag_chip</item>
+        <item name="android:backgroundTint">@color/status_unmarked_bg</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">@dimen/padding_medium</item>
+        <item name="android:paddingEnd">@dimen/padding_medium</item>
+        <item name="android:paddingTop">@dimen/padding_x_small</item>
+        <item name="android:paddingBottom">@dimen/padding_x_small</item>
+        <item name="android:textColor">@color/status_unmarked_text</item>
+        <item name="android:textSize">@dimen/default_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- The tag that leads, in blue (a site's project). -->
+    <style name="CustomTagChip.Info">
+        <item name="android:backgroundTint">@color/status_leave_bg</item>
+        <item name="android:textColor">@color/status_leave_text</item>
+    </style>
+
+    <!-- A positive state, in green (an approval category's "Available"). -->
+    <style name="CustomTagChip.Success">
+        <item name="android:backgroundTint">@color/status_present_bg</item>
+        <item name="android:textColor">@color/status_present_text</item>
+    </style>
+
     <!-- Tracking card buttons: full-width capsule, 13sp bold label with a 16dp icon -->
     <style name="Widget.WFMS.TrackingButton" parent="Widget.Material3.Button">
         <item name="android:insetTop">0dp</item>

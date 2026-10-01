@@ -21,11 +21,20 @@
             android:orientation="vertical"
             android:padding="@dimen/padding">
 
+            <TextView
+                style="@style/CustomRegularTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin"
+                android:text="@string/approvals_intro"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:textSize="@dimen/default_large_text" />
+
             <include
                 android:id="@+id/workApprovalCard"
-                layout="@layout/layout_action_card"
+                layout="@layout/layout_category_card"
                 app:badge="@{@string/available}"
-                app:icon="@{@drawable/ic_tab_work}"
+                app:icon="@{@drawable/ic_tab_approvals}"
                 app:onClick="@{() -> vm.onWorkApprovalClick()}"
                 app:subtitle="@{@string/work_approval_subtitle}"
                 app:title="@{@string/work_approval}" />

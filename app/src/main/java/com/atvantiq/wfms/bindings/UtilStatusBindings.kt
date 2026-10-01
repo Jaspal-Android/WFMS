@@ -173,4 +173,19 @@ object UtilStatusBindings {
             }
         }
     }
+
+    // ──────────────────────────────────────────────────────
+    // Site Active / Inactive  (`is_active`)
+    // ──────────────────────────────────────────────────────
+    @JvmStatic
+    @BindingAdapter(value = ["siteActiveStatus"])
+    fun siteActiveStatus(textView: TextView, isActive: Int?) {
+        if (isActive == StatusCodes.SITE_ACTIVE) {
+            textView.text = textView.context.getString(R.string.site_active)
+            textView.applyStatus(R.color.status_present_bg, R.color.status_present_text)
+        } else {
+            textView.text = textView.context.getString(R.string.site_inactive)
+            textView.applyStatus(R.color.status_unmarked_bg, R.color.status_unmarked_text)
+        }
+    }
 }

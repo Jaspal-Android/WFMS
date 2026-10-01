@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.databinding.ItemSitesBinding
 import com.atvantiq.wfms.models.site.allSites.AllSiteData
 import com.atvantiq.wfms.models.site.allSites.Site
-import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.widgets.FooterRecyclerView
 
 class AllSitesAdapter : FooterRecyclerView() {
@@ -33,7 +32,6 @@ class AllSitesAdapter : FooterRecyclerView() {
         if (holder is SitesHolder) {
             val site = sites?.get(position)
             holder.binding.itemSiteData = site
-            holder.binding.addedDate = "Added "+ DateUtils.formatApiDateToMonthDayYear(site?.createdAt)
             holder.binding.executePendingBindings()
         }
     }

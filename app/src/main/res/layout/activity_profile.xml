@@ -49,7 +49,7 @@
                         <TextView
                             android:layout_width="@dimen/avatar_size_large"
                             android:layout_height="@dimen/avatar_size_large"
-                            android:background="@drawable/bg_avatar_initials"
+                            android:background="@drawable/bg_circle_primary"
                             android:gravity="center"
                             android:importantForAccessibility="no"
                             android:textColor="@color/white"
