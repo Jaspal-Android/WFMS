@@ -121,6 +121,9 @@
 
     <!-- Lottie "no data" animation shown by empty lists -->
     <dimen name="empty_state_animation_size">150dp</dimen>
+    <!-- Opacity of a row that can't be acted on (Material's disabled emphasis) -->
+    <item name="alpha_enabled" format="float" type="dimen">1.0</item>
+    <item name="alpha_disabled" format="float" type="dimen">0.38</item>
     <!-- Initials avatar on an employee-day row (approvals) -->
     <dimen name="employee_avatar_size">40dp</dimen>
     <!-- Icon over an approval list's empty-state text -->

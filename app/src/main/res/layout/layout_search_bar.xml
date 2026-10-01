@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A search field in a card: magnifier, the text and a clear button (shown by the screen when
+     there is text). The keyboard's action is Search. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="hint"
+            type="String" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/min_touch_target"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="@dimen/elevation_small">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/padding_medium"
+            android:paddingEnd="@dimen/padding_x_small">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="@dimen/icon_size_small"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_search"
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@{hint}"
+                android:imeOptions="actionSearch"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textColorHint="?attr/wfmsColorOnSurfaceVariant"
+                android:textSize="@dimen/default_medium_small_text" />
+
+            <ImageView
+                android:id="@+id/ivClearSearch"
+                style="@style/CustomIconButton.Small"
+                android:contentDescription="@string/clear_search"
+                android:src="@drawable/ic_close_16"
+                android:visibility="gone"
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

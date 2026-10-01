@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A Work Approval row: one employee-day with its status, date, total work, site and a Review link. -->
+<!-- A claim on the Claims Approval list: employee (or claim number), status, date, category,
+     amount and Review ›. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <import type="android.text.TextUtils" />
-
-        <import type="android.view.View" />
+        <variable
+            name="title"
+            type="String" />
 
         <variable
-            name="item"
-            type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
+            name="subtitle"
+            type="String" />
+
+        <variable
+            name="status"
+            type="String" />
 
         <variable
             name="dateLabel"
+            type="String" />
+
+        <variable
+            name="category"
+            type="String" />
+
+        <variable
+            name="amount"
             type="String" />
     </data>
 
@@ -35,20 +47,48 @@
             android:orientation="vertical"
             android:padding="@dimen/padding">
 
-            <!-- Employee + status -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <include
-                    layout="@layout/layout_employee_identity"
+                <TextView
+                    android:layout_width="@dimen/employee_avatar_size"
+                    android:layout_height="@dimen/employee_avatar_size"
+                    android:background="@drawable/bg_circle_primary"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/default_text"
+                    android:textStyle="bold"
+                    app:initials="@{title}"
+                    tools:text="JA" />
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:layout_weight="1"
-                    app:code="@{item.employee.code}"
-                    app:name="@{item.employee.name}" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{title}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="Jaspal" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{subtitle}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="JAXX029" />
+                </LinearLayout>
 
                 <TextView
                     style="@style/CustomRegularTextView"
@@ -60,11 +100,10 @@
                     android:paddingEnd="@dimen/padding_medium"
                     android:paddingBottom="@dimen/padding_x_small"
                     android:textStyle="bold"
-                    app:approvalTextStatus="@{item.action}"
+                    app:approvalTextStatus="@{status}"
                     tools:text="@string/submitted" />
             </LinearLayout>
 
-            <!-- Date · total work -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,32 +122,19 @@
                     style="@style/CustomRegularTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_small"
-                    android:text="@{dateLabel ?? @string/not_available_value}"
+                    android:layout_marginStart="@dimen/margin_small_extra"
+                    android:text="@{dateLabel}"
                     android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                    tools:text="22 Sep 2026" />
-
-                <ImageView
-                    android:layout_width="@dimen/icon_size_small"
-                    android:layout_height="@dimen/icon_size_small"
-                    android:layout_marginStart="@dimen/margin"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_clock_16"
-                    android:visibility="@{TextUtils.isEmpty(item.workHours) ? View.GONE : View.VISIBLE}"
-                    app:tint="?attr/wfmsColorOnSurfaceVariant" />
+                    tools:text="25 Sep 2026" />
 
                 <TextView
-                    style="@style/CustomRegularTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_small"
-                    android:text="@{@string/total_work_format(item.workHours)}"
-                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                    android:visibility="@{TextUtils.isEmpty(item.workHours) ? View.GONE : View.VISIBLE}"
-                    tools:text="Total work: 02:33" />
+                    style="@style/CustomTagChip"
+                    android:layout_marginStart="@dimen/margin"
+                    android:layout_marginTop="0dp"
+                    android:text="@{category}"
+                    tools:text="Local" />
             </LinearLayout>
 
-            <!-- Site · project · circle, and Review -->
             <LinearLayout
                 android:id="@+id/reviewRow"
                 android:layout_width="match_parent"
@@ -119,43 +145,25 @@
                 android:minHeight="@dimen/min_touch_target"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="@dimen/icon_size_small"
-                    android:layout_height="@dimen/icon_size_small"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_location_on"
-                    app:tint="?attr/wfmsColorPrimary" />
+                <TextView
+                    style="@style/CustomFactLabel"
+                    android:text="@string/amount_label" />
 
-                <LinearLayout
+                <TextView
+                    style="@style/CustomLargeTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CustomRegularTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{item.site.name ?? @string/not_available_value}"
-                        android:textColor="?attr/wfmsColorOnSurface"
-                        android:textStyle="bold"
-                        tools:text="Not available" />
-
-                    <TextView
-                        style="@style/CustomRegularTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{@string/project_circle_format(item.project.name ?? @string/not_available_value, item.circle.name ?? @string/not_available_value)}"
-                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                        tools:text="Project: Not available  •  Circle: Not available" />
-                </LinearLayout>
+                    android:text="@{amount}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="₹ 920.00" />
 
                 <TextView
                     style="@style/CustomRegularTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_small"
                     android:text="@string/review"
                     android:textColor="?attr/wfmsColorPrimary"
                     android:textStyle="bold" />

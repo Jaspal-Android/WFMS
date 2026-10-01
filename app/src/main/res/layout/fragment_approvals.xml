@@ -48,6 +48,15 @@
                 app:subtitle="@{@string/work_approval_subtitle}"
                 app:title="@{@string/work_approval}" />
 
+            <include
+                android:id="@+id/claimsApprovalCard"
+                layout="@layout/layout_category_card"
+                app:badge="@{@string/available}"
+                app:icon="@{@drawable/ic_find_in_page}"
+                app:onClick="@{() -> vm.onClaimsApprovalClick()}"
+                app:subtitle="@{@string/claims_approval_subtitle}"
+                app:title="@{@string/claims_approval}" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

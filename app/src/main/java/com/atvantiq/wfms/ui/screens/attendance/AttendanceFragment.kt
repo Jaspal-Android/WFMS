@@ -256,14 +256,14 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
 
     private fun setupSearch() {
         // A recreated view shows the kept list, so show the query it was filtered by.
-        binding.etSearch.setText(viewModel.searchQuery)
-        binding.ivClearSearch.visibility = if (viewModel.searchQuery.isNotBlank()) View.VISIBLE else View.GONE
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
+        binding.searchBar.etSearch.setText(viewModel.searchQuery)
+        binding.searchBar.ivClearSearch.visibility = if (viewModel.searchQuery.isNotBlank()) View.VISIBLE else View.GONE
+        binding.searchBar.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val query = s?.toString() ?: ""
-                binding.ivClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
+                binding.searchBar.ivClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
                 // The text the view restores after recreation is the query already applied; only a
                 // real change reloads (a reload clears the kept list).
                 if (query == viewModel.searchQuery) return
@@ -272,8 +272,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 searchHandler.postDelayed(searchDebounce, SEARCH_DEBOUNCE_MS)
             }
         })
-        binding.ivClearSearch.setOnClickListener {
-            binding.etSearch.setText("")
+        binding.searchBar.ivClearSearch.setOnClickListener {
+            binding.searchBar.etSearch.setText("")
         }
     }
 

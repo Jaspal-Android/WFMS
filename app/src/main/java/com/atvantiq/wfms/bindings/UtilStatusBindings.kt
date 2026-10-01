@@ -9,7 +9,7 @@ import com.atvantiq.wfms.constants.ApprovalStatusCodes
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceApprovalStatus
-import com.atvantiq.wfms.models.attendance.attendanceDetails.WorkSubmissionStatus
+import com.atvantiq.wfms.constants.ApprovalTextStatus
 import com.atvantiq.wfms.models.workSites.workSites.Status as WorkSiteStatus
 
 /**
@@ -193,13 +193,13 @@ object UtilStatusBindings {
     }
 
     // ──────────────────────────────────────────────────────
-    // Work Approval row  (attendance record `action`)
+    // Status from free text  (Work Approval `action`, claim `status`)
     // ──────────────────────────────────────────────────────
     @JvmStatic
-    @BindingAdapter(value = ["workSubmissionStatus"])
-    fun workSubmissionStatus(textView: TextView, action: String?) {
-        val status = WorkSubmissionStatus.from(action)
-        textView.text = status.labelRes?.let { textView.context.getString(it) } ?: action.orEmpty()
+    @BindingAdapter(value = ["approvalTextStatus"])
+    fun approvalTextStatus(textView: TextView, text: String?) {
+        val status = ApprovalTextStatus.from(text)
+        textView.text = status.labelRes?.let { textView.context.getString(it) } ?: text.orEmpty()
         textView.applyStatus(status.backgroundRes, status.textRes)
     }
 

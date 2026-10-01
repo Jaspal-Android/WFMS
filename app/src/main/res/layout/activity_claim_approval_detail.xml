@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Claim Approval (spec 8.2): header, facts with the live approval total, a card per site with
+     an approved amount per expense, and the submit bar (or why this role can't act). -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="claim"
+            type="com.atvantiq.wfms.models.reimbursement.detail.ClaimData" />
+
+        <variable
+            name="claimIdLabel"
+            type="String" />
+
+        <variable
+            name="amount"
+            type="String" />
+
+        <variable
+            name="approvalTotal"
+            type="String" />
+
+        <variable
+            name="dateLabel"
+            type="String" />
+
+        <variable
+            name="category"
+            type="String" />
+
+        <variable
+            name="route"
+            type="String" />
+
+        <variable
+            name="canAct"
+            type="Boolean" />
+
+        <variable
+            name="reviewed"
+            type="Boolean" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        tools:context=".ui.screens.admin.ui.claimApproval.ClaimApprovalDetailActivity">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/custom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/margin"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingBottom="@dimen/margin"
+                android:visibility="@{claim == null ? View.INVISIBLE : View.VISIBLE}">
+
+                <!-- Header -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="0dp"
+                    app:strokeColor="?attr/wfmsColorOutline"
+                    app:strokeWidth="@dimen/border_width_1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/padding">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/CustomLargeTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{claim.employee.employeeName}"
+                                android:textColor="?attr/wfmsColorOnSurface"
+                                android:textStyle="bold"
+                                tools:text="Jaspal" />
+
+                            <TextView
+                                style="@style/CustomRegularTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{claimIdLabel}"
+                                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                tools:text="Claim ID: 627890811548" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_small"
+                            android:paddingStart="@dimen/padding_medium"
+                            android:paddingTop="@dimen/padding_x_small"
+                            android:paddingEnd="@dimen/padding_medium"
+                            android:paddingBottom="@dimen/padding_x_small"
+                            android:textStyle="bold"
+                            app:approvalTextStatus="@{claim.status}"
+                            tools:text="@string/submitted" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Facts -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    app:cardBackgroundColor="?attr/wfmsColorSurface"
+                    app:cardCornerRadius="@dimen/card_radius"
+                    app:cardElevation="0dp"
+                    app:strokeColor="?attr/wfmsColorOutline"
+                    app:strokeWidth="@dimen/border_width_1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/CustomFactLabel"
+                                android:text="@string/amount_label" />
+
+                            <TextView
+                                style="@style/CustomFactValue"
+                                android:text="@{amount}"
+                                tools:text="₹ 920.00" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/CustomFactLabel"
+                                android:text="@string/approval_total" />
+
+                            <TextView
+                                style="@style/CustomFactValue"
+                                android:text="@{approvalTotal}"
+                                android:textColor="?attr/wfmsColorPrimary"
+                                tools:text="₹ 920.00" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/CustomFactLabel"
+                                android:text="@string/date_label" />
+
+                            <TextView
+                                style="@style/CustomFactValue"
+                                android:text="@{dateLabel}"
+                                tools:text="25 Sep 2026" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/CustomFactLabel"
+                                android:text="@string/category_label" />
+
+                            <TextView
+                                style="@style/CustomFactValue"
+                                android:text="@{category}"
+                                tools:text="Local" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/CustomFactLabel"
+                                android:text="@string/purpose_label" />
+
+                            <TextView
+                                style="@style/CustomFactValue"
+                                android:text="@{claim.claimPurpose ?? @string/not_available_value}"
+                                tools:text="Site visit" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:orientation="horizontal"
+                            android:visibility="@{route == null ? View.GONE : View.VISIBLE}">
+
+                            <TextView
+                                style="@style/CustomFactLabel"
+                                android:text="@string/travel_route" />
+
+                            <TextView
+                                style="@style/CustomFactValue"
+                                android:text="@{route}"
+                                tools:text="Testing 4 to Check-out location" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin"
+                    android:text="@string/expense_decision"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold" />
+
+                <TextView
+                    style="@style/CustomMoreRowSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="@string/expense_decision_help" />
+
+                <LinearLayout
+                    android:id="@+id/sitesContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Bottom bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/wfmsColorSurface"
+            android:orientation="vertical"
+            android:padding="@dimen/padding"
+            android:visibility="@{claim == null ? View.GONE : View.VISIBLE}">
+
+            <com.atvantiq.wfms.widgets.GradientButton
+                android:id="@+id/btnSubmit"
+                style="@style/CustomButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{!safeUnbox(reviewed)}"
+                android:text="@{safeUnbox(reviewed) ? @string/claim_reviewed : @string/submit_claim_approval}"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:visibility="@{safeUnbox(canAct) || safeUnbox(reviewed) ? View.VISIBLE : View.GONE}" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="@{safeUnbox(canAct) || safeUnbox(reviewed) ? View.GONE : View.VISIBLE}">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_lock"
+                    app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:text="@string/claim_decision_not_permitted"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

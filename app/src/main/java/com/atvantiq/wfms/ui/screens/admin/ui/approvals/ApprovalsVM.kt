@@ -19,4 +19,8 @@ class ApprovalsVM @Inject constructor(application: Application) : BaseViewModel(
     fun onWorkApprovalClick() {
         clickEvents.value = ApprovalsClickEvents.WORK_APPROVAL
     }
+
+    fun onClaimsApprovalClick() {
+        clickEvents.value = ApprovalsClickEvents.CLAIMS_APPROVAL
+    }
 }

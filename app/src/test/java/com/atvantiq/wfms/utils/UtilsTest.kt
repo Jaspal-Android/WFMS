@@ -77,4 +77,11 @@ class UtilsTest {
         assertEquals("", Utils.nameInitials(null))
         assertEquals("", Utils.nameInitials("   "))
     }
+
+    @Test
+    fun `humanize turns an API key into display text`() {
+        assertEquals("Local conveyance", Utils.humanize("local_conveyance"))
+        assertEquals("Travel", Utils.humanize("TRAVEL"))
+        assertEquals("", Utils.humanize(null))
+    }
 }
