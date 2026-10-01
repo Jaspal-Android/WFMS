@@ -85,6 +85,9 @@ object NetworkEndPoints {
 
 	/*Claim by ID*/
 	const val claimById = "claim/{claim_id}"
+	/*PM / OPS / admin: claims to review, and the per-expense approval*/
+	const val claimsForReview = "claim/all"
+	const val approveClaim = "claim/approve"
 
 	/*Update / delete own claim (same path as claimById, different verb)*/
 	const val updateClaim = "claim/{claim_id}"

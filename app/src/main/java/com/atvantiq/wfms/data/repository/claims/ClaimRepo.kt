@@ -11,6 +11,9 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.atvantiq.wfms.models.reimbursement.review.ClaimApproveResponse
+import com.atvantiq.wfms.models.reimbursement.review.ClaimReviewListResponse
+import com.google.gson.JsonObject
 
 @Singleton
 class ClaimRepo @Inject constructor(private val apiService: ApiService) : IClaimRepo {
@@ -39,6 +42,11 @@ class ClaimRepo @Inject constructor(private val apiService: ApiService) : IClaim
     override suspend fun claimById(claimId: Long): ClaimDetailResponse = apiService.claimById(
         claimId = claimId
     )
+
+    override suspend fun claimsForReview(page: Int, pageSize: Int, search: String?): ClaimReviewListResponse =
+        apiService.claimsForReview(page, pageSize, search?.trim()?.takeIf { it.isNotEmpty() })
+
+    override suspend fun approveClaim(params: JsonObject): ClaimApproveResponse = apiService.approveClaim(params)
 
     override suspend fun updateClaim(
         claimId: Long,

@@ -1,7 +1,7 @@
 package com.atvantiq.wfms.models.attendance
 
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
-import com.atvantiq.wfms.models.attendance.attendanceDetails.WorkSubmissionStatus
+import com.atvantiq.wfms.constants.ApprovalTextStatus
 import com.atvantiq.wfms.models.attendance.attendanceDetails.day
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
@@ -55,11 +55,11 @@ class AttendanceApprovalParsingTest {
 
     @Test
     fun `work chip follows the action text`() {
-        assertEquals(WorkSubmissionStatus.APPROVED, WorkSubmissionStatus.from("Approved by PM"))
-        assertEquals(WorkSubmissionStatus.REJECTED, WorkSubmissionStatus.from("Rejected by OPS"))
-        assertEquals(WorkSubmissionStatus.SUBMITTED, WorkSubmissionStatus.from("Submitted by employee"))
-        assertEquals(WorkSubmissionStatus.PENDING, WorkSubmissionStatus.from("PENDING"))
-        assertEquals(WorkSubmissionStatus.OTHER, WorkSubmissionStatus.from("Marked by HR"))
-        assertEquals(WorkSubmissionStatus.OTHER, WorkSubmissionStatus.from(null))
+        assertEquals(ApprovalTextStatus.APPROVED, ApprovalTextStatus.from("Approved by PM"))
+        assertEquals(ApprovalTextStatus.REJECTED, ApprovalTextStatus.from("Rejected by OPS"))
+        assertEquals(ApprovalTextStatus.SUBMITTED, ApprovalTextStatus.from("Submitted by employee"))
+        assertEquals(ApprovalTextStatus.PENDING, ApprovalTextStatus.from("PENDING"))
+        assertEquals(ApprovalTextStatus.OTHER, ApprovalTextStatus.from("Marked by HR"))
+        assertEquals(ApprovalTextStatus.OTHER, ApprovalTextStatus.from(null))
     }
 }

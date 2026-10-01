@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One expense on Claim Approval: type, claimed amount, the approved amount and optional remarks. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="type"
+            type="String" />
+
+        <variable
+            name="claimed"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/border_width_1dp"
+            android:layout_marginVertical="@dimen/margin_medium"
+            android:background="?attr/wfmsColorOutline" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/CustomRegularTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{type}"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                tools:text="Travel" />
+
+            <TextView
+                style="@style/CustomRegularTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{claimed}"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                tools:text="Claimed: ₹ 20.00" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/amountLayout"
+            style="@style/CustomOutlinedField"
+            android:hint="@string/approved_amount">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAmount"
+                style="@style/CustomEditInputTextRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="numberDecimal"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/CustomOutlinedField"
+            android:hint="@string/remarks_optional">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etRemarks"
+                style="@style/CustomEditInputTextRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="textCapSentences"
+                android:singleLine="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+</layout>

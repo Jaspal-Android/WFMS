@@ -22,6 +22,8 @@ import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.review.ClaimApproveResponse
+import com.atvantiq.wfms.models.reimbursement.review.ClaimReviewListResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
 import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
@@ -217,6 +219,16 @@ interface ApiService {
 
 	@GET(NetworkEndPoints.siteById)
 	suspend fun siteById(@Path("id") siteId: Long): SiteDetailResponse
+
+	@GET(NetworkEndPoints.claimsForReview)
+	suspend fun claimsForReview(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("search") search: String?
+	): ClaimReviewListResponse
+
+	@POST(NetworkEndPoints.approveClaim)
+	suspend fun approveClaim(@Body params: JsonObject): ClaimApproveResponse
 
 	@GET(NetworkEndPoints.claimById)
 	suspend fun claimById(@Path("claim_id") claimId: Long): ClaimDetailResponse

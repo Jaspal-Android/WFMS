@@ -76,6 +76,13 @@
             android:name=".ui.screens.admin.ui.attendanceApproval.AttendanceReviewActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.screens.admin.ui.claimApproval.ClaimApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.admin.ui.claimApproval.ClaimApprovalDetailActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.screens.admin.ui.site.addSite.AddSiteActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan|adjustResize" />

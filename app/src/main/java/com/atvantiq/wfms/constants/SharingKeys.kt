@@ -20,5 +20,7 @@ object SharingKeys {
     const val TRAVELING_DETAILS = "TRAVELING_DETAILS"
     const val CLAIM_ID = "CLAIM_ID"
     const val EDIT_CLAIM_ID = "EDIT_CLAIM_ID"
+    /** The approval total a claim review hands back to its list. */
+    const val APPROVED_TOTAL = "APPROVED_TOTAL"
     const val USED_MATERIALS="used_materials"
 }

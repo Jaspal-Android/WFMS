@@ -1,15 +1,15 @@
-package com.atvantiq.wfms.models.attendance.attendanceDetails
+package com.atvantiq.wfms.constants
 
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import com.atvantiq.wfms.R
 
 /**
- * The chip on a Work Approval row, read from the record's `action` ignoring case: "approved" →
- * Approved, "reject" → Rejected, "submit" → Submitted, "pending" → Pending; anything else shows
- * the action text itself ([labelRes] null).
+ * A status chip read from free text ignoring case: a Work Approval record's `action` or a claim's
+ * `status`. "approved" → Approved, "reject" → Rejected, "submit" → Submitted, "pending" → Pending;
+ * anything else shows the text itself ([labelRes] null).
  */
-enum class WorkSubmissionStatus(@StringRes val labelRes: Int?, @ColorRes val backgroundRes: Int, @ColorRes val textRes: Int) {
+enum class ApprovalTextStatus(@StringRes val labelRes: Int?, @ColorRes val backgroundRes: Int, @ColorRes val textRes: Int) {
     APPROVED(R.string.approved, R.color.status_present_bg, R.color.status_present_text),
     REJECTED(R.string.rejected, R.color.status_absent_bg, R.color.status_absent_text),
     SUBMITTED(R.string.submitted, R.color.status_submitted_bg, R.color.status_submitted_text),
@@ -22,8 +22,8 @@ enum class WorkSubmissionStatus(@StringRes val labelRes: Int?, @ColorRes val bac
         private const val SUBMITTED_WORD = "submit"
         private const val PENDING_WORD = "pending"
 
-        fun from(action: String?): WorkSubmissionStatus {
-            val value = action.orEmpty()
+        fun from(text: String?): ApprovalTextStatus {
+            val value = text.orEmpty()
             return when {
                 value.contains(APPROVED_WORD, ignoreCase = true) -> APPROVED
                 value.contains(REJECTED_WORD, ignoreCase = true) -> REJECTED
