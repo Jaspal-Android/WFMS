@@ -415,6 +415,24 @@
         <item name="android:layout_marginBottom">@dimen/margin_small</item>
     </style>
 
+    <!-- Outlined form field (TextInputLayout) as used across the app's forms. -->
+    <style name="CustomOutlinedField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_small</item>
+        <item name="android:minHeight">@dimen/text_input_edit_text_min_height</item>
+        <item name="boxStrokeColor">?attr/wfmsColorOutline</item>
+        <item name="boxStrokeWidthFocused">@dimen/border_width_2dp</item>
+        <item name="hintTextColor">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <!-- A field that opens a searchable list (client, project, circle). -->
+    <style name="CustomOutlinedField.Picker">
+        <item name="endIconDrawable">@drawable/ic_arrow_down_24</item>
+        <item name="endIconMode">custom</item>
+        <item name="endIconTint">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
     <!-- Small pill tag on a card (a site's circle and added-by). Grey by default. -->
     <style name="CustomTagChip" parent="CustomSmallTextView">
         <item name="android:layout_width">wrap_content</item>
