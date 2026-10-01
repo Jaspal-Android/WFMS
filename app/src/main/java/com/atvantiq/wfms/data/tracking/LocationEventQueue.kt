@@ -2,7 +2,9 @@ package com.atvantiq.wfms.data.tracking
 
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
+import com.atvantiq.wfms.utils.DateUtils
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import javax.inject.Inject
@@ -14,7 +16,18 @@ data class QueuedLocationEvent(
     @SerializedName("longitude") val longitude: Double,
     @SerializedName("recordedAtMillis") val recordedAtMillis: Long,
     @SerializedName("accuracyMeters") val accuracyMeters: Float?
-)
+) {
+    /**
+     * Body for `POST /geo-tracking/location`. [recordedAtMillis] is the time of the fix, so a point
+     * uploaded late from the queue still lands in the right place in the server's trail.
+     */
+    fun toUploadParams(): JsonObject = JsonObject().apply {
+        addProperty("latitude", latitude)
+        addProperty("longitude", longitude)
+        addProperty("recordedAt", DateUtils.formatUtcIso(recordedAtMillis))
+        accuracyMeters?.let { addProperty("accuracy", it) }
+    }
+}
 
 @Singleton
 class LocationEventQueue @Inject constructor(

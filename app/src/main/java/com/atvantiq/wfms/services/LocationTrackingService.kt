@@ -30,7 +30,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.google.gson.JsonObject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -216,7 +215,7 @@ class LocationTrackingService : Service() {
                     QueuedLocationEvent(
                         latitude = location.latitude,
                         longitude = location.longitude,
-                        recordedAtMillis = System.currentTimeMillis(),
+                        recordedAtMillis = location.time.takeIf { it > 0 } ?: System.currentTimeMillis(),
                         accuracyMeters = if (location.hasAccuracy()) location.accuracy else null
                     )
                 )
@@ -231,11 +230,7 @@ class LocationTrackingService : Service() {
 
         for (event in queuedLocations) {
             try {
-                val params = JsonObject().apply {
-                    addProperty("latitude", event.latitude)
-                    addProperty("longitude", event.longitude)
-                }
-                trackingService.sendLocation(params)
+                trackingService.sendLocation(event.toUploadParams())
                 syncedCount++
             } catch (e: Exception) {
                 if (syncedCount > 0) {
