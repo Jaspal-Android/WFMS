@@ -7,6 +7,8 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.AccessLevel
 import com.atvantiq.wfms.models.loginResponse.Data
@@ -33,6 +35,7 @@ class LoginVMTest {
 
     private lateinit var application: Application
     private lateinit var authRepo: IAuthRepo
+    private lateinit var prefMain: SecurePrefMain
     private lateinit var viewModel: LoginVM
     private val testDispatcher = StandardTestDispatcher()
 
@@ -45,9 +48,14 @@ class LoginVMTest {
 
         // Use NetworkConnectivityHelper for mocking
         mockkObject(Utils)
+        mockkStatic(android.util.Log::class)
+        every { android.util.Log.w(any(), any<String>(), any()) } returns 0
+        every { android.util.Log.e(any(), any<String>(), any()) } returns 0
         every { Utils.isInternet(application) } returns true
 
-        viewModel = LoginVM(application, authRepo)
+        prefMain = mockk(relaxed = true)
+        viewModel = LoginVM(application, authRepo, prefMain)
+        viewModel.fetchPushToken = { "push-token" }
     }
 
     @After
@@ -162,5 +170,82 @@ class LoginVMTest {
         assertEquals(Status.SUCCESS, viewModel.loginResponse.value?.status)
         assertEquals(response, viewModel.loginResponse.value?.response)
         assertTrue(viewModel.isButtonEnabled.value == true)
+    }
+
+    private fun loginAnswer(accepted: Boolean): LoginResponse = mockk(relaxed = true) {
+        every { code } returns if (accepted) 200 else 401
+        every { success } returns accepted
+        every { message } returns "msg"
+        every { data?.accessToken } returns "access-token"
+        every { data?.user } returns mockk(relaxed = true) {
+            every { userId } returns 42L
+        }
+    }
+
+    private fun submitLogin(answer: LoginResponse) {
+        coEvery { authRepo.loginRequest(any()) } returns answer
+        viewModel.userName.value = "user@example.com"
+        viewModel.password.value = "secret"
+        viewModel.onSubmitLoginClick()
+    }
+
+    @Test
+    fun `an accepted login saves the session, registers the push token, then completes`() = runTest {
+        val params = slot<JsonObject>()
+        coEvery { authRepo.sendNotificationToken(capture(params)) } returns mockk(relaxed = true)
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify { prefMain.put(PrefKeys.LOGIN_TOKEN, "access-token") }
+        assertEquals("42", params.captured.get("employee_id").asString)
+        assertEquals("push-token", params.captured.get("token").asString)
+        assertEquals(true, viewModel.loginCompleted.value)
+        assertEquals(42L, viewModel.user?.userId)
+    }
+
+    @Test
+    fun `login still completes when the push token cannot be fetched`() = runTest {
+        viewModel.fetchPushToken = { throw IllegalStateException("no token") }
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 0) { authRepo.sendNotificationToken(any()) }
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login still completes when uploading the push token fails`() = runTest {
+        coEvery { authRepo.sendNotificationToken(any()) } throws java.io.IOException("offline")
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login completes after the timeout when the push token never arrives`() = runTest {
+        viewModel.fetchPushToken = { kotlinx.coroutines.awaitCancellation() }
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceTimeBy(9_999)
+        testDispatcher.scheduler.runCurrent()
+        assertNull("still waiting before the timeout", viewModel.loginCompleted.value)
+
+        testDispatcher.scheduler.advanceTimeBy(2)
+        testDispatcher.scheduler.runCurrent()
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `a rejected login saves nothing and does not complete`() = runTest {
+        submitLogin(loginAnswer(accepted = false))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(exactly = 0) { prefMain.put(PrefKeys.LOGIN_TOKEN, any<String>()) }
+        assertNull(viewModel.loginCompleted.value)
+        assertFalse(viewModel.isAccepted(viewModel.loginResponse.value?.response))
     }
 }

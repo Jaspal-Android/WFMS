@@ -5,17 +5,12 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -24,7 +19,6 @@ import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityLoginBinding
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
-import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.DashboardActivity
@@ -36,8 +30,6 @@ import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.messaging.FirebaseMessaging
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,13 +39,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     var long: Double = 0.0
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var getOtpBottomSheet: GetOTPBottomSheetDialog? = null
-
-    // Push-token registration is best-effort: once the session is saved, login must finish
-    // whether or not the token could be fetched or uploaded.
-    private var loginCompleted = false
-    private var loginCompletionPending = false
-    private val notificationTokenHandler = Handler(Looper.getMainLooper())
-    private val notificationTokenTimeout = Runnable { completeLogin() }
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_login, LoginVM::class.java)
@@ -74,9 +59,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         vm.clickEvents.observe(this, Observer { handleClickEvents(it, vm) })
         vm.errorHandler.observe(this, Observer { handleErrors(it) })
         vm.loginResponse.observe(this, Observer { handleLoginResponse(it) })
-        vm.sendNotificationTokenResponse.observe(
-            this,
-            Observer { handleSendNotificationTokenResponse(it) })
+        vm.loginCompleted.observe(this, Observer { completed -> if (completed == true) onLoginCompleted() })
         vm.requestOtpResponse.observe(this, Observer { handleRequestOtpResponse(it) })
     }
 
@@ -125,35 +108,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         }
     }
 
-    private fun handleSendNotificationTokenResponse(response: ApiState<UpdateNotificationTokenResponse>) {
-        when (response.status) {
-            Status.SUCCESS -> completeLogin()
-
-            Status.LOADING -> Unit
-
-            Status.ERROR -> {
-                Log.w("FCM", "Uploading FCM registration token failed", response.throwable)
-                completeLogin()
-            }
-        }
-    }
-
     private fun handleLoginSuccess(response: ApiState<LoginResponse>) {
-        if (loginCompleted) return
-        val loginResponse = response.response
-        if (loginResponse != null && loginResponse.code == ValConstants.SUCCESS_CODE && loginResponse.success) {
-            PrefMethods.saveUserToken(prefMain, loginResponse.data?.accessToken.orEmpty())
-            PrefMethods.saveUserData(prefMain, loginResponse.data?.user)
-            getOtpBottomSheet?.dismiss()
-            getOtpBottomSheet = null
-            val user = loginResponse.data?.user
-            viewModel.user = user
-            // The progress dialog stays up while the push token registers.
-            registerNotificationToken(user?.userId.toString())
-            return
-        }
+        // Accepted: the ViewModel saves the session and registers the push token; the progress
+        // dialog stays up until loginCompleted.
+        if (viewModel.isAccepted(response.response)) return
         dismissProgress()
-        loginResponse?.let {
+        response.response?.let {
             alertDialogShow(
                 this,
                 getString(R.string.alert),
@@ -164,42 +124,12 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         }
     }
 
-    private fun registerNotificationToken(userId: String) {
-        notificationTokenHandler.postDelayed(notificationTokenTimeout, NOTIFICATION_TOKEN_TIMEOUT_MS)
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    viewModel.sendNotificationToken(userId, task.result)
-                } else {
-                    Log.w("FCM", "Fetching FCM registration token failed", task.exception)
-                    completeLogin()
-                }
-            }
-    }
-
-    private fun completeLogin() {
-        if (loginCompleted || isFinishing || isDestroyed) return
-        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            // Starting an activity from the background is blocked; finish when we are visible again.
-            loginCompletionPending = true
-            return
-        }
-        loginCompleted = true
-        loginCompletionPending = false
-        notificationTokenHandler.removeCallbacks(notificationTokenTimeout)
+    private fun onLoginCompleted() {
+        getOtpBottomSheet?.dismiss()
+        getOtpBottomSheet = null
         dismissProgress()
         showToast(this, getString(R.string.login_success))
         navigateToDashboard()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (loginCompletionPending) completeLogin()
-    }
-
-    override fun onDestroy() {
-        notificationTokenHandler.removeCallbacks(notificationTokenTimeout)
-        super.onDestroy()
     }
 
     private fun handleRequestOtpResponse(response: ApiState<RequestOtpResponse>) {
@@ -226,7 +156,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     private fun handleRequestOtpSuccess(response: ApiState<RequestOtpResponse>) {
         dismissProgress()
         response.response?.let {
-            if (it.code == 200 && it.success) {
+            if (it.code == ValConstants.SUCCESS_CODE && it.success) {
                 showToast(this, it.message.orEmpty())
                 getOtpBottomSheet = GetOTPBottomSheetDialog().apply {
                     onSubmitOTP = { otp -> viewModel.verifyLoginWithOtp(otp) }
@@ -296,28 +226,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
     private fun startLocationPermissionFlow() {
         val foreground = getForegroundLocationPermissions()
         when {
-            hasAllPermissions(foreground) -> {
-                requestBackgroundIfNeededThenFetch(false)
-            }
+            hasAllPermissions(foreground) -> getCurrentLatitudeLongitude()
             foreground.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
             else -> permissionLauncherForeground.launch(foreground)
-        }
-    }
-
-    private fun requestBackgroundIfNeededThenFetch(isBackgroundLocationRequired: Boolean) {
-        if (!isBackgroundLocationRequired) {
-            getCurrentLatitudeLongitude()
-            return
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            getCurrentLatitudeLongitude()
-            return
-        }
-        val background = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        when {
-            hasAllPermissions(background) -> getCurrentLatitudeLongitude()
-            background.any { shouldShowRequestPermissionRationale(it) } -> showBackgroundPermissionRationale()
-            else -> permissionLauncherBackground.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
     }
 
@@ -336,15 +247,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
             long = longitude ?: 0.0
             if (latitude != null && longitude != null) {
                 Utils.getAddressFromLatLong(this, lat, long) { addressFromLatLon ->
-                    runOnUiThread {
-                        alertDialogShow(
-                            this,
-                            getString(R.string.current_location),
-                            "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $long\n\n${
-                                getString(R.string.Address)
-                            }: $addressFromLatLon"
-                        )
-                    }
+                    alertDialogShow(
+                        this,
+                        getString(R.string.current_location),
+                        getString(R.string.current_location_details, lat.toString(), long.toString(), addressFromLatLon)
+                    )
                 }
             } else {
                 alertDialogShow(
@@ -373,31 +280,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         when {
-            result.all { it.value } -> requestBackgroundIfNeededThenFetch(false)
+            result.all { it.value } -> getCurrentLatitudeLongitude()
             !result.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
             else -> showPermissionRationale()
         }
-    }
-
-    private val permissionLauncherBackground = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        when {
-            granted -> getCurrentLatitudeLongitude()
-            !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> showPermissionDeniedPermanently()
-            else -> showBackgroundPermissionRationale()
-        }
-    }
-
-    private fun showBackgroundPermissionRationale() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Background location required")
-            .setMessage(
-                "To enable live location tracking during working hours even when the app is closed, please allow Background location in Settings."
-            )
-            .setPositiveButton(R.string.open_settings) { _, _ -> openApplicationSettings() }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     private fun showPermissionRationale() {
@@ -424,10 +310,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = android.net.Uri.fromParts("package", this.packageName, null)
         startActivity(intent)
-    }
-
-    private companion object {
-        const val NOTIFICATION_TOKEN_TIMEOUT_MS = 10_000L
     }
 
     private fun requestOtp() {

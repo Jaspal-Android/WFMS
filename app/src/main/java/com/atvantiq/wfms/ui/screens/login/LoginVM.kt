@@ -1,26 +1,36 @@
 package com.atvantiq.wfms.ui.screens.login
 
 import android.app.Application
+import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
-import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents
-import com.atvantiq.wfms.utils.Utils
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.JsonObject
+import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 @HiltViewModel
 class LoginVM @Inject constructor(
     application: Application,
-    private val authRepo: IAuthRepo
+    private val authRepo: IAuthRepo,
+    private val prefMain: SecurePrefMain
 ) : BaseViewModel(application) {
 
     var isPasswordVisible = true
@@ -34,7 +44,17 @@ class LoginVM @Inject constructor(
     val errorHandler = MutableLiveData<LoginErrorHandler>()
     val networkError = MutableLiveData<Boolean>()
     val loginResponse = MutableLiveData<ApiState<LoginResponse>>()
-    val sendNotificationTokenResponse = MutableLiveData<ApiState<UpdateNotificationTokenResponse>>()
+
+    /**
+     * True once an accepted login is saved and push-token registration has finished, failed or
+     * timed out. LiveData only delivers it while the screen is visible, so a login that completes
+     * in the background opens the dashboard when the user comes back.
+     */
+    val loginCompleted = MutableLiveData<Boolean>()
+    private var isCompletingLogin = false
+
+    /** Fetches this device's push token; replaced in tests. */
+    internal var fetchPushToken: suspend () -> String = { firebasePushToken() }
     val requestOtpResponse = MutableLiveData<ApiState<RequestOtpResponse>>()
 
     // Click event handlers
@@ -71,21 +91,58 @@ class LoginVM @Inject constructor(
         executeApiCall(
             apiCall = { authRepo.loginRequest(params) },
             liveData = loginResponse,
-            onSuccess = { isButtonEnabled.value = true },
+            onSuccess = { response ->
+                isButtonEnabled.value = true
+                onLoginAnswered(response)
+            },
             onError = { isButtonEnabled.value = true }
         )
     }
 
-    fun sendNotificationToken(empId:String,token: String) {
-        val params = JsonObject().apply {
-            addProperty("employee_id", empId)
-            addProperty("token", token)
-            addProperty("device_type", ValConstants.ANDROID)
+    fun isAccepted(response: LoginResponse?): Boolean =
+        response != null && response.code == ValConstants.SUCCESS_CODE && response.success
+
+    /** Saves an accepted session, registers the push token (best-effort), then completes. */
+    private fun onLoginAnswered(response: LoginResponse) {
+        if (!isAccepted(response) || isCompletingLogin) return
+        isCompletingLogin = true
+        PrefMethods.saveUserToken(prefMain, response.data?.accessToken.orEmpty())
+        PrefMethods.saveUserData(prefMain, response.data?.user)
+        user = response.data?.user
+        viewModelScope.launch {
+            registerPushToken(user?.userId.toString())
+            loginCompleted.value = true
         }
-        executeApiCall(
-            apiCall = {authRepo.sendNotificationToken(params)},
-            liveData = sendNotificationTokenResponse,
-        )
+    }
+
+    /** Login must finish whether the token uploads, fails, or takes too long. */
+    private suspend fun registerPushToken(employeeId: String) {
+        try {
+            withTimeout(NOTIFICATION_TOKEN_TIMEOUT_MS) {
+                val params = JsonObject().apply {
+                    addProperty("employee_id", employeeId)
+                    addProperty("token", fetchPushToken())
+                    addProperty("device_type", ValConstants.ANDROID)
+                }
+                authRepo.sendNotificationToken(params)
+            }
+        } catch (e: TimeoutCancellationException) {
+            Log.w(TAG, "Push token registration timed out", e)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.w(TAG, "Push token registration failed", e)
+        }
+    }
+
+    private suspend fun firebasePushToken(): String = suspendCancellableCoroutine { continuation ->
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                continuation.resume(task.result)
+            } else {
+                continuation.resumeWithException(task.exception ?: IllegalStateException("No push token"))
+            }
+        }
     }
 
     fun requestLoginWithOtp() {
@@ -106,6 +163,12 @@ class LoginVM @Inject constructor(
         executeApiCall(
             apiCall = {authRepo.verifyOTP(params)},
             liveData = loginResponse,
+            onSuccess = { response -> onLoginAnswered(response) }
         )
+    }
+
+    private companion object {
+        const val TAG = "LoginVM"
+        const val NOTIFICATION_TOKEN_TIMEOUT_MS = 10_000L
     }
 }
