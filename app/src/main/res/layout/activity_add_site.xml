@@ -204,6 +204,17 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:accessibilityLiveRegion="polite"
+                    android:text="@{vm.validationError == null ? null : context.getString(vm.validationError)}"
+                    android:textColor="?attr/wfmsColorError"
+                    android:visibility="@{vm.validationError == null ? View.GONE : View.VISIBLE}"
+                    tools:text="@string/add_site_select_project" />
+
                 <com.atvantiq.wfms.widgets.GradientButton
                     style="@style/CustomButtonStyle"
                     android:layout_width="match_parent"

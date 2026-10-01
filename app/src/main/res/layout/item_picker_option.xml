@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A row of a picker sheet: name, optional grey second line and a radio for the current choice. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/min_touch_target"
+    android:orientation="horizontal"
+    android:padding="@dimen/padding">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/optionTitle"
+            style="@style/CustomLargeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            tools:text="TCS" />
+
+        <TextView
+            android:id="@+id/optionSubtitle"
+            style="@style/CustomRegularTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small_extra"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            tools:text="Tata Consultancy Services" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/optionRadio"
+        android:layout_width="@dimen/icon_size_small"
+        android:layout_height="@dimen/icon_size_small"
+        android:layout_marginStart="@dimen/margin_small"
+        android:importantForAccessibility="no"
+        app:tint="?attr/wfmsColorPrimary"
+        tools:src="@drawable/ic_radio_unchecked" />
+</LinearLayout>
