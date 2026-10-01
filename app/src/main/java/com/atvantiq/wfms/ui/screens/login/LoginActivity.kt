@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
-import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.ActivityLoginBinding
 import com.atvantiq.wfms.models.loginResponse.LoginResponse
@@ -22,7 +21,6 @@ import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.DashboardActivity
-import com.atvantiq.wfms.ui.screens.admin.SharedDashboardActivity
 import com.atvantiq.wfms.ui.screens.forgotPassword.ForgotPasswordActivity
 import com.atvantiq.wfms.ui.screens.forgotPassword.dialog.GetOTPBottomSheetDialog
 import com.atvantiq.wfms.ui.screens.login.withOtp.RequestOtpBottomSheet
@@ -185,20 +183,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         }
     }
 
+    /** Every role opens the same dashboard, which picks its tabs from the role. */
     private fun navigateToDashboard() {
-        val role = viewModel.user?.role ?: ""
-        val permissions = viewModel?.user?.permissions
-
-        val permissionsList = ArrayList(permissions.orEmpty())
-        if (role.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true)) {
-            Utils.jumpActivityWithData(this, DashboardActivity::class.java, Bundle().apply {
-                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissionsList)
-            })
-        } else {
-            Utils.jumpActivityWithData(this, SharedDashboardActivity::class.java, Bundle().apply {
-                putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, permissionsList)
-            })
-        }
+        Utils.jumpActivity(this, DashboardActivity::class.java)
         finish()
     }
 

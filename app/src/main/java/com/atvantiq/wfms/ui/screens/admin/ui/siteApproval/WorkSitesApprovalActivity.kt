@@ -57,7 +57,7 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
     }
 
     private fun setUpToolbarTitle() {
-        binding.siteApprovalToolbar.toolbarTitle.text = getString(R.string.approve_site)
+        binding.siteApprovalToolbar.toolbarTitle.text = getString(R.string.work_approval)
         binding.siteApprovalToolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }

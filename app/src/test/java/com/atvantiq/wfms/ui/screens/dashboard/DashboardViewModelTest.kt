@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
-import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.Data
 import com.atvantiq.wfms.network.ApiState
@@ -30,11 +29,7 @@ import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.CheckoutData
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.empDetail.AccessLevel
-import com.atvantiq.wfms.models.empDetail.EmpData
-import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.models.empDetail.Permission
-import com.atvantiq.wfms.models.empDetail.ReportingManager
-import com.atvantiq.wfms.models.loginResponse.OfficialLocation
 import com.atvantiq.wfms.utils.Utils
 
 @ExperimentalCoroutinesApi
@@ -45,7 +40,6 @@ class DashboardViewModelTest {
 
     private lateinit var application: Application
     private lateinit var attendanceRepo: IAttendanceRepo
-    private lateinit var authRepo: IAuthRepo
     private lateinit var prefMain: SecurePrefMain
     private lateinit var viewModel: DashboardViewModel
     private val testDispatcher = StandardTestDispatcher()
@@ -56,13 +50,12 @@ class DashboardViewModelTest {
         Dispatchers.setMain(testDispatcher)
         application = mockk(relaxed = true)
         attendanceRepo = mockk(relaxed = true)
-        authRepo = mockk(relaxed = true)
         prefMain = mockk(relaxed = true)
 
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
 
-        viewModel = DashboardViewModel(application, attendanceRepo, authRepo, prefMain, mockk(relaxed = true))
+        viewModel = DashboardViewModel(application, attendanceRepo, prefMain, mockk(relaxed = true))
     }
 
     @After
@@ -250,98 +243,4 @@ class DashboardViewModelTest {
             assertEquals(Status.SUCCESS, viewModel.attendanceCheckOutResponse.value?.status)
             assertEquals(response, viewModel.attendanceCheckOutResponse.value?.response)
         }
-
-    @Test
-    fun `getEmpDetails calls authRepo and updates LiveData`() = runTest {
-        val response = EmpDetailResponse(
-            code = 200,
-            message = "Employee data fetched successfully",
-            success = true,
-            data = EmpData(
-                employeeId = 39580123,
-                employeeCode = "EMP/001",
-                name = "Test Employee",
-                shortName = "Test",
-                dob = "2000-01-01",
-                gender = "male",
-                email = "employee@example.com",
-                role = "Employee",
-                permissions = listOf(
-                    Permission(
-                        featureId = 99923892,
-                        featureName = "Self_Assign_Work",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 32875610, access = "Create"),
-                            AccessLevel(accessId = 54328964, access = "View")
-                        )
-                    ),
-                    Permission(
-                        featureId = 87600650,
-                        featureName = "Client",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 54328964, access = "View"),
-                            AccessLevel(accessId = 54328964, access = "View"),
-                            AccessLevel(accessId = 81459237, access = "Delete")
-                        )
-                    ),
-                    Permission(
-                        featureId = 94039589,
-                        featureName = "purchase_order",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 54328964, access = "View")
-                        )
-                    ),
-                    Permission(
-                        featureId = 20569158,
-                        featureName = "Project",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 54328964, access = "View")
-                        )
-                    ),
-                    Permission(
-                        featureId = 87632091,
-                        featureName = "Type_Activity",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 54328964, access = "View")
-                        )
-                    ),
-                    Permission(
-                        featureId = 19503967,
-                        featureName = "Site",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 54328964, access = "View")
-                        )
-                    ),
-                    Permission(
-                        featureId = 98432186,
-                        featureName = "Assign work",
-                        accessLevels = listOf(
-                            AccessLevel(accessId = 54328964, access = "View")
-                        )
-                    )
-                ),
-                team = null,
-                circle = listOf(CircleData(code = "CH", id = 1L, name = "chandigarh")),
-                designation = "Eng",
-                reportingManager = ReportingManager(
-                    id = 45608697,
-                    name = "string"
-                ),
-                dateOfJoining = "2023-11-01",
-                officialLocation = OfficialLocation(
-                    latitude = 28.6139,
-                    longitude = 77.209,
-                )
-            )
-        )
-        coEvery { authRepo.empDetails() } returns response
-
-        viewModel.getEmpDetails()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(exactly = 1) { authRepo.empDetails() }
-        assertNotNull(viewModel.empDetailsResponse.value)
-        assertEquals(Status.SUCCESS, viewModel.empDetailsResponse.value?.status)
-        assertEquals(response, viewModel.empDetailsResponse.value?.response)
-    }
 }

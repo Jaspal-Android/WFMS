@@ -3,14 +3,12 @@ package com.atvantiq.wfms.ui.screens.admin.ui.site
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
-import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.base.PagedListUiState
-import com.atvantiq.wfms.databinding.ActivitySitesBinding
+import com.atvantiq.wfms.databinding.FragmentSitesBinding
 import com.atvantiq.wfms.models.site.allSites.Site
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
 import com.atvantiq.wfms.network.ApiState
@@ -18,52 +16,44 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AllSitesAdapter
 import com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteActivity
 import com.atvantiq.wfms.widgets.PaginationScrollListener
+import dagger.hilt.android.AndroidEntryPoint
 
-class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
+/** Sites tab (admins with the `Site` permission): Add Site, then the active sites, paged. */
+@AndroidEntryPoint
+class SitesFragment : BaseFragment<FragmentSitesBinding, SitesVM>() {
 
     private var adapter: AllSitesAdapter? = null
     private var isProgressShown = false
 
-    override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(R.layout.activity_sites, SitesVM::class.java)
+    override val fragmentBinding: FragmentBinding
+        get() = FragmentBinding(R.layout.fragment_sites, SitesVM::class.java)
 
-    override fun onCreateActivity(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        setSitesToolbar()
-        setSitesList()
-        swipeRefresh()
-        // Shows the sites already loaded (e.g. after rotation) and refreshes them in the background.
-        viewModel.sites.open()
+    override fun onCreateViewFragment(savedInstanceState: Bundle?) {
     }
 
-    private fun setSitesToolbar(){
-        binding.toolbarTitle.text = getString(R.string.sites)
-        binding.toolbarBackButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setSitesList()
+        binding.swipeRefreshLayout.setOnRefreshListener { viewModel.sites.refresh() }
+        // Shows the sites already loaded (e.g. returning to the tab) and refreshes them in the background.
+        viewModel.sites.open()
     }
 
     override fun subscribeToEvents(vm: SitesVM) {
         binding.vm = vm
 
-        vm.sites.state.observe(this) { state -> renderSites(state) }
+        vm.sites.state.observe(viewLifecycleOwner) { state -> renderSites(state) }
 
-        vm.sites.failure.observe(this) { failure ->
+        vm.sites.failure.observe(viewLifecycleOwner) { failure ->
             if (!failure.consumeOnce()) return@observe
             handleSitesFailure(failure)
         }
 
-        vm.clickEvents.observe(this) { event ->
+        vm.clickEvents.observe(viewLifecycleOwner) { event ->
+            if (!isLifeCycleResumed()) return@observe
             when (event) {
-                SitesEventClicks.ON_ADD_STIE_CLICK -> {
-                    val intent = Intent(this, AddSiteActivity::class.java)
-                    createSiteLauncher.launch(intent)
-                }
+                SitesEventClicks.ON_ADD_STIE_CLICK ->
+                    createSiteLauncher.launch(Intent(requireContext(), AddSiteActivity::class.java))
             }
         }
     }
@@ -97,16 +87,18 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
         binding.rvSites.adapter = adapter
     }
 
-    private fun swipeRefresh() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.sites.refresh()
-        }
-    }
-
     private fun stopRefreshingData() {
         if (binding.swipeRefreshLayout.isRefreshing) {
             binding.swipeRefreshLayout.isRefreshing = false
         }
+    }
+
+    override fun onDestroyView() {
+        // A progress dialog still up when the tab is left would outlive this view.
+        if (isProgressShown) dismissProgress()
+        isProgressShown = false
+        adapter = null
+        super.onDestroyView()
     }
 
     private val createSiteLauncher =
@@ -115,5 +107,4 @@ class SitesActivity : BaseActivity<ActivitySitesBinding, SitesVM>() {
                 viewModel.sites.refresh()
             }
         }
-
 }

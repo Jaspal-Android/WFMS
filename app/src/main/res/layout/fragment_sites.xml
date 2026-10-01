@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isEmptySites"
+            type="Boolean" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.admin.ui.site.SitesVM" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/padding"
+        tools:context=".ui.screens.admin.ui.site.SitesFragment">
+
+        <include
+            android:id="@+id/addSiteCard"
+            layout="@layout/layout_action_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin_small"
+            app:icon="@{@drawable/ic_add_white_24}"
+            app:onClick="@{() -> vm.onAddSiteClick()}"
+            app:subtitle="@{@string/add_site_subtitle}"
+            app:title="@{@string/add_site}" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSites"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingHorizontal="@dimen/margin_small"
+                    android:paddingBottom="@dimen/margin"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/item_sites" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="@{isEmptySites ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible">
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:layout_width="@dimen/empty_state_animation_size"
+                        android:layout_height="@dimen/empty_state_animation_size"
+                        android:layout_gravity="center"
+                        android:importantForAccessibility="no"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        app:lottie_rawRes="@raw/no_data" />
+
+                    <TextView
+                        style="@style/CustomMediumTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:text="@string/no_sites_found"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+                </LinearLayout>
+
+            </FrameLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.admin.ui.approvals.ApprovalsVM" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        tools:context=".ui.screens.admin.ui.approvals.ApprovalsFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <include
+                android:id="@+id/workApprovalCard"
+                layout="@layout/layout_action_card"
+                app:badge="@{@string/available}"
+                app:icon="@{@drawable/ic_tab_work}"
+                app:onClick="@{() -> vm.onWorkApprovalClick()}"
+                app:subtitle="@{@string/work_approval_subtitle}"
+                app:title="@{@string/work_approval}" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

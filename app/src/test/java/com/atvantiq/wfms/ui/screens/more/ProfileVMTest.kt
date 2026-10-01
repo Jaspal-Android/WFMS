@@ -6,6 +6,8 @@ import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.empDetail.EmpData
 import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
+import com.atvantiq.wfms.models.loginResponse.User
+import com.atvantiq.wfms.ui.screens.DashboardTab
 import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.utils.isSessionLost
 import com.ssas.jibli.data.prefs.PrefMethods
@@ -49,6 +51,7 @@ class ProfileVMTest {
         every { Utils.isInternet(application) } returns true
         every { PrefMethods.getEmpDetailResponse(prefMain) } returns cached
         every { PrefMethods.saveEmpDetailResponse(prefMain, any()) } returns Unit
+        every { PrefMethods.getUserData(prefMain) } returns null
     }
 
     @After
@@ -109,5 +112,37 @@ class ProfileVMTest {
         assertEquals(MoreClickEvents.LOGOUT, viewModel.clickEvents.value)
         viewModel.onViewProfileClick()
         assertEquals(MoreClickEvents.VIEW_PROFILE, viewModel.clickEvents.value)
+    }
+
+    @Test
+    fun `tabs follow the profile's role and permissions, and update when it refreshes`() {
+        every { cached.role } returns "employee"
+        every { fresh.role } returns "ops"
+        every { fresh.permissions } returns emptyList()
+        coEvery { authRepo.empDetails() } returns answer(200)
+        val viewModel = ProfileVM(application, authRepo, prefMain)
+        val tabs = mutableListOf<List<DashboardTab>>()
+        viewModel.tabs.observeForever { tabs += it }
+
+        viewModel.refresh()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(
+            listOf(
+                listOf(DashboardTab.DASHBOARD, DashboardTab.WORK, DashboardTab.CLAIMS, DashboardTab.MORE),
+                listOf(DashboardTab.DASHBOARD, DashboardTab.APPROVALS, DashboardTab.MORE)
+            ),
+            tabs
+        )
+    }
+
+    @Test
+    fun `with no cached profile the tabs follow the login role, without permissions`() {
+        every { PrefMethods.getEmpDetailResponse(prefMain) } returns null
+        every { PrefMethods.getUserData(prefMain) } returns mockk<User>(relaxed = true) { every { role } returns "pm" }
+        val viewModel = ProfileVM(application, authRepo, prefMain)
+        viewModel.tabs.observeForever { }
+
+        assertEquals(listOf(DashboardTab.DASHBOARD, DashboardTab.APPROVALS, DashboardTab.MORE), viewModel.tabs.value)
     }
 }

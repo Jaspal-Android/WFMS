@@ -211,9 +211,7 @@
     <string name="site_created_successfully">Site created successfully</string>
     <string name="site">Site</string>
     <string name="approve_site">Approve Site</string>
-    <string name="approve_claims">Approve Claims</string>
     <string name="no_action">No Action</string>
-    <string name="attendance_completed_for_day">Attendance completed for today.</string>
     <string name="no_work_started_title">No Work Started or Completed</string>
     <string name="no_work_started_message">You have not started or completed any assigned work for today.\n\nWould you like to mark yourself as IDLE for the day, or enter your work details?</string>
     <string name="mark_idle">Mark as IDLE</string>
@@ -391,8 +389,6 @@
     <string name="location">Location</string>
     <string name="tap_to_take_photo">Tap to take photo</string>
     <string name="select_month_year">Select Month and Year</string>
-    <string name="theme">Theme</string>
-    <string name="notifications">Notifications</string>
     <string name="no_site_approvals_found">No site approvals found</string>
     <string name="select_date">Select date</string>
     <string name="check_in">Check in</string>
@@ -553,4 +549,10 @@
     </plurals>
     <string name="shift_notification_paused_text">Resumes at %1$s</string>
     <string name="continue_label">Continue</string>
+    <!-- Admin tabs: Sites and the Approvals hub -->
+    <string name="add_site_subtitle">Register a new site under a client, project and circle</string>
+    <string name="no_sites_found">No sites found.</string>
+    <string name="available">Available</string>
+    <string name="work_approval">Work Approval</string>
+    <string name="work_approval_subtitle">Review employees\' work sites and approve or reject work types</string>
 </resources>

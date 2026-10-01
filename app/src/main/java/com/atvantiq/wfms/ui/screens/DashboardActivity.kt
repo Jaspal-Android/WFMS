@@ -15,6 +15,7 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.Observer
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -24,9 +25,12 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.atvantiq.wfms.R
-import com.atvantiq.wfms.base.BaseBindingActivity
+import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityDashboardBinding
 import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
+import com.atvantiq.wfms.ui.screens.more.ProfileVM
+import com.atvantiq.wfms.utils.isSessionLost
+import com.atvantiq.wfms.utils.navigateToTab
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,10 +41,15 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.InstallStatus
 
 
+/**
+ * The app shell for every role: one header, the role's bottom tabs (see [DashboardTabs]) and the
+ * signed-in profile, which is refreshed from `GET /employee/me` on every launch.
+ */
 @AndroidEntryPoint
-class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
+class DashboardActivity : BaseActivity<ActivityDashboardBinding, ProfileVM>(){
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private var shownTabs: List<DashboardTab> = emptyList()
     private val navController: androidx.navigation.NavController
         get() = findNavController(R.id.nav_host_fragment_content_dashboard)
 
@@ -53,7 +62,7 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
     private lateinit var appUpdateManager: AppUpdateManager
 
     override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(R.layout.activity_dashboard)
+        get() = ActivityBinding(R.layout.activity_dashboard, ProfileVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         // Light status-bar icons over the green header, which is drawn behind the status bar.
@@ -63,6 +72,17 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
         batterOptimizationCheck()
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
+        // Once per launch; the ViewModel keeps the answer across rotation.
+        if (savedInstanceState == null) viewModel.refresh()
+    }
+
+    override fun subscribeToEvents(vm: ProfileVM) {
+        vm.tabs.observe(this, Observer { tabs -> renderTabs(tabs) })
+        vm.profileResponse.observe(this, Observer { response ->
+            if (!response.consumeOnce()) return@Observer
+            // A failed refresh keeps the cached profile and tabs; only a lost session matters.
+            if (response.isSessionLost { it.code }) tokenExpiresAlert()
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -116,19 +136,38 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
     }
 
     /**
-     * Employee tabs: Dashboard · Work · Claims · More. Each tab keeps its own back stack; Back from
-     * another tab returns to Dashboard, and Back on Dashboard leaves the app.
+     * Each tab keeps its own back stack; Back from another tab returns to Dashboard, and Back on
+     * Dashboard leaves the app. The items themselves come from [renderTabs].
      */
     private fun setupBottomNavigation() {
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_dashboard, R.id.nav_attendance, R.id.nav_reimbursement, R.id.nav_more)
-        )
+        appBarConfiguration = AppBarConfiguration(DashboardTab.entries.map { it.destinationId }.toSet())
         setupActionBarWithNavController(navController, appBarConfiguration)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.appBarDashboard.toolbarTitle.text = destination.label
         }
         binding.bottomNav.setupWithNavController(navController)
+    }
+
+    /**
+     * Rebuilds the bottom bar when the role's tabs change, e.g. once the first profile arrives.
+     * A tab that is no longer allowed falls back to Dashboard.
+     */
+    private fun renderTabs(tabs: List<DashboardTab>) {
+        if (tabs == shownTabs) return
+        shownTabs = tabs
+        val menu = binding.bottomNav.menu
+        menu.clear()
+        tabs.forEachIndexed { order, tab ->
+            menu.add(Menu.NONE, tab.destinationId, order, tab.titleRes).setIcon(tab.iconRes)
+        }
+        val currentId = navController.currentDestination?.id
+        val current = menu.findItem(currentId ?: return)
+        if (current != null) {
+            current.isChecked = true
+        } else if (currentId in appBarConfiguration.topLevelDestinations) {
+            navController.navigateToTab(DashboardTab.DASHBOARD.destinationId)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

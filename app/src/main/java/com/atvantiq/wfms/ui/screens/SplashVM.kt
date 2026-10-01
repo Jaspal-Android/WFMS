@@ -24,7 +24,7 @@ class SplashVM @Inject constructor(
 ) : BaseViewModel(application) {
 
     /** Where the app opens; set once the saved session has been read. */
-    val destination = MutableLiveData<SplashDestination>()
+    val destination = MutableLiveData<SplashTarget>()
 
     /** Reading the secure prefs goes through the Keystore; replaced in tests. */
     internal var ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -51,7 +51,7 @@ class SplashVM @Inject constructor(
         }
     }
 
-    private fun readDestination(): SplashDestination {
+    private fun readDestination(): SplashTarget {
         val token: String? = try {
             PrefMethods.getUserToken(prefMain)
         } catch (e: Exception) {
@@ -68,7 +68,7 @@ class SplashVM @Inject constructor(
                 null
             }
         }
-        return SplashDestination(SplashRouting.targetFor(token, user), user?.permissions.orEmpty())
+        return SplashRouting.targetFor(token, user)
     }
 
     private companion object {
