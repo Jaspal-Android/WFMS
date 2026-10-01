@@ -91,6 +91,68 @@
                     android:textColor="?attr/wfmsColorOnSurfaceVariant" />
             </LinearLayout>
 
+            <!-- ── Shift tracking card: shown only while a day is active ── -->
+            <LinearLayout
+                android:id="@+id/trackingCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:background="@drawable/bg_card_outlined"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_medium"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/locationMarkerView"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/ivTrackingIcon"
+                        android:layout_width="@dimen/tracking_icon_size"
+                        android:layout_height="@dimen/tracking_icon_size"
+                        android:background="@drawable/bg_timeline_icon"
+                        android:importantForAccessibility="no"
+                        android:padding="@dimen/timeline_icon_padding"
+                        tools:src="@drawable/ic_tracking_navigation" />
+
+                    <TextView
+                        android:id="@+id/tvTrackingMessage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_weight="1"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textSize="@dimen/default_text"
+                        android:textStyle="bold"
+                        tools:text="Tracking your shift · since 1:03 PM" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrackingPause"
+                    style="@style/Widget.WFMS.TrackingButton.Filled"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tracking_button_height"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="@string/pause_15_min"
+                    app:icon="@drawable/ic_tracking_pause" />
+
+                <!-- Resume / Fix / Open Settings, set per state -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTrackingAction"
+                    style="@style/Widget.WFMS.TrackingButton.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tracking_button_height"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:visibility="gone"
+                    tools:text="@string/resume" />
+            </LinearLayout>
+
             <!-- ── Slide to Start Day — FIX: outer_color attr ── -->
             <com.ncorti.slidetoact.SlideToActView
                 android:id="@+id/slideStartDay"
@@ -104,7 +166,7 @@
                 app:inner_color="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/locationMarkerView"
+                app:layout_constraintTop_toBottomOf="@+id/trackingCard"
                 app:outer_color="?attr/wfmsColorPrimary"
                 app:slider_height="52dp"
                 app:text="@string/start_day"

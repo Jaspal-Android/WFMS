@@ -415,6 +415,35 @@
         <item name="android:layout_marginBottom">@dimen/margin_small</item>
     </style>
 
+    <!-- Tracking card buttons: full-width capsule, 13sp bold label with a 16dp icon -->
+    <style name="Widget.WFMS.TrackingButton" parent="Widget.Material3.Button">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:minHeight">@dimen/tracking_button_height</item>
+        <item name="android:textSize">@dimen/default_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="iconSize">@dimen/padding</item>
+        <item name="iconGravity">textStart</item>
+        <item name="cornerRadius">@dimen/radius_pill</item>
+    </style>
+
+    <!-- Pause 15 min: brand colour on a soft brand fill -->
+    <style name="Widget.WFMS.TrackingButton.Filled">
+        <item name="backgroundTint">@color/primary_soft</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
+        <item name="iconTint">?attr/wfmsColorAccent</item>
+    </style>
+
+    <!-- Resume / Fix / Open Settings: brand outline -->
+    <style name="Widget.WFMS.TrackingButton.Outlined">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="strokeColor">?attr/wfmsColorAccent</item>
+        <item name="strokeWidth">@dimen/tracking_button_stroke</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
+        <item name="iconTint">?attr/wfmsColorAccent</item>
+    </style>
+
     <!--Text View Styles-->
     <style name="CustomRegularTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_text</item>

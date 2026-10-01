@@ -2,7 +2,6 @@ package com.atvantiq.wfms.ui.screens.attendance
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.constants.ValConstants
@@ -48,7 +47,7 @@ class SupersededListRequestsTest {
         workRepo = mockk(relaxed = true)
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
-        viewModel = AttendanceViewModel(application, workRepo, mockk(relaxed = true), mockk<SecurePrefMain>(relaxed = true))
+        viewModel = AttendanceViewModel(application, workRepo, mockk(relaxed = true))
     }
 
     @After

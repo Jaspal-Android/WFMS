@@ -195,8 +195,6 @@
     <string name="start_work_with_photo_lat_long">Please take a photo and confirm your location to start work.</string>
     <string name="battery_optimization">Battery Optimization</string>
     <string name="battery_optimization_msg">To ensure the app functions correctly, please disable battery optimization for this app in your device settings.</string>
-    <string name="location_tracking_active">Location Tracking Active</string>
-    <string name="your_location_tracked">Your location is being tracked for attendance</string>
     <string name="current_location">Current Location</string>
     <string name="unable_to_fetch_location">Unable to fetch location. May be your location is turned off. Please enable location services to use this feature.</string>
     <string name="get_current_latitude_longitude">Get my current latitude and longitude</string>
@@ -537,4 +535,22 @@
     <string name="my_day_empty_today">Start your day to see your route and timeline here.</string>
     <string name="my_day_empty_past">No activity was recorded on this day.</string>
     <string name="my_day_privacy">Only you and your organisation\'s managers can see this. Location is recorded only while your shift is active and stops when you end your day.</string>
+    <!-- Shift tracking card and notification -->
+    <string name="pause_15_min">Pause 15 min</string>
+    <string name="resume">Resume</string>
+    <string name="fix">Fix</string>
+    <string name="tracking_active_since">Tracking your shift · since %1$s</string>
+    <string name="tracking_paused_until">Tracking paused · resumes at %1$s</string>
+    <string name="tracking_starting">Starting tracking…</string>
+    <string name="tracking_needs_always">Set Location to \"Allow all the time\" to track your shift.</string>
+    <string name="tracking_permission_denied">Location access is off for ONAQT. Allow it in Settings to track your shift.</string>
+    <string name="tracking_gps_off">Location Services are off. Turn them on in Settings.</string>
+    <string name="shift_notification_active_title">ONAQT · Shift active</string>
+    <string name="shift_notification_paused_title">ONAQT · Tracking paused</string>
+    <string name="shift_notification_active_text">Since %1$s · %2$s · %3$.1f km</string>
+    <plurals name="locations_count">
+        <item quantity="one">%d location</item>
+        <item quantity="other">%d locations</item>
+    </plurals>
+    <string name="shift_notification_paused_text">Resumes at %1$s</string>
 </resources>

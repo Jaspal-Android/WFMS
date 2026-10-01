@@ -49,6 +49,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import com.atvantiq.wfms.utils.navigateToTab
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.myDay.MyDayFragment
+import android.content.res.ColorStateList
+import android.graphics.Color
+import androidx.core.location.LocationManagerCompat
+import com.atvantiq.wfms.data.tracking.ShiftState
+import com.atvantiq.wfms.utils.DateUtils
 
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
@@ -92,6 +97,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
+
+        // Pause / Resume from the card or the notification, and the end of a pause.
+        vm.shiftState.observe(viewLifecycleOwner) { renderTrackingCard() }
 
         vm.clickEvents.observe(viewLifecycleOwner) {
             if (!isLifeCycleResumed()) return@observe
@@ -181,6 +189,13 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     override fun onResume() {
         super.onResume()
         checkInAttendanceStatus()
+        // Permissions or Location Services may have changed in Settings.
+        renderTrackingCard()
+    }
+
+    override fun onDestroyView() {
+        view?.removeCallbacks(trackingCardRefresh)
+        super.onDestroyView()
     }
 
     private fun logoutUser() {
@@ -337,7 +352,100 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             slideStartDay.isReversed = false
         }
         slideStartDay.setAccessibleAction(slideStartDay.text)
+        renderTrackingCard()
     }
+
+    /** Re-renders the card when a pause runs out while the dashboard is open. */
+    private val trackingCardRefresh = Runnable { renderTrackingCard() }
+
+    /**
+     * The tracking card under the name row: whether the shift is being tracked, with one action.
+     * Shown only while a day is active; End Day always works, whatever the card shows.
+     */
+    private fun renderTrackingCard() {
+        val root = view ?: return
+        val shift = viewModel.shiftState.value ?: ShiftState()
+        val now = System.currentTimeMillis()
+        val state = TrackingCardState.resolve(
+            isDayActive = isDayStarted,
+            isTrackingStarted = viewModel.isTrackingStarted,
+            hasForegroundLocation = PermissionUtils.hasLocationPermissions(requireContext()),
+            hasBackgroundLocation = PermissionUtils.hasBackgroundLocationPermission(requireContext()),
+            isGpsOn = isLocationServiceOn(),
+            shift = shift,
+            nowMillis = now
+        )
+        root.removeCallbacks(trackingCardRefresh)
+        shift.pausedUntilMillis?.takeIf { state == TrackingCardState.PAUSED }?.let { until ->
+            root.postDelayed(trackingCardRefresh, (until - now).coerceAtLeast(0L))
+        }
+        with(binding.appDashHeader) {
+            trackingCard.visibility = if (state == null) View.GONE else View.VISIBLE
+            if (state == null) return
+            val context = requireContext()
+            val accent = MaterialColors.getColor(trackingCard, R.attr.wfmsColorAccent)
+            val error = MaterialColors.getColor(trackingCard, R.attr.wfmsColorError)
+            val white = ContextCompat.getColor(context, R.color.white)
+            when (state) {
+                TrackingCardState.ACTIVE -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_card_outlined)
+                    setTrackingIcon(R.drawable.ic_tracking_navigation, MaterialColors.getColor(trackingCard, R.attr.wfmsColorPrimary), white)
+                    tvTrackingMessage.text = getString(R.string.tracking_active_since, shortTime(shift.checkInMillis))
+                }
+                TrackingCardState.PAUSED -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_tracking_card_paused)
+                    setTrackingIcon(R.drawable.ic_tracking_pause, MaterialColors.getColor(trackingCard, R.attr.wfmsColorWarning), white)
+                    tvTrackingMessage.text = getString(R.string.tracking_paused_until, shortTime(shift.pausedUntilMillis))
+                }
+                TrackingCardState.STARTING -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_card_outlined)
+                    setTrackingIcon(R.drawable.rounded_location_on_24, Color.TRANSPARENT, accent)
+                    tvTrackingMessage.setText(R.string.tracking_starting)
+                }
+                TrackingCardState.NEEDS_ALWAYS, TrackingCardState.PERMISSION_DENIED, TrackingCardState.GPS_OFF -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_tracking_card_alert)
+                    setTrackingIcon(R.drawable.ic_tracking_warning, ContextCompat.getColor(context, R.color.error_soft), error)
+                    tvTrackingMessage.setText(
+                        when (state) {
+                            TrackingCardState.NEEDS_ALWAYS -> R.string.tracking_needs_always
+                            TrackingCardState.PERMISSION_DENIED -> R.string.tracking_permission_denied
+                            else -> R.string.tracking_gps_off
+                        }
+                    )
+                }
+            }
+            btnTrackingPause.visibility = if (state == TrackingCardState.ACTIVE) View.VISIBLE else View.GONE
+            btnTrackingPause.setOnClickListener { viewModel.pauseTracking() }
+            val action: Pair<Int, () -> Unit>? = when (state) {
+                TrackingCardState.PAUSED -> R.string.resume to { viewModel.resumeTracking() }
+                TrackingCardState.NEEDS_ALWAYS -> R.string.fix to { requestBackgroundLocation() }
+                TrackingCardState.PERMISSION_DENIED -> R.string.open_settings to { openApplicationSettings() }
+                TrackingCardState.GPS_OFF -> R.string.open_settings to {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+                else -> null
+            }
+            btnTrackingAction.visibility = if (action == null) View.GONE else View.VISIBLE
+            action?.let { (label, onClick) ->
+                btnTrackingAction.setText(label)
+                btnTrackingAction.setIconResource(if (state == TrackingCardState.PAUSED) R.drawable.ic_tracking_play else 0)
+                btnTrackingAction.setOnClickListener { onClick() }
+            }
+        }
+    }
+
+    private fun setTrackingIcon(icon: Int, circleColor: Int, iconColor: Int) = with(binding.appDashHeader.ivTrackingIcon) {
+        setImageResource(icon)
+        backgroundTintList = ColorStateList.valueOf(circleColor)
+        imageTintList = ColorStateList.valueOf(iconColor)
+    }
+
+    private fun shortTime(millis: Long?): String =
+        millis?.let { DateUtils.formatShortTime(it) } ?: getString(R.string.not_available)
+
+    private fun isLocationServiceOn(): Boolean =
+        ContextCompat.getSystemService(requireContext(), LocationManager::class.java)
+            ?.let { LocationManagerCompat.isLocationEnabled(it) } ?: true
 
 
     private fun checkInAttendanceStatus() {
@@ -497,7 +605,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     // undo it; the result is intentionally ignored.
     private val permissionLauncherBackgroundLocation = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { }
+    ) { renderTrackingCard() }
 
 
     private fun openApplicationSettings() {
@@ -524,6 +632,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
 
     private fun startTrackingAndAskForBackground() {
         viewModel.startTracking()
+        renderTrackingCard()
         requestBackgroundLocationIfNeeded()
     }
 
@@ -532,6 +641,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun requestBackgroundLocationIfNeeded() {
         if (backgroundLocationPrompted || PermissionUtils.hasBackgroundLocationPermission(requireContext())) return
         backgroundLocationPrompted = true
+        requestBackgroundLocation()
+    }
+
+    /** Disclosure, then the "Allow all the time" request (also the card's Fix button). */
+    private fun requestBackgroundLocation() {
         Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
             permissionLauncherBackgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
