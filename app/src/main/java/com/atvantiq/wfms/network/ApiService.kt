@@ -3,6 +3,7 @@ import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.models.attendance.approve.AttendanceApproveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -167,6 +168,9 @@ interface ApiService {
 
 	@POST(NetworkEndPoints.approveWorkSite)
 	suspend fun approveWorkSite(@Body params: JsonArray): ApproveWorkSiteTypeResponse
+
+	@POST(NetworkEndPoints.attendanceApprove)
+	suspend fun attendanceApprove(@Path("attendance_id") attendanceId: Long, @Body params: JsonObject): AttendanceApproveResponse
 
 	@POST(NetworkEndPoints.attendanceEmpRemarks)
 	suspend fun attendanceEmpRemarks(@Path("attendance_id") attendanceId: Long,@Body params: JsonObject) : AttendanceRemarksResponse

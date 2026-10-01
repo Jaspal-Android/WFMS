@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.data.repository.atten
 
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.models.attendance.approve.AttendanceApproveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -30,6 +31,9 @@ class AttendanceRepo @Inject constructor(
     override suspend fun attendanceCheckInStatus(): CheckInStatusResponse {
         return apiService.attendanceCheckInStatus()
     }
+
+    override suspend fun attendanceApprove(attendanceId: Long, params: JsonObject): AttendanceApproveResponse =
+        apiService.attendanceApprove(attendanceId, params)
 
     override suspend fun attendanceForApproval(page: Int, pageSize: Int, month: Int, year: Int): AttendanceDetailListResponse =
         apiService.attendanceForApproval(page, pageSize, month, year)

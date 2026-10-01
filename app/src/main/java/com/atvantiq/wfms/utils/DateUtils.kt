@@ -256,6 +256,9 @@ object DateUtils {
         return sign * (hours * 60 + minutes) * 60_000L
     }
 
+    /** An API timestamp as a local clock time such as "9:35 AM", or null when it is missing. */
+    fun formatIsoShortTime(value: String?): String? = parseUtcIso(value)?.let(::formatShortTime)
+
     /** A yyyy-MM-dd day as "23 Sep 2026", or null when it isn't one. */
     fun formatYmdLabel(ymd: String?): String? = runCatching {
         SimpleDateFormat(DATE_FORMAT, Locale.US).apply { isLenient = false }.parse(ymd.orEmpty())

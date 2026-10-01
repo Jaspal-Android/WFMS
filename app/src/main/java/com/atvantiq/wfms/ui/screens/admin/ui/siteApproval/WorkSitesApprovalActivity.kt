@@ -42,8 +42,8 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         }
         setUpToolbar()
         setUpList()
-        binding.swipeRefreshLayout.setOnRefreshListener { viewModel.submissions.refresh() }
-        viewModel.submissions.open()
+        binding.swipeRefreshLayout.setOnRefreshListener { viewModel.records.refresh() }
+        viewModel.records.open()
     }
 
     private fun setUpToolbar() {
@@ -59,8 +59,8 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         vm.monthCount.observe(this) { count ->
             binding.monthSubtitle = count?.let { resources.getQuantityString(R.plurals.submissions_count, it, it) }
         }
-        vm.submissions.state.observe(this) { state -> renderSubmissions(state) }
-        vm.submissions.failure.observe(this) { failure ->
+        vm.records.state.observe(this) { state -> renderSubmissions(state) }
+        vm.records.failure.observe(this) { failure ->
             if (!failure.consumeOnce()) return@observe
             handleFailure(failure)
         }
@@ -69,7 +69,7 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
     private fun setUpList() {
         adapter = WorkSubmissionsAdapter(onReview = ::openWorkSites)
         binding.rvSubmissions.adapter = adapter
-        binding.rvSubmissions.addOnScrollListener(PaginationScrollListener { viewModel.submissions.loadNextPage() })
+        binding.rvSubmissions.addOnScrollListener(PaginationScrollListener { viewModel.records.loadNextPage() })
     }
 
     private fun renderSubmissions(state: PagedListUiState<AttendanceRecord>) {
@@ -105,6 +105,6 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
     /** Work was approved or rejected on that day: its status comes back from the server. */
     private val workSitesLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) viewModel.submissions.refresh()
+            if (result.resultCode == Activity.RESULT_OK) viewModel.records.refresh()
         }
 }

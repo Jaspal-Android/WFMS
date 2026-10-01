@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An attendance record under review: the status bar ("Mark attendance" when it can be marked,
+     else "Attendance status"), the employee and date, check-in – check-out, work hours, and an
+     optional Details link. Used by the Attendance Approval rows and the Attendance Review screen. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="record"
+            type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
+
+        <variable
+            name="dateLabel"
+            type="String" />
+
+        <variable
+            name="timeRange"
+            type="String" />
+
+        <variable
+            name="canMark"
+            type="Boolean" />
+
+        <variable
+            name="showDetails"
+            type="Boolean" />
+
+        <variable
+            name="onMark"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="onDetails"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_small">
+
+            <!-- Status bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_status_bar"
+                android:clickable="@{safeUnbox(canMark)}"
+                android:focusable="@{safeUnbox(canMark)}"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/min_touch_target"
+                android:onClick="@{onMark}"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/padding_medium"
+                android:paddingEnd="@dimen/padding_small">
+
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_event_available"
+                    app:tint="?attr/wfmsColorPrimary" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:text="@{safeUnbox(canMark) ? @string/mark_attendance : @string/attendance_status_caption}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="@string/mark_attendance" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingTop="@dimen/padding_x_small"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:paddingBottom="@dimen/padding_x_small"
+                    android:textStyle="bold"
+                    app:attendanceApprovalStatus="@{record.status}"
+                    tools:text="@string/submitted" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small_extra"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_arrow_down_24"
+                    android:visibility="@{safeUnbox(canMark) ? View.VISIBLE : View.GONE}"
+                    app:tint="?attr/wfmsColorOnSurfaceVariant" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/padding_small"
+                android:paddingTop="@dimen/padding_small">
+
+                <!-- Employee + date -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <include
+                        layout="@layout/layout_employee_identity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:code="@{record.employee.code}"
+                        app:name="@{record.employee.name}" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_calendar_today"
+                        app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small_extra"
+                        android:text="@{dateLabel ?? @string/not_available_value}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="23 Sep 2026" />
+                </LinearLayout>
+
+                <!-- Check-in – check-out · work hours -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="@dimen/padding_small">
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_clock_16"
+                        app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small"
+                        android:layout_weight="1"
+                        android:text="@{timeRange}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="9:35 AM – Not available" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_size_small"
+                        android:layout_height="@dimen/icon_size_small"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_hourglass"
+                        app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small_extra"
+                        android:text="@{android.text.TextUtils.isEmpty(record.workHours) ? @string/not_available_value : record.workHours}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="02:33" />
+                </LinearLayout>
+
+                <!-- Details -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/border_width_1dp"
+                    android:background="?attr/wfmsColorOutline"
+                    android:visibility="@{safeUnbox(showDetails) ? View.VISIBLE : View.GONE}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/min_touch_target"
+                    android:onClick="@{onDetails}"
+                    android:orientation="horizontal"
+                    android:visibility="@{safeUnbox(showDetails) ? View.VISIBLE : View.GONE}">
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/details"
+                        android:textColor="?attr/wfmsColorPrimary"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/forward_arrow_right_24"
+                        app:tint="?attr/wfmsColorPrimary" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

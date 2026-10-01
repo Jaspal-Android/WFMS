@@ -14,7 +14,23 @@ enum class AppRole {
     val canApprove: Boolean
         get() = this == PM || this == OPS || this == ADMIN
 
+    /**
+     * How an approver is named in the approval logs and texts ("Approved by PM"), or null for a
+     * role that can't approve.
+     */
+    val approverTag: String?
+        get() = when (this) {
+            PM -> PM_TAG
+            OPS -> OPS_TAG
+            ADMIN -> ADMIN_TAG
+            EMPLOYEE, OTHER -> null
+        }
+
     companion object {
+        private const val PM_TAG = "PM"
+        private const val OPS_TAG = "OPS"
+        private const val ADMIN_TAG = "ADMIN"
+
         fun from(role: String?): AppRole {
             val value = role?.trim().orEmpty()
             return when {

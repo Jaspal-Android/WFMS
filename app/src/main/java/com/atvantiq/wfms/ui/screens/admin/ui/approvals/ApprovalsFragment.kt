@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.databinding.FragmentApprovalsBinding
+import com.atvantiq.wfms.ui.screens.admin.ui.attendanceApproval.AttendanceApprovalActivity
 import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +24,8 @@ class ApprovalsFragment : BaseFragment<FragmentApprovalsBinding, ApprovalsVM>() 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
             if (!isLifeCycleResumed()) return@observe
             when (event) {
+                ApprovalsClickEvents.ATTENDANCE_APPROVAL ->
+                    Utils.jumpActivity(requireContext(), AttendanceApprovalActivity::class.java)
                 ApprovalsClickEvents.WORK_APPROVAL ->
                     Utils.jumpActivity(requireContext(), WorkSitesApprovalActivity::class.java)
             }

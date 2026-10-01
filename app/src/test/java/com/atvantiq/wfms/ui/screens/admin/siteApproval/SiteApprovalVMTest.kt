@@ -154,13 +154,13 @@ class SiteApprovalVMTest {
         }
         val start = viewModel.month.value!!
 
-        viewModel.submissions.open()
+        viewModel.records.open()
         viewModel.showPreviousMonth()
         testDispatcher.scheduler.advanceUntilIdle()
 
         val shown = start.previous()
         coVerify { attendanceRepo.attendanceForApproval(1, 25, shown.month, shown.year) }
-        assertEquals(listOf(withEmployee), viewModel.submissions.state.value?.items)
+        assertEquals(listOf(withEmployee), viewModel.records.state.value?.items)
         assertEquals(3, viewModel.monthCount.value)
     }
 }

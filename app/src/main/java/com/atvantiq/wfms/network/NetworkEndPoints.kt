@@ -27,6 +27,8 @@ object NetworkEndPoints {
 	const val workSiteDetails ="work/site/{work_site_id}/types"
 	const val workDetailByDate = "work/details"
 	const val attendanceEmpRemarks = "attendance/emp/remarks/{attendance_id}"
+	/*PM / OPS / admin records an attendance decision*/
+	const val attendanceApprove = "attendance/approve/{attendance_id}"
 	const val applyLeave  = "attendance/apply-leave"
 
 	/*Client*/
