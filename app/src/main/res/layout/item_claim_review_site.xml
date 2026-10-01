@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A numbered site card on Claim Approval; its expenses are added into expensesContainer. -->
+<!-- A site on Claim Approval: numbered circle, name, expense count and site amount; its expenses
+     are added into expensesContainer. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View" />
-
         <variable
-            name="title"
+            name="number"
             type="String" />
 
         <variable
-            name="code"
+            name="name"
+            type="String" />
+
+        <variable
+            name="expenseCount"
+            type="String" />
+
+        <variable
+            name="amount"
             type="String" />
     </data>
 
@@ -39,22 +46,50 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    style="@style/CustomLargeTextView"
+                    android:layout_width="@dimen/employee_avatar_size"
+                    android:layout_height="@dimen/employee_avatar_size"
+                    android:background="@drawable/bg_circle_primary_dark"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@{number}"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/default_text"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_medium"
                     android:layout_weight="1"
-                    android:text="@{title}"
-                    android:textColor="?attr/wfmsColorOnSurface"
-                    android:textStyle="bold"
-                    tools:text="1. Testing 4" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{name}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="MOGA" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{expenseCount}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="1 expense(s)" />
+                </LinearLayout>
 
                 <TextView
-                    style="@style/CustomTagChip"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:text="@{code}"
-                    android:visibility="@{code == null ? View.GONE : View.VISIBLE}"
-                    tools:text="T4" />
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{amount}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="₹ 200.00" />
             </LinearLayout>
 
             <LinearLayout

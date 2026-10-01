@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A claim on the Claims Approval list: employee (or claim number), status, date, category,
-     amount and Review ›. -->
+<!-- A claim on the Claims Approval list: employee (or claim number), status, date, claim amount
+     and Review ›. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -20,10 +20,6 @@
 
         <variable
             name="dateLabel"
-            type="String" />
-
-        <variable
-            name="category"
             type="String" />
 
         <variable
@@ -76,6 +72,8 @@
                         style="@style/CustomLargeTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@{title}"
                         android:textColor="?attr/wfmsColorOnSurface"
                         android:textStyle="bold"
@@ -100,7 +98,7 @@
                     android:paddingEnd="@dimen/padding_medium"
                     android:paddingBottom="@dimen/padding_x_small"
                     android:textStyle="bold"
-                    app:approvalTextStatus="@{status}"
+                    app:claimStatus="@{status}"
                     tools:text="@string/submitted" />
             </LinearLayout>
 
@@ -127,12 +125,6 @@
                     android:textColor="?attr/wfmsColorOnSurfaceVariant"
                     tools:text="25 Sep 2026" />
 
-                <TextView
-                    style="@style/CustomTagChip"
-                    android:layout_marginStart="@dimen/margin"
-                    android:layout_marginTop="0dp"
-                    android:text="@{category}"
-                    tools:text="Local" />
             </LinearLayout>
 
             <LinearLayout
@@ -145,20 +137,36 @@
                 android:minHeight="@dimen/min_touch_target"
                 android:orientation="horizontal">
 
-                <TextView
-                    style="@style/CustomFactLabel"
-                    android:text="@string/amount_label" />
+                <ImageView
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_currency_rupee"
+                    app:tint="?attr/wfmsColorPrimary" />
 
-                <TextView
-                    style="@style/CustomLargeTextView"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
                     android:layout_weight="1"
-                    android:text="@{amount}"
-                    android:textColor="?attr/wfmsColorOnSurface"
-                    android:textStyle="bold"
-                    tools:text="₹ 920.00" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/claim_amount"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+                    <TextView
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{amount}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="₹ 200.00" />
+                </LinearLayout>
 
                 <TextView
                     style="@style/CustomRegularTextView"

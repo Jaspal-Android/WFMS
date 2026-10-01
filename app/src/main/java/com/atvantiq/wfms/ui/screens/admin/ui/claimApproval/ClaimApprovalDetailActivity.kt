@@ -18,7 +18,6 @@ import com.atvantiq.wfms.models.reimbursement.detail.ClaimData
 import com.atvantiq.wfms.models.reimbursement.review.ExpenseDecisionInput
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.DateUtils
-import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -108,26 +107,32 @@ class ClaimApprovalDetailActivity : BaseActivity<ActivityClaimApprovalDetailBind
         binding.claim = claim
         binding.claimIdLabel = claim.id?.let { getString(R.string.claim_id_format, it) }
         binding.amount = getString(R.string.rupee_format, claim.totalAmount ?: 0.0)
-        binding.dateLabel = DateUtils.formatYmdLabel(claim.date) ?: claim.date ?: getString(R.string.not_available_value)
-        binding.category = Utils.humanize(claim.claimCategory)
-        binding.route = if (claim.travellingFrom.isNullOrBlank() && claim.travellingTo.isNullOrBlank()) null else getString(
+        val unknown = getString(R.string.unknown_value)
+        binding.dateLabel = DateUtils.formatYmdLabel(claim.date) ?: claim.date ?: unknown
+        binding.category = claim.claimCategory.orUnknown(unknown)
+        binding.purpose = claim.claimPurpose.orUnknown(unknown)
+        binding.route = getString(
             R.string.travel_route_format,
-            claim.travellingFrom ?: getString(R.string.not_available_value),
-            claim.travellingTo ?: getString(R.string.not_available_value)
+            claim.travellingFrom.orUnknown(unknown),
+            claim.travellingTo.orUnknown(unknown)
         )
         binding.canAct = viewModel.canAct
         renderExpenses(viewModel.inputs)
     }
 
-    /** A numbered card per site, one block per expense; typing goes straight into the ViewModel. */
+    private fun String?.orUnknown(unknown: String): String = this?.takeIf { it.isNotBlank() } ?: unknown
+
+    /** A numbered card per site, one tile per expense; typing goes straight into the ViewModel. */
     private fun renderExpenses(inputs: List<ExpenseDecisionInput>) {
         val container = binding.sitesContainer
         container.removeAllViews()
         inputs.groupBy { it.siteNumber }.forEach { (number, expenses) ->
             val first = expenses.first()
             val site = ItemClaimReviewSiteBinding.inflate(layoutInflater, container, false)
-            site.title = getString(R.string.site_number_format, number, first.siteName ?: getString(R.string.not_available_value))
-            site.code = first.siteCode
+            site.number = number.toString()
+            site.name = first.siteName ?: getString(R.string.unknown_value)
+            site.expenseCount = resources.getQuantityString(R.plurals.expense_count, expenses.size, expenses.size)
+            site.amount = getString(R.string.rupee_format, first.siteAmount ?: expenses.sumOf { it.claimed })
             expenses.forEach { input -> site.expensesContainer.addView(expenseView(site, input)) }
             site.executePendingBindings()
             container.addView(site.root)
@@ -136,7 +141,7 @@ class ClaimApprovalDetailActivity : BaseActivity<ActivityClaimApprovalDetailBind
 
     private fun expenseView(site: ItemClaimReviewSiteBinding, input: ExpenseDecisionInput) =
         ItemClaimReviewExpenseBinding.inflate(layoutInflater, site.expensesContainer, false).apply {
-            type = Utils.humanize(input.expenseType)
+            type = input.expenseType ?: getString(R.string.unknown_value)
             claimed = getString(R.string.claimed_format, getString(R.string.rupee_format, input.claimed))
             val editable = viewModel.canAct && input.expenseId != null
             etAmount.setText(input.amountText)

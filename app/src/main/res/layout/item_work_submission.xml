@@ -148,6 +148,7 @@
                         android:layout_height="wrap_content"
                         android:text="@{@string/project_circle_format(item.project.name ?? @string/not_available_value, item.circle.name ?? @string/not_available_value)}"
                         android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        android:textSize="@dimen/default_medium_small_text"
                         tools:text="Project: Not available  •  Circle: Not available" />
                 </LinearLayout>
 

@@ -457,8 +457,4 @@ object Utils {
     }
 
     private const val INITIALS_LENGTH = 2
-
-    /** An API key for display: "local_conveyance" → "Local conveyance". */
-    fun humanize(key: String?): String =
-        key.orEmpty().trim().replace('_', ' ').lowercase().replaceFirstChar { it.titlecase() }
 }

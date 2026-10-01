@@ -10,7 +10,6 @@ import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceApprovalStatus
 import com.atvantiq.wfms.constants.ApprovalTextStatus
-import com.atvantiq.wfms.models.workSites.workSites.Status as WorkSiteStatus
 
 /**
  * UtilStatusBindings
@@ -204,12 +203,27 @@ object UtilStatusBindings {
     }
 
     // ──────────────────────────────────────────────────────
-    // Work Sites card  (work status {code, label})
+    // Claim status  (as approvalTextStatus, but Submitted is light blue on claims, as on iOS)
     // ──────────────────────────────────────────────────────
     @JvmStatic
-    @BindingAdapter(value = ["workSiteStatus"])
-    fun workSiteStatus(textView: TextView, status: WorkSiteStatus?) {
-        when (status?.code) {
+    @BindingAdapter(value = ["claimStatus"])
+    fun claimStatus(textView: TextView, text: String?) {
+        val status = ApprovalTextStatus.from(text)
+        textView.text = status.labelRes?.let { textView.context.getString(it) } ?: text.orEmpty()
+        if (status == ApprovalTextStatus.SUBMITTED) {
+            textView.applyStatus(R.color.status_leave_bg, R.color.status_leave_text)
+        } else {
+            textView.applyStatus(status.backgroundRes, status.textRes)
+        }
+    }
+
+    // ──────────────────────────────────────────────────────
+    // Work status of a site or work type  (3 In Progress, 5 Completed, else its label)
+    // ──────────────────────────────────────────────────────
+    @JvmStatic
+    @BindingAdapter(value = ["workStatusCode", "workStatusLabel"], requireAll = false)
+    fun workStatus(textView: TextView, code: Int?, label: String?) {
+        when (code) {
             StatusCodes.WIP -> {
                 textView.text = textView.context.getString(R.string.in_progress)
                 textView.applyStatus(R.color.status_leave_bg, R.color.status_leave_text)
@@ -219,9 +233,23 @@ object UtilStatusBindings {
                 textView.applyStatus(R.color.status_present_bg, R.color.status_present_text)
             }
             else -> {
-                textView.text = status?.label ?: textView.context.getString(R.string.not_available_value)
+                textView.text = label ?: textView.context.getString(R.string.not_available_value)
                 textView.applyStatus(R.color.status_unmarked_bg, R.color.status_unmarked_text)
             }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────
+    // A PM / OPS / ADMIN approval step on a work type  (1 approved, 2 rejected, 0 pending)
+    // ──────────────────────────────────────────────────────
+    @JvmStatic
+    @BindingAdapter(value = ["approvalStep", "approvalStepLabel"], requireAll = true)
+    fun approvalStep(textView: TextView, step: Int?, label: String) {
+        textView.text = textView.context.getString(R.string.approval_step_format, label, step ?: ApprovalStatusCodes.OPEN)
+        when (step) {
+            ApprovalStatusCodes.ACCEPTED -> textView.applyStatus(R.color.status_present_bg, R.color.status_present_text)
+            ApprovalStatusCodes.REJECTED -> textView.applyStatus(R.color.status_incomplete_bg, R.color.status_incomplete_text)
+            else -> textView.applyStatus(R.color.status_leave_bg, R.color.status_leave_text)
         }
     }
 

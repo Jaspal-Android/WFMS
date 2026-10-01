@@ -450,23 +450,62 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Small pill tag on a card (a site's circle and added-by). Grey by default. -->
-    <style name="CustomTagChip" parent="CustomSmallTextView">
+    <!-- One column of a three-column fact row (Site ID | Project | Circle): small label, value
+         truncated to one line. -->
+    <style name="CustomFactColumnLabel" parent="CustomSmallTextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomFactColumnValue" parent="CustomRegularTextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_small_extra</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- A small fact tile (claim amount, approval total, date) inside a card. -->
+    <style name="CustomFactTile">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/info_chip_bg</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_small</item>
+    </style>
+
+    <style name="CustomFactTileLabel" parent="CustomFactColumnLabel">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- A small pill chip whose colours come from a status binding (step and status tags). -->
+    <style name="CustomStatusChip" parent="CustomSmallTextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/margin_small</item>
         <item name="android:layout_marginEnd">@dimen/margin_small</item>
-        <item name="android:background">@drawable/bg_tag_chip</item>
-        <item name="android:backgroundTint">@color/status_unmarked_bg</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
         <item name="android:paddingStart">@dimen/padding_medium</item>
         <item name="android:paddingEnd">@dimen/padding_medium</item>
         <item name="android:paddingTop">@dimen/padding_x_small</item>
         <item name="android:paddingBottom">@dimen/padding_x_small</item>
-        <item name="android:textColor">@color/status_unmarked_text</item>
         <item name="android:textSize">@dimen/default_text</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Small pill tag on a card (a site's circle and added-by). Grey by default. -->
+    <style name="CustomTagChip" parent="CustomStatusChip">
+        <item name="android:background">@drawable/bg_tag_chip</item>
+        <item name="android:backgroundTint">@color/status_unmarked_bg</item>
+        <item name="android:textColor">@color/status_unmarked_text</item>
     </style>
 
     <!-- The tag that leads, in blue (a site's project). -->

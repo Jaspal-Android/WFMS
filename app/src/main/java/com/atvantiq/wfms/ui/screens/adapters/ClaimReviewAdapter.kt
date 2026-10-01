@@ -8,7 +8,6 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.ItemClaimReviewBinding
 import com.atvantiq.wfms.models.reimbursement.review.ClaimReviewRecord
 import com.atvantiq.wfms.utils.DateUtils
-import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.FooterRecyclerView
 
 /** Claims Approval rows, with the paging footer. A claim with no id can't be opened. */
@@ -36,7 +35,6 @@ class ClaimReviewAdapter(private val onReview: (ClaimReviewRecord) -> Unit) : Fo
             status = claim.status
             dateLabel = DateUtils.formatYmdLabel((claim.date ?: claim.createdAt)?.take(YMD_LENGTH))
                 ?: context.getString(R.string.not_available_value)
-            category = Utils.humanize(claim.expenseCategory)
             amount = context.getString(R.string.rupee_format, claim.totalAmount ?: 0.0)
             root.alpha = if (canOpen) ResourcesCompat.getFloat(context.resources, R.dimen.alpha_enabled)
                 else ResourcesCompat.getFloat(context.resources, R.dimen.alpha_disabled)

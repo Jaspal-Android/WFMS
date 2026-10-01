@@ -8,6 +8,7 @@ import com.atvantiq.wfms.models.reimbursement.review.ClaimReviewListResponse
 import com.atvantiq.wfms.models.reimbursement.review.ExpenseDecisionInput
 import com.atvantiq.wfms.models.reimbursement.review.canReviewClaim
 import com.google.gson.FieldNamingPolicy
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -96,5 +97,20 @@ class ClaimReviewTest {
         assertEquals("ok", expenses[0].asJsonObject.get("remarks").asString)
         assertFalse(expenses[1].asJsonObject.has("remarks"))
         assertEquals(915.0, decision.approvedTotal, 0.0)
+    }
+
+    @Test
+    fun `each expense starts at its claimed amount, written as typed (200, not 200_0)`() {
+        val claim = Gson().fromJson(
+            """{ "id": 1, "sites": [ { "site_name": "MOGA", "amount_site": 200.0,
+                 "expenses": [ { "expense_id": 991, "expense_type": "travel", "claimed_amount": 200.0 },
+                               { "expense_id": 992, "expense_type": "da", "claimed_amount": 12.5 } ] } ] }""",
+            com.atvantiq.wfms.models.reimbursement.detail.ClaimData::class.java
+        )
+        val inputs = ClaimDecision.inputsFor(claim)
+        assertEquals(listOf("200", "12.5"), inputs.map { it.amountText })
+        assertEquals(1, inputs.first().siteNumber)
+        assertEquals(200.0, inputs.first().siteAmount!!, 0.0)
+        assertEquals(212.5, ClaimDecision.total(inputs), 0.0)
     }
 }
