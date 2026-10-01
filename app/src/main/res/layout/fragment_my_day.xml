@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        tools:context=".ui.screens.dashboard.tabs.myDay.MyDayFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <!-- Day navigator: ◀ day ▶ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnPreviousDay"
+                    style="@style/CustomIconButton"
+                    android:contentDescription="@string/previous_day"
+                    android:src="@drawable/arrow_back_ios_24"
+                    app:tint="?attr/wfmsColorAccent" />
+
+                <TextView
+                    android:id="@+id/tvDay"
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="Friday, 25 Sep" />
+
+                <ImageButton
+                    android:id="@+id/btnNextDay"
+                    style="@style/CustomIconButton"
+                    android:contentDescription="@string/next_day"
+                    android:src="@drawable/arrow_forward_ios_24"
+                    app:tint="?attr/wfmsColorAccent" />
+            </LinearLayout>
+
+            <!-- Error banner (server message) -->
+            <TextView
+                android:id="@+id/tvError"
+                style="@style/CustomRegularTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/bg_error_banner"
+                android:padding="@dimen/padding_medium"
+                android:textColor="?attr/wfmsColorError"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <!-- First load -->
+            <LinearLayout
+                android:id="@+id/loadingCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:background="@drawable/bg_card_outlined"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:layout_width="@dimen/icon_size_small"
+                    android:layout_height="@dimen/icon_size_small" />
+
+                <TextView
+                    style="@style/CustomRegularTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_small"
+                    android:text="@string/my_day_loading"
+                    android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvEmpty"
+                style="@style/CustomRegularTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:gravity="center"
+                android:padding="@dimen/padding"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                android:visibility="gone"
+                tools:text="@string/my_day_empty_today" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <!-- Summary -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:background="@drawable/bg_card_outlined"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_medium">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvDistanceCaption"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAllCaps="true"
+                                    android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                                    android:textSize="@dimen/text_caption_tiny"
+                                    android:textStyle="bold"
+                                    tools:text="@string/distance_today" />
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:baselineAligned="true"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/tvDistance"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="?attr/wfmsColorOnSurface"
+                                        android:textSize="@dimen/text_distance"
+                                        android:textStyle="bold"
+                                        tools:text="27.9" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/margin_small_extra"
+                                        android:text="@string/unit_km"
+                                        android:textColor="?attr/wfmsColorOnSurface"
+                                        android:textSize="@dimen/default_text" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvShiftStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/my_day_pill_height"
+                                android:drawablePadding="@dimen/padding_x_small"
+                                android:gravity="center_vertical"
+                                android:paddingStart="@dimen/padding_medium"
+                                android:paddingEnd="@dimen/padding_medium"
+                                android:textSize="@dimen/default_medium_small_text"
+                                android:textStyle="bold"
+                                tools:background="@drawable/bg_pill_primary_soft"
+                                tools:text="@string/shift_active" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/border_width_1dp"
+                            android:layout_marginTop="@dimen/margin_small"
+                            android:layout_marginBottom="@dimen/margin_small"
+                            android:background="?attr/wfmsColorOutline" />
+
+                        <include
+                            android:id="@+id/rowCheckedIn"
+                            layout="@layout/item_profile_row" />
+
+                        <include
+                            android:id="@+id/rowCheckedOut"
+                            layout="@layout/item_profile_row" />
+
+                        <include
+                            android:id="@+id/rowTimeMoving"
+                            layout="@layout/item_profile_row" />
+
+                        <include
+                            android:id="@+id/rowLocations"
+                            layout="@layout/item_profile_row" />
+                    </LinearLayout>
+
+                    <!-- Route map -->
+                    <FrameLayout
+                        android:id="@+id/mapCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/my_day_map_height"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:background="@drawable/bg_card_outlined"
+                        android:padding="@dimen/border_width_1dp">
+
+                        <com.atvantiq.wfms.widgets.ScrollFriendlyMapView
+                            android:id="@+id/mapView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
+
+                    <!-- Timeline -->
+                    <LinearLayout
+                        android:id="@+id/timelineCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_small"
+                        android:background="@drawable/bg_card_outlined"
+                        android:orientation="vertical"
+                        android:padding="@dimen/padding_medium">
+
+                        <TextView
+                            style="@style/CustomRegularTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/margin_small"
+                            android:text="@string/timeline"
+                            android:textColor="?attr/wfmsColorOnSurface"
+                            android:textStyle="bold" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvTimeline"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            tools:itemCount="3"
+                            tools:listitem="@layout/item_my_day_timeline" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin"
+                        android:text="@string/my_day_privacy"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        android:textSize="@dimen/default_medium_small_text" />
+                </LinearLayout>
+
+                <!-- Reloading on top of the kept content -->
+                <LinearLayout
+                    android:id="@+id/reloadPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/my_day_pill_height"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:background="@drawable/bg_pill_primary_soft"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/padding_medium"
+                    android:paddingEnd="@dimen/padding_medium"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:layout_width="@dimen/padding"
+                        android:layout_height="@dimen/padding" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/margin_small_extra"
+                        android:text="@string/my_day_loading"
+                        android:textColor="?attr/wfmsColorAccent"
+                        android:textSize="@dimen/default_medium_small_text" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

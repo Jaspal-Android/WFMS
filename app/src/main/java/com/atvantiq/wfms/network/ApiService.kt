@@ -51,6 +51,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import com.atvantiq.wfms.models.myDay.MyDayResponse
 
 interface ApiService {
 	/***
@@ -133,6 +134,10 @@ interface ApiService {
 
 	@POST(NetworkEndPoints.geoTrackingLocation)
 	suspend fun sendLocation(@Body params: JsonObject) : SendLocationResponse
+
+	/** The signed-in employee's own day; [date] is yyyy-MM-dd, or null for today. */
+	@GET(NetworkEndPoints.geoTrackingMyDay)
+	suspend fun myDay(@Query("date") date: String?): MyDayResponse
 
 	@POST(NetworkEndPoints.notificationToken)
 	suspend fun sendNotificationToken(@Body params: JsonObject) : UpdateNotificationTokenResponse

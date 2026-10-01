@@ -92,4 +92,17 @@ class DateUtilsTest {
         assertEquals("not-a-date", DateUtils.formatSpokenDate("not-a-date", java.util.Locale.US))
         assertEquals("", DateUtils.formatSpokenDate("", java.util.Locale.US))
     }
+
+    @Test
+    fun `utc iso timestamps parse with or without fractional seconds`() {
+        assertEquals(1_789_705_930_000L, DateUtils.parseUtcIso("2026-09-18T04:32:10Z"))
+        assertEquals(1_789_705_930_123L, DateUtils.parseUtcIso("2026-09-18T04:32:10.123Z"))
+        // As the dev server actually sends them: microseconds and a +00:00 offset
+        assertEquals(1_789_705_930_896L, DateUtils.parseUtcIso("2026-09-18T04:32:10.896602+00:00"))
+        assertEquals(1_789_705_930_000L, DateUtils.parseUtcIso("2026-09-18T04:32:10+00:00"))
+        assertEquals(1_789_705_930_000L, DateUtils.parseUtcIso("2026-09-18T10:02:10+05:30"))
+        assertEquals(null, DateUtils.parseUtcIso("18/09/2026"))
+        assertEquals(null, DateUtils.parseUtcIso(null))
+        assertEquals("2026-09-18T04:32:10Z", DateUtils.formatUtcIso(1_789_705_930_000L))
+    }
 }

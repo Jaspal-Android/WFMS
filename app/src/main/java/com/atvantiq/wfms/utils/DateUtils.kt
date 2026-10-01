@@ -24,6 +24,10 @@ object DateUtils {
     private const val TIME_12_FORMAT = "hh:mm a"
     private const val API_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     private const val API_DISPLAY_FORMAT = "hh:mm a  dd-MM-yyyy"
+    private const val DAY_LABEL_FORMAT = "EEEE, d MMM"
+    private const val SHORT_TIME_FORMAT = "h:mm a"
+    private const val ISO_BASE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+    private val ISO_TIMESTAMP = Regex("""^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})?$""")
 
 
     fun showMonthYearPickerDialog(context: Context, month: Int?, year: Int?, param: (Int, Int) -> Unit
@@ -209,6 +213,46 @@ object DateUtils {
 
     interface TimeCallBack {
         fun onTimeSelected(time: String, formatTime: String)
+    }
+
+    /** [millis] as a local yyyy-MM-dd date, the API's date parameter format. */
+    fun formatYmd(millis: Long): String =
+        SimpleDateFormat(DATE_FORMAT, Locale.US).format(Date(millis))
+
+    /** A day heading such as "Friday, 25 Sep". */
+    fun formatDayLabel(millis: Long): String =
+        SimpleDateFormat(DAY_LABEL_FORMAT, Locale.getDefault()).format(Date(millis))
+
+    /** A local clock time such as "1:03 PM". */
+    fun formatShortTime(millis: Long): String =
+        SimpleDateFormat(SHORT_TIME_FORMAT, Locale.getDefault()).format(Date(millis))
+            .replace(Regex("am|pm", RegexOption.IGNORE_CASE)) { it.value.uppercase() }
+
+    /**
+     * Millis for an ISO 8601 timestamp, or null when [value] is missing or not in that form.
+     * Accepts any fractional precision and a `Z` or `±HH:MM` offset, as the API sends both
+     * ("2026-09-18T04:32:10Z", "2026-10-01T11:14:38.896602+00:00").
+     */
+    fun parseUtcIso(value: String?): Long? {
+        val match = ISO_TIMESTAMP.matchEntire(value?.trim().orEmpty()) ?: return null
+        val (base, fraction, offset) = match.destructured
+        val baseMillis = runCatching {
+            SimpleDateFormat(ISO_BASE_FORMAT, Locale.US).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+                isLenient = false
+            }.parse(base)?.time
+        }.getOrNull() ?: return null
+        val fractionMillis = fraction.padEnd(3, '0').take(3).toLongOrNull() ?: 0L
+        return baseMillis + fractionMillis - offsetMillis(offset)
+    }
+
+    private fun offsetMillis(offset: String): Long {
+        if (offset.isEmpty() || offset == "Z") return 0L
+        val sign = if (offset.startsWith("-")) -1 else 1
+        val digits = offset.drop(1).replace(":", "")
+        val hours = digits.take(2).toLongOrNull() ?: return 0L
+        val minutes = digits.drop(2).toLongOrNull() ?: 0L
+        return sign * (hours * 60 + minutes) * 60_000L
     }
 
     /** [millis] as an ISO 8601 UTC timestamp, e.g. 2026-09-18T04:32:10Z (the API's time format). */

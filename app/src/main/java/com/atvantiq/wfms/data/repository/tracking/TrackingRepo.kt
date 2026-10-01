@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.data.repository.tracking
 import com.atvantiq.wfms.models.location.SendLocationResponse
+import com.atvantiq.wfms.models.myDay.MyDayResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonObject
 import javax.inject.Inject
@@ -12,4 +13,6 @@ class TrackingRepo @Inject constructor(private val apiService: ApiService) :ITra
     override suspend fun sendLocation(params: JsonObject): SendLocationResponse  = apiService.sendLocation(
         params = params
     )
+
+    override suspend fun myDay(date: String?): MyDayResponse = apiService.myDay(date)
 }
