@@ -7,18 +7,10 @@
     <color name="black">#1D1C1A</color>
     <color name="white">#FFFFFFFF</color>
     <color name="lightGray">#D3D3D3</color>
-    <color name="mediumGray">#A9A9A9</color>
     <color name="darkGray">#808080</color>
     <color name="slateGray">#708090</color>
-    <color name="darker_gray">#7A7A7A</color>
     <color name="red">#b84040</color>
     <color name="green">#008000</color>
-    <color name="red_light">#FEF2F2</color>
-    <color name="orange">#ffa500</color>
-    <color name="yellow">#FFEB3B</color>
-    <color name="purple">#9C27B0</color>
-    <color name="flatCalendar">#7AF4F4F4</color>
-    <color name="background_light">#F3F4F6</color>
 
     <!--Calendar Colors-->
     <color name="status_present_bg">#DCFCE7</color>
@@ -52,16 +44,6 @@
     <color name="status_unmarked_text">#6B7280</color>
 
 
-    <color name="green_pastel">#C5E7B0</color>
-    <color name="red_pastel">#FAC0C3</color>
-    <color name="red_pastel_medium">#F89096</color>
-    <color name="red_pastel_dark">#FA4853</color>
-    <color name="orange_pastal">#FFB347</color>
-    <color name="blue_pastal">#AEC6CF</color>
-    <color name="yellow_pastal">#E7DA8B</color>
-    <color name="purple_pastal">#EBB3EB</color>
-    <color name="primary_dark_pastal">#7A4F1A</color>
-    <color name="primary_pastal">#7A4F1A</color>
 
 
     <color name="forest_gradient_end">#4a8c62</color>  <!-- lighter green, same hue -->
@@ -71,11 +53,6 @@
     <color name="amber_gradient_end">#c07828</color>   <!-- lighter amber, same hue -->
     <color name="slate_gradient_end">#3a8878</color>   <!-- lighter teal-slate, same hue -->
 
-    <!-- Check In / Out Colors -->
-    <color name="checkin_bg">#D1FAE5</color>
-    <color name="checkin_dark">#047857</color>
-    <color name="checkout_bg">#FEE2E2</color>
-    <color name="checkout_dark">#B91C1C</color>
 
     <!-- ══════════════════════════════════════════
          THEME 1 — FOREST GREEN (default)
@@ -246,13 +223,10 @@
     <color name="dark_surface">#1a1d27</color>
     <color name="dark_surface_variant">#1e2130</color>
     <color name="dark_surface_2">#252836</color>
-    <color name="dark_surface_3">#2d3145</color>
-    <color name="dark_surface_4">#363b52</color>
     <color name="dark_on_surface">#f3f4f6</color>
     <color name="dark_on_surface_variant">#9ca3af</color>
     <color name="dark_outline">#4a5068</color>
 
-    <color name="your_primary_dark_color">#3700B3</color>
 
 
     <!-- Dark-mode accent: brand hue lifted to >= 5:1 on every dark surface -->
