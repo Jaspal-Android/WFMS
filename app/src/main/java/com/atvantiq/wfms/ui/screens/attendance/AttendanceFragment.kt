@@ -411,19 +411,21 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         handleLocationPermissions(
             onPermissionsGranted = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val latitude = location.latitude.toString()
-                        val longitude = location.longitude.toString()
-                        StartWorkBottomSheet.newInstance(latitude, longitude).apply {
-                            onImageSelected = { imagePath ->
-                                viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
-                            }
-                        }.show(requireActivity().supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
-                    } else {
-                        showToast(requireContext(), getString(R.string.location_not_found))
+                    whenAttached { context ->
+                        if (location != null) {
+                            val latitude = location.latitude.toString()
+                            val longitude = location.longitude.toString()
+                            StartWorkBottomSheet.newInstance(latitude, longitude).apply {
+                                onImageSelected = { imagePath ->
+                                    viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
+                                }
+                            }.show(parentFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
+                        } else {
+                            showToast(context, getString(R.string.location_not_found))
+                        }
                     }
                 }.addOnFailureListener {
-                    showToast(requireContext(), getString(R.string.location_error))
+                    whenAttached { showToast(it, getString(R.string.location_error)) }
                 }
             }
         )
