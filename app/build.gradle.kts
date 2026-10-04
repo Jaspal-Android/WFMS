@@ -147,7 +147,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.security.crypto.ktx)
     testImplementation(libs.junit)
@@ -162,10 +161,6 @@ dependencies {
     // Coroutines Testing
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
-    // Hilt Testing
-    testImplementation("com.google.dagger:hilt-android-testing:2.56.2")
-    kaptTest("com.google.dagger:hilt-android-compiler:2.56.2")
-
     // Hilt
     kapt("com.google.dagger:hilt-android-compiler:2.56.2")
     implementation("com.google.dagger:hilt-android:2.56.2")
@@ -174,34 +169,18 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     debugImplementation("com.facebook.stetho:stetho:1.5.1")
     debugImplementation("com.facebook.stetho:stetho-okhttp3:1.5.1")
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.0")
 
-    //Navigation Controller
-
-    // Views/Fragments integration
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
-    // Feature module support for Fragments
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.7.7")
-    // Chart Drawings
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    // Places API
+    // Location
     implementation(libs.play.services.location)
     //Circular Image View
     implementation("de.hdodenhof:circleimageview:3.1.0")
     //Google Maps
     implementation("com.google.android.gms:play-services-maps:19.0.0")
-    //Services Location
-    implementation("com.google.android.gms:play-services-location:21.0.1")
-    //Maps Utils
-    implementation("com.google.maps.android:android-maps-utils:2.4.0")
-    //Secure Pref
-    implementation(libs.androidx.security.crypto.ktx)
     //Lottie Files
     implementation("com.airbnb.android:lottie:6.6.6")
     //Slider
