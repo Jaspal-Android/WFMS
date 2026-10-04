@@ -3,7 +3,6 @@
     <string name="title_activity_dashboard">DashboardActivity</string>
 
     <string name="menu_dashboard">Dashboard</string>
-    <string name="menu_attendance">Attendance</string>
     <string name="menu_vendor">Vendor</string>
     <string name="menu_cab">Cab</string>
     <string name="material_reco">Material</string>
@@ -22,7 +21,6 @@
     <string name="present">Present</string>
     <string name="idle">Idle</string>
     <string name="absent">Absent</string>
-    <string name="work_from_home">Work From Home</string>
     <string name="leave">Leave</string>
     <string name="project">Project</string>
     <string name="colon">:</string>
@@ -30,23 +28,15 @@
     <string name="ic_completed">I&amp;C Completed</string>
     <string name="no_of_sites">No of Sites</string>
     <string name="atp_completed">ATP Completed</string>
-    <string name="wfms">WFMS</string>
     <string name="wfms_dtails">Work Force Management System</string>
-    <string name="sign_in">Sign-In</string>
     <string name="sign_out">Sign-Out</string>
     <string name="my_progress">My Progress</string>
     <string name="approvals">Approvals</string>
-    <string name="mark_your_daily_attendance">Mark your daily Attendance</string>
-    <string name="update_status_of_your_work">Update Status of your Work</string>
-    <string name="monthly_progress">Monthly Progress</string>
-    <string name="pending_approvals">Pending Approvals (For PM)</string>
     <string name="attendance">Attendance</string>
-    <string name="add_login_activity">Add Login Activity</string>
     <string name="save">Save</string>
 
     <!--Image picker strings-->
     <string name="pick_image">Pick image from</string>
-    <string name="cant_pick_image">Can\'t pick this image.</string>
     <string-array name="source_items">
         <item>Camera</item>
         <item>Gallery</item>
@@ -54,7 +44,6 @@
     <string name="camera_permission_msg">Please turn on camera permission from settings to upload image.</string>
     <string name="image_process_error">Couldn\'t process this photo. Please try again or choose another.</string>
     <string name="image_size_error">The image is too large. Please choose an image smaller than %1$d MB.</string>
-    <string name="app_id" translatable="false">com.atvantiq.wfms.provider</string>
     <string name="file_creation_error">Couldn\'t prepare a file for the photo. Please try again.</string>
     <string name="camera_error">Couldn\'t capture the photo. Please try again.</string>
     <string name="gallery_error">Couldn\'t open that image. Please choose another.</string>
@@ -62,19 +51,13 @@
     <string name="warning_gps_needed">Location Services Required</string>
     <string name="go_to_settings">Go to Settings</string>
     <string name="create_claim">Create Claim</string>
-    <string name="add_new">Add New</string>
     <string name="my_claims">My Claims</string>
-    <string name="sumitted_approved_claims">Submitted/Approved</string>
-    <string name="my_approvals">My Approvals</string>
     <string name="pending_approvals_pm">Pending Approvals(For PM)</string>
     <string name="start_activity">Start Activity</string>
     <string name="start_record_vendor_data">Start/record Vendor Data</string>
-    <string name="end_activity">End Activity</string>
-    <string name="complete_the_activity">Complete The Activity</string>
     <string name="view_all_activities">View All Activities</string>
     <string name="vendor_completed_tasks">Vendor Completed Tasks</string>
     <string name="details">Details</string>
-    <string name="tracking_details">Tracking Details</string>
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>
     <string name="forgotYourPassword">Forgot your password?</string>
@@ -108,7 +91,6 @@
     <string name="start_day">Slide to Start Day</string>
     <string name="end_day">Slide to End Day</string>
     <string name="tab_layout_desc">Dashboard tabs</string>
-    <string name="unauthorized_access">Unauthorized access</string>
     <string name="something_went_wrong">Something went wrong</string>
 
     <!-- Network errors: shown wherever a failed request is reported (see ApiErrorMapper) -->
@@ -128,7 +110,6 @@
     <string name="work_accepted">Work Accepted</string>
     <string name="work_started">Work Started</string>
     <string name="location_not_found">Location not found</string>
-    <string name="done">Done</string>
     <string name="no_image_selected">No image selected</string>
     <string name="work_ended">Work Ended</string>
     <string name="work_location">Work Location</string>
@@ -136,8 +117,6 @@
     <string name="select_status">Select Status</string>
     <string name="not_available">Not Available</string>
     <string name="work_assigned_successfully">Work assigned successfully</string>
-    <string name="no_projects_found">No projects found</string>
-    <string name="view_work_details">View Work Details</string>
     <string name="no_work_details_found">No work details found</string>
     <string name="no_data_available">No data available</string>
     <string name="work_details">Work Details</string>
@@ -163,10 +142,7 @@
     <string name="under_development">We’re working on this feature. Available soon.</string>
     <string name="holidays">Holidays</string>
     <string name="work_off">Work Off</string>
-    <string name="n_a">N/A</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="location_error">Location not found.</string>
     <string name="type">Type</string>
     <string name="activity">Activity</string>
@@ -178,7 +154,6 @@
     <string name="select_site">Select Site</string>
     <string name="select_type">Select Type</string>
     <string name="select_activity">Select Activity</string>
-    <string name="select_valid_option">Select valid option.</string>
 
     <string name="default_name">N/A</string>
     <string name="default_value">N/A</string>
@@ -186,13 +161,8 @@
     <string name="date_of_joining_label">Date of joining</string>
     <string name="reporting_manager_label">Reporting Manager</string>
     <string name="designation_label">Designation</string>
-    <string name="attendance_already_marked">Attendance is already marked for today. You don’t need to mark it again.</string>
-    <string name="home_location_check">Attendance can only be marked when you are within 500 meters of your registered location (office/home). Please move closer to the location to proceed.</string>
-    <string name="no_actions_available">No actions available</string>
     <string name="attendance_submitted">Submitted</string>
     <string name="unmarked_days">Unmarked Days</string>
-    <string name="end_work_with_details">Provide details to end your work for today.</string>
-    <string name="start_work_with_photo_lat_long">Please take a photo and confirm your location to start work.</string>
     <string name="battery_optimization">Battery Optimization</string>
     <string name="battery_optimization_msg">To ensure the app functions correctly, please disable battery optimization for this app in your device settings.</string>
     <string name="current_location">Current Location</string>
@@ -204,8 +174,6 @@
     <string name="sites">Sites</string>
     <string name="add_site">Add Site</string>
     <string name="site_created_successfully">Site created successfully</string>
-    <string name="site">Site</string>
-    <string name="approve_site">Approve Site</string>
     <string name="no_action">No Action</string>
     <string name="no_work_started_title">No Work Started or Completed</string>
     <string name="no_work_started_message">You have not started or completed any assigned work for today.\n\nWould you like to mark yourself as IDLE for the day, or enter your work details?</string>
@@ -213,14 +181,11 @@
     <string name="enter_work_details">Enter Work Details</string>
     <string name="reset_password_email_sent">If the email is registered with us, a password reset link has been sent to your email.</string>
     <string name="email">Email</string>
-    <string name="role">Role</string>
     <string name="update_downloaded">Update downloaded. Restart now.</string>
     <string name="install">Install</string>
     <string name="approved">Approved</string>
     <string name="rejected">Rejected</string>
     <string name="pending">Pending</string>
-    <string name="pm_status">PM Status: </string>
-    <string name="pm_remarks">PM Remarks: </string>
     <string name="apply_leave">Apply Leave</string>
     <string name="back">Back</string>
     <string name="leave_start_date_required">Leave Start Date *</string>
@@ -228,12 +193,8 @@
     <string name="leave_type_required">Leave Type *</string>
     <string name="reason_required">Reason *</string>
     <string name="attachment_optional">Attachment (Optional)</string>
-    <string name="select_start_date">Select start date</string>
-    <string name="select_end_date">Select end date</string>
     <string name="select_leave_type">Select Leave Type</string>
-    <string name="enter_reason">Enter reason for leave</string>
     <string name="no_file_selected">No file selected</string>
-    <string name="browse">Browse</string>
     <string name="upload">Upload</string>
     <string name="file_hint">Supported: PDF, JPG, PNG (Max 5MB)</string>
     <string name="submit_leave_request">Submit Leave Request</string>
@@ -254,7 +215,6 @@
     <string name="please_enter_email">Please enter email</string>
     <string name="please_enter_otp">Please enter OTP</string>
     <string name="we_have_sent_otp_email">We have sent an OTP on given Email Address</string>
-    <string name="invalid_otp">Invalid OTP. Please try again.</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="types">Types: </string>
     <string name="select_all">Select All</string>
@@ -262,9 +222,7 @@
     <string name="start_site">Start Site</string>
     <string name="end_work">End Work</string>
     <string name="site_information">Site Information</string>
-    <string name="enter_status_and_remarks">Enter Status and Remarks</string>
     <string name="completed">COMPLETED</string>
-    <string name="assigned_work">Assigned Work</string>
     <string name="site_id">Site ID: </string>
     <string name="project_colon">Project: </string>
     <string name="open">Open</string>
@@ -273,15 +231,8 @@
     <string name="removed">Removed</string>
     <string name="approve">Approve</string>
     <string name="reject">Reject</string>
-    <string name="approved_by">Approved By</string>
-    <string name="rejected_by">Rejected By</string>
     <string name="work_site_approval_successful">Work site approval successful</string>
-    <string name="pm">PM</string>
-    <string name="ops">OPS</string>
-    <string name="admin">Admin</string>
-    <string name="started">Started</string>
     <string name="absent_system_generated">Absent (System Generated)</string>
-    <string name="incomplete_attendance">Incomplete</string>
     <string name="attendance_location_disclosure_title">Allow location for attendance</string>
     <string name="attendance_location_disclosure_msg">ONAQT uses your location to verify check-in and check-out, and to record your route while your shift is active. Location is used only for official work purposes and is never shared with third parties.</string>
     <string name="background_location_usage">Allow background location?</string>
@@ -323,7 +274,6 @@
     <string name="purpose">Purpose</string>
     <string name="select_purpose">Select Purpose</string>
     <string name="select_travel_mode">Select Travel Mode</string>
-    <string name="circle_id_not_found">Circle not found</string>
     <string name="success">Success</string>
     <string name="claim_submitted_successfully">Claim submitted successfully</string>
     <string name="delete_claim">Delete Claim</string>
@@ -338,11 +288,8 @@
     <string name="claim_edit_unavailable">This claim\'s project details couldn\'t be loaded, so it can\'t be edited right now. Please try again.</string>
     <string name="edit_claim_locked_note">Date, sites, project and category can\'t be changed. You can update the expenses below.</string>
     <string name="expenses">Expenses</string>
-    <string name="single_site">Single Site</string>
-    <string name="multiple_site">Multiple Site</string>
     <string name="claim_amount">Claim Amount</string>
     <string name="basic_information">Basic Information</string>
-    <string name="total_claim_amount">Total Claim Amount</string>
     <string name="rupee_format" translatable="false">₹ %1$.2f</string>
     <string name="remarks">Remarks</string>
     <string name="claim_details">Claim Details</string>
@@ -353,13 +300,9 @@
         <item quantity="other">%d expense(s)</item>
     </plurals>
     <string name="of_format" translatable="false">of ₹ %1$.2f</string>
-    <string name="locations">Locations</string>
-    <string name="items">Items</string>
     <string name="please_enter_from_location">Please enter from location</string>
     <string name="please_enter_to_location">Please enter to location</string>
-    <string name="please_enter_travel_mode">Please enter travel mode</string>
     <string name="please_enter_travel_amount">Please enter travel amount</string>
-    <string name="please_enter_travel_purpose">Please enter travel purpose</string>
     <string name="please_select_date">Please select date</string>
     <string name="please_select_site">Please select site</string>
     <string name="please_select_project">Please select project</string>
@@ -375,7 +318,6 @@
     <string name="work_types">Work Types</string>
     <string name="self_work_assign">Self Work Assign</string>
     <string name="start_work">Start Work</string>
-    <string name="create_new_work_assignment">Create New Work Assignment</string>
     <string name="submit_new_reimbursement_claim">Submit New Reimbursement Claim</string>
     <string name="approved_amount">Approved Amount</string>
     <string name="upload_receipt_subtitle">Upload receipt for reimbursement claim</string>
@@ -383,19 +325,10 @@
     <string name="with">with</string>
     <string name="location">Location</string>
     <string name="tap_to_take_photo">Tap to take photo</string>
-    <string name="select_month_year">Select Month and Year</string>
-    <string name="no_site_approvals_found">No site approvals found</string>
-    <string name="select_date">Select date</string>
-    <string name="check_in">Check in</string>
-    <string name="check_out">Check out</string>
-    <string name="view_sites_visited">View sites visited</string>
-    <string name="total_work_hours_format">Total %1$s hrs</string>
     <string name="no_work_sites_found">No work sites found for this employee and date.</string>
-    <string name="view_details">View details</string>
 
     <!--Material Usage Strings-->
     <string name="material_usage_title">Material Usage</string>
-    <string name="material_usage_subtitle">Enter consumed material quantity</string>
     <string name="material_search_hint">Search by name or unit</string>
     <string name="material_qty_hint">Qty</string>
 
@@ -429,7 +362,6 @@
     <string name="material_empty_msg">There is no material assigned for this work. You can still complete the work without recording any usage.</string>
 
     <string name="material_retry">Retry</string>
-    <string name="work_completed_success">Work completed successfully.</string>
 
     <!-- My Targets -->
     <string name="period">PERIOD</string>
@@ -442,7 +374,6 @@
     <string name="active_days">Active Days</string>
     <string name="hours_worked">Hours Worked</string>
     <string name="efficiency">Efficiency</string>
-    <string name="select_month">Select Month</string>
     <string name="no_targets_data">No targets data available for this period.</string>
     <string name="status_above_target">Above Target</string>
     <string name="status_under_target">Under Target</string>
@@ -622,7 +553,6 @@
     <string name="work_status_caption">WORK STATUS</string>
     <string name="in_progress">In Progress</string>
     <string name="completed_label">Completed</string>
-    <string name="site_code">Site Code</string>
     <string name="review_site_details">Review site details</string>
     <string name="site_work_detail">Site Work Detail</string>
     <string name="approval_step_format">%1$s: %2$d</string>
