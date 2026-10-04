@@ -38,7 +38,7 @@
     <!-- Small (20dp) icons, and the padding that centres one in a 48dp touch target -->
     <dimen name="icon_size_small">20dp</dimen>
     <dimen name="icon_touch_inset_small">14dp</dimen>
-    <dimen name="switch_button_height">45dp</dimen>
+    <dimen name="switch_button_height">@dimen/min_touch_target</dimen>
 
     <!--padding-->
     <dimen name="button_padding_lr">16dp</dimen>
@@ -123,7 +123,7 @@
     <dimen name="empty_state_animation_size">150dp</dimen>
     <!-- Header of a screen opened from a tab: round back button, centred title -->
     <dimen name="screen_header_height">64dp</dimen>
-    <dimen name="screen_header_back_size">44dp</dimen>
+    <dimen name="screen_header_back_size">@dimen/min_touch_target</dimen>
     <dimen name="screen_header_title_inset">72dp</dimen>
     <!-- Opacity of a row that can't be acted on (Material's disabled emphasis) -->
     <item name="alpha_enabled" format="float" type="dimen">1.0</item>
