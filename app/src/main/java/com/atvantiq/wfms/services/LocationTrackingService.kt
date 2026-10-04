@@ -22,14 +22,14 @@ import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
-import com.atvantiq.wfms.data.repository.tracking.ITrackingRepo
 import com.atvantiq.wfms.data.tracking.LocationEventQueue
+import com.atvantiq.wfms.data.tracking.QueueUploader
 import com.atvantiq.wfms.data.tracking.QueuedLocationEvent
 import com.atvantiq.wfms.data.tracking.SamplingMode
 import com.atvantiq.wfms.data.tracking.ShiftTracker
 import com.atvantiq.wfms.data.tracking.TrackPoint
 import com.atvantiq.wfms.data.tracking.TripModePolicy
-import com.atvantiq.wfms.network.ApiService
+import com.atvantiq.wfms.data.tracking.UploadOutcome
 import com.atvantiq.wfms.ui.screens.SplashActivity
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.ThemeManager
@@ -56,6 +56,10 @@ class LocationTrackingService : Service() {
     companion object {
         const val CHANNEL_ID = "location_service_channel_v2"
         const val NOTIFICATION_ID = 12345
+
+        /** Shown when the service ends itself, so a silent stop never goes unnoticed. */
+        private const val ALERT_CHANNEL_ID = "location_service_alert_channel"
+        private const val ALERT_NOTIFICATION_ID = NOTIFICATION_ID + 1
         /** Rest mode: balanced power, a fix every 15 minutes. */
         private const val REST_INTERVAL_MILLIS = 15 * 60 * 1000L
 
@@ -95,10 +99,7 @@ class LocationTrackingService : Service() {
     private val syncMutex = Mutex()
 
     @Inject
-    lateinit var api: ApiService // Your API service interface
-
-    @Inject
-    lateinit var trackingService: ITrackingRepo
+    lateinit var queueUploader: QueueUploader
 
     @Inject
     lateinit var prefMain: SecurePrefMain
@@ -140,7 +141,7 @@ class LocationTrackingService : Service() {
             initializeLocationTracking()
         } catch (e: Exception) {
             Log.e("LocationService", "Error setting up service", e)
-            stopSelf()
+            stopWithNotice(TrackingStopReason.ERROR)
         }
     }
 
@@ -169,13 +170,14 @@ class LocationTrackingService : Service() {
                 ACTION_RESUME -> shiftTracker.resume()
             }
             startForeground(NOTIFICATION_ID, buildNotification())
+            clearStopNotice()
             scheduleAutoResume()
             isServiceRunning = true
             startLocationUpdates()
             return START_STICKY
         } catch (e: Exception) {
             Log.e("LocationService", "Error starting service", e)
-            stopSelf()
+            stopWithNotice(TrackingStopReason.ERROR)
             return START_NOT_STICKY
         }
     }
@@ -260,7 +262,7 @@ class LocationTrackingService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Location Tracking",
+                getString(R.string.tracking_channel_name),
                 NotificationManager.IMPORTANCE_LOW
             )
             channel.setShowBadge(false)
@@ -269,6 +271,13 @@ class LocationTrackingService : Service() {
             channel.setSound(null, null)
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
+            manager.createNotificationChannel(
+                NotificationChannel(
+                    ALERT_CHANNEL_ID,
+                    getString(R.string.tracking_alert_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+            )
         }
     }
 
@@ -289,7 +298,7 @@ class LocationTrackingService : Service() {
         val callback = locationCallback ?: return
         if (!checkLocationPermission()) {
             Log.e("LocationService", "Location permission not granted")
-            stopSelf()
+            stopWithNotice(TrackingStopReason.PERMISSION_LOST)
             return
         }
         val request = when (mode) {
@@ -305,7 +314,7 @@ class LocationTrackingService : Service() {
             if (BuildConfig.DEBUG) Log.d("LocationService", "Sampling in $mode mode")
         } catch (e: SecurityException) {
             Log.e("LocationService", "Security exception: ${e.message}")
-            stopSelf()
+            stopWithNotice(TrackingStopReason.PERMISSION_LOST)
         }
     }
 
@@ -360,28 +369,36 @@ class LocationTrackingService : Service() {
     }
 
     private suspend fun flushQueuedLocations() {
-        val queuedLocations = locationEventQueue.peekAll()
-        var syncedCount = 0
-
-        for (event in queuedLocations) {
-            try {
-                trackingService.sendLocation(event.toUploadParams())
-                syncedCount++
-            } catch (e: Exception) {
-                if (syncedCount > 0) {
-                    locationEventQueue.removeSynced(syncedCount)
-                }
-                Log.e("LocationService", "Queued location sync paused after failure", e)
-                return
-            }
+        when (val outcome = queueUploader.flush()) {
+            UploadOutcome.Complete -> Unit
+            is UploadOutcome.Paused -> Log.e("LocationService", "Queued location sync paused after failure", outcome.cause)
+            // Retrying with a dead session cannot succeed; say so instead of failing quietly.
+            UploadOutcome.SessionExpired -> stopWithNotice(TrackingStopReason.SESSION_EXPIRED)
         }
+    }
 
-        if (syncedCount > 0) {
-            locationEventQueue.removeSynced(syncedCount)
-            if (BuildConfig.DEBUG) {
-                Log.d("LocationService", "Synced $syncedCount queued location event(s)")
-            }
-        }
+    /**
+     * Ends the service and tells the user why. The "tracking active" flag is cleared too, so the
+     * dashboard offers to start tracking again when the user comes back, instead of the shift
+     * screen claiming a service that is no longer running.
+     */
+    private fun stopWithNotice(reason: TrackingStopReason) {
+        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false)
+        val notice = NotificationCompat.Builder(this, ALERT_CHANNEL_ID)
+            .setContentTitle(getString(R.string.tracking_stopped_title))
+            .setContentText(getString(reason.textRes))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(getString(reason.textRes)))
+            .setSmallIcon(R.drawable.ic_notifications_24)
+            .setContentIntent(openDashboardIntent())
+            .setAutoCancel(true)
+            .build()
+        getSystemService(NotificationManager::class.java)?.notify(ALERT_NOTIFICATION_ID, notice)
+        stopSelf()
+    }
+
+    /** A new successful start supersedes any earlier "tracking stopped" notice. */
+    private fun clearStopNotice() {
+        getSystemService(NotificationManager::class.java)?.cancel(ALERT_NOTIFICATION_ID)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
