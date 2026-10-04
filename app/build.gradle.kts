@@ -176,8 +176,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("com.facebook.stetho:stetho:1.5.1")
-    implementation("com.facebook.stetho:stetho-okhttp3:1.5.1")
+    debugImplementation("com.facebook.stetho:stetho:1.5.1")
+    debugImplementation("com.facebook.stetho:stetho-okhttp3:1.5.1")
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.0")
 

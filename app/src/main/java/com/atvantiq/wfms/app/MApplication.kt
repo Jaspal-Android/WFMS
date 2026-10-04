@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.utils.ThemeManager
-import com.facebook.stetho.Stetho
+import com.atvantiq.wfms.debug.DebugTools
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.Lazy
 import dagger.hilt.android.HiltAndroidApp
@@ -19,13 +19,12 @@ class MApplication : Application() {
 	
 	override fun onCreate() {
 		super.onCreate()
-		//stetho only working debug
 		// Firebase is already initialised by its content provider before this runs.
 		FirebaseCrashlytics.getInstance()
 			.setCrashlyticsCollectionEnabled(true)
 
 		if (BuildConfig.DEBUG) {
-			Stetho.initializeWithDefaults(this)
+			DebugTools.init(this)
 		}
 		instance = this
 
