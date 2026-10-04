@@ -470,7 +470,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         fusedLocationClient.lastLocation
             .addOnSuccessListener { cachedLocation ->
                 if (Utils.isUsableAttendanceLocation(cachedLocation)) {
-                    onResult(cachedLocation)
+                    whenAttached { onResult(cachedLocation) }
                     return@addOnSuccessListener
                 }
 
@@ -479,13 +479,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     Priority.PRIORITY_HIGH_ACCURACY,
                     cancellationTokenSource.token
                 ).addOnSuccessListener { freshLocation ->
-                    onResult(freshLocation)
+                    whenAttached { onResult(freshLocation) }
                 }.addOnFailureListener {
-                    onResult(null)
+                    whenAttached { onResult(null) }
                 }
             }.addOnFailureListener {
-                resetAttendanceAction()
-                onResult(null)
+                whenAttached {
+                    resetAttendanceAction()
+                    onResult(null)
+                }
             }
     }
 
@@ -671,29 +673,26 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     @SuppressLint("MissingPermission")
     private fun getCurrentLatitudeLongitude() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            val latitude = location?.latitude
-            val longitude = location?.longitude
-            val lat = latitude ?: 0.0
-            val lon = longitude ?: 0.0
-            if (latitude != null && longitude != null) {
-                Utils.getAddressFromLatLong(requireContext(), lat, lon) { addressFromLatLon ->
-                    requireActivity().runOnUiThread {
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.current_location),
-                            "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $lon\n\n${getString(R.string.Address)}: $addressFromLatLon"
-                        )
+            whenAttached { context ->
+                val latitude = location?.latitude
+                val longitude = location?.longitude
+                if (latitude != null && longitude != null) {
+                    // The address arrives on the main thread, possibly after the screen is gone.
+                    Utils.getAddressFromLatLong(context, latitude, longitude) { addressFromLatLon ->
+                        whenAttached {
+                            alertDialogShow(
+                                it,
+                                getString(R.string.current_location),
+                                getString(R.string.current_location_details, latitude.toString(), longitude.toString(), addressFromLatLon)
+                            )
+                        }
                     }
+                } else {
+                    alertDialogShow(context, getString(R.string.alert), getString(R.string.unable_to_fetch_location))
                 }
-            } else {
-                alertDialogShow(
-                    requireContext(),
-                    getString(R.string.alert),
-                    getString(R.string.unable_to_fetch_location)
-                )
             }
         }.addOnFailureListener {
-            alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.unable_to_fetch_location))
+            whenAttached { alertDialogShow(it, getString(R.string.alert), getString(R.string.unable_to_fetch_location)) }
         }
     }
 }

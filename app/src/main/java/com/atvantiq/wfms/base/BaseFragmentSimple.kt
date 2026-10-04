@@ -227,6 +227,15 @@ open class BaseFragmentSimple : Fragment() {
 		//}
 	}
 
+	/**
+	 * Runs [block] with the context only while the fragment is still attached. Location and
+	 * geocoder callbacks can arrive after the screen is gone, and `requireContext()` then throws.
+	 */
+	protected fun whenAttached(block: (Context) -> Unit) {
+		val attached = context
+		if (isAdded && attached != null) block(attached)
+	}
+
 	fun isLifeCycleResumed() =
 		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 
