@@ -4,9 +4,10 @@ import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.network.ApiService
 import com.atvantiq.wfms.network.AuthInterceptor
+import com.atvantiq.wfms.network.LogRedactor
 import com.atvantiq.wfms.network.NetworkEndPoints
 import com.atvantiq.wfms.BuildConfig
-import com.facebook.stetho.okhttp3.StethoInterceptor
+import com.atvantiq.wfms.debug.DebugTools
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -49,7 +50,9 @@ class NetModule() {
         client.connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         client.readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         client.writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        val logging = HttpLoggingInterceptor().apply {
+        val logging = HttpLoggingInterceptor { message ->
+            HttpLoggingInterceptor.Logger.DEFAULT.log(LogRedactor.redact(message))
+        }.apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
             } else {
@@ -65,7 +68,7 @@ class NetModule() {
         client.protocols(protocols)
         client.addInterceptor(logging)
         if (BuildConfig.DEBUG) {
-            client.addNetworkInterceptor(StethoInterceptor())
+            DebugTools.networkInterceptor()?.let(client::addNetworkInterceptor)
         }
         return client.build()
     }
