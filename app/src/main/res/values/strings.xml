@@ -3,11 +3,6 @@
     <string name="title_activity_dashboard">DashboardActivity</string>
 
     <string name="menu_dashboard">Dashboard</string>
-    <string name="menu_vendor">Vendor</string>
-    <string name="menu_cab">Cab</string>
-    <string name="material_reco">Material</string>
-    <string name="menu_about">About</string>
-    <string name="menu_feedback">Feedback</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="atvantiq_networks">Atvantiq Networks Pvt Ltd.</string>
@@ -33,7 +28,6 @@
     <string name="my_progress">My Progress</string>
     <string name="approvals">Approvals</string>
     <string name="attendance">Attendance</string>
-    <string name="save">Save</string>
 
     <!--Image picker strings-->
     <string name="pick_image">Pick image from</string>
@@ -47,16 +41,9 @@
     <string name="file_creation_error">Couldn\'t prepare a file for the photo. Please try again.</string>
     <string name="camera_error">Couldn\'t capture the photo. Please try again.</string>
     <string name="gallery_error">Couldn\'t open that image. Please choose another.</string>
-    <string name="warning_location_permission">"The app needs location permissions to continue the application. You can enable them in the app settings.</string>
-    <string name="warning_gps_needed">Location Services Required</string>
-    <string name="go_to_settings">Go to Settings</string>
     <string name="create_claim">Create Claim</string>
     <string name="my_claims">My Claims</string>
     <string name="pending_approvals_pm">Pending Approvals(For PM)</string>
-    <string name="start_activity">Start Activity</string>
-    <string name="start_record_vendor_data">Start/record Vendor Data</string>
-    <string name="view_all_activities">View All Activities</string>
-    <string name="vendor_completed_tasks">Vendor Completed Tasks</string>
     <string name="details">Details</string>
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>
@@ -68,8 +55,6 @@
     <string name="back_to_login">Back to Login</string>
     <string name="enter_confirm_password">Enter Confirm Password</string>
     <string name="password_mismatch_error">Password and confirm password does not match</string>
-    <string name="add_cab_fare">Add Cab Fare</string>
-    <string name="add_material">Add Material</string>
     <string name="alert">Alert</string>
     <string name="please_wait">Please wait...</string>
     <!--Greeting messages-->
@@ -139,7 +124,6 @@
     <string name="no_types_available">No types available</string>
     <string name="no_activities_available">No activities available</string>
     <string name="select_activities">Select Activities</string>
-    <string name="under_development">We’re working on this feature. Available soon.</string>
     <string name="holidays">Holidays</string>
     <string name="work_off">Work Off</string>
 

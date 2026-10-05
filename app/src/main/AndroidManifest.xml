@@ -99,10 +99,6 @@
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity
-            android:name=".ui.screens.cab.add.AddCabFareActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
             android:name=".ui.screens.forgotPassword.newPassword.NewPasswordActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
@@ -115,14 +111,6 @@
             android:exported="false"
             android:screenOrientation="userPortrait"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.screens.vendor.loginDetails.VendorLoginDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.vendor.viewAllActivities.VendorDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
         <activity
             android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsDetailsActivity"
             android:exported="false"
@@ -137,14 +125,6 @@
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".ui.screens.attendance.signInDetails.SignInDetailActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.vendor.viewAllActivities.ViewAllVendorActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.vendor.startActivity.VendorStartActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity

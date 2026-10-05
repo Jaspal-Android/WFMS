@@ -35,32 +35,4 @@
         android:name="com.atvantiq.wfms.ui.screens.more.MoreFragment"
         android:label="@string/tab_more"
         tools:layout="@layout/fragment_more" />
-    <fragment
-        android:id="@+id/nav_vendor"
-        android:name="com.atvantiq.wfms.ui.screens.vendor.VendorFragment"
-        android:label="@string/menu_vendor"
-        tools:layout="@layout/fragment_vendor" />
-    <fragment
-        android:id="@+id/nav_about"
-        android:name="com.atvantiq.wfms.ui.screens.about.AboutFragment"
-        android:label="@string/menu_about"
-        tools:layout="@layout/fragment_about" />
-    <fragment
-        android:id="@+id/nav_feedback"
-        android:name="com.atvantiq.wfms.ui.screens.feedback.FeedbackFragment"
-        android:label="@string/menu_feedback"
-        tools:layout="@layout/fragment_feedback" />
-    <fragment
-        android:id="@+id/nav_cab"
-        android:name="com.atvantiq.wfms.ui.screens.cab.CabFragment"
-        android:label="@string/menu_cab"
-        tools:layout="@layout/fragment_cab"
-        />
-    <fragment
-        android:id="@+id/nav_material_reco"
-        android:name="com.atvantiq.wfms.ui.screens.materialReco.PurchaseFragment"
-        android:label="@string/material_reco"
-        tools:layout="@layout/fragment_purchase" />
-
-
 </navigation>
