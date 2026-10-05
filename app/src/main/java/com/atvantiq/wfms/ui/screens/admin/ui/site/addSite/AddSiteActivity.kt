@@ -50,18 +50,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
                             viewModel.clients = clients
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -87,18 +76,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
                             viewModel.projects = projects
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -123,18 +101,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
                             viewModel.circles = circles
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -165,18 +132,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
                             finish()
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 

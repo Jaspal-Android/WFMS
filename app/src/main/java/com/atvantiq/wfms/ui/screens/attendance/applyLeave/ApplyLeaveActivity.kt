@@ -124,12 +124,10 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
             showToast(this,response.response.message)
             viewModel.clearData()
             binding.hasPreviewImage = false
-        } else if (response.response?.code == ValConstants.UNAUTHORIZED_CODE) {
-            // The API reports auth failures in the body (HTTP 200 + code 401), so an expired
-            // session lands here and must route to login like every other screen.
-            tokenExpiresAlert()
-        } else{
-            alertDialogShow(this,response?.response?.message?:getString(R.string.something_went_wrong))
+        } else {
+            // The API reports auth failures in the body (HTTP 200 + code 401), which
+            // handleRejectedResponse routes to the login dialog.
+            handleRejectedResponse(response.response?.code, response.response?.message)
         }
     }
 

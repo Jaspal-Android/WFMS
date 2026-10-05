@@ -21,7 +21,6 @@ import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import java.util.Locale
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
@@ -154,7 +153,7 @@ class AddTravelingDetailActivity :
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -164,28 +163,8 @@ class AddTravelingDetailActivity :
 
             Status.ERROR -> {
                 dismissProgress()
-                handleError(response.throwable)
+                handleApiFailure(response.throwable)
             }
-        }
-    }
-
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
-    }
-
-    private fun handleError(throwable: Throwable?) {
-        if (throwable is HttpException) {
-            if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-                tokenExpiresAlert()
-            } else {
-                showToast(this, throwable.message ?: getString(R.string.something_went_wrong))
-            }
-        } else {
-            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
         }
     }
 

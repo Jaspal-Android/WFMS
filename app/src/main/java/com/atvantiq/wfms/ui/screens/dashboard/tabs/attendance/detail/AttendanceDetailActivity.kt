@@ -28,7 +28,6 @@ import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 
@@ -134,18 +133,9 @@ class AttendanceDetailActivity :
                             }
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                            binding.isNoDataAvailable = true
-                        }
-
                         else -> {
                             binding.isNoDataAvailable = true
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                resp?.message ?: getString(R.string.something_went_wrong)
-                            )
+                            handleRejectedResponse(resp?.code, resp?.message)
                         }
                     }
                 }
@@ -153,12 +143,7 @@ class AttendanceDetailActivity :
                 Status.ERROR -> {
                     dismissProgress()
                     binding.isNoDataAvailable = true
-                    (response.throwable as? HttpException)?.let {
-                        if (it.code() == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert()
-                    } ?: showToast(
-                        this,
-                        response.throwable?.message ?: getString(R.string.something_went_wrong)
-                    )
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> showProgress()

@@ -19,7 +19,6 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.utils.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import java.util.Locale
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
@@ -196,18 +195,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             viewModel.clients = clients
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -234,18 +222,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             viewModel.projects = projects
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -271,18 +248,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             viewModel.poNumbers = poNumbers
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -307,18 +273,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             viewModel.circles = circles
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -344,18 +299,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             viewModel.sites = sites
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -381,18 +325,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             viewModel.types = types
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
@@ -448,18 +381,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             finish()
                         }
 
-                        ValConstants.UNAUTHORIZED_CODE -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 

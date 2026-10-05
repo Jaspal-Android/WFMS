@@ -13,7 +13,6 @@ import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
 import com.atvantiq.wfms.utils.Utils
-import retrofit2.HttpException
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding, AttendanceViewModel>() {
@@ -88,34 +87,16 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                             binding.isNoDataAvailable = false
                             //adapter?.submitList(response.response.data)
                         }
-                    } else if (response.response?.code == ValConstants.UNAUTHORIZED_CODE) {
-                        tokenExpiresAlert()
-                        binding.isNoDataAvailable = true
                     } else {
                         binding.isNoDataAvailable = true
-                        alertDialogShow(
-                            this,
-                            getString(R.string.alert),
-                            response.response?.message
-                                ?: getString(R.string.something_went_wrong)
-                        )
+                        handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     dismissProgress()
                     binding.isNoDataAvailable = true
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {

@@ -24,7 +24,6 @@ import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.widgets.CalendarView
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import java.util.Calendar
 
 
@@ -124,7 +123,7 @@ class AttendanceStatusFragment :
             binding.showCalendarProgressBar = response.status == Status.LOADING
             when (response.status) {
                 Status.SUCCESS -> handleSuccessResponse(response.response)
-                Status.ERROR -> handleErrorResponse(response.throwable)
+                Status.ERROR -> handleApiFailure(response.throwable)
                 Status.LOADING -> Unit
             }
         }
@@ -133,23 +132,7 @@ class AttendanceStatusFragment :
     private fun handleSuccessResponse(response: AttendanceDetailListResponse?) {
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> handleAttendanceDetailsResponse(response)
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(
-                requireContext(),
-                getString(R.string.alert),
-                response?.message ?: getString(R.string.something_went_wrong)
-            )
-        }
-    }
-
-    private fun handleErrorResponse(throwable: Throwable?) {
-        if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-            tokenExpiresAlert()
-        } else {
-            showToast(
-                requireContext(),
-                throwable?.message ?: getString(R.string.something_went_wrong)
-            )
+            else -> handleRejectedResponse(response?.code, response?.message)
         }
     }
 

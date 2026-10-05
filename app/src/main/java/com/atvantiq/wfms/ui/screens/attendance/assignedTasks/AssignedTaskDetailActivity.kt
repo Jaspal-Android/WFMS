@@ -268,7 +268,7 @@ class AssignedTaskDetailActivity :
                         showToast(this, it.message ?: getString(successMessage))
                         handleStatusUpdateResponse(it.data, true)
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -295,7 +295,7 @@ class AssignedTaskDetailActivity :
                         it.data?.canRestart = false
                         handleStatusUpdateResponse(it.data)
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -324,7 +324,7 @@ class AssignedTaskDetailActivity :
                             handleStatusUpdateResponse(it.data, isEndWorkCase = true)
                         }
                         else -> {
-                            handleErrorResponse(it.code, it.message)
+                            handleRejectedResponse(it.code, it.message)
                         }
                     }
                 }
@@ -396,22 +396,10 @@ class AssignedTaskDetailActivity :
         }
     }
 
-    private fun handleErrorResponse(code: Int?, message: String?) {
-        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
-    }
-
     private fun handleError(throwable: Throwable?) {
         dismissProgress()
         finishWorkAction()
-        if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
-            tokenExpiresAlert()
-        } else {
-            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
-        }
+        handleApiFailure(throwable)
     }
 
     private val permissionLauncher = registerForActivityResult(

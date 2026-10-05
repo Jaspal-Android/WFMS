@@ -129,7 +129,7 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
                         okLister = DialogInterface.OnClickListener { _, _ -> finish() }
                     )
                 } else {
-                    handleErrorResponse(code ?: 0, response.response?.message)
+                    handleRejectedResponse(code ?: 0, response.response?.message)
                 }
             }
             Status.ERROR -> {
@@ -150,7 +150,7 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
                         setDataOnUI(claim)
                     }
                     else -> {
-                        handleErrorResponse(response.response?.code ?: 0, response.response?.message)
+                        handleRejectedResponse(response.response?.code ?: 0, response.response?.message)
                     }
                 }
             }
@@ -159,10 +159,6 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
                 handleError(response.throwable)
             }
         }
-    }
-
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
     }
 
     private fun handleError(throwable: Throwable?) {
