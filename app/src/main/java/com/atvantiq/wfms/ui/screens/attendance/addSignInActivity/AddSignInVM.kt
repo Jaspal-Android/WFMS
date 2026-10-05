@@ -218,7 +218,8 @@ class AddSignInVM @Inject constructor(
                     val stillSelected = selectedTypeIdList.orEmpty().map { it.id }.toSet()
                     results
                         .filter { it.typeId in stillSelected && it.response.code == ValConstants.SUCCESS_CODE }
-                        .forEach { activitySelection.setAvailable(it.typeId, it.response.data) }
+                        // Activities are not shown on Add Work; every activity of the type is sent.
+                        .forEach { activitySelection.setAvailable(it.typeId, it.response.data, selectAll = true) }
                 }
                 isActivityLoading.set(false)
             },
@@ -252,6 +253,10 @@ class AddSignInVM @Inject constructor(
             }
             selectedTypeIdList.isNullOrEmpty() -> {
                 errorHandler.value = AssignTaskError.ON_TYPE_ERROR
+                false
+            }
+            isActivityLoading.get() == true -> {
+                errorHandler.value = AssignTaskError.ON_ACTIVITY_LOADING
                 false
             }
             !activitySelection.coversAll(selectedTypeIdList.orEmpty().map { it.id }) -> {

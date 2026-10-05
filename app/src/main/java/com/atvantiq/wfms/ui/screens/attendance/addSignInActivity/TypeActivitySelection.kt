@@ -46,11 +46,19 @@ class TypeActivitySelection(
 
     fun hasActivities(typeId: Long): Boolean = availableByType[typeId].orEmpty().isNotEmpty()
 
-    /** Stores the activities of a type and drops picks the server no longer offers. */
-    fun setAvailable(typeId: Long, activities: List<ActivityData>) {
+    /**
+     * Stores the activities of a type and drops picks the server no longer offers. With
+     * [selectAll] every offered activity is picked: Add Work does not show activities, they go
+     * with the type.
+     */
+    fun setAvailable(typeId: Long, activities: List<ActivityData>, selectAll: Boolean = false) {
         availableByType[typeId] = activities
-        val offered = activities.map { it.id }.toSet()
-        selectedByType[typeId]?.let { picked -> selectedByType[typeId] = picked.intersect(offered) }
+        val offered = activities.map { it.id }.toCollection(LinkedHashSet())
+        if (selectAll) {
+            selectedByType[typeId] = offered
+        } else {
+            selectedByType[typeId]?.let { picked -> selectedByType[typeId] = picked.intersect(offered) }
+        }
         picksChanged()
     }
 

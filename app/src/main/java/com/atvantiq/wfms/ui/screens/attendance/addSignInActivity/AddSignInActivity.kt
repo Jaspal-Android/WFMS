@@ -177,9 +177,14 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     showToast(this, getString(R.string.select_type))
                 }
 
+                AssignTaskError.ON_ACTIVITY_LOADING -> showToast(this, getString(R.string.activities_still_loading))
+
+                // Activities are not shown here: say what is wrong with the type, and fetch again
+                // in case the first fetch failed.
                 AssignTaskError.ON_ACTIVITY_ERROR -> {
-                    binding.activitiesEt.error = getString(R.string.select_activity)
-                    showToast(this, getString(R.string.select_activity))
+                    binding.typeEt.error = getString(R.string.no_activities_for_type)
+                    showToast(this, getString(R.string.no_activities_for_type))
+                    viewModel.loadMissingActivities()
                 }
             }
         }

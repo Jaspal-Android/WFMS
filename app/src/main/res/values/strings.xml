@@ -129,6 +129,8 @@
     <string name="select_site">Select Site</string>
     <string name="select_type">Select Type</string>
     <string name="select_activity">Select Activity</string>
+    <string name="activities_still_loading">Loading the work type\'s activities. Please try again in a moment.</string>
+    <string name="no_activities_for_type">No activities are set up for the selected work type.</string>
 
     <string name="default_name">N/A</string>
     <string name="default_value">N/A</string>

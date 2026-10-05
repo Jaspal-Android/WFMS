@@ -27,6 +27,17 @@ class TypeActivitySelectionTest {
     }
 
     @Test
+    fun `selectAll picks every activity of that type only`() {
+        val s = TypeActivitySelection().apply {
+            setAvailable(10L, listOf(survey, install), selectAll = true)
+            setAvailable(20L, listOf(install))
+        }
+
+        assertEquals(setOf(1L, 2L), s.selectedIds(10L))
+        assertTrue(s.selectedIds(20L).isEmpty())
+    }
+
+    @Test
     fun `same activity offered by two types stays separate`() {
         val s = TypeActivitySelection().apply {
             setAvailable(10L, listOf(survey))
