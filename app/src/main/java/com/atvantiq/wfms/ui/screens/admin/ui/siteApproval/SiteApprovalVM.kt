@@ -2,35 +2,24 @@ package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
+import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
-import com.atvantiq.wfms.ui.screens.admin.ui.approvals.MonthlyAttendanceListVM
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType
 import com.atvantiq.wfms.models.workSites.workSiteDetails.isApprovableBy
-import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
 import com.atvantiq.wfms.network.ApiState
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+/** Site Work Detail: one site's work types, and approving or rejecting them. */
 @HiltViewModel
 class SiteApprovalVM @Inject constructor(
     application: Application,
-    attendanceRepo: IAttendanceRepo
-) : MonthlyAttendanceListVM(application, attendanceRepo) {
-
-    var itemPosition = MutableLiveData<Int>().apply { value = -1 }
-
-
-    var workSites  = MutableLiveData<ApiState<WorkSitesResponse>>()
-    fun getWorkSites(employeeId: String,date: String) {
-        executeApiCall(
-            apiCall = { attendanceRepo.workSites(employeeId,date) },
-            liveData = workSites
-        )
-    }
+    private val attendanceRepo: IAttendanceRepo
+) : BaseViewModel(application) {
 
     var workSiteDetails = MutableLiveData<ApiState<WorkSiteDetailResponse>>()
     fun getWorkSiteDetails(workSiteId: Long,employeeId: String,date: String) {

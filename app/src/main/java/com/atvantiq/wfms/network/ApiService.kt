@@ -40,7 +40,7 @@ import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
-import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignmentsResponse
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -167,8 +167,19 @@ interface ApiService {
 	@POST(NetworkEndPoints.createSite)
 	suspend fun createSite(@Body params: JsonObject): CreateSiteResponse
 
-	@GET(NetworkEndPoints.workSites)
-	suspend fun workSites(@Path("employee_id") employeeId: String, @Query("date") date: String): WorkSitesResponse
+	/**
+	 * The work assignments Work Approval lists. The API also filters by employee, project, site, type,
+	 * activity, status, PO, visit, circle and assigner, and sorts; only the date range and the search
+	 * are used (it takes yyyy-MM-dd dates, and sorts newest first by default).
+	 */
+	@GET(NetworkEndPoints.workAll)
+	suspend fun workAssignments(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("from_date") fromDate: String,
+		@Query("to_date") toDate: String,
+		@Query("search") search: String? = null
+	): WorkAssignmentsResponse
 
 	@GET(NetworkEndPoints.workSiteDetailsAdmin)
 	suspend fun workSiteDetailsAdmin(@Path("work_site_id") workSiteId: Long, @Query("employee_id") employeeId: String, @Query("date") date: String): WorkSiteDetailResponse

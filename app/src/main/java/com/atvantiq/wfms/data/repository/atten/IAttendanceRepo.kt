@@ -8,7 +8,7 @@ import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksRe
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
-import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignmentsResponse
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -33,7 +33,7 @@ interface IAttendanceRepo {
 
     suspend fun attendanceApprove(attendanceId: Long, params: JsonObject): AttendanceApproveResponse
 
-    suspend fun workSites(employeeId: String,date: String): WorkSitesResponse
+    suspend fun workAssignments(page: Int, pageSize: Int, fromDate: String, toDate: String, search: String?): WorkAssignmentsResponse
 
     suspend fun workSiteDetailsAdmin(workSiteId: Long, employeeId: String, date: String): WorkSiteDetailResponse
 

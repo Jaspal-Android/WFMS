@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A Work Approval row: one employee-day with its status, date, total work, site and a Review link. -->
+<!-- A Work Approval row: one work assignment with its status, date, visit, progress, site and a Review link. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="android.text.TextUtils" />
-
         <import type="android.view.View" />
 
         <variable
             name="item"
-            type="com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord" />
+            type="com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignment" />
 
         <variable
             name="dateLabel"
+            type="String" />
+
+        <variable
+            name="progressLabel"
             type="String" />
     </data>
 
@@ -60,11 +62,12 @@
                     android:paddingEnd="@dimen/padding_medium"
                     android:paddingBottom="@dimen/padding_x_small"
                     android:textStyle="bold"
-                    app:approvalTextStatus="@{item.action}"
-                    tools:text="@string/submitted" />
+                    app:workStatusCode="@{item.status.code}"
+                    app:workStatusLabel="@{item.status.label}"
+                    tools:text="@string/in_progress" />
             </LinearLayout>
 
-            <!-- Date · total work -->
+            <!-- Date · visit · progress -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,7 +97,7 @@
                     android:layout_marginStart="@dimen/margin"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_clock_16"
-                    android:visibility="@{TextUtils.isEmpty(item.workHours) ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{progressLabel == null ? View.GONE : View.VISIBLE}"
                     app:tint="?attr/wfmsColorOnSurfaceVariant" />
 
                 <TextView
@@ -102,10 +105,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
-                    android:text="@{@string/total_work_format(item.workHours)}"
+                    android:text="@{progressLabel}"
                     android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                    android:visibility="@{TextUtils.isEmpty(item.workHours) ? View.GONE : View.VISIBLE}"
-                    tools:text="Total work: 02:33" />
+                    android:visibility="@{progressLabel == null ? View.GONE : View.VISIBLE}"
+                    tools:text="Visit 1  •  0/1 done" />
             </LinearLayout>
 
             <!-- Site · project · circle, and Review -->

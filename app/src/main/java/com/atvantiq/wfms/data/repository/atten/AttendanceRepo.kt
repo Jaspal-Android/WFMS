@@ -7,7 +7,7 @@ import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksRe
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
-import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignmentsResponse
 import com.atvantiq.wfms.network.ApiService
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -46,11 +46,13 @@ class AttendanceRepo @Inject constructor(
         )
     }
 
-    override suspend fun workSites(employeeId: String, date: String): WorkSitesResponse =
-        apiService.workSites(
-            employeeId,
-            date
-        )
+    override suspend fun workAssignments(
+        page: Int,
+        pageSize: Int,
+        fromDate: String,
+        toDate: String,
+        search: String?
+    ): WorkAssignmentsResponse = apiService.workAssignments(page, pageSize, fromDate, toDate, search)
 
     override suspend fun workSiteDetailsAdmin(workSiteId: Long, employeeId: String, date: String): WorkSiteDetailResponse =
         apiService.workSiteDetailsAdmin(

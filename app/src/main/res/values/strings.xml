@@ -581,11 +581,15 @@
     <string name="cannot_approve_work_types">You cannot approve these work types.</string>
     <string name="select_eligible_work_type">Select at least one eligible work type.</string>
     <string name="employee_id_invalid">Employee ID is invalid.</string>
-    <string name="no_attendance_records_for_approval">No attendance records found for approval.</string>
-    <plurals name="submissions_count">
-        <item quantity="one">%d submission</item>
-        <item quantity="other">%d submissions</item>
+    <plurals name="work_assignments_count">
+        <item quantity="one">%d assignment</item>
+        <item quantity="other">%d assignments</item>
     </plurals>
+    <string name="search_work_hint">Search employee, site, or project</string>
+    <string name="no_work_assignments_for_approval">No work found for approval.</string>
+    <string name="work_visit_format">Visit %d</string>
+    <string name="work_progress_format">%1$d/%2$d done</string>
+    <string name="work_detail_separator" translatable="false">"  •  "</string>
     <string name="client">Client</string>
     <string name="not_selected">Not selected</string>
     <string name="site_id_label">Site ID</string>

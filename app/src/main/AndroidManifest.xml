@@ -60,9 +60,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity"
             android:exported="false" />
         <activity

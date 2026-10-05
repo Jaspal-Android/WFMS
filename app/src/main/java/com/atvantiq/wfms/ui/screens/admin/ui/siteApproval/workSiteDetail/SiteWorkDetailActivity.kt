@@ -23,7 +23,7 @@ import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 /**
  * Site Work Detail (spec 7.3): the work types at one site, where the role approves or rejects the
- * ones still waiting for it. RESULT_OK tells Work Sites that something changed.
+ * ones still waiting for it. RESULT_OK tells Work Approval that something changed.
  */
 @AndroidEntryPoint
 class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteApprovalVM>() {
@@ -54,7 +54,6 @@ class SiteWorkDetailActivity : BaseActivity<ActivitySiteWorkDetailBinding, SiteA
         workSiteId = intent.getLongExtra(SharingKeys.WORK_ID, NO_ID)
         employeeId = intent.getStringExtra(SharingKeys.EMPLOYEE_ID).orEmpty()
         date = intent.getStringExtra(SharingKeys.WORK_DATE).orEmpty()
-        viewModel.itemPosition.value = intent.getIntExtra(SharingKeys.WORK_POSITION, NO_ID.toInt())
         loadWorkSite()
     }
 
