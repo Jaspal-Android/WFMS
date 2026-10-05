@@ -4,7 +4,13 @@ import android.app.Application
 import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.base.savedField
+import com.atvantiq.wfms.base.savedList
+import com.atvantiq.wfms.base.savedListValue
+import com.atvantiq.wfms.base.savedObject
+import com.atvantiq.wfms.base.savedValue
 import com.atvantiq.wfms.constants.ReimbursementData
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
@@ -42,11 +48,15 @@ import javax.inject.Inject
 class CreateClaimVM @Inject constructor(
     application: Application,
     private val claimRepo: IClaimRepo,
-    private val creationRepo: CreationRepo
+    private val creationRepo: CreationRepo,
+    state: SavedStateHandle
 ) : BaseViewModel(application) {
 
-    var isOutstationExpense = ObservableField<Boolean>().apply { set(false) }
-    var isMultiSite = ObservableField<Boolean>().apply { set(false) }
+    // What the user typed, picked and added is kept in the SavedStateHandle, so a long claim survives
+    // Android ending the process while the user is in the camera or another app. The lists the
+    // pickers offer are fetched again.
+    var isOutstationExpense = state.savedField("outstation", false)
+    var isMultiSite = state.savedField("multiSite", false)
     val isSubmitting = ObservableField<Boolean>().apply { set(false) }
 
     /* Edit mode: header (date, sites, project, circle, category) is locked; only expenses change. */
@@ -54,24 +64,25 @@ class CreateClaimVM @Inject constructor(
     val lockedSitesSummary = ObservableField<String>().apply { set("") }
     private var lockedHeader: LockedClaimHeader? = null
 
-    var remarks = MutableLiveData<String>().apply { value = "" }
-    var date = ObservableField<String>().apply { set("") }
-    var purpose = ObservableField<String>().apply { set("") }
-    var selectedSingleSite: Site? = null
-    var selectedProjectId: Long? = null
-    var selectedCircleId: Long? = null
-    var selectedCircleCode: String? = null
-    var travelingEntriesList = MutableLiveData<List<TravelExpense>>().apply { value = emptyList() }
-    var daEntriesList = MutableLiveData<List<DAExpense>>().apply { value = emptyList() }
-    var hotelEntriesList = MutableLiveData<List<HotelExpense>>().apply { value = emptyList() }
-    var othersEntriesList = MutableLiveData<List<OtherExpense>>().apply { value = emptyList() }
-    var selectedSitesIdList = MutableLiveData<List<SiteData>>().apply { value = emptyList() }
+    var remarks: MutableLiveData<String> = state.getLiveData("remarks", "")
+    var date = state.savedField("date", "")
+    var purpose = state.savedField("purpose", "")
+    var selectedSingleSite: Site? by state.savedObject("singleSite")
+    var selectedProjectId: Long? by state.savedValue("projectId", null)
+    var selectedCircleId: Long? by state.savedValue("circleId", null)
+    var selectedCircleCode: String? by state.savedValue("circleCode", null)
+    var travelingEntriesList = state.savedList<TravelExpense>("travelEntries")
+    var daEntriesList = state.savedList<DAExpense>("daEntries")
+    var hotelEntriesList = state.savedList<HotelExpense>("hotelEntries")
+    var othersEntriesList = state.savedList<OtherExpense>("otherEntries")
+    var selectedSitesIdList = state.savedList<SiteData>("pickedSites")
 
-    /*Listing data*/
-    var singleSites: List<Site> = ArrayList()
+    /*Listing data: the sites offered for the date and the circles of the picked project are small and kept;
+      the project list and the project's site list are fetched again when needed.*/
+    var singleSites: List<Site> by state.savedListValue("singleSites")
     var multiSites: List<SiteData> = ArrayList()
     var projects: List<Project> = ArrayList()
-    var circles: List<Circle> = ArrayList()
+    var circles: List<Circle> by state.savedListValue("circles")
 
     var clickEvents = LiveEvent<CreateClaimClickEvents>()
     var errorEvents = LiveEvent<CreateClaimErrorHandler>()
@@ -270,6 +281,11 @@ class CreateClaimVM @Inject constructor(
             apiCall = { creationRepo.siteListByProject(projectId) },
             liveData = siteListByProjectResponse,
         )
+    }
+
+    // After the process was recreated the picked project's site list (multi-site claims) is not back.
+    init {
+        if (isMultiSite.get() == true) selectedProjectId?.let { getSiteListByProject(it) }
     }
 
     /** The claim being edited plus one of its sites, which supplies the claim's project and circle. */

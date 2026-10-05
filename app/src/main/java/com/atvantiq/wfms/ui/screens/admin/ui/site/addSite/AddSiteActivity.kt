@@ -168,7 +168,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
             title = getString(R.string.select_client),
             layoutResId = R.layout.item_picker_option,
             bind = { view, client ->
-                bindOption(view, client.companyName, client.displayName, client.id == viewModel.selectedClient?.id)
+                bindOption(view, client.companyName, client.displayName, client.id == viewModel.selectedClientId)
             },
             onItemSelected = { viewModel.selectClient(it) },
             filterCondition = { client, query -> matches(query, client.companyName, client.displayName) },
@@ -187,7 +187,7 @@ class AddSiteActivity : BaseActivity<ActivityAddSiteBinding, AddSiteVM>() {
             onItemSelected = { viewModel.selectProject(it) },
             filterCondition = { project, query -> matches(query, project.name) },
             emptyMessage = getString(R.string.no_projects_available),
-            retryAction = { getProjectListByClientId(viewModel.selectedClient?.id ?: 0L) },
+            retryAction = { getProjectListByClientId(viewModel.selectedClientId ?: 0L) },
             tag = "ProjectSelectionDialog"
         )
     }

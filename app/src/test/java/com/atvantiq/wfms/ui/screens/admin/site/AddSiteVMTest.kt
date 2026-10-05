@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.admin.site
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.Client
@@ -10,6 +11,7 @@ import com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteVM
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -59,7 +61,7 @@ class AddSiteVMTest {
         Dispatchers.setMain(dispatcher)
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
-        viewModel = AddSiteVM(application, creationRepo)
+        viewModel = AddSiteVM(application, creationRepo, SavedStateHandle())
     }
 
     @After
@@ -75,6 +77,51 @@ class AddSiteVMTest {
         viewModel.siteId.set("MH-0042")
         viewModel.siteName.set("Testing 6")
         viewModel.siteAddress.set("Sector 17")
+    }
+
+    @Test
+    fun `a recreated form keeps what was typed and picked`() {
+        val handle = SavedStateHandle()
+        viewModel = AddSiteVM(application, creationRepo, handle)
+        fillSite()
+        viewModel.siteLatitude.set("30.7333")
+
+        val restored = AddSiteVM(application, creationRepo, handle)
+
+        assertEquals("Jio", restored.clientName.get())
+        assertEquals("jio_4g", restored.projectName.get())
+        assertEquals("Chandigarh", restored.circleName.get())
+        assertEquals(1L, restored.selectedClientId)
+        assertEquals(12L, restored.selectedProjectId)
+        assertEquals(4L, restored.selectedCircleId)
+        assertEquals("MH-0042", restored.siteId.get())
+        assertEquals("Testing 6", restored.siteName.get())
+        assertEquals("Sector 17", restored.siteAddress.get())
+        assertEquals("30.7333", restored.siteLatitude.get())
+        assertTrue(restored.canCreate.get())
+    }
+
+    @Test
+    fun `a recreated form fetches the lists behind the pickers again`() {
+        val handle = SavedStateHandle()
+        viewModel = AddSiteVM(application, creationRepo, handle)
+        fillSite()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        AddSiteVM(application, creationRepo, handle)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(atLeast = 2) { creationRepo.projectListByClientId(1L) }
+        coVerify(atLeast = 2) { creationRepo.circleByProject(12L) }
+    }
+
+    @Test
+    fun `a form that was never filled starts empty and fetches nothing`() {
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertNull(viewModel.selectedClientId)
+        assertEquals("", viewModel.siteName.get())
+        coVerify(exactly = 0) { creationRepo.projectListByClientId(any()) }
     }
 
     @Test
