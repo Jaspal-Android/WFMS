@@ -120,11 +120,13 @@ object UtilStatusBindings {
                 textView.text = textView.context.getString(R.string.accepted)
                 textView.applyStatus(R.color.status_idle_bg, R.color.status_idle_text)
             }
+            // Started, not completed: the "Active" filter, and "In Progress" on the approval screens.
             StatusCodes.WIP -> {
-                textView.text = textView.context.getString(R.string.pending)
+                textView.text = textView.context.getString(R.string.in_progress)
                 textView.applyStatus(R.color.status_incomplete_bg, R.color.status_incomplete_text)
             }
             StatusCodes.ACCESS_ISSUE -> {
+                textView.text = textView.context.getString(R.string.access_issue)
                 textView.applyStatus(R.color.status_absent_bg, R.color.status_absent_text)
             }
             StatusCodes.COMPLETED -> {
