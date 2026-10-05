@@ -3,6 +3,7 @@ package com.atvantiq.wfms.utils
 import android.Manifest
 import android.content.Context
 import io.mockk.mockk
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -46,5 +47,53 @@ class LocationPermissionStagingTest {
     @Test
     fun `below Android 10 background location needs no runtime grant`() {
         assertTrue(PermissionUtils.hasBackgroundLocationPermission(mockk<Context>(relaxed = true)))
+    }
+
+    @Test
+    fun `granted location is the outcome whatever the notification answer`() {
+        val results = mapOf(fine to true, coarse to true, notifications to false)
+
+        assertEquals(
+            PermissionUtils.LocationOutcome.GRANTED,
+            PermissionUtils.locationOutcome(results) { error("not asked when granted") }
+        )
+    }
+
+    @Test
+    fun `a denial the system will not prompt for again sends the user to Settings`() {
+        val results = mapOf(fine to false, coarse to false)
+
+        assertEquals(
+            PermissionUtils.LocationOutcome.DENIED_PERMANENTLY,
+            PermissionUtils.locationOutcome(results) { false }
+        )
+    }
+
+    @Test
+    fun `a denial the user can still be asked about again keeps the rationale path`() {
+        val results = mapOf(fine to false, coarse to false)
+
+        assertEquals(
+            PermissionUtils.LocationOutcome.DENIED_CAN_RETRY,
+            PermissionUtils.locationOutcome(results) { it == fine }
+        )
+    }
+
+    @Test
+    fun `approximate-only location is a denial, not a grant`() {
+        val results = mapOf(fine to false, coarse to true)
+
+        assertEquals(
+            PermissionUtils.LocationOutcome.DENIED_CAN_RETRY,
+            PermissionUtils.locationOutcome(results) { true }
+        )
+    }
+
+    @Test
+    fun `an empty result is treated as denied`() {
+        assertEquals(
+            PermissionUtils.LocationOutcome.DENIED_PERMANENTLY,
+            PermissionUtils.locationOutcome(emptyMap()) { false }
+        )
     }
 }
