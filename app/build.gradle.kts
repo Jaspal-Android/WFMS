@@ -9,6 +9,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
+    alias(libs.plugins.detekt)
 }
 
 // Local builds read the git-ignored secrets.properties; CI supplies the same names as
@@ -150,6 +151,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.security.crypto.ktx)
+    implementation(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -201,4 +203,12 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    baseline = file("detekt-baseline.xml")
+    source.setFrom("src/main/java", "src/test/java")
+    parallel = true
 }

@@ -1,13 +1,13 @@
 package com.atvantiq.wfms.utils.files
 
 import android.Manifest
+import timber.log.Timber
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -174,7 +174,7 @@ class PickMediaHelper(
             ownedFiles += outFile.absolutePath
             outFile.absolutePath
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to copy picked Uri to cache", e)
+            Timber.e(e, "Failed to copy picked Uri to cache")
             null
         }
     }
@@ -205,7 +205,7 @@ class PickMediaHelper(
         return try {
             FileUtils.createImageFile(context)
         } catch (e: IOException) {
-            Log.e(TAG, "File creation failed", e)
+            Timber.e(e, "File creation failed")
             null
         }
     }
@@ -244,7 +244,6 @@ class PickMediaHelper(
     }
 
     companion object {
-        const val TAG = "PickMediaHelper"
         private const val MAX_SOURCE_MB = 25
         private const val MAX_SOURCE_BYTES = MAX_SOURCE_MB * 1024L * 1024L
     }

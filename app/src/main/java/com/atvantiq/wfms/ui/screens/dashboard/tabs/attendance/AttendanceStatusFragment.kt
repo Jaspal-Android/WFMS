@@ -1,9 +1,9 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance
 
 import android.graphics.drawable.ColorDrawable
+import timber.log.Timber
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -91,8 +91,8 @@ class AttendanceStatusFragment :
 
         override fun attendanceSummaryResult(statusCounts: Map<String, Int>, noApiDays: Int) {
             if (BuildConfig.DEBUG) {
-                Log.d("CalendarView", "Status Counts: $statusCounts")
-                Log.d("CalendarView", "Days without API data: $noApiDays")
+                Timber.d("Status Counts: $statusCounts")
+                Timber.d("Days without API data: $noApiDays")
             }
             showAttendanceSummary(statusCounts, noApiDays)
         }

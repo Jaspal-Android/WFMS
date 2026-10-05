@@ -1,11 +1,11 @@
 package com.atvantiq.wfms.utils.files
 
 import android.content.Context
+import timber.log.Timber
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
-import android.util.Log
 import androidx.core.graphics.scale
 import java.io.File
 import java.io.IOException
@@ -36,7 +36,7 @@ class ImageProcessor(private val context: Context) {
             try {
                 return decodeAndEncode(sourcePath, sample)
             } catch (e: OutOfMemoryError) {
-                Log.w(TAG, "Out of memory at sampleSize=$sample, retrying smaller", e)
+                Timber.w(e, "Out of memory at sampleSize=$sample, retrying smaller")
                 sample *= 2
             }
         }
@@ -53,7 +53,7 @@ class ImageProcessor(private val context: Context) {
         val upright = applyOrientation(decoded, readOrientation(sourcePath))
         scaleToFit(upright, maxSide)
     } catch (e: OutOfMemoryError) {
-        Log.w(TAG, "Out of memory decoding preview", e)
+        Timber.w(e, "Out of memory decoding preview")
         null
     }
 
@@ -68,7 +68,7 @@ class ImageProcessor(private val context: Context) {
         val output = try {
             File.createTempFile("compressed_", ".jpg", context.cacheDir)
         } catch (e: IOException) {
-            Log.e(TAG, "Failed to create temp file for compression", e)
+            Timber.e(e, "Failed to create temp file for compression")
             fitted.recycle()
             return null
         }
@@ -154,8 +154,6 @@ class ImageProcessor(private val context: Context) {
     }
 
     companion object {
-        private const val TAG = "ImageProcessor"
-
         /** Longest side of the uploaded photo. Plenty for a legible receipt or site photo. */
         const val UPLOAD_MAX_SIDE = 2048
 

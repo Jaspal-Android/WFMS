@@ -1,8 +1,8 @@
 package com.atvantiq.wfms.services
 
 import com.google.firebase.messaging.FirebaseMessagingService
+import timber.log.Timber
 import com.google.firebase.messaging.RemoteMessage
-import android.util.Log
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,14 +10,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.ui.screens.SplashActivity
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
-        private const val TAG = "FCM"
         private const val CHANNEL_ID = "wfms_general_notifications_v2"
         private const val CHANNEL_NAME = "WFMS Notifications"
         private const val CHANNEL_DESC = "WFMS Notifications"
@@ -28,17 +26,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * Avoids duplicate notifications if both data and notification payloads are present.
      */
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "FCM message received")
+        Timber.d("FCM message received")
 
         // Prefer data payload if present to avoid duplicate notifications
         if (remoteMessage.data.isNotEmpty()) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "Message data payload received")
+            Timber.d("Message data payload received")
             val title = remoteMessage.data["title"] ?: remoteMessage.notification?.title ?: "Notification"
             val message = remoteMessage.data["body"] ?: remoteMessage.data["message"] ?: remoteMessage.notification?.body ?: ""
             showNotification(title, message, remoteMessage.data)
         } else if (remoteMessage.notification != null) {
             val notification = remoteMessage.notification
-            if (BuildConfig.DEBUG) Log.d(TAG, "Notification payload received")
+            Timber.d("Notification payload received")
             showNotification(
                 title = notification?.title ?: "Notification",
                 message = notification?.body ?: "",
@@ -48,7 +46,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "FCM token refreshed")
+        Timber.d("FCM token refreshed")
         // Optionally send token to your server
     }
 

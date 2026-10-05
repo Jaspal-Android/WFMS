@@ -10,6 +10,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.Lazy
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import timber.log.Timber
 
 @HiltAndroidApp
 class MApplication : Application() {
@@ -19,6 +20,7 @@ class MApplication : Application() {
 	
 	override fun onCreate() {
 		super.onCreate()
+		Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else CrashReportingTree())
 		// Firebase is already initialised by its content provider before this runs.
 		FirebaseCrashlytics.getInstance()
 			.setCrashlyticsCollectionEnabled(true)

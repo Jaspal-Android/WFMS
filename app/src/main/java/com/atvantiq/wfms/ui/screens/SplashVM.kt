@@ -1,8 +1,8 @@
 package com.atvantiq.wfms.ui.screens
 
 import android.app.Application
+import timber.log.Timber
 import android.os.SystemClock
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.atvantiq.wfms.base.BaseViewModel
@@ -55,7 +55,7 @@ class SplashVM @Inject constructor(
         val token: String? = try {
             PrefMethods.getUserToken(prefMain)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to read secure prefs even after recovery", e)
+            Timber.e(e, "Failed to read secure prefs even after recovery")
             null
         }
         val user = if (token.isNullOrBlank()) {
@@ -64,14 +64,10 @@ class SplashVM @Inject constructor(
             try {
                 PrefMethods.getUserData(prefMain)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to read user data", e)
+                Timber.e(e, "Failed to read user data")
                 null
             }
         }
         return SplashRouting.targetFor(token, user)
-    }
-
-    private companion object {
-        const val TAG = "SplashVM"
     }
 }
