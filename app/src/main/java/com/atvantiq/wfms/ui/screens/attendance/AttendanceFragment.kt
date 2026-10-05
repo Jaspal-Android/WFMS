@@ -117,7 +117,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     private fun renderWorkList(state: PagedListUiState<Site>) {
         showFirstPageProgress(state.isLoadingFirstPage)
         if (!state.isLoadingFirstPage && !state.isRefreshing) stopRefreshingData()
-        adapter?.submitList(state.items)
+        adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.isEmptyAssignedTasks = state.isEmpty
     }

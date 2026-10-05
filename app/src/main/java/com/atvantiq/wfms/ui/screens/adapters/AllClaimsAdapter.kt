@@ -1,83 +1,45 @@
 package com.atvantiq.wfms.ui.screens.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.atvantiq.wfms.databinding.ItemAssignedTasksBinding
-import com.atvantiq.wfms.models.work.workAssigned.Site
-import com.atvantiq.wfms.widgets.FooterRecyclerView
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.ReimbursementData
 import com.atvantiq.wfms.databinding.ItemClaimsBinding
-import com.atvantiq.wfms.databinding.ItemTypeChipBinding
 import com.atvantiq.wfms.models.reimbursement.allClaims.Record
+import com.atvantiq.wfms.widgets.FooterListAdapter
+import com.atvantiq.wfms.widgets.diffById
 
-
+/**
+ * The employee's own claims, with the paging footer. [onClaimClicked] gets the claim and its
+ * position when the tap happens.
+ */
 class AllClaimsAdapter(
-    var onClaimClicked: (claim:Record, position: Int) -> Unit,
-) : FooterRecyclerView() {
+    private val onClaimClicked: (claim: Record, position: Int) -> Unit,
+) : FooterListAdapter<Record>(diffById { it.claimId }) {
 
-    private var allClaims: MutableList<Record>? = mutableListOf()
-    private val VIEW_TYPE_ITEM = 1
+    class AllClaimsViewHolder(val binding: ItemClaimsBinding) : RecyclerView.ViewHolder(binding.root)
 
-    inner class AllClaimsViewHolder(var binding: ItemClaimsBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    override fun onCreateItemHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AllClaimsViewHolder(ItemClaimsBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-    override fun count(): Int {
-        return allClaims?.size ?: 0
-    }
+    override fun onBindItemHolder(holder: RecyclerView.ViewHolder, item: Record) {
+        if (holder !is AllClaimsViewHolder) return
+        val context = holder.binding.root.context
+        holder.binding.claimItem = item
 
-    override fun viewType(): Int {
-        return VIEW_TYPE_ITEM
-    }
-
-    override fun onCreateHolderMethod(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        var infalter = LayoutInflater.from(parent.context)
-        var binding: ItemClaimsBinding =
-            DataBindingUtil.inflate(infalter, R.layout.item_claims, parent, false)
-        return AllClaimsViewHolder(binding)
-    }
-
-    override fun onBindViewHolderMethod(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is AllClaimsViewHolder) {
-            val claim = allClaims?.get(position)
-            holder.binding.claimItem = claim
-
-            if (claim?.expenseCategory.equals(ReimbursementData.CLAIM_TYPE_LOCAL,ignoreCase = true)){
-                holder.binding.chipExpenseType.text = holder.binding.root.context.getString(R.string.local)
-            }else{
-                holder.binding.chipExpenseType.text = holder.binding.root.context.getString(R.string.outstation)
-            }
-
-            if (claim?.type.equals(ReimbursementData.CLAIM_SINGLE_SITE,ignoreCase = true)) {
-                holder.binding.tvTypeValue.text = holder.binding.root.context.getString(R.string.singleSite)
-            }else{
-                holder.binding.tvTypeValue.text = holder.binding.root.context.getString(R.string.multiSite)
-            }
-            holder.binding.root.setOnClickListener {
-                claim?.let { claim ->
-                    onClaimClicked(claim,position)
-                }
-            }
-            holder.binding.executePendingBindings()
+        holder.binding.chipExpenseType.text = context.getString(
+            if (item.expenseCategory.equals(ReimbursementData.CLAIM_TYPE_LOCAL, ignoreCase = true)) R.string.local
+            else R.string.outstation
+        )
+        holder.binding.tvTypeValue.text = context.getString(
+            if (item.type.equals(ReimbursementData.CLAIM_SINGLE_SITE, ignoreCase = true)) R.string.singleSite
+            else R.string.multiSite
+        )
+        holder.binding.root.setOnClickListener {
+            val position = holder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) onClaimClicked(item, position)
         }
+        holder.binding.executePendingBindings()
     }
-
-    fun addData(claims: List<Record>) {
-        this.allClaims?.addAll(claims)
-        notifyDataSetChanged()
-    }
-
-
-    fun submitList(newItems: List<Record>) {
-        this.allClaims?.clear()
-        this.allClaims?.addAll(newItems)
-        notifyDataSetChanged()
-    }
-
 }

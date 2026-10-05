@@ -8,25 +8,21 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.ItemClaimReviewBinding
 import com.atvantiq.wfms.models.reimbursement.review.ClaimReviewRecord
 import com.atvantiq.wfms.utils.DateUtils
-import com.atvantiq.wfms.widgets.FooterRecyclerView
+import com.atvantiq.wfms.widgets.FooterListAdapter
+import com.atvantiq.wfms.widgets.diffById
 
 /** Claims Approval rows, with the paging footer. A claim with no id can't be opened. */
-class ClaimReviewAdapter(private val onReview: (ClaimReviewRecord) -> Unit) : FooterRecyclerView() {
+class ClaimReviewAdapter(private val onReview: (ClaimReviewRecord) -> Unit) :
+    FooterListAdapter<ClaimReviewRecord>(diffById { it.claimId }) {
 
-    private val claims = mutableListOf<ClaimReviewRecord>()
+    class Holder(val binding: ItemClaimReviewBinding) : RecyclerView.ViewHolder(binding.root)
 
-    inner class Holder(val binding: ItemClaimReviewBinding) : RecyclerView.ViewHolder(binding.root)
-
-    override fun count(): Int = claims.size
-
-    override fun viewType(): Int = VIEW_TYPE_ITEM
-
-    override fun onCreateHolderMethod(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+    override fun onCreateItemHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         Holder(ItemClaimReviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-    override fun onBindViewHolderMethod(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindItemHolder(holder: RecyclerView.ViewHolder, item: ClaimReviewRecord) {
         if (holder !is Holder) return
-        val claim = claims[position]
+        val claim = item
         val context = holder.itemView.context
         val canOpen = claim.claimId != null
         with(holder.binding) {
@@ -44,14 +40,7 @@ class ClaimReviewAdapter(private val onReview: (ClaimReviewRecord) -> Unit) : Fo
         }
     }
 
-    fun submitList(items: List<ClaimReviewRecord>) {
-        claims.clear()
-        claims.addAll(items)
-        notifyDataSetChanged()
-    }
-
     private companion object {
-        const val VIEW_TYPE_ITEM = 1
         const val YMD_LENGTH = 10
     }
 }

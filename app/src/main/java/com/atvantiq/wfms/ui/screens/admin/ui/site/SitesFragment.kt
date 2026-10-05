@@ -60,7 +60,7 @@ class SitesFragment : BaseFragment<FragmentSitesBinding, SitesVM>() {
     private fun renderSites(state: PagedListUiState<Site>) {
         showFirstPageProgress(state.isLoadingFirstPage)
         if (!state.isLoadingFirstPage && !state.isRefreshing) stopRefreshingData()
-        adapter?.submitList(state.items)
+        adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.isEmptySites = state.isEmpty
     }

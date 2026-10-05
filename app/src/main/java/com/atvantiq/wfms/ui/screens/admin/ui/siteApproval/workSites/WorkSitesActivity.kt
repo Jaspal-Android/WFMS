@@ -86,7 +86,7 @@ class WorkSitesActivity : BaseActivity<ActivityWorkSitesBinding, SiteApprovalVM>
         }
         val sites = response.data?.workSites.orEmpty()
         binding.employee = response.data?.employee
-        workSiteAdapter?.submitData(sites)
+        workSiteAdapter?.submitList(sites)
         binding.emptyState.root.isVisible = sites.isEmpty()
     }
 
