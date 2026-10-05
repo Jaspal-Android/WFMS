@@ -1,7 +1,7 @@
 package com.atvantiq.wfms.ui.screens.login
 
 import android.app.Application
-import android.util.Log
+import timber.log.Timber
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -135,11 +135,11 @@ class LoginVM @Inject constructor(
                 }
             }
         } catch (e: TimeoutCancellationException) {
-            Log.w(TAG, "Profile fetch after login timed out", e)
+            Timber.w(e, "Profile fetch after login timed out")
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Profile fetch after login failed", e)
+            Timber.w(e, "Profile fetch after login failed")
         }
     }
 
@@ -155,11 +155,11 @@ class LoginVM @Inject constructor(
                 authRepo.sendNotificationToken(params)
             }
         } catch (e: TimeoutCancellationException) {
-            Log.w(TAG, "Push token registration timed out", e)
+            Timber.w(e, "Push token registration timed out")
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.w(TAG, "Push token registration failed", e)
+            Timber.w(e, "Push token registration failed")
         }
     }
 
@@ -196,7 +196,6 @@ class LoginVM @Inject constructor(
     }
 
     private companion object {
-        const val TAG = "LoginVM"
         const val NOTIFICATION_TOKEN_TIMEOUT_MS = 10_000L
         const val PROFILE_TIMEOUT_MS = 10_000L
     }

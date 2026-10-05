@@ -2,6 +2,7 @@
 package com.atvantiq.wfms.services
 
 import android.app.Notification
+import timber.log.Timber
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -14,11 +15,9 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import android.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
@@ -140,7 +139,7 @@ class LocationTrackingService : Service() {
             createNotificationChannel()
             initializeLocationTracking()
         } catch (e: Exception) {
-            Log.e("LocationService", "Error setting up service", e)
+            Timber.e(e, "Error setting up service")
             stopWithNotice(TrackingStopReason.ERROR)
         }
     }
@@ -176,7 +175,7 @@ class LocationTrackingService : Service() {
             startLocationUpdates()
             return START_STICKY
         } catch (e: Exception) {
-            Log.e("LocationService", "Error starting service", e)
+            Timber.e(e, "Error starting service")
             stopWithNotice(TrackingStopReason.ERROR)
             return START_NOT_STICKY
         }
@@ -297,7 +296,7 @@ class LocationTrackingService : Service() {
         if (mode == requestedMode) return
         val callback = locationCallback ?: return
         if (!checkLocationPermission()) {
-            Log.e("LocationService", "Location permission not granted")
+            Timber.e("Location permission not granted")
             stopWithNotice(TrackingStopReason.PERMISSION_LOST)
             return
         }
@@ -311,9 +310,9 @@ class LocationTrackingService : Service() {
             fusedLocationClient?.removeLocationUpdates(callback)
             fusedLocationClient?.requestLocationUpdates(request, callback, Looper.getMainLooper())
             requestedMode = mode
-            if (BuildConfig.DEBUG) Log.d("LocationService", "Sampling in $mode mode")
+            Timber.d("Sampling in $mode mode")
         } catch (e: SecurityException) {
-            Log.e("LocationService", "Security exception: ${e.message}")
+            Timber.e(e, "Security exception")
             stopWithNotice(TrackingStopReason.PERMISSION_LOST)
         }
     }
@@ -371,7 +370,7 @@ class LocationTrackingService : Service() {
     private suspend fun flushQueuedLocations() {
         when (val outcome = queueUploader.flush()) {
             UploadOutcome.Complete -> Unit
-            is UploadOutcome.Paused -> Log.e("LocationService", "Queued location sync paused after failure", outcome.cause)
+            is UploadOutcome.Paused -> Timber.e(outcome.cause, "Queued location sync paused after failure")
             // Retrying with a dead session cannot succeed; say so instead of failing quietly.
             UploadOutcome.SessionExpired -> stopWithNotice(TrackingStopReason.SESSION_EXPIRED)
         }
@@ -417,7 +416,7 @@ class LocationTrackingService : Service() {
             stopForeground(STOP_FOREGROUND_REMOVE)
             serviceScope.cancel()
         } catch (e: Exception) {
-            Log.e("LocationService", "Error cleaning up service", e)
+            Timber.e(e, "Error cleaning up service")
         }
         super.onDestroy()
     }

@@ -1,0 +1,495 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:MultiSelectBottomSheetDialog.kt$MultiSelectBottomSheetDialog$bind == null || onSelectionChanged == null || onSubmit == null || filterCondition == null</ID>
+    <ID>ComplexCondition:SecurePrefMain.kt$SecurePrefMain$cause is AEADBadTagException || cause is BadPaddingException || name.contains("GeneralSecurityException") || name.contains("InvalidProtocolBufferException")</ID>
+    <ID>CyclomaticComplexMethod:AddSignInActivity.kt$AddSignInActivity$override fun subscribeToEvents(vm: AddSignInVM)</ID>
+    <ID>CyclomaticComplexMethod:AddSiteActivity.kt$AddSiteActivity$override fun subscribeToEvents(vm: AddSiteVM)</ID>
+    <ID>CyclomaticComplexMethod:AssignedTaskDetailActivity.kt$AssignedTaskDetailActivity$private fun setupUI(record: WorkDetailData?)</ID>
+    <ID>CyclomaticComplexMethod:ClaimApprovalDetailActivity.kt$ClaimApprovalDetailActivity$override fun subscribeToEvents(vm: ClaimApprovalDetailVM)</ID>
+    <ID>CyclomaticComplexMethod:CreateClaimActivity.kt$CreateClaimActivity$private fun handleClickEvents(event: CreateClaimClickEvents)</ID>
+    <ID>CyclomaticComplexMethod:DashboardFragment.kt$DashboardFragment$override fun subscribeToEvents(vm: DashboardViewModel)</ID>
+    <ID>CyclomaticComplexMethod:DashboardFragment.kt$DashboardFragment$private fun renderTrackingCard()</ID>
+    <ID>CyclomaticComplexMethod:MaterialAdapter.kt$MaterialAdapter.VH$fun bind(row: MaterialRow)</ID>
+    <ID>CyclomaticComplexMethod:MaterialUsageActivity.kt$MaterialUsageActivity$private fun render(state: MaterialUsageUiState)</ID>
+    <ID>CyclomaticComplexMethod:ProjectBudgetAdapter.kt$ProjectBudgetAdapter$override fun onBindViewHolder(holder: ViewHolder, position: Int)</ID>
+    <ID>CyclomaticComplexMethod:ThemePickerBottomSheet.kt$ThemePickerBottomSheet$override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View</ID>
+    <ID>EmptyDefaultConstructor:NetModule.kt$NetModule$()</ID>
+    <ID>EmptyDefaultConstructor:RepoModule.kt$RepoModule$()</ID>
+    <ID>EmptyFunctionBlock:ApprovalsFragment.kt$ApprovalsFragment${ }</ID>
+    <ID>EmptyFunctionBlock:AttendanceFragment.kt$AttendanceFragment.&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:DashboardFragment.kt$DashboardFragment${ }</ID>
+    <ID>EmptyFunctionBlock:GenericBottomSheetDialog.kt$GenericBottomSheetDialog.&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:GetOTPBottomSheetDialog.kt$GetOTPBottomSheetDialog${ }</ID>
+    <ID>EmptyFunctionBlock:GetOTPBottomSheetDialog.kt$GetOTPBottomSheetDialog.&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:MoreFragment.kt$MoreFragment${ }</ID>
+    <ID>EmptyFunctionBlock:MyDayFragment.kt$MyDayFragment${ }</ID>
+    <ID>EmptyFunctionBlock:ReimbursementFragment.kt$ReimbursementFragment${ }</ID>
+    <ID>EmptyFunctionBlock:SiteSelectionBottomSheetDialog.kt$SiteSelectionBottomSheetDialog.SitePoAdapter.ViewHolder.&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:SitesFragment.kt$SitesFragment${ }</ID>
+    <ID>EnumNaming:DashboardClickEvents.kt$DashboardClickEvents$onAnnouncementsClicks</ID>
+    <ID>EnumNaming:DashboardClickEvents.kt$DashboardClickEvents$onFetchCurrentLatitudeLongitudeClicks</ID>
+    <ID>FunctionParameterNaming:ApiService.kt$ApiService$@Query("is_active") is_active:Int</ID>
+    <ID>FunctionParameterNaming:ApiService.kt$ApiService$@Query("page_size") page_size: Int</ID>
+    <ID>FunctionParameterNaming:ICreationRepo.kt$ICreationRepo$is_active:Int</ID>
+    <ID>FunctionParameterNaming:Utils.kt$Utils$`object`: Any</ID>
+    <ID>ImplicitDefaultLocale:DateUtils.kt$DateUtils$String.format("%d:%02d %s", hourIn12Format, selectedMinute, format)</ID>
+    <ID>InvalidPackageDeclaration:PrefMethods.kt$package com.ssas.jibli.data.prefs</ID>
+    <ID>InvalidPackageDeclaration:SharedPrefPrint.kt$package com.ssas.jibli.data.prefs</ID>
+    <ID>LargeClass:AddSignInActivity.kt$AddSignInActivity : BaseActivity</ID>
+    <ID>LongMethod:AddSignInActivity.kt$AddSignInActivity$override fun subscribeToEvents(vm: AddSignInVM)</ID>
+    <ID>LongMethod:AddSiteActivity.kt$AddSiteActivity$override fun subscribeToEvents(vm: AddSiteVM)</ID>
+    <ID>LongMethod:CreateClaimActivity.kt$CreateClaimActivity$private fun handleClickEvents(event: CreateClaimClickEvents)</ID>
+    <ID>LongMethod:DashboardFragment.kt$DashboardFragment$override fun subscribeToEvents(vm: DashboardViewModel)</ID>
+    <ID>LongMethod:DashboardFragment.kt$DashboardFragment$private fun renderTrackingCard()</ID>
+    <ID>LongParameterList:AddSiteValidation.kt$AddSiteValidation$( hasClient: Boolean, hasProject: Boolean, hasCircle: Boolean, siteId: String?, name: String?, address: String?, latitude: String?, longitude: String? )</ID>
+    <ID>LongParameterList:AddSiteValidationTest.kt$AddSiteValidationTest$( client: Boolean = true, project: Boolean = true, circle: Boolean = true, siteId: String? = "CHD-600", name: String? = "North Gate", address: String? = "Sector 17", latitude: String? = "", longitude: String? = "" )</ID>
+    <ID>LongParameterList:ApiService.kt$ApiService$( @Query("page") page: Int, @Query("page_size") pageSize: Int, @Query("month") month: Int, @Query("year") year: Int, @Query("is_all") isAll: Boolean = false, @Query("is_export") isExport: Boolean = false )</ID>
+    <ID>LongParameterList:AttendanceViewModel.kt$AttendanceViewModel$( workSiteId: Long, latitude: Double, longitude: Double, types: List&lt;Type&gt;, statusId: Int, remarks: String, position: Int, usedMaterials: List&lt;UsedMaterial&gt;? )</ID>
+    <ID>LongParameterList:BaseActivitySimple.kt$BaseActivitySimple$( context: Context, title: String, message: String, okButtonTitle: String, okLister: DialogInterface.OnClickListener, canelLister: DialogInterface.OnClickListener )</ID>
+    <ID>LongParameterList:BaseActivitySimple.kt$BaseActivitySimple$( context: Context, title: String, message: String, okButtonTitle: String, okLister: DialogInterface.OnClickListener, neutralButtonTitle: String, neutralLister: DialogInterface.OnClickListener )</ID>
+    <ID>LongParameterList:BaseActivitySimple.kt$BaseActivitySimple$( items: List&lt;T&gt;, title: String, layoutResId: Int, bind: (view: android.view.View, item: T) -&gt; Unit, onItemSelected: (T) -&gt; Unit, filterCondition: (T, String) -&gt; Boolean, emptyMessage: String, retryAction: () -&gt; Unit, tag: String )</ID>
+    <ID>LongParameterList:BaseActivitySimple.kt$BaseActivitySimple$( title: String, message: String, positiveButtonText: String = getString(R.string.ok), negativeButtonText: String = getString(R.string.cancel), cancelable: Boolean = false, onPositive: (() -&gt; Unit)? = null, onNegative: (() -&gt; Unit)? = null, )</ID>
+    <ID>LongParameterList:BaseBindingBottomSheetFragment.kt$BaseBindingBottomSheetFragment$( context: Context, title: String, message: String, okButtonTitle: String, okLister: DialogInterface.OnClickListener, canelLister: DialogInterface.OnClickListener )</ID>
+    <ID>LongParameterList:BaseFragmentSimple.kt$BaseFragmentSimple$( context: Context, title: String, message: String, okButtonTitle: String, okLister: DialogInterface.OnClickListener, canelLister: DialogInterface.OnClickListener )</ID>
+    <ID>LongParameterList:BaseFragmentSimple.kt$BaseFragmentSimple$( context: Context, title: String, message: String, okButtonTitle: String, okLister: DialogInterface.OnClickListener, isCancelable:Boolean )</ID>
+    <ID>LongParameterList:BaseFragmentSimple.kt$BaseFragmentSimple$( context: Context, title: String, message: String, okButtonTitle: String, okLister: DialogInterface.OnClickListener, neutralButtonTitle: String, neutralLister: DialogInterface.OnClickListener )</ID>
+    <ID>LongParameterList:MaterialUsageActivity.kt$MaterialUsageActivity.Companion$( ctx: Context, workId: Long, projectId: Long, statusId: Int, remarks: String, latitude: String, longitude: String )</ID>
+    <ID>LongParameterList:MultiSelectBottomSheetDialog.kt$MultiSelectBottomSheetDialog$( items: List&lt;T&gt;, preSelectedItems: Set&lt;T&gt;, bind: (View, T, Boolean) -&gt; Unit, onSelectionChanged: (Set&lt;T&gt;) -&gt; Unit, onSubmit: (Set&lt;T&gt;) -&gt; Unit, filterCondition: (T, String) -&gt; Boolean, title: String? = null )</ID>
+    <ID>LongParameterList:TrackingCardState.kt$TrackingCardState.Companion$( isDayActive: Boolean, isTrackingStarted: Boolean, hasForegroundLocation: Boolean, hasBackgroundLocation: Boolean, isGpsOn: Boolean, shift: ShiftState, nowMillis: Long )</ID>
+    <ID>LongParameterList:TrackingCardStateTest.kt$TrackingCardStateTest$( dayActive: Boolean = true, started: Boolean = true, foreground: Boolean = true, background: Boolean = true, gps: Boolean = true, pausedUntil: Long? = null )</ID>
+    <ID>MagicNumber:AssignedTaskDetailActivity.kt$AssignedTaskDetailActivity$0.55f</ID>
+    <ID>MagicNumber:AssignedTaskDetailActivity.kt$AssignedTaskDetailActivity$206</ID>
+    <ID>MagicNumber:AttendanceStatusFragment.kt$AttendanceStatusFragment$3</ID>
+    <ID>MagicNumber:AttendanceStatusFragment.kt$AttendanceStatusFragment$4</ID>
+    <ID>MagicNumber:AttendanceStatusFragment.kt$AttendanceStatusFragment$5</ID>
+    <ID>MagicNumber:AttendanceStatusFragment.kt$AttendanceStatusFragment$6</ID>
+    <ID>MagicNumber:AttendanceStatusFragment.kt$AttendanceStatusFragment$7</ID>
+    <ID>MagicNumber:AttendanceStatusFragment.kt$AttendanceStatusFragment$8</ID>
+    <ID>MagicNumber:CalendarView.kt$CalendarView$42</ID>
+    <ID>MagicNumber:CalendarView.kt$CalendarView$4f</ID>
+    <ID>MagicNumber:CalendarView.kt$CalendarView$7</ID>
+    <ID>MagicNumber:CreateClaimActivity.kt$CreateClaimActivity$0.55f</ID>
+    <ID>MagicNumber:DashboardFragment.kt$DashboardFragment$3001</ID>
+    <ID>MagicNumber:DashboardPagerAdapter.kt$DashboardPagerAdapter$1125899906842597L</ID>
+    <ID>MagicNumber:DashboardPagerAdapter.kt$DashboardPagerAdapter$31L</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$11</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$12</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$2000</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$2100</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$3</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$60</ID>
+    <ID>MagicNumber:DateUtils.kt$DateUtils$60_000L</ID>
+    <ID>MagicNumber:FileUtils.kt$FileUtils$1024</ID>
+    <ID>MagicNumber:GetOTPBottomSheetDialog.kt$GetOTPBottomSheetDialog$6</ID>
+    <ID>MagicNumber:GetOTPBottomSheetDialog.kt$GetOTPBottomSheetDialog.&lt;no name provided&gt;$5</ID>
+    <ID>MagicNumber:GetOTPBottomSheetDialog.kt$GetOTPBottomSheetDialog.&lt;no name provided&gt;$6</ID>
+    <ID>MagicNumber:GradientLogoView.kt$GradientLogoView$28f</ID>
+    <ID>MagicNumber:ImageProcessor.kt$ImageProcessor$3</ID>
+    <ID>MagicNumber:ImageProcessor.kt$ImageProcessor$4</ID>
+    <ID>MagicNumber:ImageSizing.kt$ImageSizing$180</ID>
+    <ID>MagicNumber:ImageSizing.kt$ImageSizing$270</ID>
+    <ID>MagicNumber:ImageSizing.kt$ImageSizing$90</ID>
+    <ID>MagicNumber:MaterialAdapter.kt$MaterialAdapter.VH$0.55f</ID>
+    <ID>MagicNumber:MaterialUsageActivity.kt$MaterialUsageActivity$0.5f</ID>
+    <ID>MagicNumber:MaterialUsageActivity.kt$MaterialUsageActivity.&lt;no name provided&gt;$250</ID>
+    <ID>MagicNumber:MyTargetsFragment.kt$MyTargetsFragment$100</ID>
+    <ID>MagicNumber:ProjectBudgetAdapter.kt$ProjectBudgetAdapter$100</ID>
+    <ID>MagicNumber:SiteSelectionBottomSheetDialog.kt$SiteSelectionBottomSheetDialog$0.5f</ID>
+    <ID>MagicNumber:ThemePickerBottomSheet.kt$ThemePickerBottomSheet$0.08f</ID>
+    <ID>MagicNumber:ThemePickerBottomSheet.kt$ThemePickerBottomSheet$11f</ID>
+    <ID>MagicNumber:ThemePickerBottomSheet.kt$ThemePickerBottomSheet$14f</ID>
+    <ID>MagicNumber:ThemePickerBottomSheet.kt$ThemePickerBottomSheet$16f</ID>
+    <ID>MagicNumber:ThemePickerBottomSheet.kt$ThemePickerBottomSheet$18f</ID>
+    <ID>MagicNumber:TrackMath.kt$TrackMath$10</ID>
+    <ID>MagicNumber:TrackMath.kt$TrackMath$10.0</ID>
+    <ID>MagicNumber:UtilStatusBindings.kt$UtilStatusBindings$3</ID>
+    <ID>MagicNumber:UtilStatusBindings.kt$UtilStatusBindings$4</ID>
+    <ID>MagicNumber:UtilStatusBindings.kt$UtilStatusBindings$5</ID>
+    <ID>MagicNumber:UtilStatusBindings.kt$UtilStatusBindings$6</ID>
+    <ID>MagicNumber:Utils.kt$Utils$11</ID>
+    <ID>MagicNumber:Utils.kt$Utils$12</ID>
+    <ID>MagicNumber:Utils.kt$Utils$16</ID>
+    <ID>MagicNumber:Utils.kt$Utils$17</ID>
+    <ID>MagicNumber:Utils.kt$Utils$20</ID>
+    <ID>MagicNumber:Utils.kt$Utils$5</ID>
+    <ID>MaxLineLength:AnnouncementsActivity.kt$AnnouncementsActivity$val items = listOf("New year celebrations are coming soon.", "Report files must be submitted before december", "Reimbursement forms are open now.")</ID>
+    <ID>MaxLineLength:ApiService.kt$ApiService$suspend</ID>
+    <ID>MaxLineLength:AttendanceFragment.kt$AttendanceFragment$alertDialogShow</ID>
+    <ID>MaxLineLength:AttendanceRepo.kt$AttendanceRepo$override suspend</ID>
+    <ID>MaxLineLength:AttendanceViewModelTest.kt$AttendanceViewModelTest$/* @Test fun `getWorkAssignedAll calls workRepo and updates LiveData`() = runTest { val response = WorkAssignedAllResponse( code = 200, message = "Work assignments fetched successfully", success = true, data = com.atvantiq.wfms.models.work.assignedAll.Data( page = 1, pageSize = 10, totalCount = 18, totalRecords = 15, totalPages = 2, records = listOf( WorkRecord( id = 985273047249, employee = null, project = Project( id = 57941758, client = 68067649, name = "Airtel-HR-5G-Rollout" ), site = Site( id = 535937546585, name = "ATCHD" ), type = listOf( Type( id = 62653421, name = "Type: Site Survey", activity = listOf( Activity( id = 45508443, name = "Identify existing 4G tower locations" ) ) ) ), circle = Circle( id = 37851209, name = "Chandigarh", code = "CH" ), status = "COMPLETED", assignedBy = AssignedBy( id = 95034689, name = "admin" ), progress = listOf( Progres( id = 373581294074, startedAt = "2025-08-27T07:55:54.751320", endedAt = "", startLatitude = 30.7149142, startLongitude = 76.7034246, endedLatitude = null, endedLongitude = null, status = "WIP", remarks = "", photoPath = "static/start_work_photos/39580123/985273047249/373581294074_43bf5ff96bb04d9a8f8097889c01017e.jpg" ), Progres( id = 726294930712, startedAt = "", endedAt = "2025-08-28T06:25:06.329064", startLatitude = null, startLongitude = null, endedLatitude = 30.7149369, endedLongitude = 76.703396, status = "COMPLETED", remarks = "", photoPath = "" ) ), createdAt = "2025-08-20T07:34:11.416545", updatedAt = "2025-08-20T07:34:11.416545" ) ) ) ) coEvery { workRepo.workAssignedAll(any(), any()) } returns response viewModel.getWorkAssignedAll(1, 10) testDispatcher.scheduler.advanceUntilIdle() coVerify(exactly = 1) { workRepo.workAssignedAll(1, 10) } assertNotNull(viewModel.workAssignedAllResponse.value) assertEquals(Status.SUCCESS, viewModel.workAssignedAllResponse.value?.status) assertEquals(response, viewModel.workAssignedAllResponse.value?.response) } @Test fun `workById calls workRepo and updates LiveData`() = runTest { val response = WorkDetailResponse( code = 200, message = "Work record fetched successfully", success = true, data = WorkRecord( id = 985273047249, employee = null, project = Project( id = 57941758, client = 68067649, name = "Airtel-HR-5G-Rollout" ), site = Site( id = 535937546585, name = "ATCHD" ), type = listOf( Type( id = 62653421, name = "Type: Site Survey", activity = listOf( Activity( id = 45508443, name = "Identify existing 4G tower locations" ) ) ) ), circle = Circle( id = 37851209, name = "Chandigarh", code = "CF" ), status = "COMPLETED", assignedBy = AssignedBy( id = 95034689, name = "admin" ), progress = listOf( Progres( id = 373581294074, startedAt = "2025-08-27T07:55:54.751320", endedAt = "", startLatitude = 30.7149142, startLongitude = 76.7034246, endedLatitude = null, endedLongitude = null, status = "WIP", remarks = "", photoPath = "static/start_work_photos/39580123/985273047249/373581294074_43bf5ff96bb04d9a8f8097889c01017e.jpg" ), Progres( id = 726294930712, startedAt = "", endedAt = "2025-08-28T06:25:06.329064", startLatitude = null, startLongitude = null, endedLatitude = 30.7149369, endedLongitude = 76.703396, status = "COMPLETED", remarks = "", photoPath = "" ) ), createdAt = "2025-08-20T07:34:11.416545", updatedAt = "2025-08-20T07:34:11.416545" ) ) coEvery { workRepo.workById(any()) } returns response viewModel.workById(123L) testDispatcher.scheduler.advanceUntilIdle() coVerify(exactly = 1) { workRepo.workById(123L) } assertNotNull(viewModel.workByIdResponse.value) assertEquals(Status.SUCCESS, viewModel.workByIdResponse.value?.status) assertEquals(response, viewModel.workByIdResponse.value?.response) }*/</ID>
+    <ID>MaxLineLength:AttendanceViewModelTest.kt$AttendanceViewModelTest$/* @Test fun `workDetailsByDate calls workRepo and updates LiveData`() = runTest { val response = WorkDetailsByDateResponse( code = 200, message = "Success", success = true, data = listOf( WorkRecord( id = 985273047249, employee = null, project = Project( id = 57941758, client = 68067649, name = "Airtel-HR-5G-Rollout" ), site = Site( id = 535937546585, name = "ATCHD" ), type = listOf( Type( id = 62653421, name = "Type: Site Survey", activity = listOf( Activity( id = 45508443, name = "Identify existing 4G tower locations" ) ) ) ), circle = Circle( id = 37851209, name = "Chandigarh", code = "CH" ), status = "COMPLETED", assignedBy = AssignedBy( id = 95034689, name = "admin" ), progress = listOf( Progres( id = 373581294074, startedAt = "2025-08-27T07:55:54.751320", endedAt = "", startLatitude = 30.7149142, startLongitude = 76.7034246, endedLatitude = null, endedLongitude = null, status = "WIP", remarks = "", photoPath = "static/start_work_photos/39580123/985273047249/373581294074_43bf5ff96bb04d9a8f8097889c01017e.jpg" ), Progres( id = 726294930712, startedAt = "", endedAt = "2025-08-28T06:25:06.329064", startLatitude = null, startLongitude = null, endedLatitude = 30.7149369, endedLongitude = 76.703396, status = "COMPLETED", remarks = "", photoPath = "" ) ), createdAt = "2025-08-20T07:34:11.416545", updatedAt = "2025-08-20T07:34:11.416545" ) ) ) coEvery { workRepo.workDetailByDate(any()) } returns response viewModel.workDetailsByDate("2024-06-01") testDispatcher.scheduler.advanceUntilIdle() coVerify(exactly = 1) { workRepo.workDetailByDate("2024-06-01") } assertNotNull(viewModel.workDetailsByDateResponse.value) assertEquals(Status.SUCCESS, viewModel.workDetailsByDateResponse.value?.status) assertEquals(response, viewModel.workDetailsByDateResponse.value?.response) } @Test fun `workAccept calls workRepo and updates LiveData and itemPosition`() = runTest { val response = AcceptWorkResponse( code = 200, message = "Task accepted successfully.", data = AcceptWorkData( workId = 886000028313, status = "ACCEPTED" ), success = true ) coEvery { workRepo.workAccept(any()) } returns response viewModel.workAccept(123L, 2) testDispatcher.scheduler.advanceUntilIdle() coVerify(exactly = 1) { workRepo.workAccept(123L) } assertNotNull(viewModel.workAcceptResponse.value) assertEquals(Status.SUCCESS, viewModel.workAcceptResponse.value?.status) assertEquals(response, viewModel.workAcceptResponse.value?.response) assertEquals(2, viewModel.itemPosition.value) } @Test fun `workStart calls workRepo and updates LiveData and itemPosition`() = runTest { val response = StartWorkResponse( code = 200, message = "Work started successfully.", data = StartWorkData( workId = 886000028313, progressId = 272050434462, status = "WIP", startedAt = "2025-09-03T07:53:45.250203", photoPath = "static/start_work_photos/39580123/886000028313/272050434462_1e6287930ad4445ebbfd14200f7464d8.png" ), success = true ) coEvery { workRepo.workStart(any(), any(), any(), any()) } returns response // Use a temp file for photoPath val tempFile = kotlin.io.path.createTempFile().toFile() tempFile.writeText("fake image data") viewModel.workStart("123", "12.34", "56.78", tempFile.absolutePath, 1) testDispatcher.scheduler.advanceUntilIdle() coVerify(exactly = 1) { workRepo.workStart(any(), any(), any(), any()) } assertNotNull(viewModel.workStartResponse.value) assertEquals(Status.SUCCESS, viewModel.workStartResponse.value?.status) assertEquals(response, viewModel.workStartResponse.value?.response) assertEquals(1, viewModel.itemPosition.value) tempFile.delete() } @Test fun `workEnd calls workRepo and updates LiveData and itemPosition`() = runTest { val response = EndWorkResponse( code = 200, message = "Work end recorded successfully.", data = EndWorkData( workId = 886000028313, progressId = 272050434462, status = "OPEN", endedAt = "2025-09-03T07:59:02.746040", endedLatitude = 30.7333, endedLongitude = 76.7794, remarks = "Done" ), success = true ) coEvery { workRepo.workEnd(any()) } returns response viewModel.workEnd(123L, 12.34, 56.78, 1, "Done", 3) testDispatcher.scheduler.advanceUntilIdle() coVerify(exactly = 1) { workRepo.workEnd(any()) } assertNotNull(viewModel.workEndResponse.value) assertEquals(Status.SUCCESS, viewModel.workEndResponse.value?.status) assertEquals(response, viewModel.workEndResponse.value?.response) assertEquals(3, viewModel.itemPosition.value) } */</ID>
+    <ID>MaxLineLength:BaseFragmentSimple.kt$BaseFragmentSimple$viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.CREATED||viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.STARTED</ID>
+    <ID>MaxLineLength:ClaimDetailActivity.kt$ClaimDetailActivity$if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))</ID>
+    <ID>MaxLineLength:ClaimReviewPageDeserializer.kt$ClaimReviewPageDeserializer$private fun JsonObject.double(key: String): Double?</ID>
+    <ID>MaxLineLength:ClaimReviewTest.kt$ClaimReviewTest$assertEquals(ClaimDecision.Invalid(R.string.approved_amount_exceeds_claimed), ClaimDecision.build(1, listOf(input(typed = "20.01"))))</ID>
+    <ID>MaxLineLength:DarkThemeContrastTest.kt$DarkThemeContrastTest$Regex("""&lt;style name="(ThemeOverlay\.WFMS\.(?:Forest|Ocean|Rose|Indigo|Amber|Slate))"[^&gt;]*&gt;(.*?)&lt;/style&gt;""", RegexOption.DOT_MATCHES_ALL)</ID>
+    <ID>MaxLineLength:DashboardActivity.kt$DashboardActivity$}</ID>
+    <ID>MaxLineLength:DashboardFragment.kt$DashboardFragment$Utils</ID>
+    <ID>MaxLineLength:DashboardFragment.kt$DashboardFragment$alertDialogShow(requireContext(), getString(R.string.alert), message ?: throwable?.message ?: getString(R.string.something_went_wrong))</ID>
+    <ID>MaxLineLength:DashboardFragment.kt$DashboardFragment$else -&gt; alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))</ID>
+    <ID>MaxLineLength:DashboardFragment.kt$DashboardFragment$setTrackingIcon(R.drawable.ic_tracking_navigation, MaterialColors.getColor(trackingCard, R.attr.wfmsColorPrimary), white)</ID>
+    <ID>MaxLineLength:DashboardFragment.kt$DashboardFragment.&lt;no name provided&gt;$Utils</ID>
+    <ID>MaxLineLength:EnterDaBottomSheet.kt$EnterDaBottomSheet$pickMediaHelper</ID>
+    <ID>MaxLineLength:EnterOthersBottomSheet.kt$EnterOthersBottomSheet$pickMediaHelper</ID>
+    <ID>MaxLineLength:IAttendanceRepo.kt$IAttendanceRepo$suspend fun applyLeave(leaveType: RequestBody, fromDate: RequestBody, toDate: RequestBody, reason: RequestBody, attachment: MultipartBody.Part?): ApplyLeaveResponse</ID>
+    <ID>MaxLineLength:IWorkRepo.kt$IWorkRepo$suspend fun workStart(workSiteId: RequestBody, latitude: RequestBody, longitude: RequestBody, photo: MultipartBody.Part): WorkDetailResponse</ID>
+    <ID>MaxLineLength:SiteSelectionBottomSheetDialog.kt$SiteSelectionBottomSheetDialog.SitePoAdapter.ViewHolder$val poLabels = listOf(itemView.context.getString(R.string.select_po_number)) + (site.po?.map { it.poNumber } ?: emptyList())</ID>
+    <ID>MaxLineLength:StartWorkBottomSheet.kt$StartWorkBottomSheet$pickMediaHelper</ID>
+    <ID>MaxLineLength:TimelineStyle.kt$TimelineStyle.Companion$TimelineKind.ACTIVITY -&gt; TimelineStyle(R.string.activity, R.drawable.ic_activity_dot, tintAttr = R.attr.wfmsColorOnSurfaceVariant)</ID>
+    <ID>MaxLineLength:TimelineStyle.kt$TimelineStyle.Companion$TimelineKind.CHECK_IN -&gt; TimelineStyle(R.string.timeline_started_day, R.drawable.ic_day_started, tintAttr = R.attr.wfmsColorPrimary)</ID>
+    <ID>MaxLineLength:TimelineStyle.kt$TimelineStyle.Companion$TimelineKind.CHECK_OUT -&gt; TimelineStyle(R.string.timeline_ended_day, R.drawable.ic_day_ended, tintAttr = R.attr.wfmsColorPrimary)</ID>
+    <ID>MaxLineLength:TimelineStyle.kt$TimelineStyle.Companion$TimelineKind.CLAIM -&gt; TimelineStyle(R.string.timeline_submitted_claim, R.drawable.ic_tab_claims, tintAttr = R.attr.wfmsColorOnSurfaceVariant)</ID>
+    <ID>MaxLineLength:TimelineStyle.kt$TimelineStyle.Companion$TimelineKind.WORK_COMPLETE -&gt; TimelineStyle(R.string.timeline_completed_work, R.drawable.ic_work_completed, tintColor = R.color.status_present_text)</ID>
+    <ID>MaxLineLength:TimelineStyle.kt$TimelineStyle.Companion$TimelineKind.WORK_START -&gt; TimelineStyle(R.string.timeline_started_work, R.drawable.ic_work_started, tintColor = R.color.status_present_text)</ID>
+    <ID>MaxLineLength:WorkRepo.kt$WorkRepo$override suspend</ID>
+    <ID>NestedBlockDepth:AttendanceViewModel.kt$AttendanceViewModel$fun workEnd( workSiteId: Long, latitude: Double, longitude: Double, types: List&lt;Type&gt;, statusId: Int, remarks: String, position: Int, usedMaterials: List&lt;UsedMaterial&gt;? )</ID>
+    <ID>NestedBlockDepth:CreateClaimVM.kt$CreateClaimVM$private fun buildLockedHeaderJson(header: LockedClaimHeader): JSONObject</ID>
+    <ID>NestedBlockDepth:CreateClaimVM.kt$CreateClaimVM$private fun buildNewClaimHeaderJson(): JSONObject</ID>
+    <ID>NestedBlockDepth:FileUtils.kt$FileUtils$private fun copyFileToCache(context: Context, uri: Uri): String?</ID>
+    <ID>NestedBlockDepth:QueueUploader.kt$QueueUploader$suspend fun flush(): UploadOutcome</ID>
+    <ID>NewLineAtEndOfFile:ADMIN.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.ADMIN.kt</ID>
+    <ID>NewLineAtEndOfFile:AccessLevel.kt$com.atvantiq.wfms.models.empDetail.AccessLevel.kt</ID>
+    <ID>NewLineAtEndOfFile:AccessLevel.kt$com.atvantiq.wfms.models.loginResponse.AccessLevel.kt</ID>
+    <ID>NewLineAtEndOfFile:Activity.kt$com.atvantiq.wfms.models.type.Activity.kt</ID>
+    <ID>NewLineAtEndOfFile:Activity.kt$com.atvantiq.wfms.models.work.assignedAll.Activity.kt</ID>
+    <ID>NewLineAtEndOfFile:Activity.kt$com.atvantiq.wfms.models.work.selfAssign.Activity.kt</ID>
+    <ID>NewLineAtEndOfFile:Activity.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Activity.kt</ID>
+    <ID>NewLineAtEndOfFile:ActivityData.kt$com.atvantiq.wfms.models.activity.ActivityData.kt</ID>
+    <ID>NewLineAtEndOfFile:ActivityListByProjectTypeResponse.kt$com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:AddSignInClickEvents.kt$com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:AddSiteActivity.kt$com.atvantiq.wfms.ui.screens.admin.ui.site.addSite.AddSiteActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:AddTravelDetailsErrorHandler.kt$com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelDetailsErrorHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:AddTravelingClickEvents.kt$com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelingClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:AddedBy.kt$com.atvantiq.wfms.models.client.AddedBy.kt</ID>
+    <ID>NewLineAtEndOfFile:AddedBy.kt$com.atvantiq.wfms.models.site.allSites.AddedBy.kt</ID>
+    <ID>NewLineAtEndOfFile:AddedBy.kt$com.atvantiq.wfms.models.site.create.AddedBy.kt</ID>
+    <ID>NewLineAtEndOfFile:Admin.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Admin.kt</ID>
+    <ID>NewLineAtEndOfFile:AllClaimsAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.AllClaimsAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:AllClaimsResponse.kt$com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:AllProjectsResponse.kt$com.atvantiq.wfms.models.allProjects.AllProjectsResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:AllSiteData.kt$com.atvantiq.wfms.models.site.allSites.AllSiteData.kt</ID>
+    <ID>NewLineAtEndOfFile:AllSitesAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.AllSitesAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:AnnouncementAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.AnnouncementAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:AnnouncementsActivity.kt$com.atvantiq.wfms.ui.screens.announcements.AnnouncementsActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:ApiService.kt$com.atvantiq.wfms.network.ApiService.kt</ID>
+    <ID>NewLineAtEndOfFile:ApiState.kt$com.atvantiq.wfms.network.ApiState.kt</ID>
+    <ID>NewLineAtEndOfFile:AppListData.kt$com.atvantiq.wfms.constants.AppListData.kt</ID>
+    <ID>NewLineAtEndOfFile:ApplyLeaveActivity.kt$com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:ApplyLeaveClickEvents.kt$com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:ApplyLeaveErrorHandler.kt$com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveErrorHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:ApplyLeaveResponse.kt$com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:ApplyLeaveVM.kt$com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveVM.kt</ID>
+    <ID>NewLineAtEndOfFile:ApprovalStatusCodes.kt$com.atvantiq.wfms.constants.ApprovalStatusCodes.kt</ID>
+    <ID>NewLineAtEndOfFile:ApproveWorkData.kt$com.atvantiq.wfms.models.workSites.approve.ApproveWorkData.kt</ID>
+    <ID>NewLineAtEndOfFile:ApproveWorkSiteTypeResponse.kt$com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:AssignTaskError.kt$com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AssignTaskError.kt</ID>
+    <ID>NewLineAtEndOfFile:AssignedBy.kt$com.atvantiq.wfms.models.work.assignedAll.AssignedBy.kt</ID>
+    <ID>NewLineAtEndOfFile:AssignedBy.kt$com.atvantiq.wfms.models.work.selfAssign.AssignedBy.kt</ID>
+    <ID>NewLineAtEndOfFile:AssignedTasksListAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:AssignedWorkData.kt$com.atvantiq.wfms.models.work.workAssigned.AssignedWorkData.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceClickEvents.kt$com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceCommunicationViewModel.kt$com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceCommunicationViewModel.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceDay.kt$com.atvantiq.wfms.models.calendar.AttendanceDay.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceDetailData.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailData.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceDetailListResponse.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceLogs.kt$com.atvantiq.wfms.models.workSites.workSites.AttendanceLogs.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceOptionsAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.AttendanceOptionsAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceRecord.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceRemarksResponse.kt$com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:AttendanceRepo.kt$com.atvantiq.wfms.data.repository.atten.AttendanceRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:BaseActivity.kt$com.atvantiq.wfms.base.BaseActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:BaseBindingActivity.kt$com.atvantiq.wfms.base.BaseBindingActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:BaseBindingBottomSheetFragment.kt$com.atvantiq.wfms.base.BaseBindingBottomSheetFragment.kt</ID>
+    <ID>NewLineAtEndOfFile:BaseBottomSheet.kt$com.atvantiq.wfms.widgets.BaseBottomSheet.kt</ID>
+    <ID>NewLineAtEndOfFile:BaseFragment.kt$com.atvantiq.wfms.base.BaseFragment.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.CalendarAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:CalendarView.kt$com.atvantiq.wfms.widgets.CalendarView.kt</ID>
+    <ID>NewLineAtEndOfFile:CheckInOutResponse.kt$com.atvantiq.wfms.models.attendance.CheckInOutResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:CheckInStatusResponse.kt$com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Checkin.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.Checkin.kt</ID>
+    <ID>NewLineAtEndOfFile:Checkout.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.Checkout.kt</ID>
+    <ID>NewLineAtEndOfFile:CheckoutData.kt$com.atvantiq.wfms.models.attendance.CheckoutData.kt</ID>
+    <ID>NewLineAtEndOfFile:Circle.kt$com.atvantiq.wfms.models.allProjects.Circle.kt</ID>
+    <ID>NewLineAtEndOfFile:Circle.kt$com.atvantiq.wfms.models.work.assignedAll.Circle.kt</ID>
+    <ID>NewLineAtEndOfFile:Circle.kt$com.atvantiq.wfms.models.work.workAssigned.Circle.kt</ID>
+    <ID>NewLineAtEndOfFile:Circle.kt$com.atvantiq.wfms.models.workSites.workSites.Circle.kt</ID>
+    <ID>NewLineAtEndOfFile:CircleData.kt$com.atvantiq.wfms.models.circle.CircleData.kt</ID>
+    <ID>NewLineAtEndOfFile:CircleListByProjectResponse.kt$com.atvantiq.wfms.models.circle.CircleListByProjectResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:ClaimData.kt$com.atvantiq.wfms.models.reimbursement.detail.ClaimData.kt</ID>
+    <ID>NewLineAtEndOfFile:ClaimDetailResponse.kt$com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Client.kt$com.atvantiq.wfms.models.allProjects.Client.kt</ID>
+    <ID>NewLineAtEndOfFile:Client.kt$com.atvantiq.wfms.models.client.Client.kt</ID>
+    <ID>NewLineAtEndOfFile:Client.kt$com.atvantiq.wfms.models.work.selfAssign.Client.kt</ID>
+    <ID>NewLineAtEndOfFile:ClientData.kt$com.atvantiq.wfms.models.client.ClientData.kt</ID>
+    <ID>NewLineAtEndOfFile:ClientListResponse.kt$com.atvantiq.wfms.models.client.ClientListResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:CreateClaimClickEvents.kt$com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:CreateClaimErrorHandler.kt$com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimErrorHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:CreateClaimResponse.kt$com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:CreateSiteData.kt$com.atvantiq.wfms.models.site.create.CreateSiteData.kt</ID>
+    <ID>NewLineAtEndOfFile:CreateSiteResponse.kt$com.atvantiq.wfms.models.site.create.CreateSiteResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:CreatedBy.kt$com.atvantiq.wfms.models.allProjects.CreatedBy.kt</ID>
+    <ID>NewLineAtEndOfFile:DAExpense.kt$com.atvantiq.wfms.models.reimbursement.DAExpense.kt</ID>
+    <ID>NewLineAtEndOfFile:DashboardClickEvents.kt$com.atvantiq.wfms.ui.screens.dashboard.DashboardClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:DashboardPagerAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.allProjects.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.attendance.applyLeave.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.attendance.attendanceRemarks.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.attendance.checkInStatus.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.empoyeeByCircle.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.loginResponse.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.reimbursement.allClaims.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.work.assignedAll.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.workSiteByDate.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Data.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Data.kt</ID>
+    <ID>NewLineAtEndOfFile:Details.kt$com.atvantiq.wfms.models.work.selfAssign.Details.kt</ID>
+    <ID>NewLineAtEndOfFile:EmpData.kt$com.atvantiq.wfms.models.empDetail.EmpData.kt</ID>
+    <ID>NewLineAtEndOfFile:EmpDetailResponse.kt$com.atvantiq.wfms.models.empDetail.EmpDetailResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Employee.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.Employee.kt</ID>
+    <ID>NewLineAtEndOfFile:Employee.kt$com.atvantiq.wfms.models.reimbursement.allClaims.Employee.kt</ID>
+    <ID>NewLineAtEndOfFile:Employee.kt$com.atvantiq.wfms.models.reimbursement.detail.Employee.kt</ID>
+    <ID>NewLineAtEndOfFile:Employee.kt$com.atvantiq.wfms.models.work.assignedAll.Employee.kt</ID>
+    <ID>NewLineAtEndOfFile:Employee.kt$com.atvantiq.wfms.models.work.selfAssign.Employee.kt</ID>
+    <ID>NewLineAtEndOfFile:Employee.kt$com.atvantiq.wfms.models.workSites.workSites.Employee.kt</ID>
+    <ID>NewLineAtEndOfFile:EmployeeByCircleResponse.kt$com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:EndWorkBottomSheet.kt$com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet.kt</ID>
+    <ID>NewLineAtEndOfFile:ExampleUnitTest.kt$com.atvantiq.wfms.ExampleUnitTest.kt</ID>
+    <ID>NewLineAtEndOfFile:Expense.kt$com.atvantiq.wfms.models.reimbursement.detail.Expense.kt</ID>
+    <ID>NewLineAtEndOfFile:ForgotPassClickEvents.kt$com.atvantiq.wfms.ui.screens.forgotPassword.vm.ForgotPassClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:ForgotPassErrorHandler.kt$com.atvantiq.wfms.ui.screens.forgotPassword.vm.ForgotPassErrorHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:ForgotPasswordResponse.kt$com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:ForgotPasswordVM.kt$com.atvantiq.wfms.ui.screens.forgotPassword.vm.ForgotPasswordVM.kt</ID>
+    <ID>NewLineAtEndOfFile:GenericBottomSheetDialog.kt$.GenericBottomSheetDialog.kt</ID>
+    <ID>NewLineAtEndOfFile:GradientButton.kt$com.atvantiq.wfms.widgets.GradientButton.kt</ID>
+    <ID>NewLineAtEndOfFile:GradientLogoView.kt$com.atvantiq.wfms.widgets.GradientLogoView.kt</ID>
+    <ID>NewLineAtEndOfFile:HotelExpense.kt$com.atvantiq.wfms.models.reimbursement.HotelExpense.kt</ID>
+    <ID>NewLineAtEndOfFile:IAttendanceRepo.kt$com.atvantiq.wfms.data.repository.atten.IAttendanceRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:IAuthRepo.kt$com.atvantiq.wfms.data.repository.auth.IAuthRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:IClaimRepo.kt$com.atvantiq.wfms.data.repository.claims.IClaimRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:ICreationRepo.kt$com.atvantiq.wfms.data.repository.creation.ICreationRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:IWorkRepo.kt$com.atvantiq.wfms.data.repository.work.IWorkRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:InventoryByProjectResponse.kt$com.atvantiq.wfms.models.inventory.InventoryByProjectResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:InventoryData.kt$com.atvantiq.wfms.models.inventory.InventoryData.kt</ID>
+    <ID>NewLineAtEndOfFile:LoginClickEvents.kt$com.atvantiq.wfms.ui.screens.login.LoginClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:LoginErrorHandler.kt$com.atvantiq.wfms.ui.screens.login.LoginErrorHandler.kt</ID>
+    <ID>NewLineAtEndOfFile:LoginResponse.kt$com.atvantiq.wfms.models.loginResponse.LoginResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Logs.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.Logs.kt</ID>
+    <ID>NewLineAtEndOfFile:MarqueeAdapter.kt$com.atvantiq.wfms.ui.screens.adapters.MarqueeAdapter.kt</ID>
+    <ID>NewLineAtEndOfFile:NetworkEndPoints.kt$com.atvantiq.wfms.network.NetworkEndPoints.kt</ID>
+    <ID>NewLineAtEndOfFile:OPS.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.OPS.kt</ID>
+    <ID>NewLineAtEndOfFile:Ops.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Ops.kt</ID>
+    <ID>NewLineAtEndOfFile:PM.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.PM.kt</ID>
+    <ID>NewLineAtEndOfFile:Permission.kt$com.atvantiq.wfms.models.empDetail.Permission.kt</ID>
+    <ID>NewLineAtEndOfFile:Permission.kt$com.atvantiq.wfms.models.loginResponse.Permission.kt</ID>
+    <ID>NewLineAtEndOfFile:Pm.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Pm.kt</ID>
+    <ID>NewLineAtEndOfFile:Po.kt$com.atvantiq.wfms.models.site.Po.kt</ID>
+    <ID>NewLineAtEndOfFile:PoData.kt$com.atvantiq.wfms.models.po.PoData.kt</ID>
+    <ID>NewLineAtEndOfFile:PoListByProjectResponse.kt$com.atvantiq.wfms.models.po.PoListByProjectResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Posts.kt$com.atvantiq.wfms.models.Posts.kt</ID>
+    <ID>NewLineAtEndOfFile:PostsItem.kt$com.atvantiq.wfms.models.PostsItem.kt</ID>
+    <ID>NewLineAtEndOfFile:PrefModule.kt$com.atvantiq.wfms.di.modules.PrefModule.kt</ID>
+    <ID>NewLineAtEndOfFile:Progres.kt$com.atvantiq.wfms.models.work.assignedAll.Progres.kt</ID>
+    <ID>NewLineAtEndOfFile:Project.kt$com.atvantiq.wfms.models.allProjects.Project.kt</ID>
+    <ID>NewLineAtEndOfFile:Project.kt$com.atvantiq.wfms.models.work.assignedAll.Project.kt</ID>
+    <ID>NewLineAtEndOfFile:Project.kt$com.atvantiq.wfms.models.work.workAssigned.Project.kt</ID>
+    <ID>NewLineAtEndOfFile:Project.kt$com.atvantiq.wfms.models.workSites.workSites.Project.kt</ID>
+    <ID>NewLineAtEndOfFile:ProjectData.kt$com.atvantiq.wfms.models.project.ProjectData.kt</ID>
+    <ID>NewLineAtEndOfFile:ProjectListByClientResponse.kt$com.atvantiq.wfms.models.project.ProjectListByClientResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Record.kt$com.atvantiq.wfms.models.reimbursement.allClaims.Record.kt</ID>
+    <ID>NewLineAtEndOfFile:ReimbursementClickEvents.kt$com.atvantiq.wfms.ui.screens.reimbursement.ReimbursementClickEvents.kt</ID>
+    <ID>NewLineAtEndOfFile:ReimbursementData.kt$com.atvantiq.wfms.constants.ReimbursementData.kt</ID>
+    <ID>NewLineAtEndOfFile:ReportingManager.kt$com.atvantiq.wfms.models.empDetail.ReportingManager.kt</ID>
+    <ID>NewLineAtEndOfFile:ReportingManager.kt$com.atvantiq.wfms.models.workSites.workSites.ReportingManager.kt</ID>
+    <ID>NewLineAtEndOfFile:RequestOtpBottomSheet.kt$com.atvantiq.wfms.ui.screens.login.withOtp.RequestOtpBottomSheet.kt</ID>
+    <ID>NewLineAtEndOfFile:RequestOtpResponse.kt$com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:Result.kt$com.atvantiq.wfms.models.work.selfAssign.Result.kt</ID>
+    <ID>NewLineAtEndOfFile:SecurePrefMain.kt$com.atvantiq.wfms.data.prefs.SecurePrefMain.kt</ID>
+    <ID>NewLineAtEndOfFile:SelfAssignData.kt$com.atvantiq.wfms.models.work.selfAssign.SelfAssignData.kt</ID>
+    <ID>NewLineAtEndOfFile:SelfAssignResponse.kt$com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:SendLocationResponse.kt$com.atvantiq.wfms.models.location.SendLocationResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:SharingKeys.kt$com.atvantiq.wfms.constants.SharingKeys.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.reimbursement.allClaims.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.reimbursement.detail.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.site.allSites.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.work.assignedAll.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.work.selfAssign.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.work.workAssigned.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.workSiteByDate.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:Site.kt$com.atvantiq.wfms.models.workSites.workSites.Site.kt</ID>
+    <ID>NewLineAtEndOfFile:SiteData.kt$com.atvantiq.wfms.models.site.SiteData.kt</ID>
+    <ID>NewLineAtEndOfFile:SiteListByProjectResponse.kt$com.atvantiq.wfms.models.site.SiteListByProjectResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:SitesEventClicks.kt$com.atvantiq.wfms.ui.screens.admin.ui.site.SitesEventClicks.kt</ID>
+    <ID>NewLineAtEndOfFile:SitesListAllResponse.kt$com.atvantiq.wfms.models.site.allSites.SitesListAllResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:SitesVM.kt$com.atvantiq.wfms.ui.screens.admin.ui.site.SitesVM.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.models.attendance.attendanceDetails.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.models.reimbursement.allClaims.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.models.work.workAssigned.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.models.work.workDetail.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.models.workSites.workSites.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:Status.kt$com.atvantiq.wfms.network.Status.kt</ID>
+    <ID>NewLineAtEndOfFile:StatusCodes.kt$com.atvantiq.wfms.constants.StatusCodes.kt</ID>
+    <ID>NewLineAtEndOfFile:TrackingRepo.kt$com.atvantiq.wfms.data.repository.tracking.TrackingRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:TravelExpense.kt$com.atvantiq.wfms.models.reimbursement.TravelExpense.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.atvantiq.wfms.models.work.assignedAll.Type.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.atvantiq.wfms.models.work.selfAssign.Type.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.atvantiq.wfms.models.work.workAssigned.Type.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.atvantiq.wfms.models.work.workDetail.Type.kt</ID>
+    <ID>NewLineAtEndOfFile:TypeData.kt$com.atvantiq.wfms.models.type.TypeData.kt</ID>
+    <ID>NewLineAtEndOfFile:TypeListByProjectResponse.kt$com.atvantiq.wfms.models.type.TypeListByProjectResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:UpdateNotificationTokenResponse.kt$com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:ValConstants.kt$com.atvantiq.wfms.constants.ValConstants.kt</ID>
+    <ID>NewLineAtEndOfFile:ValidatorUtils.kt$com.atvantiq.wfms.utils.ValidatorUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkAssignedAllResponse.kt$com.atvantiq.wfms.models.work.assignedAll.WorkAssignedAllResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkAssignedResponse.kt$com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkDetailData.kt$com.atvantiq.wfms.models.work.workDetail.WorkDetailData.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkDetailResponse.kt$com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkDetailsByDateActivity.kt$com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail.WorkDetailsByDateActivity.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkDetailsByDateResponse.kt$com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkRecord.kt$com.atvantiq.wfms.models.work.assignedAll.WorkRecord.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkRepo.kt$com.atvantiq.wfms.data.repository.work.WorkRepo.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkSite.kt$com.atvantiq.wfms.models.workSites.workSites.WorkSite.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkSiteByDateResponse.kt$com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkSiteData.kt$com.atvantiq.wfms.models.workSites.workSites.WorkSiteData.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkSiteDetailResponse.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkSitesResponse.kt$com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse.kt</ID>
+    <ID>NewLineAtEndOfFile:WorkType.kt$com.atvantiq.wfms.models.workSites.workSiteDetails.WorkType.kt</ID>
+    <ID>ReturnCount:AddSignInVM.kt$AddSignInVM$private fun getWorkAssigned()</ID>
+    <ID>ReturnCount:AddSiteValidation.kt$AddSiteValidation$private fun isOptionalCoordinate(value: String?, limit: Double): Boolean</ID>
+    <ID>ReturnCount:AddTravelDetailViewModel.kt$AddTravelDetailViewModel$fun validateTravelDetailOrPostError(): Boolean</ID>
+    <ID>ReturnCount:ApiErrorMapper.kt$ApiErrorMapper$fun userFacing(throwable: Exception, messageFor: (ApiErrorKind) -&gt; String): Exception</ID>
+    <ID>ReturnCount:AttendanceApprovalRules.kt$fun AttendanceRecord.canBeMarkedBy(role: AppRole): Boolean</ID>
+    <ID>ReturnCount:AttendanceApprovalVM.kt$AttendanceApprovalVM$fun submitDecision()</ID>
+    <ID>ReturnCount:CircleListDeserializer.kt$CircleListDeserializer$override fun deserialize( json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext? ): List&lt;CircleData&gt;</ID>
+    <ID>ReturnCount:ClaimApprovalDetailVM.kt$ClaimApprovalDetailVM$fun submit()</ID>
+    <ID>ReturnCount:ClaimDecision.kt$ClaimDecision.Companion$fun build(claimId: Long, inputs: List&lt;ExpenseDecisionInput&gt;): ClaimDecision</ID>
+    <ID>ReturnCount:ClaimEditMapper.kt$ClaimEditMapper$fun toEditableClaim(claim: ClaimData, site: SiteDetail?): EditableClaim?</ID>
+    <ID>ReturnCount:CreateClaimVM.kt$CreateClaimVM$fun applyClaimForEdit(claim: ClaimData?, site: SiteDetail?): Boolean</ID>
+    <ID>ReturnCount:CreateClaimVM.kt$CreateClaimVM$fun onSubmitClaim()</ID>
+    <ID>ReturnCount:CreateClaimVM.kt$CreateClaimVM$private fun validateCreateClaim(): Boolean</ID>
+    <ID>ReturnCount:DateUtils.kt$DateUtils$fun parseUtcIso(value: String?): Long?</ID>
+    <ID>ReturnCount:DateUtils.kt$DateUtils$private fun offsetMillis(offset: String): Long</ID>
+    <ID>ReturnCount:FileUtils.kt$FileUtils$@JvmStatic fun getRealPathFromUri(context: Context, uri: Uri): String?</ID>
+    <ID>ReturnCount:GradientButton.kt$GradientButton$private fun resolveColor(primaryAttr: Int, fallbackAttr: Int): Int</ID>
+    <ID>ReturnCount:HttpExceptionExt.kt$fun HttpException.serverMessage(): String?</ID>
+    <ID>ReturnCount:ImageProcessor.kt$ImageProcessor$fun prepare(sourcePath: String): PreparedImage?</ID>
+    <ID>ReturnCount:ImageProcessor.kt$ImageProcessor$private fun decodeAndEncode(sourcePath: String, sample: Int): PreparedImage?</ID>
+    <ID>ReturnCount:ImageProcessor.kt$ImageProcessor$private fun encodeUnderLimit(source: Bitmap, output: File): Boolean</ID>
+    <ID>ReturnCount:LocationTrackingService.kt$LocationTrackingService$override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int</ID>
+    <ID>ReturnCount:LocationTrackingService.kt$LocationTrackingService$private fun applySamplingMode(mode: SamplingMode)</ID>
+    <ID>ReturnCount:MaterialUsageViewModel.kt$MaterialUsageViewModel$private fun validate(raw: String, item: InventoryData): ErrorType?</ID>
+    <ID>ReturnCount:MyDayContent.kt$MyDayContent$private fun MyDayPoint.toTrackPoint(): TrackPoint?</ID>
+    <ID>ReturnCount:PickMediaHelper.kt$PickMediaHelper$private fun guessExtension(uri: Uri): String</ID>
+    <ID>ReturnCount:PickMediaHelper.kt$PickMediaHelper$private fun handlePickedUri(uri: Uri)</ID>
+    <ID>ReturnCount:QueueUploader.kt$QueueUploader$suspend fun flush(): UploadOutcome</ID>
+    <ID>ReturnCount:SiteWorkDetailActivity.kt$SiteWorkDetailActivity$private fun decide(status: Int)</ID>
+    <ID>SwallowedException:AddressResolver.kt$AddressResolver$e: Exception</ID>
+    <ID>SwallowedException:ConnectivityReceiver.kt$ConnectivityReceiver.Companion$e: SecurityException</ID>
+    <ID>SwallowedException:DateUtils.kt$DateUtils$e: Exception</ID>
+    <ID>SwallowedException:HttpExceptionExt.kt$e: Exception</ID>
+    <ID>SwallowedException:ImageProcessor.kt$ImageProcessor$e: IOException</ID>
+    <ID>TooGenericExceptionCaught:AddressResolver.kt$AddressResolver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BaseViewModel.kt$BaseViewModel$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DateUtils.kt$DateUtils$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:HttpExceptionExt.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LocationTrackingService.kt$LocationTrackingService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LoginVM.kt$LoginVM$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PickMediaHelper.kt$PickMediaHelper$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QueueUploader.kt$QueueUploader$failure: Exception</ID>
+    <ID>TooGenericExceptionCaught:SecurePrefMain.kt$SecurePrefMain$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SecurePrefMain.kt$SecurePrefMain$firstError: Exception</ID>
+    <ID>TooGenericExceptionCaught:SecurePrefMain.kt$SecurePrefMain$secondError: Exception</ID>
+    <ID>TooGenericExceptionCaught:SplashVM.kt$SplashVM$e: Exception</ID>
+    <ID>TooManyFunctions:AddSignInActivity.kt$AddSignInActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:AddSignInVM.kt$AddSignInVM : BaseViewModel</ID>
+    <ID>TooManyFunctions:AddSiteActivity.kt$AddSiteActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:AddSiteVM.kt$AddSiteVM : BaseViewModel</ID>
+    <ID>TooManyFunctions:AddTravelingDetailActivity.kt$AddTravelingDetailActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:ApiService.kt$ApiService</ID>
+    <ID>TooManyFunctions:AssignedTaskDetailActivity.kt$AssignedTaskDetailActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:AttendanceFragment.kt$AttendanceFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:AttendanceRepo.kt$AttendanceRepo : IAttendanceRepo</ID>
+    <ID>TooManyFunctions:AttendanceStatusFragment.kt$AttendanceStatusFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:BaseActivitySimple.kt$BaseActivitySimple : AppCompatActivity</ID>
+    <ID>TooManyFunctions:BaseBindingBottomSheetFragment.kt$BaseBindingBottomSheetFragment&lt;T : ViewDataBinding&gt; : BottomSheetDialogFragment</ID>
+    <ID>TooManyFunctions:BaseFragmentSimple.kt$BaseFragmentSimple : Fragment</ID>
+    <ID>TooManyFunctions:ClaimDetailActivity.kt$ClaimDetailActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:CreateClaimActivity.kt$CreateClaimActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:CreateClaimVM.kt$CreateClaimVM : BaseViewModel</ID>
+    <ID>TooManyFunctions:CreationRepo.kt$CreationRepo : ICreationRepo</ID>
+    <ID>TooManyFunctions:DashboardActivity.kt$DashboardActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:DashboardFragment.kt$DashboardFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:DashboardViewModel.kt$DashboardViewModel : BaseViewModel</ID>
+    <ID>TooManyFunctions:DateUtils.kt$DateUtils</ID>
+    <ID>TooManyFunctions:FooterRecyclerView.kt$FooterRecyclerView : Adapter</ID>
+    <ID>TooManyFunctions:IAttendanceRepo.kt$IAttendanceRepo</ID>
+    <ID>TooManyFunctions:ICreationRepo.kt$ICreationRepo</ID>
+    <ID>TooManyFunctions:LocationTrackingService.kt$LocationTrackingService : Service</ID>
+    <ID>TooManyFunctions:LoginActivity.kt$LoginActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:LoginVM.kt$LoginVM : BaseViewModel</ID>
+    <ID>TooManyFunctions:MaterialUsageActivity.kt$MaterialUsageActivity : BaseActivity</ID>
+    <ID>TooManyFunctions:MaterialUsageViewModel.kt$MaterialUsageViewModel : BaseViewModel</ID>
+    <ID>TooManyFunctions:MyDayFragment.kt$MyDayFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:MyTargetsFragment.kt$MyTargetsFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:PickMediaHelper.kt$PickMediaHelper</ID>
+    <ID>TooManyFunctions:PrefMain.kt$PrefMain : SharedPrefPrint</ID>
+    <ID>TooManyFunctions:ReimbursementFragment.kt$ReimbursementFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:SecurePrefMain.kt$SecurePrefMain : SharedPrefPrint</ID>
+    <ID>TooManyFunctions:SharedPrefPrint.kt$SharedPrefPrint</ID>
+    <ID>TooManyFunctions:ThemeManager.kt$ThemeManager</ID>
+    <ID>TooManyFunctions:UtilStatusBindings.kt$UtilStatusBindings</ID>
+    <ID>TooManyFunctions:Utils.kt$Utils</ID>
+    <ID>UnusedParameter:CalendarView.kt$CalendarView$attrs: AttributeSet?</ID>
+    <ID>UnusedParameter:CalendarView.kt$CalendarView$context: Context</ID>
+    <ID>UnusedPrivateMember:AttendanceFragment.kt$AttendanceFragment$private fun checkAttendanceStatus(id: Long, position: Int)</ID>
+    <ID>UnusedPrivateMember:BaseBindingBottomSheetFragment.kt$BaseBindingBottomSheetFragment$private fun initProgress()</ID>
+    <ID>UnusedPrivateMember:CalendarView.kt$CalendarView$private fun isInvalidDate(): Boolean</ID>
+    <ID>UnusedPrivateMember:DashboardActivity.kt$DashboardActivity$private fun requestPostNotificationsPermissionIfNeeded()</ID>
+    <ID>UnusedPrivateProperty:AttendanceFragment.kt$AttendanceFragment$val primaryColor = com.google.android.material.color.MaterialColors.getColor( requireView(), com.atvantiq.wfms.R.attr.wfmsColorPrimary )</ID>
+    <ID>UnusedPrivateProperty:AttendanceRemarksBottomSheet.kt$AttendanceRemarksBottomSheet$private var selectedStatus: StatusOption? = null</ID>
+    <ID>UnusedPrivateProperty:DateUtils.kt$DateUtils$private const val DOB_FORMAT = "dd/MM/yyyy"</ID>
+    <ID>UnusedPrivateProperty:FooterRecyclerView.kt$FooterRecyclerView$val inflater = LayoutInflater.from(parent.context)</ID>
+    <ID>UnusedPrivateProperty:MaterialAdapter.kt$MaterialAdapter.VH$val strokeColor = when { row.error != null -&gt; colorError row.isAdded -&gt; colorPrimary else -&gt; colorOutline }</ID>
+    <ID>VariableNaming:AllClaimsAdapter.kt$AllClaimsAdapter$private val VIEW_TYPE_ITEM = 1</ID>
+    <ID>VariableNaming:AllSitesAdapter.kt$AllSitesAdapter$private val VIEW_TYPE_ITEM = 1</ID>
+    <ID>VariableNaming:AssignedTasksListAdapter.kt$AssignedTasksListAdapter$private val VIEW_TYPE_ITEM = 1</ID>
+    <ID>VariableNaming:DashboardViewModel.kt$DashboardViewModel$var GEOFENCE_LAT = ObservableField&lt;Double&gt;().apply { set(0.0) }</ID>
+    <ID>VariableNaming:DashboardViewModel.kt$DashboardViewModel$var GEOFENCE_LON = ObservableField&lt;Double&gt;().apply { set(0.0) }</ID>
+    <ID>VariableNaming:FooterRecyclerView.kt$FooterRecyclerView$private val VIEW_TYPE_LOADING = 0</ID>
+    <ID>VariableNaming:ProgressCircularDialog.kt$ProgressCircularDialog$val ARG_TITLE: String = "ARG_TITLE"</ID>
+    <ID>VariableNaming:ProgressDialog.kt$ProgressDialog$val ARG_TITLE: String = "ARG_TITLE"</ID>
+    <ID>WildcardImport:AddSignInVMTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:AddSignInVMTest.kt$import kotlinx.coroutines.test.*</ID>
+    <ID>WildcardImport:AddSignInVMTest.kt$import org.junit.*</ID>
+    <ID>WildcardImport:AddSignInVMTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:AttendanceRepoTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:AttendanceRepoTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:AttendanceStatusVMTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:AttendanceStatusVMTest.kt$import kotlinx.coroutines.test.*</ID>
+    <ID>WildcardImport:AttendanceStatusVMTest.kt$import org.junit.*</ID>
+    <ID>WildcardImport:AttendanceStatusVMTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:AuthRepoTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:AuthRepoTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:BaseBindingBottomSheetFragment.kt$import android.view.*</ID>
+    <ID>WildcardImport:CreationRepoTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:CreationRepoTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:DashboardActivity.kt$import com.google.android.play.core.appupdate.*</ID>
+    <ID>WildcardImport:DashboardViewModelTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:DashboardViewModelTest.kt$import kotlinx.coroutines.test.*</ID>
+    <ID>WildcardImport:DashboardViewModelTest.kt$import org.junit.*</ID>
+    <ID>WildcardImport:DateUtilsTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:ExampleUnitTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:FileUtils.kt$import java.io.*</ID>
+    <ID>WildcardImport:LoginVMTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:LoginVMTest.kt$import kotlinx.coroutines.test.*</ID>
+    <ID>WildcardImport:LoginVMTest.kt$import org.junit.*</ID>
+    <ID>WildcardImport:LoginVMTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:Utils.kt$import android.content.*</ID>
+    <ID>WildcardImport:Utils.kt$import android.graphics.*</ID>
+    <ID>WildcardImport:UtilsTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:WorkRepoTest.kt$import io.mockk.*</ID>
+    <ID>WildcardImport:WorkRepoTest.kt$import org.junit.Assert.*</ID>
+  </CurrentIssues>
+</SmellBaseline>

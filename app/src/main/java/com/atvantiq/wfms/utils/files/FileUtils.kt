@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.utils.files
 
 import android.content.ContentValues
+import timber.log.Timber
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
@@ -8,7 +9,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -71,7 +71,7 @@ object FileUtils {
             }
             return cacheFile.absolutePath
         } catch (e: IOException) {
-            Log.e("FileUtils", "Error copying file: ${e.localizedMessage}")
+            Timber.e(e, "Error copying file")
         }
         return null
     }
