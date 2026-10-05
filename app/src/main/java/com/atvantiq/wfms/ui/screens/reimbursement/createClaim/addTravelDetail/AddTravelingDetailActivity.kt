@@ -22,6 +22,9 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
@@ -61,13 +64,42 @@ class AddTravelingDetailActivity :
         handleToolbar()
 
         setImagePicker()
+        pickMediaHelper.restoreState(savedInstanceState)
 
         isOutstation = intent.getBooleanExtra(SharingKeys.IS_OUTSTATION_CLAIM, false)
         circleCode = intent.extras?.getString(SharingKeys.EXTRA_CIRCLE_CODE)
-        val defaultFrom = intent.getStringExtra(SharingKeys.EXTRA_DEFAULT_FROM)
-        if (!defaultFrom.isNullOrBlank()) {
-            viewModel.fromLocation.set(defaultFrom)
+        if (savedInstanceState == null) {
+            val defaultFrom = intent.getStringExtra(SharingKeys.EXTRA_DEFAULT_FROM)
+            if (!defaultFrom.isNullOrBlank()) viewModel.fromLocation.set(defaultFrom)
+        } else {
+            showRestoredEntry()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        pickMediaHelper.saveState(outState)
+    }
+
+    /** After Android ended the process: the companion and the receipt preview the form had. */
+    private fun showRestoredEntry() {
+        viewModel.selectedEmployee.get()?.let { showTravelingWith(it) }
+        val receipt = viewModel.attachmentPath.get().orEmpty()
+        if (receipt.isEmpty()) return
+        lifecycleScope.launch {
+            val preview = withContext(Dispatchers.IO) { pickMediaHelper.decodeBitmap(receipt) }
+            if (preview == null) {
+                // The prepared file is gone; ask for the receipt again rather than send a missing one.
+                viewModel.attachmentPath.set("")
+                return@launch
+            }
+            binding.hasPreviewImage = true
+            binding.capturedImagePreview.setImageBitmap(preview)
+        }
+    }
+
+    private fun showTravelingWith(employee: Data) {
+        binding.travelingWithEt.setText(getString(R.string.name_with_code_format, employee.name, employee.code))
     }
 
     private fun handleToolbar() {
@@ -202,7 +234,7 @@ class AddTravelingDetailActivity :
             },
             onItemSelected = { selected ->
                 binding.travelingWithEt.error = null
-                binding.travelingWithEt.setText(getString(R.string.name_with_code_format, selected.name, selected.code))
+                showTravelingWith(selected)
                 viewModel.selectedEmployee.set(selected)
             },
             filterCondition = { item, query ->

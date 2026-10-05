@@ -16,4 +16,16 @@ object SplashRouting {
         user == null -> SplashTarget.LOGIN
         else -> SplashTarget.DASHBOARD
     }
+
+    /**
+     * The launcher icon tapped while the app is already open in the background. The splash is
+     * then started on top of the user's screen; it should step aside so they return to where
+     * they were, not to a new Dashboard. Notification taps use their own actions and still route.
+     */
+    fun isRelaunchOverOpenTask(isTaskRoot: Boolean, action: String?, categories: Set<String>?): Boolean =
+        !isTaskRoot && action == ACTION_MAIN && categories.orEmpty().contains(CATEGORY_LAUNCHER)
+
+    // Intent.ACTION_MAIN / Intent.CATEGORY_LAUNCHER, spelled out so this stays free of Android.
+    private const val ACTION_MAIN = "android.intent.action.MAIN"
+    private const val CATEGORY_LAUNCHER = "android.intent.category.LAUNCHER"
 }

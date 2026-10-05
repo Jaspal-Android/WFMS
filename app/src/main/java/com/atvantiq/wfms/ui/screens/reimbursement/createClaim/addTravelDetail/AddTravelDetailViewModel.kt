@@ -2,9 +2,10 @@ package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail
 
 import android.app.Application
 import com.atvantiq.wfms.base.LiveEvent
-import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.base.savedField
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
 import com.atvantiq.wfms.models.empoyeeByCircle.Data
 import com.atvantiq.wfms.models.empoyeeByCircle.EmployeeByCircleResponse
@@ -18,16 +19,19 @@ import javax.inject.Inject
 class AddTravelDetailViewModel @Inject constructor(
     application: Application,
     private val claimRepo: IClaimRepo,
+    state: SavedStateHandle
 ) : BaseViewModel(application) {
 
-    val travelAmount = ObservableField<String>().apply { set("") }
-    val fromLocation = ObservableField<String>().apply { set("") }
-    val toLocation = ObservableField<String>().apply { set("") }
-    val attachmentPath = ObservableField<String>().apply { set("") }
-    var selectedTravelMode = ObservableField<TravelModeOption>().apply { set(null) }
-    val selectedTravelModeValue = ObservableField<String>().apply { set("") }
+    // Kept in the SavedStateHandle, so the entry survives Android ending the app's process while
+    // the user is in the camera or another app.
+    val travelAmount = state.savedField("amount", "")
+    val fromLocation = state.savedField("from", "")
+    val toLocation = state.savedField("to", "")
+    val attachmentPath = state.savedField("receipt", "")
+    val selectedTravelMode = state.savedField<TravelModeOption?>("mode", null)
+    val selectedTravelModeValue = state.savedField("modeLabel", "")
 
-    var selectedEmployee =  ObservableField<Data>().apply { set(null) }
+    val selectedEmployee = state.savedField<Data?>("travelingWith", null)
 
     var employeesByCircle: List<Data> = ArrayList()
 

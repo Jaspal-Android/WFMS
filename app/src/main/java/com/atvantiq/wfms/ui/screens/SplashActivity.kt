@@ -30,6 +30,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashVM>() {
         get() = ActivityBinding(R.layout.activity_splash, SplashVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        if (SplashRouting.isRelaunchOverOpenTask(isTaskRoot, intent?.action, intent?.categories)) {
+            finish()
+            return
+        }
         enableEdgeToEdge()
         binding.main.applySystemBarsAndImePadding()
         binding.versionText.text = getString(R.string.version_label, BuildConfig.VERSION_NAME)
