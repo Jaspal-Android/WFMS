@@ -305,6 +305,7 @@
     <string name="incomplete">Incomplete</string>
     <string name="hrs_mins">hrs : mins</string>
     <string name="work_types">Work Types</string>
+    <string name="assign">Assign</string>
     <string name="self_work_assign">Self Work Assign</string>
     <string name="start_work">Start Work</string>
     <string name="submit_new_reimbursement_claim">Submit New Reimbursement Claim</string>
