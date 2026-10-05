@@ -10,8 +10,8 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.utils.MonthYear
 
 /**
- * One month of attendance records for review, paged (`GET /attendance/details`). Work Approval
- * and Attendance Approval both list these; ◀ ▶ step the month and reload from page 1.
+ * One month of attendance records for review, paged (`GET /attendance/details`). ◀ ▶ step the
+ * month and reload from page 1.
  */
 abstract class MonthlyAttendanceListVM(
     application: Application,

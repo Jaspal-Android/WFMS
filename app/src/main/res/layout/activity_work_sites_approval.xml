@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Work Approval: ◀ month ▶ with the submission count, then one row per employee-day, paged. -->
+<!-- Work Approval: search, ◀ month ▶ with the assignment count, then one row per work assignment, paged. -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.SiteApprovalVM" />
+            type="com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.WorkApprovalVM" />
 
         <variable
             name="monthTitle"
@@ -35,6 +35,15 @@
             android:layout_height="wrap_content" />
 
         <include
+            android:id="@+id/searchBar"
+            layout="@layout/layout_search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/min_touch_target"
+            android:layout_marginHorizontal="@dimen/margin"
+            android:layout_marginTop="@dimen/margin_small"
+            app:hint="@{@string/search_work_hint}" />
+
+        <include
             layout="@layout/layout_month_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,7 +64,7 @@
                 android:layout_height="match_parent">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvSubmissions"
+                    android:id="@+id/rvAssignments"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
@@ -63,7 +72,7 @@
                     android:paddingBottom="@dimen/margin"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
-                    tools:listitem="@layout/item_work_submission" />
+                    tools:listitem="@layout/item_work_assignment" />
 
                 <include
                     android:id="@+id/emptyState"
@@ -73,7 +82,7 @@
                     android:layout_marginHorizontal="@dimen/margin"
                     android:layout_marginTop="@dimen/margin_medium"
                     app:icon="@{@drawable/ic_tab_approvals}"
-                    app:message="@{@string/no_attendance_records_for_approval}" />
+                    app:message="@{@string/no_work_assignments_for_approval}" />
             </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>

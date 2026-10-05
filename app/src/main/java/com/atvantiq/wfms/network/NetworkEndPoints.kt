@@ -47,7 +47,7 @@ object NetworkEndPoints {
 	const val siteListByProject = "site/project/{project_id}"
 	const val siteById = "site/{id}"
 	const val createSite="site/create"
-	const val workSites = "work/sites/{employee_id}"
+	const val workAll = "work/all"
 	const val workSiteDetailsAdmin ="/work/site/progress/{work_site_id}"
 	const val approveWorkSite = "work/approve"
 

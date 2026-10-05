@@ -1,45 +1,48 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.siteApproval
 
-import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.base.PagedListUiState
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivityWorkSitesApprovalBinding
-import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
-import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
-import com.atvantiq.wfms.models.attendance.attendanceDetails.day
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignment
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignmentsResponse
+import com.atvantiq.wfms.models.workSites.workAssignments.workDate
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
-import com.atvantiq.wfms.ui.screens.adapters.WorkSubmissionsAdapter
-import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity
+import com.atvantiq.wfms.ui.screens.adapters.WorkAssignmentsAdapter
+import com.atvantiq.wfms.ui.screens.admin.ui.siteApproval.workSiteDetail.SiteWorkDetailActivity
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import dagger.hilt.android.AndroidEntryPoint
-import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
-/** Work Approval: the month's employee-days, each opening that day's Work Sites. */
+/** Work Approval: the month's work assignments, each opening its Site Work Detail. */
 @AndroidEntryPoint
-class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding, SiteApprovalVM>() {
+class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding, WorkApprovalVM>() {
 
-    private var adapter: WorkSubmissionsAdapter? = null
+    private var adapter: WorkAssignmentsAdapter? = null
     private var isProgressShown = false
 
     override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(R.layout.activity_work_sites_approval, SiteApprovalVM::class.java)
+        get() = ActivityBinding(R.layout.activity_work_sites_approval, WorkApprovalVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()
+        setUpSearch()
         setUpList()
-        binding.swipeRefreshLayout.setOnRefreshListener { viewModel.records.refresh() }
-        viewModel.records.open()
+        binding.swipeRefreshLayout.setOnRefreshListener { viewModel.assignments.refresh() }
+        viewModel.assignments.open()
     }
 
     private fun setUpToolbar() {
@@ -49,26 +52,44 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         }
     }
 
-    override fun subscribeToEvents(vm: SiteApprovalVM) {
+    private fun setUpSearch() {
+        with(binding.searchBar) {
+            etSearch.setText(viewModel.appliedSearch)
+            ivClearSearch.isVisible = viewModel.appliedSearch.isNotEmpty()
+            etSearch.doAfterTextChanged { ivClearSearch.isVisible = !it.isNullOrEmpty() }
+            etSearch.setOnEditorActionListener { view, actionId, _ ->
+                if (actionId != EditorInfo.IME_ACTION_SEARCH) return@setOnEditorActionListener false
+                hideSoftKeyboard(this@WorkSitesApprovalActivity)
+                viewModel.search(view.text.toString())
+                true
+            }
+            ivClearSearch.setOnClickListener {
+                etSearch.setText("")
+                viewModel.search("")
+            }
+        }
+    }
+
+    override fun subscribeToEvents(vm: WorkApprovalVM) {
         binding.vm = vm
         vm.month.observe(this) { month -> binding.monthTitle = month.label }
-        vm.monthCount.observe(this) { count ->
-            binding.monthSubtitle = count?.let { resources.getQuantityString(R.plurals.submissions_count, it, it) }
+        vm.assignmentCount.observe(this) { count ->
+            binding.monthSubtitle = count?.let { resources.getQuantityString(R.plurals.work_assignments_count, it, it) }
         }
-        vm.records.state.observe(this) { state -> renderSubmissions(state) }
-        vm.records.failure.observe(this) { failure ->
+        vm.assignments.state.observe(this) { state -> renderAssignments(state) }
+        vm.assignments.failure.observe(this) { failure ->
             if (!failure.consumeOnce()) return@observe
             handleFailure(failure)
         }
     }
 
     private fun setUpList() {
-        adapter = WorkSubmissionsAdapter(onReview = ::openWorkSites)
-        binding.rvSubmissions.adapter = adapter
-        binding.rvSubmissions.addOnScrollListener(PaginationScrollListener { viewModel.records.loadNextPage() })
+        adapter = WorkAssignmentsAdapter(onReview = ::openSiteWorkDetail)
+        binding.rvAssignments.adapter = adapter
+        binding.rvAssignments.addOnScrollListener(PaginationScrollListener { viewModel.assignments.loadNextPage() })
     }
 
-    private fun renderSubmissions(state: PagedListUiState<AttendanceRecord>) {
+    private fun renderAssignments(state: PagedListUiState<WorkAssignment>) {
         showFirstPageProgress(state.isLoadingFirstPage)
         if (!state.isLoadingFirstPage && !state.isRefreshing) binding.swipeRefreshLayout.isRefreshing = false
         adapter?.submitList(state.items, state.changedPosition)
@@ -82,7 +103,7 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         if (show) showProgress() else dismissProgress()
     }
 
-    private fun handleFailure(failure: ApiState<AttendanceDetailListResponse>) {
+    private fun handleFailure(failure: ApiState<WorkAssignmentsResponse>) {
         if (failure.status == Status.SUCCESS) {
             failure.response?.let { handleRejectedResponse(it.code, it.message) }
         } else {
@@ -90,17 +111,23 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         }
     }
 
-    private fun openWorkSites(record: AttendanceRecord) {
-        val intent = Intent(this, WorkSitesActivity::class.java).apply {
-            putExtra(SharingKeys.EMPLOYEE_ID, record.employee?.id.toString())
-            putExtra(SharingKeys.DATE, record.day.orEmpty())
+    private fun openSiteWorkDetail(assignment: WorkAssignment) {
+        val workSiteId = assignment.site?.workSiteId
+        val employeeId = assignment.employee?.id
+        val date = assignment.workDate
+        if (workSiteId == null || employeeId == null || date == null) {
+            return showToast(this, getString(R.string.work_progress_unavailable))
         }
-        workSitesLauncher.launch(intent)
+        detailLauncher.launch(Intent(this, SiteWorkDetailActivity::class.java).apply {
+            putExtra(SharingKeys.WORK_ID, workSiteId)
+            putExtra(SharingKeys.EMPLOYEE_ID, employeeId.toString())
+            putExtra(SharingKeys.WORK_DATE, date)
+        })
     }
 
-    /** Work was approved or rejected on that day: its status comes back from the server. */
-    private val workSitesLauncher =
+    /** Work was approved or rejected there: its status comes back from the server. */
+    private val detailLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) viewModel.records.refresh()
+            if (result.resultCode == Activity.RESULT_OK) viewModel.assignments.refresh()
         }
 }
