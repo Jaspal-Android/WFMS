@@ -42,6 +42,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginVM>() {
         get() = ActivityBinding(R.layout.activity_login, LoginVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        blockScreenCapture()
         enableEdgeToEdge()
         binding.main.applySystemBarsAndImePadding()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

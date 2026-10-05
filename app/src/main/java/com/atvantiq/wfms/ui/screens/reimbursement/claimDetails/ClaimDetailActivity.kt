@@ -34,6 +34,7 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
         get() = ActivityBinding(R.layout.activity_claim_detail, ReimbursementViewModel::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        blockScreenCapture()
         enableEdgeToEdge()
         findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         handleToolbar()
