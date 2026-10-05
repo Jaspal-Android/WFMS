@@ -20,9 +20,6 @@
     <string name="project">Project</string>
     <string name="colon">:</string>
     <string name="concatText" translatable="false">%1$s %2$s</string>
-    <string name="ic_completed">I&amp;C Completed</string>
-    <string name="no_of_sites">No of Sites</string>
-    <string name="atp_completed">ATP Completed</string>
     <string name="wfms_dtails">Work Force Management System</string>
     <string name="approvals">Approvals</string>
     <string name="attendance">Attendance</string>
