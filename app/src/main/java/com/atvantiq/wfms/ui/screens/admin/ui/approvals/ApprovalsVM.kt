@@ -1,7 +1,7 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.approvals
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
+import com.atvantiq.wfms.base.LiveEvent
 import com.atvantiq.wfms.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -10,7 +10,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ApprovalsVM @Inject constructor(application: Application) : BaseViewModel(application) {
 
-    val clickEvents = MutableLiveData<ApprovalsClickEvents>()
+    val clickEvents = LiveEvent<ApprovalsClickEvents>()
 
     fun onAttendanceApprovalClick() {
         clickEvents.value = ApprovalsClickEvents.ATTENDANCE_APPROVAL

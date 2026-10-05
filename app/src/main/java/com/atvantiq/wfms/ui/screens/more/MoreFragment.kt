@@ -36,7 +36,6 @@ class MoreFragment : BaseFragment<FragmentMoreBinding, ProfileVM>() {
         }
 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            if (!isLifeCycleResumed()) return@observe
             when (event) {
                 MoreClickEvents.VIEW_PROFILE -> Utils.jumpActivity(requireContext(), ProfileActivity::class.java)
                 MoreClickEvents.APPEARANCE -> ThemePickerBottomSheet().show(parentFragmentManager, THEME_PICKER_TAG)

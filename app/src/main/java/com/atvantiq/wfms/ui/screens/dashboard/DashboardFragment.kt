@@ -141,7 +141,6 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         vm.shiftState.observe(viewLifecycleOwner) { renderTrackingCard() }
 
         vm.clickEvents.observe(viewLifecycleOwner) {
-            if (!isLifeCycleResumed()) return@observe
             when (it) {
                 DashboardClickEvents.onAnnouncementsClicks -> Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
 

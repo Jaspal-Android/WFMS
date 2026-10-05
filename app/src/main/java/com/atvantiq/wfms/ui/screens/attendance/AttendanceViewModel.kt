@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.attendance
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
@@ -34,7 +35,7 @@ class AttendanceViewModel @Inject constructor(
     private val attendanceRepo: IAttendanceRepo
 ) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<AttendanceClickEvents>()
+    var clickEvents = LiveEvent<AttendanceClickEvents>()
     var itemPosition = MutableLiveData<Int>().apply { value = -1 }
     var currentWorkId: Long? = null
 

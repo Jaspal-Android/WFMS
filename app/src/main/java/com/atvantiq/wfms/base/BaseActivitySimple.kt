@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
@@ -213,8 +212,6 @@ abstract class BaseActivitySimple : AppCompatActivity() {
             progressDialog = null
         }
     }
-
-    fun isLifeCycleResumed(): Boolean = lifecycle.currentState == Lifecycle.State.RESUMED
 
     fun shakeEditText(context: Context, view: View) {
         var animation: Animation = AnimationUtils.loadAnimation(context, R.anim.shake)

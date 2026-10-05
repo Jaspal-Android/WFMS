@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.claimApproval
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseViewModel
@@ -45,7 +46,7 @@ class ClaimApprovalDetailVM @Inject constructor(
     val isReviewed = MutableLiveData(false)
 
     /** A decision that can't be sent, as a message to show. One-shot. */
-    val decisionError = MutableLiveData<Int?>()
+    val decisionError = LiveEvent<Int?>()
 
     private var isSubmitting = false
 

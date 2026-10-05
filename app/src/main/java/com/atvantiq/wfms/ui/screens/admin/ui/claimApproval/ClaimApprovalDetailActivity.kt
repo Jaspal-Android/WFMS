@@ -71,7 +71,6 @@ class ClaimApprovalDetailActivity : BaseActivity<ActivityClaimApprovalDetailBind
         }
         vm.decisionError.observe(this) { error ->
             error ?: return@observe
-            vm.decisionError.value = null
             showToast(this, getString(error))
         }
         vm.approveResponse.observe(this) { response ->

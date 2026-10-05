@@ -59,7 +59,6 @@ class AttendanceDecisionBottomSheet : BaseBottomSheet() {
 
         viewModel.decisionError.observe(viewLifecycleOwner) { error ->
             error ?: return@observe
-            viewModel.decisionError.value = null
             showToast(requireContext(), getString(error))
         }
         // The host shows the result and closes the sheet; here only the sending state matters.

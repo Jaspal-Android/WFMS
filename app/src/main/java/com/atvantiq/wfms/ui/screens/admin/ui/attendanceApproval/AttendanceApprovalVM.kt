@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.attendanceApproval
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.R
@@ -39,7 +40,7 @@ class AttendanceApprovalVM @Inject constructor(
     val decisionRemarks = ObservableField<String>()
 
     /** A decision that can't be sent, as a message to show. One-shot. */
-    val decisionError = MutableLiveData<Int?>()
+    val decisionError = LiveEvent<Int?>()
 
     val approveResponse = MutableLiveData<ApiState<AttendanceApproveResponse>>()
 

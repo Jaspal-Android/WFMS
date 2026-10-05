@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.login
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import timber.log.Timber
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
@@ -41,9 +42,8 @@ class LoginVM @Inject constructor(
     var user:User?=null
     val userEmailId = ObservableField<String>().apply { set("") }
 
-    val clickEvents = MutableLiveData<LoginClickEvents>()
-    val errorHandler = MutableLiveData<LoginErrorHandler>()
-    val networkError = MutableLiveData<Boolean>()
+    val clickEvents = LiveEvent<LoginClickEvents>()
+    val errorHandler = LiveEvent<LoginErrorHandler>()
     val loginResponse = MutableLiveData<ApiState<LoginResponse>>()
 
     /**
@@ -51,7 +51,7 @@ class LoginVM @Inject constructor(
      * have finished, failed or timed out. LiveData only delivers it while the screen is visible, so a login that completes
      * in the background opens the dashboard when the user comes back.
      */
-    val loginCompleted = MutableLiveData<Boolean>()
+    val loginCompleted = LiveEvent<Boolean>()
     private var isCompletingLogin = false
 
     /** Fetches this device's push token; replaced in tests. */

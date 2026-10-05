@@ -77,7 +77,6 @@ class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, A
         binding.vm = vm
         vm.decisionError.observe(this) { error ->
             error ?: return@observe
-            vm.decisionError.value = null
             showToast(this, getString(error))
         }
         vm.approveResponse.observe(this) { response ->

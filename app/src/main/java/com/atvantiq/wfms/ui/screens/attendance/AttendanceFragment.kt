@@ -75,9 +75,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         binding.vm = vm
 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            if (!isLifeCycleResumed()) return@observe
             handleClickEvents(event)
-
         }
         vm.workList.state.observe(viewLifecycleOwner) { state -> renderWorkList(state) }
 
@@ -87,22 +85,22 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
 
         vm.workAcceptResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleAcceptWorkResponse(response, R.string.work_accepted, ValConstants.ACCEPTED)
         }
 
         vm.workStartResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleStartWorkResponse(response, R.string.work_started, ValConstants.WIP)
         }
 
         vm.workEndResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleWorkEndResponse(response)
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleAttendanceCheckInResponse(response)
         }
     }

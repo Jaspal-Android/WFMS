@@ -44,9 +44,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     override fun subscribeToEvents(vm: ReimbursementViewModel) {
         binding.vm = vm
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            if (!isLifeCycleResumed()) return@observe
             handleClickEvents(event)
-
         }
 
         vm.claims.state.observe(viewLifecycleOwner) { state -> renderClaims(state) }

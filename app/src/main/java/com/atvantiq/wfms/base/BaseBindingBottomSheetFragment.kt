@@ -11,7 +11,6 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -160,7 +159,4 @@ abstract class BaseBindingBottomSheetFragment<T : ViewDataBinding> :
 			binding.unbind()
 		}
 	}
-	
-	fun isLifeCycleResumed() =
-		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 }

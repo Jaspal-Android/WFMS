@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
@@ -30,8 +31,8 @@ class AddTravelDetailViewModel @Inject constructor(
 
     var employeesByCircle: List<Data> = ArrayList()
 
-    val clickEvents = MutableLiveData<AddTravelingClickEvents>()
-    val errorHandler = MutableLiveData<AddTravelDetailsErrorHandler>()
+    val clickEvents = LiveEvent<AddTravelingClickEvents>()
+    val errorHandler = LiveEvent<AddTravelDetailsErrorHandler>()
 
     private fun postClickEvent(event: AddTravelingClickEvents) {
         clickEvents.value = event

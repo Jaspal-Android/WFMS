@@ -1,7 +1,7 @@
 package com.atvantiq.wfms.ui.screens.admin.ui.site
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
+import com.atvantiq.wfms.base.LiveEvent
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SitesVM @Inject constructor(application: Application, private val creationRepo: ICreationRepo,) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<SitesEventClicks>()
+    var clickEvents = LiveEvent<SitesEventClicks>()
 
     /** Active sites */
     val sites = PagedList<SitesListAllResponse, Site>(
