@@ -312,6 +312,8 @@
     <!-- Claims list row: "Sep 29, 2026 · Local" and "Approved ₹ 0.00" -->
     <string name="claim_meta_format">%1$s · %2$s</string>
     <string name="claim_approved_format">Approved %1$s</string>
+    <!-- Slim month bar: "September 2026 · 1 claim" -->
+    <string name="month_bar_count_format" translatable="false">· %1$s</string>
     <string name="upload_receipt_subtitle">Upload receipt for reimbursement claim</string>
     <string name="route">Route</string>
     <string name="with">with</string>
