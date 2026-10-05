@@ -5,7 +5,10 @@ import androidx.databinding.Observable
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.base.savedField
+import com.atvantiq.wfms.base.savedValue
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
@@ -23,19 +26,23 @@ import javax.inject.Inject
 @HiltViewModel
 class AddSiteVM @Inject constructor(
     application: Application,
-    private val creationRepo: ICreationRepo) : BaseViewModel(application) {
+    private val creationRepo: ICreationRepo,
+    state: SavedStateHandle
+) : BaseViewModel(application) {
 
-    var selectedClient: Client? = null
+    // What the user typed and picked is kept in the SavedStateHandle, so the form survives Android
+    // ending the process while the user is in another app.
+    var selectedClientId: Long? by state.savedValue("clientId", null)
         private set
-    var selectedProjectId: Long? = null
+    var selectedProjectId: Long? by state.savedValue("projectId", null)
         private set
-    var selectedCircleId: Long? = null
+    var selectedCircleId: Long? by state.savedValue("circleId", null)
         private set
 
     /** Names shown in the pickers; null means "Not selected". */
-    val clientName = ObservableField<String?>()
-    val projectName = ObservableField<String?>()
-    val circleName = ObservableField<String?>()
+    val clientName = state.savedField<String?>("clientName", null)
+    val projectName = state.savedField<String?>("projectName", null)
+    val circleName = state.savedField<String?>("circleName", null)
 
     var clients: List<Client> = ArrayList()
     var projects: List<ProjectData> = ArrayList()
@@ -45,11 +52,11 @@ class AddSiteVM @Inject constructor(
     val isProjectLoading = ObservableField<Boolean>().apply { set(false) }
     val isCircleLoading = ObservableField<Boolean>().apply { set(false) }
 
-    var siteId = ObservableField<String>().apply { set("") }
-    var siteName = ObservableField<String>().apply { set("") }
-    var siteAddress = ObservableField<String>().apply { set("") }
-    var siteLatitude = ObservableField<String>().apply { set("") }
-    var siteLongitude = ObservableField<String>().apply { set("") }
+    var siteId = state.savedField("siteId", "")
+    var siteName = state.savedField("siteName", "")
+    var siteAddress = state.savedField("siteAddress", "")
+    var siteLatitude = state.savedField("siteLatitude", "")
+    var siteLongitude = state.savedField("siteLongitude", "")
 
     /** The first failing check (spec order), shown under the form once the user has started. */
     val validationError = ObservableField<Int?>()
@@ -74,8 +81,14 @@ class AddSiteVM @Inject constructor(
         validate()
     }
 
+    /** After the process was recreated the picked values are back but the lists behind the pickers are not. */
+    private fun reloadPickerLists() {
+        selectedClientId?.let { getProjectListByClientId(it) }
+        selectedProjectId?.let { getCircleListByProject(it) }
+    }
+
     private fun firstError(): Int? = AddSiteValidation.firstError(
-        hasClient = selectedClient != null,
+        hasClient = selectedClientId != null,
         hasProject = selectedProjectId != null,
         hasCircle = selectedCircleId != null,
         siteId = siteId.get(),
@@ -104,9 +117,14 @@ class AddSiteVM @Inject constructor(
     var circleListByProjectResponse = MutableLiveData<ApiState<CircleListByProjectResponse>>()
     var createSiteResponse = MutableLiveData<ApiState<CreateSiteResponse>>()
 
+    // Last: the picker lists are fetched into the response fields above.
+    init {
+        reloadPickerLists()
+    }
+
     /** A new client clears the project and circle chosen for the previous one. */
     fun selectClient(client: Client) {
-        selectedClient = client
+        selectedClientId = client.id
         clientName.set(client.companyName)
         clearProject()
         getProjectListByClientId(client.id)

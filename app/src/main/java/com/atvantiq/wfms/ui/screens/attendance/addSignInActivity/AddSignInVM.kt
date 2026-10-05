@@ -4,7 +4,11 @@ import android.app.Application
 import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.base.savedArrayList
+import com.atvantiq.wfms.base.savedObject
+import com.atvantiq.wfms.base.savedValue
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
@@ -23,6 +27,7 @@ import com.atvantiq.wfms.models.type.TypeListByProjectResponse
 import com.atvantiq.wfms.models.work.selfAssign.SelfAssignResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.Utils
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,17 +42,20 @@ import com.atvantiq.wfms.constants.ValConstants
 class AddSignInVM @Inject constructor(
     application: Application,
     private val creationRepo: ICreationRepo,
-    private val workRepo: IWorkRepo
+    private val workRepo: IWorkRepo,
+    private val state: SavedStateHandle
 ) : BaseViewModel(application) {
 
     var clickEvents = LiveEvent<AddSignInClickEvents>()
     var errorHandler = LiveEvent<AssignTaskError>()
 
-    var selectedClient: Client? = null
-    var selectedProjectId: Long? = null
-    var selectedPoNumberId: Long? = null
-    var selectedCircleId: Long? = null
-    var selectedSiteId: Long? = null
+    // What the user picked is kept in the SavedStateHandle, so the form survives Android ending the
+    // process while the user is in another app. The lists offered by the pickers are fetched again.
+    var selectedClient: Client? by state.savedObject("client")
+    var selectedProjectId: Long? by state.savedValue("projectId", null)
+    var selectedPoNumberId: Long? by state.savedValue("poNumberId", null)
+    var selectedCircleId: Long? by state.savedValue("circleId", null)
+    var selectedSiteId: Long? by state.savedValue("siteId", null)
 
     var clients: List<Client> = ArrayList()
     var projects: List<ProjectData> = ArrayList()
@@ -56,8 +64,12 @@ class AddSignInVM @Inject constructor(
     var sites: List<SiteData> = ArrayList()
     var types: List<TypeData> = ArrayList()
 
-    var selectedTypeIdList: ArrayList<TypeData>? = ArrayList()
-    val activitySelection = TypeActivitySelection()
+    /** Assign a new list to change it; a list edited in place is not saved. */
+    var selectedTypeIdList: ArrayList<TypeData>? by state.savedArrayList("types")
+    val activitySelection = TypeActivitySelection(
+        restoredPicks = state.get<String>(PICKS_KEY)?.let { Gson().fromJson(it, Array<TypePicks>::class.java).toList() }.orEmpty(),
+        onPicksChanged = { state[PICKS_KEY] = Gson().toJson(it) }
+    )
 
     val isClientLoading = ObservableField<Boolean>().apply { set(false) }
     val isProjectLoading = ObservableField<Boolean>().apply { set(false) }
@@ -85,6 +97,25 @@ class AddSignInVM @Inject constructor(
     var typeListByProjectResponse = MutableLiveData<ApiState<TypeListByProjectResponse>>()
     var typeActivitiesResponse = MutableLiveData<ApiState<List<TypeActivities>>>()
     var workAssignedResponse = MutableLiveData<ApiState<SelfAssignResponse>>()
+
+    // Last: the picker lists are fetched into the response fields above.
+    init {
+        reloadPickerLists()
+    }
+
+    /** After the process was recreated the picks are back but the lists behind the pickers are not. */
+    private fun reloadPickerLists() {
+        selectedClient?.let { getProjectListByClientId(it.id) }
+        selectedProjectId?.let { projectId ->
+            getPoNumberListByProject(projectId)
+            getCircleListByProject(projectId)
+            getSiteListByProject(projectId)
+        }
+        selectedPoNumberId?.let { poId ->
+            getTypeListByPo(poId)
+            loadMissingActivities()
+        }
+    }
 
     // API methods using executeApiCall from BaseViewModel
     fun getClientList() {
@@ -152,7 +183,7 @@ class AddSignInVM @Inject constructor(
         selectedTypeIdList.orEmpty().map { it.id to it.name.orEmpty() }
 
     fun clearTypes() {
-        selectedTypeIdList?.clear()
+        selectedTypeIdList = ArrayList()
         activitySelection.clear()
     }
 
@@ -281,6 +312,10 @@ class AddSignInVM @Inject constructor(
 
     fun onSubmitCompleted() {
         isSubmitting.set(false)
+    }
+
+    private companion object {
+        const val PICKS_KEY = "activityPicks"
     }
 }
 

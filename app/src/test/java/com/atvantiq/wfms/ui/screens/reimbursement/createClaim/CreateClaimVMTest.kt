@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 import android.app.Application
+import androidx.lifecycle.SavedStateHandle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
@@ -24,7 +25,8 @@ class CreateClaimVMTest {
         viewModel = CreateClaimVM(
             mockk<Application>(relaxed = true),
             mockk<IClaimRepo>(relaxed = true),
-            mockk<CreationRepo>(relaxed = true)
+            mockk<CreationRepo>(relaxed = true),
+            SavedStateHandle()
         )
     }
 

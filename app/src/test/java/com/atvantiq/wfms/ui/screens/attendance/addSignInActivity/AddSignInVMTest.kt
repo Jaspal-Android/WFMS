@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.attendance.addSignInActivity
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.activity.ActivityData
@@ -60,7 +61,7 @@ class AddSignInVMTest {
         workRepo = mockk(relaxed = true)
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
-        viewModel = AddSignInVM(application, creationRepo, workRepo)
+        viewModel = AddSignInVM(application, creationRepo, workRepo, SavedStateHandle())
     }
 
     @After

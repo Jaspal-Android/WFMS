@@ -69,4 +69,27 @@ class TypeActivitySelectionTest {
         assertTrue(s.coversAll(listOf(10L)))
     }
 
+    @Test
+    fun `picks are reported on every change and come back from a restore`() {
+        var saved = emptyList<TypePicks>()
+        val first = TypeActivitySelection(onPicksChanged = { saved = it }).apply {
+            setAvailable(10L, listOf(survey, install))
+            select(setOf(TypeActivityOption(10L, "A", survey), TypeActivityOption(10L, "A", install)))
+        }
+        assertEquals(listOf(TypePicks(10L, listOf(1L, 2L))), saved)
+
+        val restored = TypeActivitySelection(restoredPicks = saved)
+
+        assertEquals(setOf(1L, 2L), restored.selectedIds(10L))
+        assertEquals(first.selectedIds(10L), restored.selectedIds(10L))
+    }
+
+    @Test
+    fun `a restored pick the server no longer offers is dropped when the offer is fetched again`() {
+        val restored = TypeActivitySelection(restoredPicks = listOf(TypePicks(10L, listOf(1L, 99L))))
+
+        restored.setAvailable(10L, listOf(survey, install))
+
+        assertEquals(setOf(1L), restored.selectedIds(10L))
+    }
 }

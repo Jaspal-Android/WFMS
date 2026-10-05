@@ -9,24 +9,39 @@ data class TypeActivityOption(
     val activity: ActivityData
 )
 
+/** The activities picked for one type; what is saved so the picks survive the process. */
+data class TypePicks(val typeId: Long, val activityIds: List<Long>)
+
 /**
  * Activities are defined per type, so the ones a user picks must stay attached to the type they
  * were picked for. This holds the available activities and the picks for every selected type.
  */
-class TypeActivitySelection {
+class TypeActivitySelection(
+    restoredPicks: List<TypePicks> = emptyList(),
+    private val onPicksChanged: (List<TypePicks>) -> Unit = {}
+) {
 
     private val availableByType = LinkedHashMap<Long, List<ActivityData>>()
     private val selectedByType = LinkedHashMap<Long, Set<Long>>()
 
+    init {
+        // The activities on offer are fetched again; the user's picks come back with the process.
+        restoredPicks.forEach { selectedByType[it.typeId] = it.activityIds.toCollection(LinkedHashSet()) }
+    }
+
+    private fun picksChanged() = onPicksChanged(selectedByType.map { (typeId, ids) -> TypePicks(typeId, ids.toList()) })
+
     fun clear() {
         availableByType.clear()
         selectedByType.clear()
+        picksChanged()
     }
 
     /** Forgets everything about types that are no longer selected; the others keep their picks. */
     fun retainTypes(typeIds: Set<Long>) {
         availableByType.keys.retainAll(typeIds)
         selectedByType.keys.retainAll(typeIds)
+        picksChanged()
     }
 
     fun hasActivities(typeId: Long): Boolean = availableByType[typeId].orEmpty().isNotEmpty()
@@ -36,6 +51,7 @@ class TypeActivitySelection {
         availableByType[typeId] = activities
         val offered = activities.map { it.id }.toSet()
         selectedByType[typeId]?.let { picked -> selectedByType[typeId] = picked.intersect(offered) }
+        picksChanged()
     }
 
     /** All activities that can be picked for [types], in type order. */
@@ -53,6 +69,7 @@ class TypeActivitySelection {
         picked.groupBy { it.typeId }.forEach { (typeId, options) ->
             selectedByType[typeId] = options.map { it.activity.id }.toCollection(LinkedHashSet())
         }
+        picksChanged()
     }
 
     fun selectedIds(typeId: Long): Set<Long> = selectedByType[typeId].orEmpty()
