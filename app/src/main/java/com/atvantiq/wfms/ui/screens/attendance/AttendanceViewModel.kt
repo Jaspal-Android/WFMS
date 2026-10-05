@@ -58,8 +58,6 @@ class AttendanceViewModel @Inject constructor(
 
     // Click event handlers
     fun onSignInClick() = postClickEvent(AttendanceClickEvents.ON_SIGN_IN_CLICK)
-    fun onMyProgressClick() = postClickEvent(AttendanceClickEvents.ON_MY_PROGRESS_CLICK)
-    fun onSignInDetailsClick() = postClickEvent(AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK)
 
     private fun postClickEvent(event: AttendanceClickEvents) {
         clickEvents.value = event

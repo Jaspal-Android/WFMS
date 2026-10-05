@@ -54,9 +54,6 @@
             android:name=".ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelingDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.screens.reimbursement.createClaim.addSiteDetail.AddMutilSiteDetailsActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.screens.admin.ui.siteApproval.workSiteDetail.SiteWorkDetailActivity"
             android:exported="false" />
         <activity
@@ -99,10 +96,6 @@
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity
-            android:name=".ui.screens.forgotPassword.newPassword.NewPasswordActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
             android:name=".ui.screens.forgotPassword.ForgotPasswordActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
@@ -112,39 +105,7 @@
             android:screenOrientation="userPortrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.myClaims.MyClaimDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.myProgress.progressDetails.ProgressDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.signInDetails.SignInDetailActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.myClaims.MyClaimsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
             android:name=".ui.screens.reimbursement.createClaim.CreateClaimActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.approvals.ApprovalsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.myProgress.MyProgressActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity

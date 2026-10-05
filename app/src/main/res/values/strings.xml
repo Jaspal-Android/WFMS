@@ -24,8 +24,6 @@
     <string name="no_of_sites">No of Sites</string>
     <string name="atp_completed">ATP Completed</string>
     <string name="wfms_dtails">Work Force Management System</string>
-    <string name="sign_out">Sign-Out</string>
-    <string name="my_progress">My Progress</string>
     <string name="approvals">Approvals</string>
     <string name="attendance">Attendance</string>
 
@@ -42,8 +40,6 @@
     <string name="camera_error">Couldn\'t capture the photo. Please try again.</string>
     <string name="gallery_error">Couldn\'t open that image. Please choose another.</string>
     <string name="create_claim">Create Claim</string>
-    <string name="my_claims">My Claims</string>
-    <string name="pending_approvals_pm">Pending Approvals(For PM)</string>
     <string name="details">Details</string>
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>
@@ -53,8 +49,6 @@
     <string name="enter_email">Enter Email</string>
     <string name="reset_password">Reset Password</string>
     <string name="back_to_login">Back to Login</string>
-    <string name="enter_confirm_password">Enter Confirm Password</string>
-    <string name="password_mismatch_error">Password and confirm password does not match</string>
     <string name="alert">Alert</string>
     <string name="please_wait">Please wait...</string>
     <!--Greeting messages-->
@@ -239,8 +233,6 @@
     <string name="da">DA (Daily Allowance)</string>
     <string name="hotel">Hotel</string>
     <string name="others">Others</string>
-    <string name="enter_purpose">Enter Purpose</string>
-    <string name="add_site_details">Add Site Details</string>
     <string name="local">Local</string>
     <string name="outstation">Outstation</string>
     <string name="add_travel_entry">Add Travel Entry</string>
@@ -422,7 +414,6 @@
     <string name="theme_indigo">Slate Indigo</string>
     <string name="theme_amber">Warm Amber</string>
     <string name="theme_slate">Cool Slate</string>
-    <string name="create_password">Create Password</string>
     <string name="po_number_format">PO: %1$s</string>
     <string name="entry_number_format">Entry %1$d</string>
     <string name="appearance_subtitle">Change app theme and appearance.</string>
