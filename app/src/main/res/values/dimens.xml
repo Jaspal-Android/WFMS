@@ -15,6 +15,14 @@
     <!-- Shift tracking card -->
     <dimen name="tracking_icon_size">32dp</dimen>
     <dimen name="tracking_button_height">34dp</dimen>
+    <!-- The tracking buttons are drawn 34dp tall inside a 48dp touch target: (48 - 34) / 2 -->
+    <dimen name="tracking_button_inset">7dp</dimen>
+    <dimen name="tracking_button_margin_top">1dp</dimen>
+    <!-- Apply Leave is drawn 30dp tall inside a 48dp touch target: (48 - 30) / 2 -->
+    <dimen name="apply_leave_inset">9dp</dimen>
+    <!-- Calendar arrows are drawn 40dp wide inside a 48dp touch target -->
+    <dimen name="calendar_nav_inset">4dp</dimen>
+    <dimen name="calendar_nav_padding">12dp</dimen>
     <dimen name="tracking_button_stroke">1.5dp</dimen>
     <!-- My Day -->
     <dimen name="my_day_map_height">240dp</dimen>

@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/review_site_details"
-                    android:textColor="?attr/wfmsColorPrimary"
+                    android:textColor="?attr/wfmsColorAccent"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:importantForAccessibility="no"
                     android:src="@drawable/forward_arrow_right_24"
-                    app:tint="?attr/wfmsColorPrimary" />
+                    app:tint="?attr/wfmsColorAccent" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

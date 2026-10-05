@@ -48,8 +48,10 @@
                 style="@style/CustomSmallTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/apply_leave_bg"
+                android:background="@drawable/apply_leave_bg_touch"
                 android:elevation="@dimen/elevation_small"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/min_touch_target"
                 android:onClick="@{()->vm.onApplyLeaveClick()}"
                 android:paddingHorizontal="@dimen/padding"
                 android:paddingVertical="@dimen/padding_small"
@@ -137,8 +139,8 @@
                     android:id="@+id/btnTrackingPause"
                     style="@style/Widget.WFMS.TrackingButton.Filled"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/tracking_button_height"
-                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_height="@dimen/min_touch_target"
+                    android:layout_marginTop="@dimen/tracking_button_margin_top"
                     android:text="@string/pause_15_min"
                     app:icon="@drawable/ic_tracking_pause" />
 
@@ -147,8 +149,8 @@
                     android:id="@+id/btnTrackingAction"
                     style="@style/Widget.WFMS.TrackingButton.Outlined"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/tracking_button_height"
-                    android:layout_marginTop="@dimen/margin_small"
+                    android:layout_height="@dimen/min_touch_target"
+                    android:layout_marginTop="@dimen/tracking_button_margin_top"
                     android:visibility="gone"
                     tools:text="@string/resume" />
             </LinearLayout>

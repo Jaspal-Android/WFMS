@@ -229,7 +229,7 @@
                             android:paddingHorizontal="@dimen/padding_small"
                             android:paddingVertical="@dimen/padding_x_small"
                             android:text="@{@plurals/sites_count_calculation(claim.sites.size(), claim.sites.size())}"
-                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textColor="?attr/wfmsColorAccent"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@id/tvSitesTitle"
                             app:layout_constraintEnd_toEndOf="parent"

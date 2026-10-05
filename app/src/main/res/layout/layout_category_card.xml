@@ -42,7 +42,7 @@
                 android:background="@drawable/info_chip_bg"
                 android:importantForAccessibility="no"
                 android:src="@{icon}"
-                app:tint="?attr/wfmsColorPrimary"
+                app:tint="?attr/wfmsColorAccent"
                 tools:src="@drawable/ic_tab_approvals" />
 
             <LinearLayout
