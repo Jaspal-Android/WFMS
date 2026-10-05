@@ -46,6 +46,9 @@ class WorkTypeAdapter(
             }
             showSelectableOption = workTypes[position].status?.code == StatusCodes.WIP && hasEligibleToEnd
                 && (workTypes[position].endedToday != true)
+            // Apply the status pill, date and checkbox now: left to the next frame, the row is
+            // measured first and the pill and date show empty until it is bound again.
+            executePendingBindings()
         }
     }
 

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -46,6 +47,21 @@ class PickMediaHelper(
 
     fun setPhotoPickerLauncher(launcher: ActivityResultLauncher<PickVisualMediaRequest>?) {
         photoPickerLauncher = launcher
+    }
+
+    /**
+     * Keeps the file the camera was asked to write to in [outState]. Android can end the app's
+     * process while the camera is open; without it the photo would come back as a camera error.
+     */
+    fun saveState(outState: Bundle) {
+        photoFile?.let { outState.putString(KEY_PENDING_PHOTO, it.absolutePath) }
+    }
+
+    /** Call in `onCreate` with its bundle, before the camera's result is delivered. */
+    fun restoreState(savedInstanceState: Bundle?) {
+        val path = savedInstanceState?.getString(KEY_PENDING_PHOTO) ?: return
+        photoFile = File(path)
+        ownedFiles += path
     }
 
     fun setActionId(id: Int) {
@@ -246,5 +262,6 @@ class PickMediaHelper(
     companion object {
         private const val MAX_SOURCE_MB = 25
         private const val MAX_SOURCE_BYTES = MAX_SOURCE_MB * 1024L * 1024L
+        private const val KEY_PENDING_PHOTO = "pickMedia.pendingPhoto"
     }
 }
