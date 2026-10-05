@@ -33,10 +33,10 @@
             -->
             <ImageView
                 android:id="@+id/btnPreviousMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/primary_bt_oval_bg"
-                android:padding="@dimen/padding_small"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
+                android:background="@drawable/primary_bt_oval_bg_touch"
+                android:padding="@dimen/calendar_nav_padding"
                 android:src="@drawable/arrow_back_ios_24"
                 android:contentDescription="@string/previous_month"
                 app:tint="?attr/wfmsColorPrimaryLight" />
@@ -56,10 +56,10 @@
             <!-- FIX: same as prev button, consistent padding -->
             <ImageView
                 android:id="@+id/btnNextMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/primary_bt_oval_bg"
-                android:padding="@dimen/padding_small"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
+                android:background="@drawable/primary_bt_oval_bg_touch"
+                android:padding="@dimen/calendar_nav_padding"
                 android:src="@drawable/arrow_forward_ios_24"
                 android:visibility="@{hideNextBt ? View.INVISIBLE : View.VISIBLE}"
                 android:contentDescription="@string/next_month"

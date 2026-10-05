@@ -73,7 +73,7 @@
                     android:layout_height="@dimen/icon_size_small"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_event_available"
-                    app:tint="?attr/wfmsColorPrimary" />
+                    app:tint="?attr/wfmsColorAccent" />
 
                 <TextView
                     style="@style/CustomRegularTextView"
@@ -213,7 +213,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/details"
-                        android:textColor="?attr/wfmsColorPrimary"
+                        android:textColor="?attr/wfmsColorAccent"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -221,7 +221,7 @@
                         android:layout_height="wrap_content"
                         android:importantForAccessibility="no"
                         android:src="@drawable/forward_arrow_right_24"
-                        app:tint="?attr/wfmsColorPrimary" />
+                        app:tint="?attr/wfmsColorAccent" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
