@@ -499,6 +499,11 @@
         <item quantity="other">%d locations</item>
     </plurals>
     <string name="shift_notification_paused_text">Resumes at %1$s</string>
+    <!-- Shift notification card (same as the iOS Live Activity) -->
+    <string name="shift_card_status_active">Shift active</string>
+    <string name="shift_card_status_paused">Tracking paused</string>
+    <string name="shift_card_detail_active">Since %1$s · %2$s</string>
+    <string name="km_unit">km</string>
     <string name="continue_label">Continue</string>
     <!-- Admin tabs: Sites and the Approvals hub -->
     <string name="add_site_subtitle">Create a new site for a project circle.</string>
