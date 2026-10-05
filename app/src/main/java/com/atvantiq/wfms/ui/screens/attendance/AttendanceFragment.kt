@@ -31,8 +31,6 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
-import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
-import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
 import com.atvantiq.wfms.utils.Utils
@@ -118,12 +116,6 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             AttendanceClickEvents.ON_SIGN_IN_CLICK -> {
                 val intent = Intent(requireContext(), AddSignInActivity::class.java)
                 assignTaskLauncher.launch(intent)
-            }
-            AttendanceClickEvents.ON_MY_PROGRESS_CLICK -> {
-                Utils.jumpActivity(requireContext(), MyProgressActivity::class.java)
-            }
-            AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK -> {
-                Utils.jumpActivity(requireContext(), SignInDetailActivity::class.java)
             }
         }
     }

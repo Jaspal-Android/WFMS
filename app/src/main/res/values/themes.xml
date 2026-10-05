@@ -560,9 +560,6 @@
     <style name="CustomSmallTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_small_text</item>
     </style>
-    <style name="CustomSmallDarkTextView" parent="CustomSmallTextView">
-        <item name="android:textColor">@color/text_strong</item>
-    </style>
     <style name="CustomSmallLightTextView" parent="CustomSmallTextView">
         <item name="android:textColor">@color/white</item>
     </style>
@@ -587,9 +584,6 @@
     </style>
     <style name="CustomLargeDarkTextView" parent="CustomLargeTextView">
         <item name="android:textColor">@color/text_strong</item>
-    </style>
-    <style name="CustomLargePrimaryTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
     <style name="CustomBigTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_extra_big_text</item>

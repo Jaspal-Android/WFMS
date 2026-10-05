@@ -66,18 +66,6 @@ class AttendanceViewModelTest {
         assertEquals(AttendanceClickEvents.ON_SIGN_IN_CLICK, viewModel.clickEvents.value)
     }
 
-    @Test
-    fun `onMyProgressClick sets clickEvents value`() {
-        viewModel.onMyProgressClick()
-        assertEquals(AttendanceClickEvents.ON_MY_PROGRESS_CLICK, viewModel.clickEvents.value)
-    }
-
-    @Test
-    fun `onSignInDetailsClick sets clickEvents value`() {
-        viewModel.onSignInDetailsClick()
-        assertEquals(AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK, viewModel.clickEvents.value)
-    }
-
 
 
   /*  @Test
