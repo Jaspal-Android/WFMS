@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shift notification, expanded: the same card as the iOS Live Activity. Glyph, "ONAQT · Shift
+     active", the elapsed time, "Since 4:44 PM · 3 locations" (or "Resumes at …"), and km.
+     RemoteViews: plain framework views and fixed colours only (no data binding, no ?attr). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/padding_small">
+
+    <ImageView
+        android:id="@+id/shiftGlyph"
+        android:layout_width="@dimen/shift_card_icon_size"
+        android:layout_height="@dimen/shift_card_icon_size"
+        android:background="@drawable/bg_shift_card_icon"
+        android:importantForAccessibility="no"
+        android:padding="@dimen/padding_medium"
+        android:src="@drawable/ic_tracking_navigation"
+        tools:tint="@color/shift_card_text" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/shiftTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textColor="@color/shift_card_text"
+            android:textSize="@dimen/default_text"
+            android:textStyle="bold"
+            tools:text="ONAQT · Shift active" />
+
+        <Chronometer
+            android:id="@+id/shiftElapsed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/shift_card_text"
+            android:textSize="@dimen/default_extra_big_text"
+            android:textStyle="bold"
+            tools:text="2:11:42" />
+
+        <TextView
+            android:id="@+id/shiftDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/shift_card_text_secondary"
+            android:textSize="@dimen/default_medium_small_text"
+            tools:text="Since 4:44 PM · 0 locations" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/shiftDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/default_extra_big_text"
+            android:textStyle="bold"
+            tools:text="0.0" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/km_unit"
+            android:textColor="@color/shift_card_text_secondary"
+            android:textSize="@dimen/default_medium_small_text"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

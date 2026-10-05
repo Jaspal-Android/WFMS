@@ -239,4 +239,10 @@
 
     <!-- Strong body text: near-black in light mode (values-night switches it to the light on-surface) -->
     <color name="text_strong">@color/black</color>
+
+    <!-- Shift notification card. The system draws it, so these are fixed; the card itself is the
+         theme's dark brand colour, which is dark in every theme. -->
+    <color name="shift_card_text">#FFFFFFFF</color>
+    <color name="shift_card_text_secondary">#A6FFFFFF</color>
+    <color name="shift_card_icon_background">#26FFFFFF</color>
 </resources>

@@ -53,7 +53,12 @@ import javax.inject.Inject
 class LocationTrackingService : Service() {
 
     companion object {
-        const val CHANNEL_ID = "location_service_channel_v2"
+        /**
+         * v3: default importance (sound and vibration off), so the shift card sits with the other
+         * notifications and on the lock screen like the iOS Live Activity, not under "Silent".
+         */
+        const val CHANNEL_ID = "location_service_channel_v3"
+        private const val RETIRED_CHANNEL_ID = "location_service_channel_v2"
         const val NOTIFICATION_ID = 12345
 
         /** Shown when the service ends itself, so a silent stop never goes unnoticed. */
@@ -182,24 +187,32 @@ class LocationTrackingService : Service() {
     }
 
     /**
-     * The shift notification: elapsed shift time, since when, locations accepted and km (or when a
-     * pause ends), with a Pause 15 min / Resume action. Silent, ongoing, no Stop action.
+     * The shift notification, drawn as the iOS Live Activity card ([ShiftNotificationViews]): live
+     * elapsed shift time, since when, locations accepted and km (or when a pause ends), with a
+     * Pause 15 min / Resume action. Silent, ongoing, no Stop action. Title and text stay set for
+     * screen readers, watches and anything that cannot show custom views.
      */
     private fun buildNotification(): Notification {
-        val content = ShiftNotificationContent.of(shiftTracker.state.value, System.currentTimeMillis())
+        val now = System.currentTimeMillis()
+        val content = ShiftNotificationContent.of(shiftTracker.state.value, now)
         val themed = ContextThemeWrapper(this, ThemeManager.getCurrentTheme(this).styleRes)
-        val accent = ThemeManager.resolveColor(
-            themed, if (content.isPaused) R.attr.wfmsColorWarning else R.attr.wfmsColorPrimary
+        val card = ThemeManager.resolveColor(themed, R.attr.wfmsColorPrimaryDark)
+        val views = ShiftNotificationViews(
+            this,
+            accent = ThemeManager.resolveColor(themed, R.attr.wfmsColorPrimaryLight),
+            warning = ThemeManager.resolveColor(themed, R.attr.wfmsColorWarning)
         )
-        val text = if (content.isPaused) {
+        val locations = resources.getQuantityString(R.plurals.locations_count, content.locations, content.locations)
+        val since = timeText(content.chronometerBaseMillis)
+        val detail = if (content.isPaused) {
             getString(R.string.shift_notification_paused_text, timeText(content.pausedUntilMillis))
         } else {
-            getString(
-                R.string.shift_notification_active_text,
-                timeText(content.chronometerBaseMillis),
-                resources.getQuantityString(R.plurals.locations_count, content.locations, content.locations),
-                content.distanceKm
-            )
+            getString(R.string.shift_card_detail_active, since, locations)
+        }
+        val text = if (content.isPaused) {
+            detail
+        } else {
+            getString(R.string.shift_notification_active_text, since, locations, content.distanceKm)
         }
         val action = if (content.isPaused) ACTION_RESUME else ACTION_PAUSE
         val actionIntent = PendingIntent.getService(
@@ -213,10 +226,17 @@ class LocationTrackingService : Service() {
             .setContentTitle(getString(content.title))
             .setContentText(text)
             .setSmallIcon(content.smallIcon)
-            .setColor(accent)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(views.collapsed(content, now))
+            .setCustomBigContentView(views.expanded(content, now, detail))
+            // Foreground-service notifications may be colorized: the card is the theme's dark brand colour.
+            .setColorized(true)
+            .setColor(card)
+            .setShowWhen(false)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            // Shown in full on the lock screen, as on iOS: shift time, locations and km only.
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(openDashboardIntent())
             .addAction(content.actionIcon, getString(content.actionTitle), actionIntent)
             .setAutoCancel(false)
@@ -224,9 +244,6 @@ class LocationTrackingService : Service() {
             .setOnlyAlertOnce(true)
             .setSilent(true)
 
-        content.chronometerBaseMillis?.let { checkIn ->
-            builder.setWhen(checkIn).setShowWhen(true).setUsesChronometer(true)
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             builder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
         }
@@ -262,13 +279,15 @@ class LocationTrackingService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 getString(R.string.tracking_channel_name),
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_DEFAULT
             )
             channel.setShowBadge(false)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             channel.enableLights(false)
             channel.enableVibration(false)
             channel.setSound(null, null)
             val manager = getSystemService(NotificationManager::class.java)
+            manager.deleteNotificationChannel(RETIRED_CHANNEL_ID)
             manager.createNotificationChannel(channel)
             manager.createNotificationChannel(
                 NotificationChannel(
