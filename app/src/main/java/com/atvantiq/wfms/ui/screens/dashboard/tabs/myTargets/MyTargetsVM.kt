@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets
 
 import android.app.Application
+import java.util.Locale
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.budget.IBudgetRepo
@@ -27,7 +28,7 @@ class MyTargetsVM @Inject constructor(
     }
 
     fun fetchMyTargets() {
-        val monthParam = "%04d-%02d".format(selectedYear, selectedMonth)
+        val monthParam = String.format(Locale.US, "%04d-%02d", selectedYear, selectedMonth)
         executeApiCall(
             apiCall = { budgetRepo.myTargets(monthParam) },
             liveData = myTargetsResponse,

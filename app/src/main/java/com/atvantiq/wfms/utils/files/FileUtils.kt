@@ -18,7 +18,7 @@ object FileUtils {
     @Throws(IOException::class)
     @JvmStatic
     fun createImageFile(context: Context): File {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val imageFileName = "WFMS_$timeStamp.jpg"
         val directory = File(context.filesDir, "WFMS")
         if (!directory.exists()) {
@@ -29,7 +29,7 @@ object FileUtils {
 
     @JvmStatic
     fun createImageFileQ(context: Context): Uri? {
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val imageFileName = "WFMS_$timeStamp.jpg"
 
         val values = ContentValues().apply {

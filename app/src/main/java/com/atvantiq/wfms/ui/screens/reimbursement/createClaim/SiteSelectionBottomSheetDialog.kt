@@ -179,7 +179,7 @@ class SiteSelectionBottomSheetDialog : BottomSheetDialogFragment() {
                 when (site.po?.size) {
                     1 -> {
                         tvAutoSelectedPo.visibility = View.VISIBLE
-                        tvAutoSelectedPo.text = "PO: ${site.po[0].poNumber}"
+                        tvAutoSelectedPo.text = getString(R.string.po_number_format, site.po[0].poNumber)
                         spinnerPo.visibility = View.GONE
                         site.selectedPo = site.po[0] // ensure it's set
                     }

@@ -145,7 +145,7 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val claim = response.response?.data
                         setDataOnUI(claim)
                     }
@@ -162,12 +162,12 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
     }
 
     private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
     }
 
     private fun handleError(throwable: Throwable?) {
         if (throwable is HttpException) {
-            if (throwable.code() == 401) {
+            if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                 tokenExpiresAlert()
             }else{
                 alertDialogShow(

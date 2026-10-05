@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters
 
+import com.atvantiq.wfms.R
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +36,7 @@ class SelectedTravelingEntriesAdapter(
         private val onRemoveClick: (position: Int) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TravelExpense, position: Int){
-            binding.tvEntryNumber.text = "Entry ${position + 1}"
+            binding.tvEntryNumber.text = binding.root.context.getString(R.string.entry_number_format, position + 1)
             binding.tvMode.text = item.mode?.label?: "-"
             binding.tvRoute .text = "${item.from}  →  ${item.to}"
             binding.tvAmount.text = item.amount

@@ -124,19 +124,6 @@ object Utils {
         return gson.fromJson(json, clazz)!!
     }
 
-    fun dateToString(date: String): String {
-        var outDate: Date? = null
-        val formatIn = SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ss")
-        val formatOut = SimpleDateFormat("dd/mm/yyyy hh:mm:ss a")
-        try {
-            outDate = formatIn.parse(date)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-        }
-
-        return formatOut.format(outDate)
-    }
-
     fun isInternet(context: Context): Boolean {
         return ConnectivityReceiver.isNetworkAvailable(context)
     }

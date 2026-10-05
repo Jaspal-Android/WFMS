@@ -25,7 +25,7 @@ class NewPasswordActivity : BaseActivity<ActivityNewPasswordBinding, CreatePassw
     }
 
     private fun initToolbar(){
-        binding.newPassToolbar.toolbarTitle.text = "Create Password"
+        binding.newPassToolbar.toolbarTitle.text = getString(R.string.create_password)
         binding.newPassToolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }

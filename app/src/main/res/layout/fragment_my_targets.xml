@@ -204,7 +204,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/margin_small_extra"
                                 android:layout_marginEnd="@dimen/margin_small_extra"
-                                android:text="·"
+                                android:text="@string/dot_separator"
                                 android:textColor="?attr/wfmsColorOnSurfaceVariant"
                                 android:textSize="@dimen/default_medium_small_text" />
 

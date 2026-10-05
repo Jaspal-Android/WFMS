@@ -204,9 +204,9 @@ class AssignedTaskDetailActivity :
             when (response.status) {
                 Status.SUCCESS -> {
                     dismissProgress()
-                    if (response.response?.code == 200) {
+                    if (response.response?.code == ValConstants.SUCCESS_CODE) {
                         setupUI(response.response.data)
-                    } else if (response.response?.code == 401) {
+                    } else if (response.response?.code == ValConstants.UNAUTHORIZED_CODE) {
                         tokenExpiresAlert()
                     } else {
                         alertDialogShow(
@@ -220,7 +220,7 @@ class AssignedTaskDetailActivity :
                 Status.ERROR -> {
                     dismissProgress()
                     val throwable = response.throwable
-                    if (throwable is HttpException && throwable.code() == 401) {
+                    if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                         tokenExpiresAlert()
                     } else {
                         showToast(
@@ -264,7 +264,7 @@ class AssignedTaskDetailActivity :
                 dismissProgress()
                 finishWorkAction()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(this, it.message ?: getString(successMessage))
                         handleStatusUpdateResponse(it.data, true)
                     } else {
@@ -290,7 +290,7 @@ class AssignedTaskDetailActivity :
                 dismissProgress()
                 finishWorkAction()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(this, it.message ?: getString(successMessage))
                         it.data?.canRestart = false
                         handleStatusUpdateResponse(it.data)
@@ -315,7 +315,7 @@ class AssignedTaskDetailActivity :
                 finishWorkAction()
                 response.response?.let {
                     when (it.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             showToast(this, it.message ?: getString(R.string.work_ended))
                             handleStatusUpdateResponse(it.data, isEndWorkCase = true)
                         }
@@ -367,7 +367,7 @@ class AssignedTaskDetailActivity :
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200 && it.data?.checkedIn == true) {
+                    if (it.code == ValConstants.SUCCESS_CODE && it.data?.checkedIn == true) {
                         finishWorkAction()
                         startWorkWithLocationPermissions(
                             viewModel.currentWorkId ?: -1,
@@ -397,7 +397,7 @@ class AssignedTaskDetailActivity :
     }
 
     private fun handleErrorResponse(code: Int?, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
+        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(
             this,
             getString(R.string.alert),
             message ?: getString(R.string.something_went_wrong)
@@ -407,7 +407,7 @@ class AssignedTaskDetailActivity :
     private fun handleError(throwable: Throwable?) {
         dismissProgress()
         finishWorkAction()
-        if (throwable is HttpException && throwable.code() == 401) {
+        if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
             tokenExpiresAlert()
         } else {
             showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))

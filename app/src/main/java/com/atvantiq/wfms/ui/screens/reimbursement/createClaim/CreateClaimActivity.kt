@@ -231,7 +231,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val sites = response.response?.data?.sites ?: emptyList()
                         viewModel.singleSites = sites
                     }
@@ -259,7 +259,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val projects = response.response?.data?.projects ?: emptyList()
                         viewModel.projects = projects
                         showAllProjectsSelectionDialog(projects)
@@ -287,7 +287,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val sites = response.response?.data ?: emptyList()
                         viewModel.multiSites = sites
                     }
@@ -490,7 +490,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     }
 
     private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
+        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(
             this,
             getString(R.string.alert),
             message ?: getString(R.string.something_went_wrong)
@@ -499,7 +499,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
     private fun handleError(throwable: Throwable?) {
         if (throwable is HttpException) {
-            if (throwable.code() == 401) {
+            if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                 tokenExpiresAlert()
             } else {
                 alertDialogShow(

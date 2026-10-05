@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail
 
+import com.atvantiq.wfms.constants.ValConstants
 import android.view.View
 import android.app.Activity
 import android.content.Intent
@@ -146,7 +147,7 @@ class AddTravelingDetailActivity :
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val employees = response.response?.data ?: emptyList()
                         viewModel.employeesByCircle = employees
                         showTravelWithSelectionDialog(employees)
@@ -169,7 +170,7 @@ class AddTravelingDetailActivity :
     }
 
     private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
+        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(
             this,
             getString(R.string.alert),
             message ?: getString(R.string.something_went_wrong)
@@ -178,7 +179,7 @@ class AddTravelingDetailActivity :
 
     private fun handleError(throwable: Throwable?) {
         if (throwable is HttpException) {
-            if (throwable.code() == 401) {
+            if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                 tokenExpiresAlert()
             } else {
                 showToast(this, throwable.message ?: getString(R.string.something_went_wrong))
