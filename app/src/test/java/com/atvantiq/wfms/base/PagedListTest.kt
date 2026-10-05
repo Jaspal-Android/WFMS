@@ -234,6 +234,28 @@ class PagedListTest {
     }
 
     @Test
+    fun `an item changed in place reports its position so the adapter can redraw that row`() {
+        viewModel.list.open()
+        answer(Page(true, items("a", "b")))
+
+        viewModel.list.updateItem(1) { it.name = "changed" }
+
+        assertEquals(1, state.changedPosition)
+    }
+
+    @Test
+    fun `the changed position is only reported once, not on the next update`() {
+        viewModel.list.open()
+        answer(Page(true, items("a", "b")))
+        viewModel.list.updateItem(1) { it.name = "changed" }
+
+        viewModel.list.refresh()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertNull(state.changedPosition)
+    }
+
+    @Test
     fun `nothing is published for a position that does not exist`() {
         viewModel.list.open()
         answer(Page(true, items("a")))

@@ -4,46 +4,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.databinding.ItemSitesBinding
-import com.atvantiq.wfms.models.site.allSites.AllSiteData
 import com.atvantiq.wfms.models.site.allSites.Site
-import com.atvantiq.wfms.widgets.FooterRecyclerView
+import com.atvantiq.wfms.widgets.FooterListAdapter
+import com.atvantiq.wfms.widgets.diffById
 
-class AllSitesAdapter : FooterRecyclerView() {
-    private val VIEW_TYPE_ITEM = 1
-    private var sites: MutableList<Site>? = mutableListOf()
+/** The Sites list, with the paging footer. */
+class AllSitesAdapter : FooterListAdapter<Site>(diffById { it.id }) {
 
-    inner class SitesHolder(var binding:ItemSitesBinding) : RecyclerView.ViewHolder(binding.root)
+    class SitesHolder(val binding: ItemSitesBinding) : RecyclerView.ViewHolder(binding.root)
 
-    override fun count(): Int {
-        return sites?.size ?: 0
-    }
+    override fun onCreateItemHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        SitesHolder(ItemSitesBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
-    override fun viewType(): Int {
-        return VIEW_TYPE_ITEM
-    }
-
-    override fun onCreateHolderMethod(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        var infalter = LayoutInflater.from(parent.context)
-        var binding: ItemSitesBinding = ItemSitesBinding.inflate(infalter, parent, false)
-        return SitesHolder(binding)
-    }
-
-    override fun onBindViewHolderMethod(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is SitesHolder) {
-            val site = sites?.get(position)
-            holder.binding.itemSiteData = site
-            holder.binding.executePendingBindings()
-        }
-    }
-
-    fun addData(assignedTasks: List<Site>) {
-        this.sites?.addAll(assignedTasks)
-        notifyDataSetChanged()
-    }
-
-    fun submitList(newItems: List<Site>) {
-        this.sites?.clear()
-        this.sites?.addAll(newItems)
-        notifyDataSetChanged()
+    override fun onBindItemHolder(holder: RecyclerView.ViewHolder, item: Site) {
+        if (holder !is SitesHolder) return
+        holder.binding.itemSiteData = item
+        holder.binding.executePendingBindings()
     }
 }

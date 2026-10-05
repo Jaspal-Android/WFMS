@@ -161,7 +161,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         /** Applies a change made elsewhere (e.g. a status updated on a detail screen). */
         fun updateItem(position: Int, change: (T) -> Unit) {
             items.getOrNull(position)?.let(change) ?: return
-            publish()
+            publish(changedPosition = position)
         }
 
         private fun loadFirstPage(keepItems: Boolean) {
@@ -198,14 +198,15 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
             publish()
         }
 
-        private fun publish() {
+        private fun publish(changedPosition: Int? = null) {
             val loadingFirst = paging.isLoadingFirstPage
             state.value = PagedListUiState(
                 items = items.toList(),
                 isLoadingFirstPage = loadingFirst && items.isEmpty(),
                 isRefreshing = loadingFirst && items.isNotEmpty(),
                 isLoadingMore = paging.isLoading && !loadingFirst,
-                isEmpty = !paging.isLoading && paging.loadedPage > 0 && items.isEmpty()
+                isEmpty = !paging.isLoading && paging.loadedPage > 0 && items.isEmpty(),
+                changedPosition = changedPosition
             )
         }
     }

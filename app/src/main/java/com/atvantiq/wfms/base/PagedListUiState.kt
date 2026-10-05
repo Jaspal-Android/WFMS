@@ -14,5 +14,10 @@ data class PagedListUiState<T>(
     /** A later page is loading: show the list footer. */
     val isLoadingMore: Boolean = false,
     /** A first page arrived and it was empty. */
-    val isEmpty: Boolean = false
+    val isEmpty: Boolean = false,
+    /**
+     * The row changed in place by [BaseViewModel.PagedList.updateItem]. The object is the same, so a
+     * list diff cannot see the change; the adapter redraws this row. Only set on that update.
+     */
+    val changedPosition: Int? = null
 )

@@ -76,7 +76,7 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
     private fun renderRecords(state: PagedListUiState<AttendanceRecord>) {
         showFirstPageProgress(state.isLoadingFirstPage)
         if (!state.isLoadingFirstPage && !state.isRefreshing) binding.swipeRefreshLayout.isRefreshing = false
-        adapter?.submitList(state.items)
+        adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.emptyState.root.isVisible = state.isEmpty
     }

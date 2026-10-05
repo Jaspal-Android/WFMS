@@ -85,7 +85,7 @@ class ClaimApprovalActivity : BaseActivity<ActivityClaimApprovalBinding, ClaimAp
     private fun renderClaims(state: PagedListUiState<ClaimReviewRecord>) {
         showFirstPageProgress(state.isLoadingFirstPage)
         if (!state.isLoadingFirstPage && !state.isRefreshing) binding.swipeRefreshLayout.isRefreshing = false
-        adapter?.submitList(state.items)
+        adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.emptyState.root.isVisible = state.isEmpty
     }

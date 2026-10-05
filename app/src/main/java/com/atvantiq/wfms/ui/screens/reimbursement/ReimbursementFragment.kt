@@ -77,7 +77,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
     private fun renderClaims(state: PagedListUiState<Record>) {
         showFirstPageProgress(state.isLoadingFirstPage)
         if (!state.isLoadingFirstPage && !state.isRefreshing) stopRefreshingData()
-        adapter?.submitList(state.items)
+        adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.isEmptyReimbursements = state.isEmpty
     }
