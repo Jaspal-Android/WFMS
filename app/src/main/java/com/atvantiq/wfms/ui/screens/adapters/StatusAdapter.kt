@@ -1,14 +1,13 @@
 package com.atvantiq.wfms.ui.screens.adapters
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
-import com.atvantiq.wfms.databinding.ItemMyTargetsBinding
 import com.atvantiq.wfms.databinding.ItemStatusBinding
 import com.atvantiq.wfms.models.StatusOption
+import com.google.android.material.color.MaterialColors
 
 class StatusAdapter(
     private val items: List<StatusOption>,
@@ -34,9 +33,9 @@ class StatusAdapter(
 
         statusName.text = item.name
         if (isSelected) {
-            statusName.setTextColor(Color.BLACK)
+            statusName.setTextColor(MaterialColors.getColor(statusName, R.attr.wfmsColorOnSurface))
         } else {
-            statusName.setTextColor(Color.GRAY)
+            statusName.setTextColor(MaterialColors.getColor(statusName, R.attr.wfmsColorOnSurfaceVariant))
         }
         holder.binding.statusCheckBox.isChecked = isSelected
 

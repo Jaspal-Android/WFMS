@@ -198,11 +198,11 @@ class AddTravelingDetailActivity :
             title = getString(R.string.travelingWith),
             layoutResId = R.layout.item_generic_adapter,
             bind = { view, item ->
-                view.findViewById<TextView>(R.id.text1).text = item.name + " - " + item.code
+                view.findViewById<TextView>(R.id.text1).text = getString(R.string.name_with_code_format, item.name, item.code)
             },
             onItemSelected = { selected ->
                 binding.travelingWithEt.error = null
-                binding.travelingWithEt.setText(selected.name + "  -  " + selected.code)
+                binding.travelingWithEt.setText(getString(R.string.name_with_code_format, selected.name, selected.code))
                 viewModel.selectedEmployee.set(selected)
             },
             filterCondition = { item, query ->

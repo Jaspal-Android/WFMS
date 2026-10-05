@@ -134,7 +134,7 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
             Toast.makeText(this, R.string.material_fix_errors, Toast.LENGTH_SHORT).show()
             return
         }
-        val msg = getString(R.string.material_confirm_submit_msg, s.addedCount, formatQty(s.totalQuantity))
+        val msg = resources.getQuantityString(R.plurals.material_confirm_submit_msg, s.addedCount, s.addedCount, formatQty(s.totalQuantity))
         AlertDialog.Builder(this)
             .setTitle(R.string.material_confirm_submit_title)
             .setMessage(msg)
@@ -175,9 +175,9 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
         val total = state.allRows.size
         val visible = state.visibleRows.size
         binding.tvMaterialCount.text = if (state.searchQuery.isBlank()) {
-            getString(R.string.material_count_total, total)
+            resources.getQuantityString(R.plurals.material_count_total, total, total)
         } else {
-            getString(R.string.material_count_matched, visible, total)
+            resources.getQuantityString(R.plurals.material_count_matched, visible, visible, total)
         }
 
         binding.tvClearAll.visibility = if (state.addedCount > 0) View.VISIBLE else View.GONE
@@ -190,7 +190,7 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
         }
 
         // Sticky footer
-        binding.tvAddedCount.text = getString(R.string.material_added_count, state.addedCount)
+        binding.tvAddedCount.text = resources.getQuantityString(R.plurals.material_added_count, state.addedCount, state.addedCount)
         binding.tvTotalQty.text = getString(R.string.material_total_qty, formatQty(state.totalQuantity))
         binding.btnSubmit.apply {
             isEnabled = !state.submitting && !state.hasAnyError

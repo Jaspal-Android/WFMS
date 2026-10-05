@@ -133,7 +133,7 @@ object DateUtils {
                     selectedHour > 12 -> selectedHour - 12
                     else -> selectedHour
                 }
-                val time = String.format("%d:%02d %s", hourIn12Format, selectedMinute, format)
+                val time = String.format(Locale.getDefault(), "%d:%02d %s", hourIn12Format, selectedMinute, format)
                 val formatTime = String.format(Locale.US, "%d:%02d", hourIn12Format, selectedMinute)
                 callBack.onTimeSelected(time, formatTime)
             }, hour, minute, false
