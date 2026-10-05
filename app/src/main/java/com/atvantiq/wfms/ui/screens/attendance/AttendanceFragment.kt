@@ -1,11 +1,10 @@
 package com.atvantiq.wfms.ui.screens.attendance
 
-import android.Manifest
+import com.atvantiq.wfms.utils.permissions.LocationPermissionDelegate
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -31,15 +30,12 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
-import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
-import com.atvantiq.wfms.utils.Utils
 import com.atvantiq.wfms.utils.navigateToTab
 import com.atvantiq.wfms.widgets.DividerItemDecoration
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -347,61 +343,19 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
 
-    /** Runs once the location request started for it is granted (e.g. Start Work). */
-    private var pendingLocationPermissionAction: (() -> Unit)? = null
-
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val pendingAction = pendingLocationPermissionAction
-        when {
-            permissions.all { it.value } -> {
-                pendingLocationPermissionAction = null
-                pendingAction?.invoke()
-            }
-
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
-                pendingLocationPermissionAction = null
-                showPermissionDeniedPermanently()
-            }
-
-            else -> {
-                showPermissionRationale()
-            }
-        }
-    }
-
-    private fun openApplicationSettings() {
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = android.net.Uri.fromParts("package", requireContext().packageName, null)
-        startActivity(intent)
-    }
-
-    private fun handleLocationPermissions(onPermissionsGranted: () -> Unit) {
-        if (hasAllPermissions(getRequiredPermissions())) {
-            onPermissionsGranted()
-            return
-        }
-        pendingLocationPermissionAction = onPermissionsGranted
-        requestLocationWithDisclosure()
-    }
-
-    // Play's Prominent Disclosure policy: the system prompt is only ever shown right after the
-    // in-app disclosure, never on its own.
-    private fun requestLocationWithDisclosure() {
-        Utils.showLocationDisclosureDialog(
-            requireContext(),
-            getString(R.string.location_permission_needed),
-            getString(R.string.start_end_work_location_permission_msg)
-        ) {
-            permissionLauncher.launch(getRequiredPermissions())
-        }
-    }
+    /** Start Work needs location: asked for (with the disclosure) and run once it is granted. */
+    private val locationPermission = LocationPermissionDelegate(
+        this, { requireContext() }, ::shouldShowRequestPermissionRationale,
+        LocationPermissionDelegate.Config(
+            LocationPermissionDelegate.Disclosure(R.string.location_permission_needed, R.string.start_end_work_location_permission_msg),
+            retry = LocationPermissionDelegate.Retry.REQUEST_AGAIN
+        )
+    )
 
     @SuppressLint("MissingPermission")
     private fun startWorkWithLocationPermissions(workId: Long, position: Int) {
-        handleLocationPermissions(
-            onPermissionsGranted = {
+        locationPermission.request(
+            action = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     whenAttached { context ->
                         if (location != null) {
@@ -421,41 +375,6 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 }
             }
         )
-    }
-
-    private fun getRequiredPermissions(): Array<String> {
-        return buildList {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }.toTypedArray()
-    }
-
-    private fun hasAllPermissions(permissions: Array<String>): Boolean =
-        permissions.all {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                it
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-
-    private fun showPermissionRationale() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_required)
-            .setMessage(R.string.location_permission_rationale)
-            .setPositiveButton(R.string.retry) { _, _ -> requestLocationWithDisclosure() }
-            .setNegativeButton(R.string.cancel) { _, _ -> pendingLocationPermissionAction = null }
-            .show()
-    }
-
-    private fun showPermissionDeniedPermanently() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_denied)
-            .setMessage(R.string.permission_denied_permanently)
-            .setPositiveButton(R.string.open_settings) { _, _ ->
-                openApplicationSettings()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     private val assignTaskLauncher =

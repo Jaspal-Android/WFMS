@@ -1,17 +1,11 @@
 package com.atvantiq.wfms.utils
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import java.util.*
 
 object PermissionUtils {
@@ -65,5 +59,18 @@ object PermissionUtils {
 		)
 	}
 
-}
+	/** How a permission request ended, judged on the location permissions alone. */
+	enum class LocationOutcome { GRANTED, DENIED_PERMANENTLY, DENIED_CAN_RETRY }
 
+	/**
+	 * Reads the [results] of a location request: granted, or denied for good (the system will no
+	 * longer show its prompt, only Settings can help), or denied but the user may be asked again.
+	 * Other permissions in the same request (notifications) do not matter for the outcome.
+	 */
+	fun locationOutcome(results: Map<String, Boolean>, shouldShowRationale: (String) -> Boolean): LocationOutcome = when {
+		areGranted(results, LOCATION_PERMISSIONS) -> LocationOutcome.GRANTED
+		LOCATION_PERMISSIONS.none { shouldShowRationale(it) } -> LocationOutcome.DENIED_PERMANENTLY
+		else -> LocationOutcome.DENIED_CAN_RETRY
+	}
+
+}
