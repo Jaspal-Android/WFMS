@@ -20,7 +20,7 @@ interface IClaimRepo {
     suspend fun workSiteByDate(date: String): WorkSiteByDateResponse
     suspend fun employeeByCircle(circleId: String): EmployeeByCircleResponse
     suspend fun createClaim(data: RequestBody, files: List<MultipartBody.Part>): CreateClaimResponse
-    suspend fun allClaims(page:Int,pageSize:Int ): AllClaimsResponse
+    suspend fun allClaims(page: Int, pageSize: Int, fromDate: String, toDate: String): AllClaimsResponse
     suspend fun claimById(claimId: Long): ClaimDetailResponse
 
     /** The admin claims list; [search] null or blank lists everything. */

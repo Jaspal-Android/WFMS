@@ -34,10 +34,8 @@ class ClaimRepo @Inject constructor(private val apiService: ApiService) : IClaim
         files = files
     )
 
-    override suspend fun allClaims(page: Int, pageSize: Int): AllClaimsResponse = apiService.allClaims(
-        page = page,
-        pageSize = pageSize
-    )
+    override suspend fun allClaims(page: Int, pageSize: Int, fromDate: String, toDate: String): AllClaimsResponse =
+        apiService.allClaims(page = page, pageSize = pageSize, fromDate = fromDate, toDate = toDate)
 
     override suspend fun claimById(claimId: Long): ClaimDetailResponse = apiService.claimById(
         claimId = claimId

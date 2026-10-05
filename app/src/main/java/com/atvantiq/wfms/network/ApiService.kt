@@ -230,8 +230,17 @@ interface ApiService {
 		@Part files: List<MultipartBody.Part>
 	): CreateClaimResponse
 
+	/**
+	 * The employee's own claims, page by page, between two yyyy-MM-dd dates. The API filters
+	 * this list by date only (`date`, `date_filter`, `from_date`, `to_date`): no search or status.
+	 */
 	@GET(NetworkEndPoints.allClaims)
-	suspend fun allClaims(@Query("page") page:Int,@Query("page_size") pageSize:Int ): AllClaimsResponse
+	suspend fun allClaims(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("from_date") fromDate: String,
+		@Query("to_date") toDate: String
+	): AllClaimsResponse
 
 	@GET(NetworkEndPoints.siteById)
 	suspend fun siteById(@Path("id") siteId: Long): SiteDetailResponse

@@ -11,6 +11,7 @@ import com.atvantiq.wfms.models.reimbursement.allClaims.Record
 import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
+import com.atvantiq.wfms.utils.MonthYear
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -30,11 +31,37 @@ class ReimbursementViewModel @Inject constructor(
     fun onCreateClaimClick() = postClickEvent(ReimbursementClickEvents.ON_CLICK_CREATE_CLAIM)
 
 
-    /*All claims*/
+    /** The month on screen; opens on the current one. */
+    val month = MutableLiveData(MonthYear.current())
+
+    /** Claims in [month] (`total_records`). */
+    val claimCount = MutableLiveData<Int?>()
+
+    /** The employee's claims in [month], paged. ◀ ▶ step the month and reload from page 1. */
     val claims = PagedList<AllClaimsResponse, Record>(
-        fetch = { page, pageSize -> claimRepo.allClaims(page, pageSize) },
-        pageItems = { if (it.code == ValConstants.SUCCESS_CODE) it.data?.records.orEmpty() else null }
+        fetch = { page, pageSize ->
+            val shown = month.value ?: MonthYear.current()
+            claimRepo.allClaims(page, pageSize, shown.firstDay, shown.lastDay)
+        },
+        pageItems = { response ->
+            if (response.code == ValConstants.SUCCESS_CODE) {
+                claimCount.value = response.data?.totalRecords
+                response.data?.records.orEmpty()
+            } else {
+                null
+            }
+        }
     )
+
+    fun showPreviousMonth() = showMonth(month.value?.previous())
+
+    fun showNextMonth() = showMonth(month.value?.next())
+
+    private fun showMonth(target: MonthYear?) {
+        month.value = target ?: return
+        claimCount.value = null
+        claims.reload()
+    }
 
     /*Get Claim by ID */
     var claimByIdResponse = MutableLiveData<ApiState<ClaimDetailResponse>>()
