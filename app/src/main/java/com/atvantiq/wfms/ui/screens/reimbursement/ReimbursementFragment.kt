@@ -47,6 +47,10 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
             handleClickEvents(event)
         }
 
+        vm.month.observe(viewLifecycleOwner) { month -> binding.monthTitle = month.label }
+        vm.claimCount.observe(viewLifecycleOwner) { count ->
+            binding.monthSubtitle = count?.let { resources.getQuantityString(R.plurals.claims_count, it, it) }
+        }
         vm.claims.state.observe(viewLifecycleOwner) { state -> renderClaims(state) }
 
         vm.claims.failure.observe(viewLifecycleOwner) { failure ->
