@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets
 
+import com.atvantiq.wfms.utils.CurrencyFormatter
 import android.os.Bundle
 import android.view.View
 import com.atvantiq.wfms.R
@@ -120,7 +121,7 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding, MyTargetsVM>() 
         val revenue = data.revenue ?: return
 
         binding.tvRevenueAchieved.text = formatCurrency(revenue.achieved)
-        binding.tvRevenueTarget.text = "of ${formatCurrency(revenue.target)} target"
+        binding.tvRevenueTarget.text = getString(R.string.revenue_target_format, formatCurrency(revenue.target))
 
         val variation = revenue.variation ?: 0.0
         binding.tvRevenueDifference.apply {
@@ -136,20 +137,20 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding, MyTargetsVM>() 
         // achievementPercentage comes as "0.0%" or "54.55%" — strip % and parse
         val pct = stripPct(revenue.achievementPercentage).toInt().coerceIn(0, 100)
         binding.progressRevenue.progress = pct
-        binding.tvRevenueAchievedPct.text = "$pct% ${getString(R.string.achieved)}"
-        binding.tvRevenueRemainingPct.text = "${100 - pct}% ${getString(R.string.to_go)}"
+        binding.tvRevenueAchievedPct.text = getString(R.string.percent_label_format, pct, getString(R.string.achieved))
+        binding.tvRevenueRemainingPct.text = getString(R.string.percent_label_format, 100 - pct, getString(R.string.to_go))
     }
 
     private fun bindStatsCard(data: MyTargetsData) {
         val sites = data.sites
         if (sites != null) {
-            binding.tvSitesValue.text = "${sites.achieved ?: 0} / ${sites.target ?: 0}"
+            binding.tvSitesValue.text = getString(R.string.ratio_format, sites.achieved ?: 0, sites.target ?: 0)
             binding.tvSitesPct.text = formatPctString(sites.achievementPercentage)
         }
 
         val days = data.activeDays
         if (days != null) {
-            binding.tvActiveDaysValue.text = "${days.achieved ?: 0} / ${days.target ?: 0}"
+            binding.tvActiveDaysValue.text = getString(R.string.ratio_format, days.achieved ?: 0, days.target ?: 0)
             binding.tvActiveDaysPct.text = formatPctString(days.achievementPercentage)
         }
 
@@ -157,7 +158,7 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding, MyTargetsVM>() 
         if (hours != null) {
             val achieved = hours.achieved?.toInt() ?: 0
             val target = hours.target?.toInt() ?: 0
-            binding.tvHoursWorkedValue.text = "$achieved / $target"
+            binding.tvHoursWorkedValue.text = getString(R.string.ratio_format, achieved, target)
             binding.tvHoursWorkedPct.text = formatPctString(hours.achievementPercentage)
         }
 
@@ -173,14 +174,6 @@ class MyTargetsFragment : BaseFragment<FragmentMyTargetsBinding, MyTargetsVM>() 
     private fun formatPctString(value: String?): String =
         if (value.isNullOrBlank()) "-" else value
 
-    private fun formatCurrency(amount: Double?): String {
-        if (amount == null) return "-"
-        val abs = Math.abs(amount)
-        val sign = if (amount < 0) "-" else ""
-        return when {
-            abs >= 1_000_000 -> "${sign}${"$"}${String.format("%.1f", abs / 1_000_000)}M"
-            abs >= 1_000 -> "${sign}${"$"}${String.format("%.0f", abs / 1_000)}K"
-            else -> "${sign}${"$"}${String.format("%.0f", abs)}"
-        }
-    }
+    private fun formatCurrency(amount: Double?): String =
+        amount?.let { CurrencyFormatter.compact(it, getString(R.string.revenue_currency_symbol)) } ?: "-"
 }

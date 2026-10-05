@@ -191,12 +191,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     vm.onSubmitCompleted()
                     dismissProgress()
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             val clients = response.response?.data?.clients ?: emptyList()
                             viewModel.clients = clients
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 
@@ -228,13 +228,13 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isProjectLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val projects = response.response?.data ?: emptyList()
                             viewModel.projects = projects
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 
@@ -265,13 +265,13 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isPoLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val poNumbers = response.response?.data ?: emptyList()
                             viewModel.poNumbers = poNumbers
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 
@@ -302,12 +302,12 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isCircleLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             val circles = response.response?.data ?: emptyList()
                             viewModel.circles = circles
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 
@@ -338,13 +338,13 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isSiteLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val sites = response.response?.data ?: emptyList()
                             viewModel.sites = sites
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 
@@ -375,13 +375,13 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isTypeLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val types = response.response?.data ?: emptyList()
                             viewModel.types = types
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 
@@ -438,7 +438,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     dismissProgress()
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             showToast(
                                 this,
                                 response.response?.message
@@ -448,7 +448,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             finish()
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                         }
 

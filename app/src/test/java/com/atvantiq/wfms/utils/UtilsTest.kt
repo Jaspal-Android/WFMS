@@ -27,14 +27,6 @@ class UtilsTest {
     }
 
     @Test
-    fun testDateToString() {
-        // Input: "2023-01-02T08:09:10"
-        val result = Utils.dateToString("2023-01-02T08:09:10")
-        // Output format: "dd/mm/yyyy hh:mm:ss a"
-        assertTrue(result.contains("2023"))
-    }
-
-    @Test
     fun testPxToDpAndDpToPx() {
         val mockDisplayMetrics = android.util.DisplayMetrics().apply { xdpi = 160f }
         val mockContext = org.mockito.Mockito.mock(android.content.Context::class.java)

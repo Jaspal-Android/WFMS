@@ -27,7 +27,7 @@ class AnnouncementsActivity : BaseBindingActivity<ActivityAnnouncementsBinding>(
     }
 
     private fun setToolbar(){
-        binding.announceToolbar.toolbarTitle.text = "Announcements"
+        binding.announceToolbar.toolbarTitle.text = getString(R.string.announcements)
         binding.announceToolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }

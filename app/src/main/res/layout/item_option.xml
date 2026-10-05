@@ -1,4 +1,6 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +15,7 @@
             android:drawableEnd="@drawable/forward_arrow_right_24"
             android:paddingHorizontal="@dimen/padding"
             android:paddingVertical="@dimen/padding_large"
-            android:text="Title"
+            tools:text="Title"
             android:textAllCaps="true" />
 
         <View

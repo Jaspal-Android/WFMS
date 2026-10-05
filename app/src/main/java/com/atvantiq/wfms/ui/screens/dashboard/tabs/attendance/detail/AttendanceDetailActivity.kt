@@ -125,7 +125,7 @@ class AttendanceDetailActivity :
                     dismissProgress()
                     val resp = response.response
                     when (resp?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             if (resp.data.isEmpty()) {
                                 binding.isNoDataAvailable = true
                                 showToast(this, getString(R.string.no_work_details_found))
@@ -135,7 +135,7 @@ class AttendanceDetailActivity :
                             }
                         }
 
-                        401 -> {
+                        ValConstants.UNAUTHORIZED_CODE -> {
                             tokenExpiresAlert()
                             binding.isNoDataAvailable = true
                         }
@@ -155,7 +155,7 @@ class AttendanceDetailActivity :
                     dismissProgress()
                     binding.isNoDataAvailable = true
                     (response.throwable as? HttpException)?.let {
-                        if (it.code() == 401) tokenExpiresAlert()
+                        if (it.code() == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert()
                     } ?: showToast(
                         this,
                         response.throwable?.message ?: getString(R.string.something_went_wrong)

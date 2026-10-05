@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.adapters
 
+import com.atvantiq.wfms.R
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +38,7 @@ class SelectedOtherEntriesAdapter(
 
         fun bind(item: OtherExpense, position: Int) {
             binding.tvCategory.text = item.category
-            binding.tvAmount.text = "₹${item.amount}"
+            binding.tvAmount.text = binding.root.context.getString(R.string.rupee_text_format, item.amount)
             binding.hasAttachments = !item.receiptAttachments.isNullOrEmpty()
             binding.btnRemove.setOnClickListener { onRemoveClick(position) }
         }

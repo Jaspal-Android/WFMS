@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.atvantiq.wfms.R
+import com.atvantiq.wfms.utils.CurrencyFormatter
 import com.atvantiq.wfms.databinding.ItemProjectBudgetBinding
 import com.atvantiq.wfms.models.targets.ProjectBudgetItem
 
@@ -58,9 +59,14 @@ class ProjectBudgetAdapter : RecyclerView.Adapter<ProjectBudgetAdapter.ViewHolde
         holder.binding.tvSitesRatio.text = "$sitesAchieved/$sitesTarget"
 
         // Revenue: "$0 of $108K"
+        val symbol = ctx.getString(R.string.revenue_currency_symbol)
         val revAchieved = item.revenue?.achieved ?: 0.0
         val revTarget = item.revenue?.target ?: 0.0
-        holder.binding.tvRevenue.text = "${formatCurrency(revAchieved)} of ${formatCurrency(revTarget)}"
+        holder.binding.tvRevenue.text = ctx.getString(
+            R.string.revenue_of_target_format,
+            CurrencyFormatter.compact(revAchieved, symbol),
+            CurrencyFormatter.compact(revTarget, symbol)
+        )
 
         // Status badge
         val status = item.status?.lowercase() ?: ""
@@ -94,14 +100,4 @@ class ProjectBudgetAdapter : RecyclerView.Adapter<ProjectBudgetAdapter.ViewHolde
 
     private fun stripPct(value: String?): Double =
         value?.trimEnd('%')?.toDoubleOrNull() ?: 0.0
-
-    private fun formatCurrency(amount: Double): String {
-        val abs = Math.abs(amount)
-        val sign = if (amount < 0) "-" else ""
-        return when {
-            abs >= 1_000_000 -> "${sign}$${String.format("%.1f", abs / 1_000_000)}M"
-            abs >= 1_000 -> "${sign}$${String.format("%.0f", abs / 1_000)}K"
-            else -> "${sign}$${String.format("%.0f", abs)}"
-        }
-    }
 }

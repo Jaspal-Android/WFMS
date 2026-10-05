@@ -183,7 +183,7 @@ class CalendarView : LinearLayoutCompat {
             val dayCalendar = tempCalendar.clone() as Calendar
             dayCalendar.set(Calendar.DAY_OF_MONTH, i)
 
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
             val dateString = dateFormat.format(dayCalendar.time)
 
             // Check if the date exists in the API data

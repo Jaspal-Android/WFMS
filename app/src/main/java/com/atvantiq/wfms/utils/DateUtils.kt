@@ -77,8 +77,8 @@ object DateUtils {
                 val calendar = Calendar.getInstance().apply {
                     set(year, monthOfYear, dayOfMonth)
                 }
-                val format = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault())
+                val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
+                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.US)
                 val strDate = format.format(calendar.time)
                 val formatDate = formatapi.format(calendar.time)
                 callBack.onDateSelected(strDate, formatDate)
@@ -102,8 +102,8 @@ object DateUtils {
                 val selectedCalendar = Calendar.getInstance().apply {
                     set(year, monthOfYear, dayOfMonth)
                 }
-                val format = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault())
+                val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
+                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.US)
                 val strDate = format.format(selectedCalendar.time)
                 val formatDate = formatapi.format(selectedCalendar.time)
                 callBack.onDateSelected(strDate, formatDate)
@@ -134,7 +134,7 @@ object DateUtils {
                     else -> selectedHour
                 }
                 val time = String.format("%d:%02d %s", hourIn12Format, selectedMinute, format)
-                val formatTime = String.format("%d:%02d", hourIn12Format, selectedMinute)
+                val formatTime = String.format(Locale.US, "%d:%02d", hourIn12Format, selectedMinute)
                 callBack.onTimeSelected(time, formatTime)
             }, hour, minute, false
         )
@@ -160,7 +160,7 @@ object DateUtils {
     fun formatDate(date: String?): String {
         if (date.isNullOrEmpty()) return ""
         return try {
-            val df = SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS", Locale.getDefault())
+            val df = SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS", Locale.US)
             val c = df.parse(date)
             val df1 = SimpleDateFormat(DISPLAY_DATE_FORMAT, Locale.getDefault())
             df1.format(c)
@@ -178,7 +178,7 @@ object DateUtils {
 
     fun convertFrom24(inTime: String): String {
         return try {
-            val timeFormat24 = SimpleDateFormat(TIME_24_FORMAT, Locale.getDefault())
+            val timeFormat24 = SimpleDateFormat(TIME_24_FORMAT, Locale.US)
             val timeFormat12 = SimpleDateFormat(TIME_12_FORMAT, Locale.getDefault())
             val inTimeParsed = timeFormat24.parse(inTime)
             val formatted = timeFormat12.format(inTimeParsed)
@@ -258,7 +258,7 @@ object DateUtils {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
             val parsedDate = isoFormat.parse(trimmed)
-            val outputFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+            val outputFormat = SimpleDateFormat(DATE_FORMAT, Locale.US)
             outputFormat.format(parsedDate)
         } catch (e: Exception) {
             null

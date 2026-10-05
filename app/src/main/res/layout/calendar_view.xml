@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Month, Year"
+                tools:text="January 2026"
                 android:textColor="?attr/wfmsColorOnSurface"
                 android:textStyle="bold" />
 
@@ -86,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="S"
+                android:text="@string/weekday_initial_sun"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="M"
+                android:text="@string/weekday_initial_mon"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="T"
+                android:text="@string/weekday_initial_tue"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="W"
+                android:text="@string/weekday_initial_wed"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="T"
+                android:text="@string/weekday_initial_thu"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="F"
+                android:text="@string/weekday_initial_fri"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
@@ -146,7 +146,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="S"
+                android:text="@string/weekday_initial_sat"
                 android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 

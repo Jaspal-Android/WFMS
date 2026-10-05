@@ -143,7 +143,7 @@ class ThemePickerBottomSheet : BottomSheetDialogFragment() {
         }
 
         // ── Theme section ──────────────────────────────────────────
-        root.addView(title("Color Theme"))
+        root.addView(title(ctx.getString(R.string.color_theme)))
 
         val currentTheme = ThemeManager.getCurrentTheme(ctx)
         ThemeManager.WfmsTheme.entries.forEachIndexed { index, theme ->
@@ -151,7 +151,7 @@ class ThemePickerBottomSheet : BottomSheetDialogFragment() {
 
             val row = baseRow(isActive).apply {
                 addView(buildThemeSwatch(theme))
-                addView(labelText(theme.displayName))
+                addView(labelText(ctx.getString(theme.nameRes)))
                 addView(checkmark(isActive))
 
                 setOnClickListener {
@@ -172,13 +172,13 @@ class ThemePickerBottomSheet : BottomSheetDialogFragment() {
         root.addView(buildDivider(marginTopDp = 8, marginBottomDp = 8, alpha = 1f))
 
         // ── Appearance section ─────────────────────────────────────
-        root.addView(sectionTitle("Appearance"))
+        root.addView(sectionTitle(ctx.getString(R.string.appearance)))
 
         val currentDark = ThemeManager.getDarkMode(ctx)
         val modes = listOf(
-            Triple(ThemeManager.DarkMode.LIGHT, "Light", "☀️"),
-            Triple(ThemeManager.DarkMode.DARK, "Dark", "🌙"),
-            Triple(ThemeManager.DarkMode.SYSTEM, "System default", "⚙️")
+            Triple(ThemeManager.DarkMode.LIGHT, ctx.getString(R.string.appearance_light), "☀️"),
+            Triple(ThemeManager.DarkMode.DARK, ctx.getString(R.string.appearance_dark), "🌙"),
+            Triple(ThemeManager.DarkMode.SYSTEM, ctx.getString(R.string.appearance_system_default), "⚙️")
         )
 
         modes.forEach { (mode, label, emoji) ->

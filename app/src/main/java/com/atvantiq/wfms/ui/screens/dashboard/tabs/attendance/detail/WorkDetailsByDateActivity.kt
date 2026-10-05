@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
+import com.atvantiq.wfms.constants.ValConstants
 import android.view.View
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -76,7 +77,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
             when (response.status) {
                 Status.SUCCESS -> {
                     dismissProgress()
-                    if (response.response?.code == 200) {
+                    if (response.response?.code == ValConstants.SUCCESS_CODE) {
                         if (response.response.data.isEmpty()) {
                             binding.isNoDataAvailable = true
                             showToast(
@@ -87,7 +88,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                             binding.isNoDataAvailable = false
                             //adapter?.submitList(response.response.data)
                         }
-                    } else if (response.response?.code == 401) {
+                    } else if (response.response?.code == ValConstants.UNAUTHORIZED_CODE) {
                         tokenExpiresAlert()
                         binding.isNoDataAvailable = true
                     } else {
@@ -106,7 +107,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                     binding.isNoDataAvailable = true
                     val throwable = response.throwable
                     if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
+                        if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                             tokenExpiresAlert()
                         }
                     } else {
