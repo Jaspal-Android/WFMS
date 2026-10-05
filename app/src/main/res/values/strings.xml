@@ -567,6 +567,7 @@
     <string name="site_caption">SITE</string>
     <string name="work_status_caption">WORK STATUS</string>
     <string name="in_progress">In Progress</string>
+    <string name="access_issue">Access Issue</string>
     <string name="completed_label">Completed</string>
     <string name="review_site_details">Review site details</string>
     <string name="site_work_detail">Site Work Detail</string>
