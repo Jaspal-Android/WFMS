@@ -328,7 +328,7 @@ object DateUtils {
     }
 
     fun isStartDateBeforeEndDate(startDate:String,endDate:String): Boolean {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
         return try {
             val startDate = format.parse(startDate)
             val endDate = format.parse(endDate)
@@ -339,7 +339,7 @@ object DateUtils {
     }
 
     fun isEndDateAfterStartDate(startDate:String,endDate:String): Boolean {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
         return try {
             val startDate = format.parse(startDate)
             val endDate = format.parse(endDate)
