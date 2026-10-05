@@ -191,8 +191,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 communicationViewModel.triggerCalendarRefresh()
                 checkPermissionForLiveLocation()
             }
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
+            else -> handleRejectedResponse(response?.code, response?.message)
         }
     }
 
@@ -208,8 +207,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             3001 ->{
                 handleNoWorkForDay(response.data?.attendanceId)
             }
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
+            else -> handleRejectedResponse(response?.code, response?.message)
         }
     }
 

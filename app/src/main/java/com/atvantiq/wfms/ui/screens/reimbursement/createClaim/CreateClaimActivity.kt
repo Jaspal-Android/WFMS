@@ -237,7 +237,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -266,7 +266,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -293,7 +293,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -337,7 +337,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                     else -> {
                         viewModel.onSubmitCompleted()
                         setSubmitEnabled(true)
-                        handleErrorResponse(code ?: 0, response.response?.message)
+                        handleRejectedResponse(code ?: 0, response.response?.message)
                     }
                 }
             }
@@ -487,14 +487,6 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             else -> { /* ...existing code... */
             }
         }
-    }
-
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == ValConstants.UNAUTHORIZED_CODE) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
     }
 
     private fun handleError(throwable: Throwable?) {
