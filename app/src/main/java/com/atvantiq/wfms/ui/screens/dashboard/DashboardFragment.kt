@@ -565,6 +565,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         )
         val titles = listOf(R.string.attendance, R.string.my_day, R.string.my_targets, R.string.projects)
         binding.viewPager.adapter = DashboardPagerAdapter(requireActivity(), pages)
+        binding.tabLayout.tabMode = PagerTabMode.forFontScale(resources.configuration.fontScale)
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = getString(titles[position])
         }.attach()
