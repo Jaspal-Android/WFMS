@@ -574,10 +574,6 @@
     <style name="CustomMediumPrimaryTextView" parent="CustomMediumTextView">
         <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
-    <style name="CustomMediumBoldTextView" parent="CustomMediumTextView">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/text_strong</item>
-    </style>
 
     <style name="CustomLargeTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_large_text</item>
