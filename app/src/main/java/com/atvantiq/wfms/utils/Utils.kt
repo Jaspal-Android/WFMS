@@ -16,11 +16,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.DisplayMetrics
 import android.view.View
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.atvantiq.wfms.R
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -118,36 +114,6 @@ object Utils {
     }
 
 
-    fun switchFragment(
-        clearStack: Boolean,
-        fm: FragmentManager,
-        frame: Int,
-        fragment: Fragment,
-        isStacked: Boolean
-    ) {
-        val tag = fragment.javaClass.simpleName
-
-        if (clearStack) {
-            fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        }
-        val transaction = fm.beginTransaction()
-        transaction.replace(frame, fragment, tag)
-        if (isStacked) {
-            transaction.addToBackStack(tag)
-        }
-        transaction.commit()
-    }
-
-    fun hideSoftKeyBoard(context: Activity) {
-        context.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-
-    }
-
-    fun hideKeyboardOnClick(context: Context, view: View) {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
-    }
-
     fun modelToString(`object`: Any): String {
         val gson = Gson()
         return gson.toJson(`object`)
@@ -175,40 +141,6 @@ object Utils {
         return ConnectivityReceiver.isNetworkAvailable(context)
     }
 
-    fun getSoftButtonsBarSizePort(activity: Activity): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            val metrics = DisplayMetrics()
-            activity.windowManager.defaultDisplay.getMetrics(metrics)
-            val usableHeight = metrics.heightPixels
-            activity.windowManager.defaultDisplay.getRealMetrics(metrics)
-            val realHeight = metrics.heightPixels
-            return if (realHeight > usableHeight)
-                realHeight - usableHeight
-            else
-                0
-        }
-        return 0
-    }
-
-    /*fun errorHandlingWithStatus(context: Context, e: Throwable): ErrorResponse {
-        var errorResponse = ErrorResponse(context.getString(R.string.exception_msg), "")
-        if (e is HttpException) {
-            val response = e.response()
-            try {
-                val jObjError = JSONObject(response.errorBody()?.string())
-                errorResponse.message = jObjError.optString("message")
-                errorResponse.statusCode = jObjError.optString("status")
-            } catch (e1: JSONException) {
-                errorResponse.message = e1.localizedMessage
-                e1.printStackTrace()
-            } catch (e1: IOException) {
-                errorResponse.message = e1.localizedMessage
-                e1.printStackTrace()
-            }
-        }
-        return errorResponse
-    }*/
-
     fun pxToDp(px: Int, context: Context): Int {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics
         return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT))
@@ -227,38 +159,6 @@ object Utils {
     fun showPassword(et: EditText?) {
         et?.transformationMethod = PasswordTransformationMethod()
         et?.setSelection(et.text.length)
-    }
-
-    /*
-    * Rate Us Dialog
-    * */
-    fun rateUsDialog(context: Context) {
-        val uri: Uri = Uri.parse("market://details?id=" + context.packageName)
-        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-        goToMarket.addFlags(
-            Intent.FLAG_ACTIVITY_NO_HISTORY or
-                    Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
-                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        )
-        try {
-            context.startActivity(goToMarket)
-        } catch (e: ActivityNotFoundException) {
-            context.startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName)
-                )
-            )
-        }
-    }
-
-    /*
-    * Call to telephone number
-    * */
-    fun callNumber(context: Context, tellPhone: String) {
-        var callIntent = Intent(Intent.ACTION_DIAL)
-        callIntent.data = Uri.parse("tel:$tellPhone")
-        context.startActivity(callIntent)
     }
 
     fun openAppSettings(context: Context) {
@@ -289,17 +189,6 @@ object Utils {
         )
     }
 
-    fun shareApp(context: Context) {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Check out this awesome app!")
-            val appPackageName = context.packageName
-            val playStoreLink = "https://play.google.com/store/apps/details?id=$appPackageName"
-            putExtra(Intent.EXTRA_TEXT, "Download this app from the Play Store: $playStoreLink")
-        }
-        context.startActivity(Intent.createChooser(shareIntent, "Share app via"))
-    }
-
     fun roundOffDecimal(number: Double): Double? {
         return try {
             val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
@@ -314,16 +203,6 @@ object Utils {
         return String.format(Locale.ENGLISH, format, value)
     }
 
-    fun getBitmapFromView(view: View): Bitmap {
-        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        val bitmap =
-            Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-        return bitmap
-    }
-
     fun getGreeting(context: Context): String {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         val resources = context.resources
@@ -336,9 +215,6 @@ object Utils {
         }
     }
 
-    /*
-    * Write function with code and logic to convert lat and long to address
-    * */
     private val geocodeExecutor: Executor =
         Executors.newSingleThreadExecutor { runnable -> Thread(runnable, "geocoder").apply { isDaemon = true } }
 
