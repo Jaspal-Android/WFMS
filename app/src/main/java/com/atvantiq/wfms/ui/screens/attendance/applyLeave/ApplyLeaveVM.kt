@@ -1,23 +1,20 @@
 package com.atvantiq.wfms.ui.screens.attendance.applyLeave
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
-import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.utils.DateUtils
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,8 +25,8 @@ class ApplyLeaveVM @Inject constructor(
 
     // variables and methods for Apply Leave functionality can be added here
 
-    var clickEvents = MutableLiveData<ApplyLeaveClickEvents>()
-    var errorHandler = MutableLiveData<ApplyLeaveErrorHandler>()
+    var clickEvents = LiveEvent<ApplyLeaveClickEvents>()
+    var errorHandler = LiveEvent<ApplyLeaveErrorHandler>()
 
     var leaveStartDate = ObservableField<String>().apply {
         set("")

@@ -5,17 +5,13 @@ import com.atvantiq.wfms.constants.ValConstants
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
@@ -235,9 +231,6 @@ open class BaseFragmentSimple : Fragment() {
 		val attached = context
 		if (isAdded && attached != null) block(attached)
 	}
-
-	fun isLifeCycleResumed() =
-		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 
 	fun isLifeCycleStarted() =
 		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.CREATED||viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.STARTED||

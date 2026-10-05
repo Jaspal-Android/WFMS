@@ -1,11 +1,10 @@
 package com.atvantiq.wfms.ui.screens.forgotPassword.vm
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
-import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.forgotPassword.ForgotPasswordResponse
 import com.atvantiq.wfms.network.ApiState
@@ -21,8 +20,8 @@ class ForgotPasswordVM @Inject constructor(
 
     //Variable declaration
 
-    var clickEvents = MutableLiveData<ForgotPassClickEvents>()
-    var errorHandler = MutableLiveData<ForgotPassErrorHandler>()
+    var clickEvents = LiveEvent<ForgotPassClickEvents>()
+    var errorHandler = LiveEvent<ForgotPassErrorHandler>()
 
     var emailAddress = ObservableField<String>().apply {
         set("")

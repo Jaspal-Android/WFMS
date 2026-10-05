@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.dashboard
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import android.content.Intent
 import android.os.Build
 import androidx.databinding.ObservableField
@@ -21,16 +22,9 @@ import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
 import com.atvantiq.wfms.utils.DateUtils
-import com.atvantiq.wfms.utils.NoInternetException
-import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,7 +44,7 @@ class DashboardViewModel @Inject constructor(
     /** Whether tracking was started for the active day. */
     val isTrackingStarted: Boolean get() = prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false)
 
-    var clickEvents = MutableLiveData<DashboardClickEvents>()
+    var clickEvents = LiveEvent<DashboardClickEvents>()
 
 
     private val _isTracking = MutableLiveData<Boolean>(false)

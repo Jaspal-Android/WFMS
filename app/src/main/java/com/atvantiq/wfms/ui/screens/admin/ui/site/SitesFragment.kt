@@ -50,7 +50,6 @@ class SitesFragment : BaseFragment<FragmentSitesBinding, SitesVM>() {
         }
 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            if (!isLifeCycleResumed()) return@observe
             when (event) {
                 SitesEventClicks.ON_ADD_STIE_CLICK ->
                     createSiteLauncher.launch(Intent(requireContext(), AddSiteActivity::class.java))

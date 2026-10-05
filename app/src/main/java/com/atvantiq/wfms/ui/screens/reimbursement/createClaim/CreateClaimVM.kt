@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
@@ -72,8 +73,8 @@ class CreateClaimVM @Inject constructor(
     var projects: List<Project> = ArrayList()
     var circles: List<Circle> = ArrayList()
 
-    var clickEvents = MutableLiveData<CreateClaimClickEvents>()
-    var errorEvents = MutableLiveData<CreateClaimErrorHandler>()
+    var clickEvents = LiveEvent<CreateClaimClickEvents>()
+    var errorEvents = LiveEvent<CreateClaimErrorHandler>()
 
     private fun postClickEvent(event: CreateClaimClickEvents) {
         clickEvents.value = event

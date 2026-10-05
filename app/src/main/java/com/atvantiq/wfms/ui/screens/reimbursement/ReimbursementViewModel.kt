@@ -1,19 +1,16 @@
 package com.atvantiq.wfms.ui.screens.reimbursement
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.atvantiq.wfms.base.BaseViewModel
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
-import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.Record
 import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -24,7 +21,7 @@ class ReimbursementViewModel @Inject constructor(
     private val claimRepo: IClaimRepo
 ) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<ReimbursementClickEvents>()
+    var clickEvents = LiveEvent<ReimbursementClickEvents>()
 
     private fun postClickEvent(event: ReimbursementClickEvents) {
         clickEvents.value = event

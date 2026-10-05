@@ -23,7 +23,6 @@ class ApprovalsFragment : BaseFragment<FragmentApprovalsBinding, ApprovalsVM>() 
     override fun subscribeToEvents(vm: ApprovalsVM) {
         binding.vm = vm
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            if (!isLifeCycleResumed()) return@observe
             when (event) {
                 ApprovalsClickEvents.ATTENDANCE_APPROVAL ->
                     Utils.jumpActivity(requireContext(), AttendanceApprovalActivity::class.java)

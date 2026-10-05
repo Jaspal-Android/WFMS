@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.more
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
@@ -27,7 +28,7 @@ class ProfileVM @Inject constructor(
     private val prefMain: SecurePrefMain
 ) : BaseViewModel(application) {
 
-    val clickEvents = MutableLiveData<MoreClickEvents>()
+    val clickEvents = LiveEvent<MoreClickEvents>()
 
     /** The cached profile straight away, replaced by the server's once [refresh] answers. */
     val profile = MutableLiveData<EmpData?>(PrefMethods.getEmpDetailResponse(prefMain))

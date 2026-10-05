@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.ui.screens.attendance.addSignInActivity
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
@@ -39,8 +40,8 @@ class AddSignInVM @Inject constructor(
     private val workRepo: IWorkRepo
 ) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<AddSignInClickEvents>()
-    var errorHandler = MutableLiveData<AssignTaskError>()
+    var clickEvents = LiveEvent<AddSignInClickEvents>()
+    var errorHandler = LiveEvent<AssignTaskError>()
 
     var selectedClient: Client? = null
     var selectedProjectId: Long? = null
