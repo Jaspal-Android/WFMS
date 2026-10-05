@@ -90,26 +90,6 @@ object DateUtils {
         datePickerDialog.show()
     }
 
-    fun onDOBPickerClick(context: Context, callBack: DateCallBack) {
-        val calendar = Calendar.getInstance().apply { set(1990, 1, 1) }
-        val datePickerDialog = DatePickerDialog(
-            context, R.style.AppTheme_DatePickerDialog,
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                val selectedCalendar = Calendar.getInstance().apply {
-                    set(year, monthOfYear, dayOfMonth)
-                }
-                val format = SimpleDateFormat(DOB_FORMAT, Locale.getDefault())
-                val strDate = format.format(selectedCalendar.time)
-                callBack.onDateSelected(strDate, strDate)
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePickerDialog.datePicker.maxDate = Date().time
-        datePickerDialog.show()
-    }
-
     fun onDateClickWithLimit(
         context: Context,
         callBack: DateCallBack,
