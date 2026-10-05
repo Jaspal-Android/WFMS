@@ -22,6 +22,8 @@
     <dimen name="apply_leave_inset">9dp</dimen>
     <!-- Calendar arrows are drawn 40dp wide inside a 48dp touch target -->
     <dimen name="calendar_nav_inset">4dp</dimen>
+    <!-- The month chip is drawn 29dp tall inside a 48dp touch target: (48 - 29) / 2 -->
+    <dimen name="month_chip_inset">9.5dp</dimen>
     <dimen name="calendar_nav_padding">12dp</dimen>
     <dimen name="tracking_button_stroke">1.5dp</dimen>
     <!-- My Day -->

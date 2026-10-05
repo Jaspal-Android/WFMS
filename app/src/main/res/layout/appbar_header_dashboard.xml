@@ -68,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_small_extra"
                 android:gravity="center_vertical"
+                android:minHeight="@dimen/min_touch_target"
                 android:onClick="@{()->vm.onFetchCurrentLatitudeLongitudeClicks()}"
                 android:orientation="horizontal"
                 android:paddingVertical="@dimen/padding_x_small"
