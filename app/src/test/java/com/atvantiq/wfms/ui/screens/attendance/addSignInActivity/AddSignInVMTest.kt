@@ -346,6 +346,31 @@ class AddSignInVMTest {
     }
 
     @Test
+    fun `every activity of a selected type goes with the work by default`() = runTest {
+        coEvery { creationRepo.activityListByPoType(33L, 10L) } returns
+            activityResponse(ActivityData(1L, "Survey"), ActivityData(3L, "Audit"))
+        coEvery { creationRepo.activityListByPoType(33L, 20L) } returns activityResponse(ActivityData(2L, "Install"))
+        fillCommonFields()
+
+        viewModel.onTypesSelected(listOf(type(10L, "A"), type(20L, "B")))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(setOf(1L, 3L), viewModel.activitySelection.selectedIds(10L))
+        assertEquals(setOf(2L), viewModel.activitySelection.selectedIds(20L))
+        assertTrue(viewModel.validateAssignTaskFields())
+    }
+
+    @Test
+    fun `Assign Work waits while the activities are still loading`() {
+        fillCommonFields()
+        viewModel.selectedTypeIdList = arrayListOf(type(10L, "A"))
+        viewModel.isActivityLoading.set(true)
+
+        assertFalse(viewModel.validateAssignTaskFields())
+        assertEquals(AssignTaskError.ON_ACTIVITY_LOADING, viewModel.errorHandler.value)
+    }
+
+    @Test
     fun `onTypesSelected keeps picks of types that stay selected and does not refetch them`() = runTest {
         coEvery { creationRepo.activityListByPoType(1L, 10L) } returns activityResponse(ActivityData(1L, "Survey"))
         coEvery { creationRepo.activityListByPoType(1L, 20L) } returns activityResponse(ActivityData(2L, "Install"))
