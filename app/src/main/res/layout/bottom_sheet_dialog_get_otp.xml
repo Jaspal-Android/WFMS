@@ -53,6 +53,7 @@
 
             <EditText
                 android:id="@+id/otp_box_1"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
@@ -70,6 +71,7 @@
 
             <EditText
                 android:id="@+id/otp_box_2"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
@@ -86,6 +88,7 @@
 
             <EditText
                 android:id="@+id/otp_box_3"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
@@ -102,6 +105,7 @@
 
             <EditText
                 android:id="@+id/otp_box_4"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
@@ -118,6 +122,7 @@
 
             <EditText
                 android:id="@+id/otp_box_5"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
@@ -134,6 +139,7 @@
 
             <EditText
                 android:id="@+id/otp_box_6"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"

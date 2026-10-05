@@ -47,7 +47,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/margin"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="Chandigarh site"
+                tools:text="Chandigarh site"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
                 android:layout_marginStart="@dimen/margin"
                 android:layout_marginBottom="@dimen/margin"
                 android:alpha="0.75"
-                android:text="CHD-345-POWN-234"
+                tools:text="CHD-345-POWN-234"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvSiteName" />
 
@@ -186,7 +186,7 @@
                                     style="@style/CustomSmallTextView"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="ERRICSON-TOWER-110"
+                                    tools:text="ERRICSON-TOWER-110"
                                     android:textColor="?attr/wfmsColorOnSurface"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -222,7 +222,7 @@
                                     style="@style/CustomSmallTextView"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Haryana (HR)"
+                                    tools:text="Haryana (HR)"
                                     android:textColor="?attr/wfmsColorOnSurface"
                                     android:textStyle="bold" />
                             </LinearLayout>

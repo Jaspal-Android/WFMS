@@ -38,7 +38,7 @@ class SelectedTravelingEntriesAdapter(
         fun bind(item: TravelExpense, position: Int){
             binding.tvEntryNumber.text = binding.root.context.getString(R.string.entry_number_format, position + 1)
             binding.tvMode.text = item.mode?.label?: "-"
-            binding.tvRoute .text = "${item.from}  →  ${item.to}"
+            binding.tvRoute .text = binding.root.context.getString(R.string.route_format, item.from, item.to)
             binding.tvAmount.text = item.amount
             binding.isTravelingWith= !item.travelingWith.isNullOrEmpty()
             binding.tvWith.text = item.travelingWith?.joinToString(", ") { it.name.toString() } ?: "-"

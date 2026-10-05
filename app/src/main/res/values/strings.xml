@@ -279,7 +279,13 @@
     <string name="weekday_initial_sat">S</string>
     <string name="budget_sites_separator">" sites  ·  "</string>
     <string name="dot_separator" translatable="false">·</string>
-    <string name="sites_count_calculation">%1$d Sites</string>
+    <string name="greeting_with_name_format" translatable="false">%1$s, %2$s</string>
+    <string name="name_with_code_format" translatable="false">%1$s - %2$s</string>
+    <string name="route_format" translatable="false">%1$s  →  %2$s</string>
+    <plurals name="sites_count_calculation">
+        <item quantity="one">%d Site</item>
+        <item quantity="other">%d Sites</item>
+    </plurals>
     <plurals name="expense_count">
         <item quantity="one">%d expense(s)</item>
         <item quantity="other">%d expense(s)</item>
@@ -317,9 +323,18 @@
     <string name="material_search_hint">Search by name or unit</string>
     <string name="material_qty_hint">Qty</string>
 
-    <string name="material_count_total">%1$d materials</string>
-    <string name="material_count_matched">%1$d of %2$d match</string>
-    <string name="material_added_count">%1$d materials added</string>
+    <plurals name="material_count_total">
+        <item quantity="one">%d material</item>
+        <item quantity="other">%d materials</item>
+    </plurals>
+    <plurals name="material_count_matched">
+        <item quantity="one">%1$d of %2$d matches</item>
+        <item quantity="other">%1$d of %2$d match</item>
+    </plurals>
+    <plurals name="material_added_count">
+        <item quantity="one">%d material added</item>
+        <item quantity="other">%d materials added</item>
+    </plurals>
     <string name="material_total_qty">Total: %1$s</string>
     <string name="material_available_qty">Available: %1$s %2$s</string>
     <string name="material_out_of_stock">Out of stock</string>
@@ -334,7 +349,10 @@
     <string name="material_clear">Clear</string>
 
     <string name="material_confirm_submit_title">Complete work?</string>
-    <string name="material_confirm_submit_msg">%1$d materials used · Total %2$s. The work order will be marked completed and material usage recorded.</string>
+    <plurals name="material_confirm_submit_msg">
+        <item quantity="one">%1$d material used · Total %2$s. The work order will be marked completed and material usage recorded.</item>
+        <item quantity="other">%1$d materials used · Total %2$s. The work order will be marked completed and material usage recorded.</item>
+    </plurals>
     <string name="material_yes_complete">Yes, complete</string>
     <string name="material_review">Review again</string>
 

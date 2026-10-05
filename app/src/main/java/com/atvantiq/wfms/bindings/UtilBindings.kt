@@ -14,7 +14,7 @@ object UtilBindings {
     @BindingAdapter(value = ["wishText"])
     fun wishText(textView: TextView, text: String?) {
         val greetingText = Utils.getGreeting(textView.context)
-        textView.text = "$greetingText, $text"
+        textView.text = textView.context.getString(R.string.greeting_with_name_format, greetingText, text)
     }
 
     @JvmStatic

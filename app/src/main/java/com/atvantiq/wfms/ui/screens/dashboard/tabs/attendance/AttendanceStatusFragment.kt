@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance
 
+import com.atvantiq.wfms.utils.toLocalizedString
 import android.graphics.drawable.ColorDrawable
 import timber.log.Timber
 import android.os.Build
@@ -102,7 +103,7 @@ class AttendanceStatusFragment :
         customCalender.clearAttendanceData()
         val month = calendar.get(Calendar.MONTH) + 1
         val year = calendar.get(Calendar.YEAR)
-        totalDaysText.text = getTotalDaysInMonth(month, year).toString()
+        totalDaysText.text = getTotalDaysInMonth(month, year).toLocalizedString()
         resetAttendanceSummary()
         viewModel.getAttendanceDetails(month, year)
     }
@@ -115,7 +116,7 @@ class AttendanceStatusFragment :
 
     private fun getAttendanceDetails() {
         val (month, year) = DateUtils.getCurrentMonthAndYear()
-        binding.totalDaysText.text = getTotalDaysInMonth(month, year).toString()
+        binding.totalDaysText.text = getTotalDaysInMonth(month, year).toLocalizedString()
         viewModel.getAttendanceDetails(month, year)
     }
 
@@ -189,28 +190,28 @@ class AttendanceStatusFragment :
     }
 
     private fun resetAttendanceSummary() = with(binding) {
-        binding.presentText.text = "0"
-        binding.absentText.text = "0"
-        binding.absentSystemText.text = "0"
-        binding.incompleteText.text = "0"
-        binding.leaveText.text = "0"
-        binding.idleText.text = "0"
-        binding.holidayText.text = "0"
-        binding.workOffText.text = "0"
-        binding.noActionText.text = "0"
-        binding.naText.text = "0"
+        binding.presentText.text = 0.toLocalizedString()
+        binding.absentText.text = 0.toLocalizedString()
+        binding.absentSystemText.text = 0.toLocalizedString()
+        binding.incompleteText.text = 0.toLocalizedString()
+        binding.leaveText.text = 0.toLocalizedString()
+        binding.idleText.text = 0.toLocalizedString()
+        binding.holidayText.text = 0.toLocalizedString()
+        binding.workOffText.text = 0.toLocalizedString()
+        binding.noActionText.text = 0.toLocalizedString()
+        binding.naText.text = 0.toLocalizedString()
     }
 
     private fun showAttendanceSummary(statusCounts: Map<String, Int>, noApiDays: Int) = with(binding) {
-        binding.presentText.text = statusCounts[AttendanceStatus.PRESENT]?.toString() ?: "0"
-        binding.absentText.text = statusCounts[AttendanceStatus.ABSENT]?.toString() ?: "0"
-        binding.absentSystemText.text = statusCounts[AttendanceStatus.ABSENT_NA]?.toString() ?: "0"
-        binding.incompleteText.text = statusCounts[AttendanceStatus.INCOMPLETE]?.toString() ?: "0"
-        binding.leaveText.text = statusCounts[AttendanceStatus.LEAVE]?.toString() ?: "0"
-        binding.idleText.text = statusCounts[AttendanceStatus.IDLE]?.toString() ?: "0"
-        binding.holidayText.text = statusCounts[AttendanceStatus.HOLIDAY]?.toString() ?: "0"
-        binding.workOffText.text = statusCounts[AttendanceStatus.WORK_OFF]?.toString() ?: "0"
-        binding.noActionText.text = statusCounts[AttendanceStatus.NO_ACTION]?.toString() ?: "0"
-        naText.text = noApiDays.toString()
+        binding.presentText.text = (statusCounts[AttendanceStatus.PRESENT] ?: 0).toLocalizedString()
+        binding.absentText.text = (statusCounts[AttendanceStatus.ABSENT] ?: 0).toLocalizedString()
+        binding.absentSystemText.text = (statusCounts[AttendanceStatus.ABSENT_NA] ?: 0).toLocalizedString()
+        binding.incompleteText.text = (statusCounts[AttendanceStatus.INCOMPLETE] ?: 0).toLocalizedString()
+        binding.leaveText.text = (statusCounts[AttendanceStatus.LEAVE] ?: 0).toLocalizedString()
+        binding.idleText.text = (statusCounts[AttendanceStatus.IDLE] ?: 0).toLocalizedString()
+        binding.holidayText.text = (statusCounts[AttendanceStatus.HOLIDAY] ?: 0).toLocalizedString()
+        binding.workOffText.text = (statusCounts[AttendanceStatus.WORK_OFF] ?: 0).toLocalizedString()
+        binding.noActionText.text = (statusCounts[AttendanceStatus.NO_ACTION] ?: 0).toLocalizedString()
+        naText.text = noApiDays.toLocalizedString()
     }
 }

@@ -46,6 +46,7 @@
 
                     <EditText
                         android:id="@+id/searchEditText"
+                        android:importantForAutofill="no"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/margin_small"
