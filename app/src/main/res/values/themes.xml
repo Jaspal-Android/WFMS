@@ -323,6 +323,18 @@
 
     <!-- Icon-only button with a 48dp touch target and a borderless ripple; set src, tint and
          contentDescription per use. -->
+    <!-- A filter chip (Work list): 48dp to touch, drawn 36dp tall by bg_filter_chip_*. -->
+    <style name="CustomFilterChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:layout_marginEnd">@dimen/margin_small</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/padding</item>
+        <item name="android:paddingEnd">@dimen/padding</item>
+        <item name="android:textSize">@dimen/default_medium_small_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="CustomIconButton">
         <item name="android:layout_width">@dimen/min_touch_target</item>
         <item name="android:layout_height">@dimen/min_touch_target</item>

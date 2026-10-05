@@ -10,6 +10,8 @@
 
     <!-- Minimum recommended tap target (Material / WCAG 2.5.8). -->
     <dimen name="min_touch_target">48dp</dimen>
+    <!-- A 36dp filter chip drawn inside its 48dp touch target -->
+    <dimen name="chip_touch_inset">6dp</dimen>
     <!-- Profile initials avatar: More card and My Profile header -->
     <dimen name="avatar_size">64dp</dimen>
     <!-- Shift tracking card -->

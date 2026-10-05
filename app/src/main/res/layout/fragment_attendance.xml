@@ -46,19 +46,25 @@
                         android:layout_weight="1"
                         app:hint="@{@string/search_by_site_or_project}" />
 
-                    <!-- Self work assign -->
-                    <ImageButton
+                    <!-- Self work assign: labelled, same height and corners as the search bar -->
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSelfAssign"
-                        android:layout_width="@dimen/min_touch_target"
+                        android:layout_width="wrap_content"
                         android:layout_height="@dimen/min_touch_target"
                         android:layout_marginStart="@dimen/margin_small"
-                        android:background="@drawable/btn_primary_gradient"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         android:contentDescription="@string/self_work_assign"
-                        android:elevation="@dimen/elevation_small"
-                        android:foreground="?attr/selectableItemBackground"
                         android:onClick="@{()->vm.onSignInClick()}"
-                        android:src="@drawable/ic_add"
-                        app:tint="@color/white" />
+                        android:paddingHorizontal="@dimen/padding"
+                        android:text="@string/assign"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:backgroundTint="?attr/wfmsColorPrimary"
+                        app:cornerRadius="@dimen/card_radius"
+                        app:elevation="0dp"
+                        app:icon="@drawable/ic_add"
+                        app:iconTint="@color/white" />
 
                 </LinearLayout>
 
@@ -79,62 +85,31 @@
 
                         <TextView
                             android:id="@+id/chipAll"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/margin_small"
+                            style="@style/CustomFilterChip"
                             android:background="@drawable/bg_filter_chip_selected"
-                            android:paddingStart="@dimen/padding"
-                            android:paddingTop="8dp"
-                            android:paddingEnd="@dimen/padding"
-                            android:paddingBottom="8dp"
                             android:text="@string/filter_all"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/default_medium_small_text"
-                            android:textStyle="bold" />
+                            android:textColor="@color/white" />
 
                         <TextView
                             android:id="@+id/chipPending"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/margin_small"
+                            style="@style/CustomFilterChip"
                             android:background="@drawable/bg_filter_chip_unselected"
-                            android:paddingStart="@dimen/padding"
-                            android:paddingTop="8dp"
-                            android:paddingEnd="@dimen/padding"
-                            android:paddingBottom="8dp"
                             android:text="@string/filter_pending"
-                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                            android:textSize="@dimen/default_medium_small_text"
-                            android:textStyle="bold" />
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant" />
 
                         <TextView
                             android:id="@+id/chipActive"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="@dimen/margin_small"
+                            style="@style/CustomFilterChip"
                             android:background="@drawable/bg_filter_chip_unselected"
-                            android:paddingStart="@dimen/padding"
-                            android:paddingTop="8dp"
-                            android:paddingEnd="@dimen/padding"
-                            android:paddingBottom="8dp"
                             android:text="@string/filter_active"
-                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                            android:textSize="@dimen/default_medium_small_text"
-                            android:textStyle="bold" />
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant" />
 
                         <TextView
                             android:id="@+id/chipCompleted"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            style="@style/CustomFilterChip"
                             android:background="@drawable/bg_filter_chip_unselected"
-                            android:paddingStart="@dimen/padding"
-                            android:paddingTop="8dp"
-                            android:paddingEnd="@dimen/padding"
-                            android:paddingBottom="8dp"
                             android:text="@string/filter_completed"
-                            android:textColor="?attr/wfmsColorOnSurfaceVariant"
-                            android:textSize="@dimen/default_medium_small_text"
-                            android:textStyle="bold" />
+                            android:textColor="?attr/wfmsColorOnSurfaceVariant" />
 
                     </LinearLayout>
                 </HorizontalScrollView>
