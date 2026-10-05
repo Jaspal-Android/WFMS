@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
@@ -49,6 +51,16 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 
     open fun getBundle() {
 
+    }
+
+    /**
+     * Keeps this screen out of screenshots, screen recordings and the Recents thumbnail. For the
+     * screens that show a password or claim receipts. Debug builds stay capturable for QA.
+     */
+    protected fun blockScreenCapture() {
+        if (!BuildConfig.DEBUG) {
+            window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     fun hideSoftKeyboard(activity: Activity) {

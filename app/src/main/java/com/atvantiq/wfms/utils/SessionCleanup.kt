@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.services.LocationTrackingService
+import com.atvantiq.wfms.utils.files.PrivateFiles
 
 object SessionCleanup {
 
@@ -16,5 +17,6 @@ object SessionCleanup {
             ?.cancelAll()
         context.stopService(Intent(context, LocationTrackingService::class.java))
         prefMain.deleteAll()
+        PrivateFiles.clearUserFiles(context.filesDir, context.cacheDir)
     }
 }

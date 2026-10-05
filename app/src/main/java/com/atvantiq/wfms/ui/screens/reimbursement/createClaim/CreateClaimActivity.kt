@@ -59,6 +59,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     private lateinit var selectedOthersEntriesAdapter: SelectedOtherEntriesAdapter
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        blockScreenCapture()
         enableEdgeToEdge()
         findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()

@@ -137,7 +137,7 @@ class PickMediaHelper(
     private fun handlePickedUri(uri: Uri) {
         val path = when (uri.scheme?.lowercase(Locale.US)) {
             "content" -> copyUriToCache(uri)
-            "file" -> uri.path
+            "file" -> uri.path?.takeUnless { PrivateFiles.isInside(File(context.applicationInfo.dataDir), File(it)) }
             else -> null
         }
 

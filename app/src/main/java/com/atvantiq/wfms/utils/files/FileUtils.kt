@@ -15,12 +15,15 @@ import java.util.*
 
 object FileUtils {
 
+    /** Folder under `filesDir` that holds the photos the user captured or picked. */
+    const val PHOTO_DIR = "WFMS"
+
     @Throws(IOException::class)
     @JvmStatic
     fun createImageFile(context: Context): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val imageFileName = "WFMS_$timeStamp.jpg"
-        val directory = File(context.filesDir, "WFMS")
+        val directory = File(context.filesDir, PHOTO_DIR)
         if (!directory.exists()) {
             directory.mkdir()
         }
