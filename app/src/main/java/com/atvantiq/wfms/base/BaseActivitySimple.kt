@@ -189,28 +189,26 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
+    // Held until dismissed, so a second show cannot orphan the first dialog (see BaseFragmentSimple).
     fun showCircularProgress() {
-        progressCircularDialog = ProgressCircularDialog()
-        progressCircularDialog?.show(supportFragmentManager, progressCircularDialog?.tag)
+        if (progressCircularDialog != null) return
+        progressCircularDialog = ProgressCircularDialog().also { it.show(supportFragmentManager, null) }
     }
 
     fun dismissCircularProgress() {
-        if (progressCircularDialog != null) {
-            progressCircularDialog?.dismiss()
-            progressCircularDialog = null
-        }
+        progressCircularDialog?.dismissAllowingStateLoss()
+        progressCircularDialog = null
     }
 
     fun showProgress() {
-        progressDialog = ProgressDialog()
-        progressDialog?.show(supportFragmentManager, "")
+        if (progressDialog != null) return
+        progressDialog = ProgressDialog().also { it.show(supportFragmentManager, null) }
     }
 
+    // AllowingStateLoss: a response can arrive after onSaveInstanceState, and dismiss() then throws.
     fun dismissProgress() {
-        if (progressDialog != null) {
-            progressDialog?.dismiss()
-            progressDialog = null
-        }
+        progressDialog?.dismissAllowingStateLoss()
+        progressDialog = null
     }
 
     fun shakeEditText(context: Context, view: View) {
