@@ -193,34 +193,29 @@ open class BaseFragmentSimple : Fragment() {
 		}
 	}
 
-	lateinit var progressCirluarDialog: ProgressCircularDialog
+	// Held until dismissed. A dialog is not visible until its show() transaction runs, so the
+	// reference, not isVisible, is what stops a second call from orphaning the first dialog.
+	private var progressCircularDialog: ProgressCircularDialog? = null
 	private var progressDialog: ProgressDialog? = null
 
 	fun showCircularProgress() {
-		// Prevent showing multiple dialogs
-		if (::progressCirluarDialog.isInitialized && progressCirluarDialog.isVisible) return
-		progressCirluarDialog = ProgressCircularDialog()
-		progressCirluarDialog.show(parentFragmentManager, progressCirluarDialog.tag)
+		if (progressCircularDialog != null) return
+		progressCircularDialog = ProgressCircularDialog().also { it.show(parentFragmentManager, null) }
 	}
 
 	fun dismissCircularProgress() {
-		if (::progressCirluarDialog.isInitialized && progressCirluarDialog.isVisible) {
-			progressCirluarDialog.dismissAllowingStateLoss()
-		}
+		progressCircularDialog?.dismissAllowingStateLoss()
+		progressCircularDialog = null
 	}
 
 	fun showProgress() {
-		// Prevent showing multiple dialogs
-		if (progressDialog?.isVisible == true) return
-		progressDialog = ProgressDialog()
-		progressDialog?.show(parentFragmentManager, "")
+		if (progressDialog != null) return
+		progressDialog = ProgressDialog().also { it.show(parentFragmentManager, null) }
 	}
 
 	fun dismissProgress() {
-		//if (progressDialog?.isVisible == true) {
-			progressDialog?.dismissAllowingStateLoss()
-			progressDialog = null
-		//}
+		progressDialog?.dismissAllowingStateLoss()
+		progressDialog = null
 	}
 
 	/**
