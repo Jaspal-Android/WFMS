@@ -59,16 +59,27 @@ object PermissionUtils {
 		)
 	}
 
+	/**
+	 * Android 12+ lets the user grant only "Approximate" location. Attendance needs the precise
+	 * one, so this is not "granted", but it is not "denied" either: Android can still be asked to
+	 * upgrade it.
+	 */
+	fun hasApproximateLocationOnly(context: Context): Boolean =
+		checkPermissionGranted(context, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)) &&
+			!checkPermissionGranted(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+
 	/** How a permission request ended, judged on the location permissions alone. */
-	enum class LocationOutcome { GRANTED, DENIED_PERMANENTLY, DENIED_CAN_RETRY }
+	enum class LocationOutcome { GRANTED, APPROXIMATE_ONLY, DENIED_PERMANENTLY, DENIED_CAN_RETRY }
 
 	/**
-	 * Reads the [results] of a location request: granted, or denied for good (the system will no
-	 * longer show its prompt, only Settings can help), or denied but the user may be asked again.
+	 * Reads the [results] of a location request: granted, approximate only (Android 12+), or denied
+	 * for good (the system will no longer show its prompt, only Settings can help), or denied but
+	 * the user may be asked again.
 	 * Other permissions in the same request (notifications) do not matter for the outcome.
 	 */
 	fun locationOutcome(results: Map<String, Boolean>, shouldShowRationale: (String) -> Boolean): LocationOutcome = when {
 		areGranted(results, LOCATION_PERMISSIONS) -> LocationOutcome.GRANTED
+		results[Manifest.permission.ACCESS_COARSE_LOCATION] == true -> LocationOutcome.APPROXIMATE_ONLY
 		LOCATION_PERMISSIONS.none { shouldShowRationale(it) } -> LocationOutcome.DENIED_PERMANENTLY
 		else -> LocationOutcome.DENIED_CAN_RETRY
 	}

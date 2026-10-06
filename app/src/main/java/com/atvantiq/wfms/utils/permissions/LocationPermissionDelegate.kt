@@ -62,6 +62,9 @@ class LocationPermissionDelegate(
 
     private var pendingAction: (() -> Unit)? = null
 
+    /** Set once this request has asked Android to upgrade "Approximate" to precise. */
+    private var preciseAsked = false
+
     private val launcher = caller.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { results -> onResult(results) }
@@ -72,9 +75,11 @@ class LocationPermissionDelegate(
      */
     fun request(action: (() -> Unit)? = null) {
         pendingAction = action
+        preciseAsked = false
         val context = contextProvider()
         when {
             PermissionUtils.hasLocationPermissions(context) -> granted()
+            PermissionUtils.hasApproximateLocationOnly(context) -> askForPrecise()
             config.rationaleFirst && PermissionUtils.LOCATION_PERMISSIONS.any(shouldShowRationale) -> showRationale()
             else -> discloseThenAsk()
         }
@@ -97,6 +102,8 @@ class LocationPermissionDelegate(
     private fun onResult(results: Map<String, Boolean>) {
         when (PermissionUtils.locationOutcome(results, shouldShowRationale)) {
             PermissionUtils.LocationOutcome.GRANTED -> granted()
+            // The pending action is kept until precise is granted or the user cancels.
+            PermissionUtils.LocationOutcome.APPROXIMATE_ONLY -> askForPrecise()
             PermissionUtils.LocationOutcome.DENIED_PERMANENTLY -> {
                 abandon()
                 showDeniedPermanently()
@@ -104,6 +111,31 @@ class LocationPermissionDelegate(
             // The pending action is kept: Retry resumes it, Cancel releases it.
             PermissionUtils.LocationOutcome.DENIED_CAN_RETRY -> showRationale()
         }
+    }
+
+    /**
+     * Only "Approximate" is granted, but attendance and the route need the precise location.
+     * Explains that, then asks again: Android shows its own "Change to precise location" prompt.
+     * Once Android won't show it any more, Settings is the only way, so the dialog says where.
+     */
+    private fun askForPrecise() {
+        val context = contextProvider()
+        val canAsk = !preciseAsked || shouldShowRationale(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.precise_location_title)
+            .setMessage(if (canAsk) R.string.precise_location_message else R.string.precise_location_settings_message)
+            .setPositiveButton(if (canAsk) R.string.continue_label else R.string.open_settings) { _, _ ->
+                if (canAsk) {
+                    preciseAsked = true
+                    launcher.launch(PermissionUtils.LOCATION_PERMISSIONS + notificationPermissions())
+                } else {
+                    abandon()
+                    context.openAppSettings()
+                }
+            }
+            .setNegativeButton(R.string.cancel) { _, _ -> abandon() }
+            .setOnCancelListener { abandon() }
+            .show()
     }
 
     private fun granted() {

@@ -80,11 +80,11 @@ class LocationPermissionStagingTest {
     }
 
     @Test
-    fun `approximate-only location is a denial, not a grant`() {
+    fun `approximate-only location is not a grant, the user is asked for precise`() {
         val results = mapOf(fine to false, coarse to true)
 
         assertEquals(
-            PermissionUtils.LocationOutcome.DENIED_CAN_RETRY,
+            PermissionUtils.LocationOutcome.APPROXIMATE_ONLY,
             PermissionUtils.locationOutcome(results) { true }
         )
     }

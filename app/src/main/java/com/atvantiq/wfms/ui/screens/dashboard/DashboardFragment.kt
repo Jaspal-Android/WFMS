@@ -363,9 +363,13 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         val state = TrackingCardState.resolve(
             isDayActive = isDayStarted,
             isTrackingStarted = viewModel.isTrackingStarted,
-            hasForegroundLocation = PermissionUtils.hasLocationPermissions(requireContext()),
-            hasBackgroundLocation = PermissionUtils.hasBackgroundLocationPermission(requireContext()),
-            isGpsOn = isLocationServiceOn(),
+            location = LocationAccess(
+                servicesOn = isLocationServiceOn(),
+                foreground = PermissionUtils.hasLocationPermissions(requireContext()) ||
+                    PermissionUtils.hasApproximateLocationOnly(requireContext()),
+                precise = PermissionUtils.hasLocationPermissions(requireContext()),
+                background = PermissionUtils.hasBackgroundLocationPermission(requireContext())
+            ),
             shift = shift,
             nowMillis = now
         )
@@ -396,12 +400,14 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     setTrackingIcon(R.drawable.rounded_location_on_24, Color.TRANSPARENT, accent)
                     tvTrackingMessage.setText(R.string.tracking_starting)
                 }
-                TrackingCardState.NEEDS_ALWAYS, TrackingCardState.PERMISSION_DENIED, TrackingCardState.GPS_OFF -> {
+                TrackingCardState.NEEDS_ALWAYS, TrackingCardState.NEEDS_PRECISE,
+                TrackingCardState.PERMISSION_DENIED, TrackingCardState.GPS_OFF -> {
                     trackingCard.setBackgroundResource(R.drawable.bg_tracking_card_alert)
                     setTrackingIcon(R.drawable.ic_tracking_warning, ContextCompat.getColor(context, R.color.error_soft), error)
                     tvTrackingMessage.setText(
                         when (state) {
                             TrackingCardState.NEEDS_ALWAYS -> R.string.tracking_needs_always
+                            TrackingCardState.NEEDS_PRECISE -> R.string.tracking_needs_precise
                             TrackingCardState.PERMISSION_DENIED -> R.string.tracking_permission_denied
                             else -> R.string.tracking_gps_off
                         }
@@ -413,6 +419,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             val action: Pair<Int, () -> Unit>? = when (state) {
                 TrackingCardState.PAUSED -> R.string.resume to { viewModel.resumeTracking() }
                 TrackingCardState.NEEDS_ALWAYS -> R.string.fix to { requestBackgroundLocation() }
+                TrackingCardState.NEEDS_PRECISE -> R.string.fix to { trackingLocationPermission.request() }
                 TrackingCardState.PERMISSION_DENIED -> R.string.open_settings to { requireContext().openAppSettings() }
                 TrackingCardState.GPS_OFF -> R.string.open_settings to {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

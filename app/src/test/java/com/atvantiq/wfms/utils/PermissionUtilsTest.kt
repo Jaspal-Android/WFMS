@@ -69,4 +69,17 @@ class PermissionUtilsTest {
             PermissionUtils.backgroundLocationOutcome(granted = false) { false }
         )
     }
+
+    @Test
+    fun `approximate only is its own outcome, not a denial`() {
+        val results = mapOf(Manifest.permission.ACCESS_FINE_LOCATION to false, Manifest.permission.ACCESS_COARSE_LOCATION to true)
+        assertEquals(PermissionUtils.LocationOutcome.APPROXIMATE_ONLY, PermissionUtils.locationOutcome(results) { false })
+        assertEquals(PermissionUtils.LocationOutcome.APPROXIMATE_ONLY, PermissionUtils.locationOutcome(results) { true })
+    }
+
+    @Test
+    fun `precise and approximate together is granted`() {
+        val results = mapOf(Manifest.permission.ACCESS_FINE_LOCATION to true, Manifest.permission.ACCESS_COARSE_LOCATION to true)
+        assertEquals(PermissionUtils.LocationOutcome.GRANTED, PermissionUtils.locationOutcome(results) { false })
+    }
 }
