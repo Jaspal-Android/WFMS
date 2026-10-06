@@ -9,10 +9,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.lifecycle.Observer
@@ -31,6 +29,7 @@ import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
 import com.atvantiq.wfms.ui.screens.more.ProfileVM
 import com.atvantiq.wfms.utils.isSessionLost
 import com.atvantiq.wfms.utils.navigateToTab
+import com.atvantiq.wfms.utils.permissions.openBatteryOptimizationSettings
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,7 +68,9 @@ class DashboardActivity : BaseActivity<ActivityDashboardBinding, ProfileVM>(){
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         setSupportActionBar(binding.appBarDashboard.toolbar)
         setupBottomNavigation()
-        batterOptimizationCheck()
+        // Once per launch: not again when the screen is recreated (theme change, rotation,
+        // process restore), which made the prompt appear over and over.
+        if (savedInstanceState == null) batteryOptimizationCheck()
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
         // Once per launch; the ViewModel keeps the answer across rotation.
@@ -101,26 +102,19 @@ class DashboardActivity : BaseActivity<ActivityDashboardBinding, ProfileVM>(){
         }
     }
 
-    private fun batterOptimizationCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val packageName = packageName
-            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                alertDialogShow(this,
-                    getString(R.string.battery_optimization),
-                    getString(R.string.battery_optimization_msg),
-                    getString(R.string.ok),
-                    { dialog, which ->
-                        dialog.dismiss()
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.data = Uri.parse("package:$packageName")
-                        startActivity(intent)
-                    },
-                    { dialog, which ->
-                        dialog.dismiss()
-                    })
-            }
-        }
+    private fun batteryOptimizationCheck() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (pm.isIgnoringBatteryOptimizations(packageName)) return
+        alertDialogShow(this,
+            getString(R.string.battery_optimization),
+            getString(R.string.battery_optimization_msg),
+            getString(R.string.ok),
+            { dialog, _ ->
+                dialog.dismiss()
+                openBatteryOptimizationSettings()
+            },
+            { dialog, _ -> dialog.dismiss() })
     }
 
     private fun requestPostNotificationsPermissionIfNeeded() {

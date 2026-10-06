@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.utils.permissions
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,6 +12,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import timber.log.Timber
 
 /**
  * The one place that asks for foreground location.
@@ -177,12 +179,33 @@ class LocationPermissionDelegate(
 
 }
 
-/** Opens this app's page in the system Settings, where a permission denied for good can be turned on. */
+/**
+ * Opens this app's page in the system Settings, where a permission denied for good can be turned on.
+ * In its own task: otherwise Settings stays on top of this app's task, and reopening the app from
+ * the launcher lands on the Settings page.
+ */
 fun Context.openAppSettings() {
     startActivity(
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             .setData(Uri.fromParts("package", packageName, null))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     )
+}
+
+/**
+ * Opens the system list of apps exempt from battery optimisation, where this app can be set to
+ * "Unrestricted"/"Not optimised". Some devices don't have that screen; this app's page is the
+ * fallback. (Asking directly with REQUEST_IGNORE_BATTERY_OPTIMIZATIONS is restricted by Play.)
+ */
+fun Context.openBatteryOptimizationSettings() {
+    try {
+        startActivity(
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    } catch (e: ActivityNotFoundException) {
+        Timber.w(e, "No battery optimisation settings screen; opening app settings")
+        openAppSettings()
+    }
 }
 
 /**
