@@ -1,6 +1,7 @@
 package com.atvantiq.wfms.utils
 
 import android.Manifest
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -43,5 +44,29 @@ class PermissionUtilsTest {
     @Test
     fun `an empty result map is denied`() {
         assertFalse(PermissionUtils.areGranted(emptyMap(), location))
+    }
+
+    @Test
+    fun `allow all the time granted`() {
+        assertEquals(
+            PermissionUtils.LocationOutcome.GRANTED,
+            PermissionUtils.backgroundLocationOutcome(granted = true) { false }
+        )
+    }
+
+    @Test
+    fun `allow all the time declined once can be asked again`() {
+        assertEquals(
+            PermissionUtils.LocationOutcome.DENIED_CAN_RETRY,
+            PermissionUtils.backgroundLocationOutcome(granted = false) { it == Manifest.permission.ACCESS_BACKGROUND_LOCATION }
+        )
+    }
+
+    @Test
+    fun `allow all the time Android will not ask for again needs Settings`() {
+        assertEquals(
+            PermissionUtils.LocationOutcome.DENIED_PERMANENTLY,
+            PermissionUtils.backgroundLocationOutcome(granted = false) { false }
+        )
     }
 }

@@ -82,7 +82,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     // Tracking runs as a location foreground service, so declining background access must not
     // undo it; the card is only refreshed.
     private val backgroundLocation = BackgroundLocationRequest(
-        this, { requireContext() },
+        this, { requireContext() }, ::shouldShowRequestPermissionRationale,
         R.string.background_location_usage, R.string.background_location_usage_msg
     ) { renderTrackingCard() }
 
@@ -596,11 +596,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun requestBackgroundLocationIfNeeded() {
         if (backgroundLocationPrompted || PermissionUtils.hasBackgroundLocationPermission(requireContext())) return
         backgroundLocationPrompted = true
-        requestBackgroundLocation()
+        backgroundLocation.request()
     }
 
-    /** Disclosure, then the "Allow all the time" request (also the card's Fix button). */
-    private fun requestBackgroundLocation() = backgroundLocation.request()
+    /** The card's Fix button: disclosure, then the request, or Settings once Android won't ask. */
+    private fun requestBackgroundLocation() = backgroundLocation.request(offerSettingsIfBlocked = true)
 
     @SuppressLint("MissingPermission")
     private fun getCurrentLatitudeLongitude() {

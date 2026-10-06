@@ -73,4 +73,14 @@ object PermissionUtils {
 		else -> LocationOutcome.DENIED_CAN_RETRY
 	}
 
+	/**
+	 * The same for "Allow all the time". Once the user has declined it twice (backing out of its
+	 * Settings page counts), Android answers "denied" at once without showing anything.
+	 */
+	fun backgroundLocationOutcome(granted: Boolean, shouldShowRationale: (String) -> Boolean): LocationOutcome = when {
+		granted -> LocationOutcome.GRANTED
+		shouldShowRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> LocationOutcome.DENIED_CAN_RETRY
+		else -> LocationOutcome.DENIED_PERMANENTLY
+	}
+
 }
