@@ -77,6 +77,8 @@
     <string name="error_client">We couldn\'t complete this request. Please check the details and try again.</string>
     <string name="error_server">The server ran into a problem. Please try again in a moment.</string>
     <string name="error_malformed">We received an unexpected response from the server. Please try again.</string>
+    <!-- A paged list whose first page failed to load: the error card with Retry (layout_error_card) -->
+    <string name="list_load_failed">This list couldn\'t be loaded.</string>
     <string name="session_expired_message">Your session has expired. Please log in again.</string>
     <string name="self_assigned_work">Self Assigned Work</string>
     <string name="assign_work">Assign Work</string>

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.base.PagedListUiState
@@ -84,6 +85,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
         adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.isEmptyReimbursements = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
     private fun showFirstPageProgress(show: Boolean) {
@@ -124,6 +126,7 @@ class ReimbursementFragment : BaseFragment<FragmentReimbursementBinding, Reimbur
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.claims.refresh()
         }
+        binding.errorState.onRetry = View.OnClickListener { viewModel.claims.refresh() }
     }
 
     private fun stopRefreshingData() {

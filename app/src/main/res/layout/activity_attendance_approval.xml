@@ -73,6 +73,15 @@
                     android:layout_marginTop="@dimen/margin_medium"
                     app:icon="@{@drawable/ic_event_available}"
                     app:message="@{@string/no_attendance_entries_for_approval}" />
+
+                <include
+                    android:id="@+id/errorState"
+                    layout="@layout/layout_error_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:visibility="gone" />
             </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>

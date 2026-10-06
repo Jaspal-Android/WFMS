@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
@@ -120,6 +121,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.isEmptyAssignedTasks = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
     private fun showFirstPageProgress(show: Boolean) {
@@ -333,6 +335,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.workList.refresh()
         }
+        binding.errorState.onRetry = View.OnClickListener { viewModel.workList.refresh() }
     }
 
     private fun stopRefreshingData() {

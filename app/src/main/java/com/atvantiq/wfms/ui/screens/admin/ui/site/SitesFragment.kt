@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
 import com.atvantiq.wfms.base.PagedListUiState
@@ -35,6 +36,7 @@ class SitesFragment : BaseFragment<FragmentSitesBinding, SitesVM>() {
         super.onViewCreated(view, savedInstanceState)
         setSitesList()
         binding.swipeRefreshLayout.setOnRefreshListener { viewModel.sites.refresh() }
+        binding.errorState.onRetry = View.OnClickListener { viewModel.sites.refresh() }
         // Shows the sites already loaded (e.g. returning to the tab) and refreshes them in the background.
         viewModel.sites.open()
     }
@@ -63,6 +65,7 @@ class SitesFragment : BaseFragment<FragmentSitesBinding, SitesVM>() {
         adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.isEmptySites = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
     private fun showFirstPageProgress(show: Boolean) {

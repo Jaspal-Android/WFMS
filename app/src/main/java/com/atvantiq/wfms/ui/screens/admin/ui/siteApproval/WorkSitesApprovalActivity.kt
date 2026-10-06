@@ -42,6 +42,7 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         setUpSearch()
         setUpList()
         binding.swipeRefreshLayout.setOnRefreshListener { viewModel.assignments.refresh() }
+        binding.errorState.onRetry = View.OnClickListener { viewModel.assignments.refresh() }
         viewModel.assignments.open()
     }
 
@@ -95,6 +96,7 @@ class WorkSitesApprovalActivity : BaseActivity<ActivityWorkSitesApprovalBinding,
         adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.emptyState.root.isVisible = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
     private fun showFirstPageProgress(show: Boolean) {

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A list that failed to load: an icon, one line of text and Retry, in the same card as
+     layout_empty_card. Shown from PagedListUiState.isFirstPageFailed. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="onRetry"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <ImageView
+                android:layout_width="@dimen/empty_state_icon_size"
+                android:layout_height="@dimen/empty_state_icon_size"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_cloud_off"
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+
+            <TextView
+                style="@style/CustomLargeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:gravity="center"
+                android:text="@string/list_load_failed"
+                android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/CustomPrimaryWireButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:minHeight="@dimen/min_touch_target"
+                android:onClick="@{onRetry}"
+                android:text="@string/retry"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

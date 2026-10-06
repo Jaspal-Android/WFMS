@@ -16,6 +16,12 @@ data class PagedListUiState<T>(
     /** A first page arrived and it was empty. */
     val isEmpty: Boolean = false,
     /**
+     * Page 1 failed (offline, timeout, server error or a rejected response) and nothing is on
+     * screen: show the error state with Retry instead of a blank page. Items already on screen
+     * stay when a refresh fails, so this stays false then.
+     */
+    val isFirstPageFailed: Boolean = false,
+    /**
      * The row changed in place by [BaseViewModel.PagedList.updateItem]. The object is the same, so a
      * list diff cannot see the change; the adapter redraws this row. Only set on that update.
      */
