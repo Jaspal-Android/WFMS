@@ -48,6 +48,7 @@ import com.ncorti.slidetoact.SlideToActView
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import com.atvantiq.wfms.utils.navigateToTab
+import com.atvantiq.wfms.utils.isUnauthorized
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.myDay.MyDayFragment
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -59,6 +60,9 @@ import com.atvantiq.wfms.utils.DateUtils
 class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
 
     private var isDayStarted = false
+    // The status error is shown once per run of failures (onResume asks again on every return to
+    // the tab); a successful status re-arms it.
+    private var statusErrorShown = false
     private var attendanceActionInFlight = false
     // Location permission is asked automatically on resume while checked in; ask once per screen.
     private var trackingPermissionPrompted = false
@@ -129,7 +133,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         setupTabBar()
         setupSwipeButton()
-        binding.appDashHeader.slideStartDay.let { it.setAccessibleAction(it.text) }
+        // Until the server's status arrives (or when it cannot, e.g. offline), show what this
+        // device knows: a shift it is tracking is an active day, so End Day and the tracking card
+        // stay available instead of an offer to start the day again.
+        isDayStarted = isDayStarted || viewModel.isTrackingStarted
+        updateSlideButton(isDayStarted)
     }
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
@@ -258,6 +266,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         dismissProgress()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
+                statusErrorShown = false
                 isDayStarted = response.data?.checkedIn == true
                 updateSlideButton(isDayStarted)
                 if(isDayStarted) checkPermissionForLiveLocation()
@@ -278,34 +287,29 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
+    /**
+     * The day's status could not be read. The slider and tracking card keep showing what the
+     * device knows (see onViewCreated), so this only explains why and offers Retry; it can be
+     * dismissed, because offline a Retry-only dialog would trap the user on this screen.
+     */
     private fun handleCheckInStatusError(message: String?, throwable: Throwable?) {
-        dismissProgress() // Ensure progress is dismissed before showing error dialog
-        if (throwable is HttpException) {
-            when (throwable.code()) {
-                ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-                ValConstants.SERVER_ERROR_CODE -> alertDialogShow(
-                    requireContext(),
-                    throwable.message ?: getString(R.string.something_went_wrong)
-                )
-                else -> alertDialogShow(
-                    requireContext(),
-                    getString(R.string.alert),
-                    message ?: getString(R.string.something_went_wrong),
-                    getString(R.string.retry),
-                    DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
-                    false
-                )
-            }
-        } else {
-            alertDialogShow(
-                requireContext(),
-                getString(R.string.alert),
-                message ?: getString(R.string.something_went_wrong),
-                getString(R.string.retry),
-                DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
-                false
-            )
+        dismissProgress()
+        if (throwable.isUnauthorized()) {
+            tokenExpiresAlert()
+            return
         }
+        if (statusErrorShown) return
+        statusErrorShown = true
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.alert)
+            .setMessage(message ?: throwable?.message ?: getString(R.string.something_went_wrong))
+            // A Retry the user asked for reports its own failure again.
+            .setPositiveButton(R.string.retry) { _, _ ->
+                statusErrorShown = false
+                checkInAttendanceStatus()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun handleNoWorkForDay(attendanceId: Long?) {
