@@ -30,7 +30,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding, SplashVM>() {
         get() = ActivityBinding(R.layout.activity_splash, SplashVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
-        if (SplashRouting.isRelaunchOverOpenTask(isTaskRoot, intent?.action, intent?.categories)) {
+        val overOpenTask = SplashRouting.isRelaunchOverOpenTask(
+            isTaskRoot, intent?.action, intent?.categories, isNotificationLaunch()
+        )
+        if (overOpenTask) {
             finish()
             return
         }

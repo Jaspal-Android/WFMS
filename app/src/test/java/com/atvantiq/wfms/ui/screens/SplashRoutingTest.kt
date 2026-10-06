@@ -36,18 +36,29 @@ class SplashRoutingTest {
 
     @Test
     fun `the launcher icon over an open app steps aside`() {
-        assertTrue(SplashRouting.isRelaunchOverOpenTask(isTaskRoot = false, action = main, categories = launcher))
+        assertTrue(SplashRouting.isRelaunchOverOpenTask(false, main, launcher, isNotificationTap = false))
     }
 
     @Test
     fun `a cold start from the launcher routes as usual`() {
-        assertFalse(SplashRouting.isRelaunchOverOpenTask(isTaskRoot = true, action = main, categories = launcher))
+        assertFalse(SplashRouting.isRelaunchOverOpenTask(true, main, launcher, isNotificationTap = false))
     }
 
     @Test
-    fun `notification taps always route, even over an open app`() {
-        assertFalse(SplashRouting.isRelaunchOverOpenTask(false, SplashActivity.ACTION_LOCATION_NOTIFICATION, null))
-        assertFalse(SplashRouting.isRelaunchOverOpenTask(false, SplashActivity.ACTION_PUSH_NOTIFICATION, null))
-        assertFalse(SplashRouting.isRelaunchOverOpenTask(false, main, emptySet()))
+    fun `a notification tap over an open app steps aside instead of stacking a second Dashboard`() {
+        assertTrue(SplashRouting.isRelaunchOverOpenTask(false, notificationAction, null, isNotificationTap = true))
     }
+
+    @Test
+    fun `a notification tap with the app closed routes as usual`() {
+        assertFalse(SplashRouting.isRelaunchOverOpenTask(true, notificationAction, null, isNotificationTap = true))
+    }
+
+    @Test
+    fun `any other start over an open app still routes`() {
+        assertFalse(SplashRouting.isRelaunchOverOpenTask(false, main, emptySet(), isNotificationTap = false))
+        assertFalse(SplashRouting.isRelaunchOverOpenTask(false, null, null, isNotificationTap = false))
+    }
+
+    private val notificationAction = SplashActivity.ACTION_LOCATION_NOTIFICATION
 }
