@@ -23,6 +23,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
@@ -115,5 +117,53 @@ class CreateClaimSitesByDateTest {
         idle()
 
         assertEquals(emptyList<Site>(), viewModel.singleSites)
+    }
+
+    @Test
+    fun `a day whose sites could not be loaded is marked for a retry, not as having none`() {
+        coEvery { claimRepo.workSiteByDate(any()) } throws java.io.IOException("timeout")
+
+        viewModel.onDateChosen("2026-10-02")
+        idle()
+
+        assertEquals(emptyList<Site>(), viewModel.singleSites)
+        assertTrue(viewModel.sitesLoadFailed)
+    }
+
+    @Test
+    fun `offline the load fails at once and a retry that succeeds clears it`() {
+        every { Utils.isInternet(application) } returns false
+        viewModel.onDateChosen("2026-10-02")
+        assertTrue(viewModel.sitesLoadFailed)
+
+        every { Utils.isInternet(application) } returns true
+        val digwa = site(131452377605L, "Digwa")
+        coEvery { claimRepo.workSiteByDate("2026-10-02") } returns sites("2026-10-02", digwa)
+        viewModel.getWorkSitesByDate("2026-10-02")
+        idle()
+
+        assertFalse(viewModel.sitesLoadFailed)
+        assertEquals(listOf(digwa), viewModel.singleSites)
+    }
+
+    @Test
+    fun `a day with no assigned sites is not a failure`() {
+        coEvery { claimRepo.workSiteByDate(any()) } returns sites("2026-10-02")
+
+        viewModel.onDateChosen("2026-10-02")
+        idle()
+
+        assertFalse(viewModel.sitesLoadFailed)
+        assertEquals(emptyList<Site>(), viewModel.singleSites)
+    }
+
+    @Test
+    fun `a rejected answer is a failure to load`() {
+        coEvery { claimRepo.workSiteByDate(any()) } returns WorkSiteByDateResponse(500, null, "boom", false)
+
+        viewModel.onDateChosen("2026-10-02")
+        idle()
+
+        assertTrue(viewModel.sitesLoadFailed)
     }
 }

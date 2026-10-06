@@ -41,6 +41,7 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterDaBot
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterOthersBottomSheet
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.serverMessage
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
@@ -233,7 +234,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 dismissProgress()
                 when (response.response?.code) {
                     // The ViewModel keeps the day's sites (see getWorkSitesByDate).
-                    ValConstants.SUCCESS_CODE -> Unit
+                    ValConstants.SUCCESS_CODE -> if (openSitesWhenLoaded) {
+                        openSitesWhenLoaded = false
+                        showSingleSitesOrNone()
+                    }
 
                     else -> {
                         handleRejectedResponse(
@@ -246,9 +250,35 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
             Status.ERROR -> {
                 dismissProgress()
+                openSitesWhenLoaded = false
                 handleError(response.throwable)
             }
         }
+    }
+
+    /** Set by Retry on the Site field, so the list opens as soon as the day's sites arrive. */
+    private var openSitesWhenLoaded = false
+
+    private fun showSingleSitesOrNone() {
+        if (viewModel.singleSites.isEmpty()) {
+            alertDialogShow(this, getString(R.string.alert), getString(R.string.no_sites_available))
+        } else {
+            showSingleSiteSelectionDialog(viewModel.singleSites)
+        }
+    }
+
+    /** The day's sites didn't load: say so (they may exist) and fetch them again. */
+    private fun offerSitesRetry() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.alert)
+            .setMessage(R.string.sites_not_loaded)
+            .setPositiveButton(R.string.retry) { _, _ ->
+                val day = viewModel.date.get() ?: return@setPositiveButton
+                openSitesWhenLoaded = true
+                viewModel.getWorkSitesByDate(day)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
 
@@ -427,14 +457,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 if (viewModel.date.get().isNullOrEmpty()) {
                     binding.dateEt.error = getString(R.string.please_select_date)
                     showToast(this, getString(R.string.please_select_date))
-                } else if (viewModel.singleSites.isEmpty()) {
-                    alertDialogShow(
-                        this,
-                        getString(R.string.alert),
-                        getString(R.string.no_sites_available),
-                    )
+                } else if (viewModel.sitesLoadFailed) {
+                    offerSitesRetry()
                 } else {
-                    showSingleSiteSelectionDialog(viewModel.singleSites)
+                    showSingleSitesOrNone()
                 }
             }
 
