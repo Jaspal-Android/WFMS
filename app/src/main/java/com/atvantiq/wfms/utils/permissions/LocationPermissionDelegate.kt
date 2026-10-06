@@ -162,16 +162,26 @@ fun Context.openAppSettings() {
 class BackgroundLocationRequest(
     caller: ActivityResultCaller,
     private val contextProvider: () -> Context,
+    private val shouldShowRationale: (String) -> Boolean,
     @StringRes private val disclosureTitle: Int,
     @StringRes private val disclosureMessage: Int,
     private val onResult: () -> Unit
 ) {
 
+    /** Set by a request the user asked for (the Fix button), so a dead end can lead to Settings. */
+    private var offerSettingsWhenBlocked = false
+
     private val launcher = caller.registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { onResult() }
+    ) { granted -> onRequestResult(granted) }
 
-    fun request() {
+    /**
+     * Disclosure, then the request. With [offerSettingsIfBlocked] (the user tapped Fix), when
+     * Android no longer shows its prompt the user is told and offered Settings instead of nothing
+     * happening. An automatic request (after Start Day) leaves a decline alone.
+     */
+    fun request(offerSettingsIfBlocked: Boolean = false) {
+        offerSettingsWhenBlocked = offerSettingsIfBlocked
         val context = contextProvider()
         Utils.showLocationDisclosureDialog(
             context,
@@ -180,5 +190,24 @@ class BackgroundLocationRequest(
         ) {
             launcher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         }
+    }
+
+    private fun onRequestResult(granted: Boolean) {
+        val outcome = PermissionUtils.backgroundLocationOutcome(granted, shouldShowRationale)
+        if (outcome == PermissionUtils.LocationOutcome.DENIED_PERMANENTLY && offerSettingsWhenBlocked) {
+            showOpenSettings()
+        }
+        offerSettingsWhenBlocked = false
+        onResult()
+    }
+
+    private fun showOpenSettings() {
+        val context = contextProvider()
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.background_location_settings_title)
+            .setMessage(R.string.background_location_settings_msg)
+            .setPositiveButton(R.string.open_settings) { _, _ -> context.openAppSettings() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 }

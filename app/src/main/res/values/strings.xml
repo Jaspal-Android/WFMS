@@ -210,6 +210,8 @@
     <string name="attendance_location_disclosure_title">Allow location for attendance</string>
     <string name="attendance_location_disclosure_msg">ONAQT uses your location to verify check-in and check-out, and to record your route while your shift is active. Location is used only for official work purposes and is never shared with third parties.</string>
     <string name="background_location_usage">Allow background location?</string>
+    <string name="background_location_settings_title">Turn on \"Allow all the time\"</string>
+    <string name="background_location_settings_msg">Android won\'t ask again for ONAQT. In Settings, open Permissions → Location and choose \"Allow all the time\" so your shift keeps being tracked when the app is closed.</string>
     <string name="background_location_usage_msg">While your shift is active, ONAQT records your location in the background, even when the app is closed or not in use, to build your My Day route and calculate travel distance for claims. It stops automatically when you end your day or sign out. You can pause it for a short break from the dashboard. Only you and your organisation\'s managers can see it; it is never used for advertising.</string>
     <string name="location_permission_needed">Location Permission Needed</string>
     <string name="start_end_work_location_permission_msg">ONAQT uses your location when you tap Start Work or End Work to:\n\n• Verify that you have reached the assigned work site\n• Record accurate work start and end times\n• Calculate travel distance for reimbursement claims\n\nLocation data is used only for official work purposes and is not shared with third parties.</string>
