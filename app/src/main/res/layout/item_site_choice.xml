@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A site in the Create Claim site picker: its name, then address · project, so sites that share a
+     name can be told apart. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="@dimen/min_touch_target"
+    android:orientation="vertical"
+    android:padding="@dimen/padding">
+
+    <TextView
+        android:id="@+id/text1"
+        style="@style/CustomMediumTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/wfmsColorOnSurface"
+        android:textStyle="bold"
+        tools:text="Digwa" />
+
+    <TextView
+        android:id="@+id/text2"
+        style="@style/CustomSmallTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_2dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+        tools:text="Digwa Charkidadari Hrayana  •  TCTS-MH-CISCO-PEYTO" />
+</LinearLayout>

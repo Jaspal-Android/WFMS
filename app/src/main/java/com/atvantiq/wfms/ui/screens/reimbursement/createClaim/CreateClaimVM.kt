@@ -256,12 +256,34 @@ class CreateClaimVM @Inject constructor(
         hotelEntriesList.value = emptyList()
     }
 
+    /**
+     * The claim's day changed: the site, project and circle picked for another day no longer apply,
+     * and the day's own sites are fetched.
+     */
+    fun onDateChosen(day: String) {
+        date.set(day)
+        clearSelectedSingleSite()
+        singleSites = emptyList()
+        getWorkSitesByDate(day)
+    }
+
     /*Work Site By Date API Call*/
     var workSiteByDateResponse = MutableLiveData<ApiState<WorkSiteByDateResponse>>()
-    fun getWorkSitesByDate(date: String) {
+
+    /**
+     * The sites assigned on [day] become [singleSites]. A newer day cancels the older request, and an
+     * answer for a day that is no longer chosen is ignored, so a slow reply can't replace the list.
+     */
+    fun getWorkSitesByDate(day: String) {
         executeApiCall(
-            apiCall = { claimRepo.workSiteByDate(date) },
+            apiCall = { claimRepo.workSiteByDate(day) },
             liveData = workSiteByDateResponse,
+            onSuccess = { response ->
+                if (date.get() == day) {
+                    singleSites = if (response.code == ValConstants.SUCCESS_CODE) response.data?.sites.orEmpty() else emptyList()
+                }
+            },
+            cancelPrevious = true
         )
     }
 
