@@ -488,6 +488,10 @@
     <string name="tracking_paused_until">Tracking paused · resumes at %1$s</string>
     <string name="tracking_starting">Starting tracking…</string>
     <string name="tracking_needs_always">Set Location to \"Allow all the time\" to track your shift.</string>
+    <string name="tracking_needs_precise">Turn on precise location to track your shift.</string>
+    <string name="precise_location_title">Turn on precise location</string>
+    <string name="precise_location_message">ONAQT needs your precise location to confirm check-in at your site and to record your shift route. When Android asks, choose \"Precise\".</string>
+    <string name="precise_location_settings_message">Android won\'t ask again for ONAQT. In Settings, open Permissions → Location and turn on \"Use precise location\".</string>
     <string name="tracking_permission_denied">Location access is off for ONAQT. Allow it in Settings to track your shift.</string>
     <string name="tracking_gps_off">Location Services are off. Turn them on in Settings.</string>
     <string name="tracking_channel_name">Location tracking</string>

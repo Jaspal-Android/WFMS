@@ -12,11 +12,12 @@ class TrackingCardStateTest {
     private fun resolve(
         dayActive: Boolean = true,
         started: Boolean = true,
-        foreground: Boolean = true,
-        background: Boolean = true,
+        location: LocationAccess = LocationAccess(),
         gps: Boolean = true,
         pausedUntil: Long? = null
-    ) = TrackingCardState.resolve(dayActive, started, foreground, background, gps, ShiftState(pausedUntilMillis = pausedUntil), now)
+    ) = TrackingCardState.resolve(
+        dayActive, started, location.copy(servicesOn = gps), ShiftState(pausedUntilMillis = pausedUntil), now
+    )
 
     @Test
     fun `hidden when no day is active`() = assertNull(resolve(dayActive = false))
@@ -32,14 +33,23 @@ class TrackingCardStateTest {
 
     @Test
     fun `problems outrank everything, GPS first`() {
-        assertEquals(TrackingCardState.GPS_OFF, resolve(gps = false, foreground = false, pausedUntil = now + 1))
-        assertEquals(TrackingCardState.PERMISSION_DENIED, resolve(foreground = false, pausedUntil = now + 1))
+        assertEquals(TrackingCardState.GPS_OFF, resolve(gps = false, pausedUntil = now + 1, location = LocationAccess(foreground = false)))
+        assertEquals(TrackingCardState.PERMISSION_DENIED, resolve(pausedUntil = now + 1, location = LocationAccess(foreground = false)))
     }
 
     @Test
     fun `starting before tracking began, then asking for all-the-time access`() {
         assertEquals(TrackingCardState.STARTING, resolve(started = false))
-        assertEquals(TrackingCardState.NEEDS_ALWAYS, resolve(background = false))
-        assertEquals(TrackingCardState.PAUSED, resolve(background = false, pausedUntil = now + 1))
+        assertEquals(TrackingCardState.NEEDS_ALWAYS, resolve(location = LocationAccess(background = false)))
+        assertEquals(TrackingCardState.PAUSED, resolve(pausedUntil = now + 1, location = LocationAccess(background = false)))
+    }
+
+    @Test
+    fun `approximate location asks for precise, before anything else but GPS and no location`() {
+        assertEquals(TrackingCardState.NEEDS_PRECISE, resolve(location = LocationAccess(precise = false)))
+        val approximateOnly = LocationAccess(precise = false, background = false)
+        assertEquals(TrackingCardState.NEEDS_PRECISE, resolve(started = false, location = approximateOnly))
+        assertEquals(TrackingCardState.PERMISSION_DENIED, resolve(location = LocationAccess(foreground = false, precise = false)))
+        assertEquals(TrackingCardState.GPS_OFF, resolve(gps = false, location = LocationAccess(precise = false)))
     }
 }

@@ -8,6 +8,8 @@ enum class TrackingCardState {
     GPS_OFF,
     /** Location permission denied: Open Settings. */
     PERMISSION_DENIED,
+    /** Only "Approximate" location (Android 12+): Fix (ask Android to switch to precise). */
+    NEEDS_PRECISE,
     /** The service is starting up: no button. */
     STARTING,
     /** The employee paused: Resume. */
@@ -25,19 +27,29 @@ enum class TrackingCardState {
         fun resolve(
             isDayActive: Boolean,
             isTrackingStarted: Boolean,
-            hasForegroundLocation: Boolean,
-            hasBackgroundLocation: Boolean,
-            isGpsOn: Boolean,
+            location: LocationAccess,
             shift: ShiftState,
             nowMillis: Long
         ): TrackingCardState? = when {
             !isDayActive -> null
-            !isGpsOn -> GPS_OFF
-            !hasForegroundLocation -> PERMISSION_DENIED
+            !location.servicesOn -> GPS_OFF
+            !location.foreground -> PERMISSION_DENIED
+            !location.precise -> NEEDS_PRECISE
             !isTrackingStarted -> STARTING
             shift.isPaused(nowMillis) -> PAUSED
-            !hasBackgroundLocation -> NEEDS_ALWAYS
+            !location.background -> NEEDS_ALWAYS
             else -> ACTIVE
         }
     }
 }
+
+/**
+ * Whether the app can get a location: Location Services on, any access while in use
+ * ([foreground], approximate counts), the precise one, and "Allow all the time".
+ */
+data class LocationAccess(
+    val servicesOn: Boolean = true,
+    val foreground: Boolean = true,
+    val precise: Boolean = true,
+    val background: Boolean = true
+)
