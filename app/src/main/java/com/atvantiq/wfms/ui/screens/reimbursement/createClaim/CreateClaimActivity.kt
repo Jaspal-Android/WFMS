@@ -130,8 +130,8 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         DateUtils.onDateClickWithLimit(this, object : DateUtils.DateCallBack {
             override fun onDateSelected(date: String, formatDate: String) {
                 binding.dateEt.error = null
-                viewModel.date.set(date)
-                viewModel.getWorkSitesByDate(date)
+                viewModel.onDateChosen(date)
+                if (viewModel.isMultiSite.get() != true) clearSingleSiteFields()
             }
         }, false)
     }
@@ -232,10 +232,8 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    ValConstants.SUCCESS_CODE -> {
-                        val sites = response.response?.data?.sites ?: emptyList()
-                        viewModel.singleSites = sites
-                    }
+                    // The ViewModel keeps the day's sites (see getWorkSitesByDate).
+                    ValConstants.SUCCESS_CODE -> Unit
 
                     else -> {
                         handleRejectedResponse(
@@ -407,9 +405,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             CreateClaimClickEvents.ON_MULTI_SITE_CLICK -> {
                 viewModel.isMultiSite.set(true)
                 viewModel.clearSelectedSingleSite()
-                binding.siteEt.setText("")
-                binding.projectEt.setText("")
-                binding.circleEt.setText("")
+                clearSingleSiteFields()
             }
 
             CreateClaimClickEvents.ON_LOCAL_CLAIM_CLICK -> {
@@ -428,7 +424,10 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             CreateClaimClickEvents.ON_SINGLE_SITE_DROPDOWN_CLICK -> {
-                if (viewModel.singleSites.isEmpty()) {
+                if (viewModel.date.get().isNullOrEmpty()) {
+                    binding.dateEt.error = getString(R.string.please_select_date)
+                    showToast(this, getString(R.string.please_select_date))
+                } else if (viewModel.singleSites.isEmpty()) {
                     alertDialogShow(
                         this,
                         getString(R.string.alert),
@@ -591,13 +590,23 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         )
     }
 
+    private fun clearSingleSiteFields() {
+        binding.siteEt.setText("")
+        binding.projectEt.setText("")
+        binding.circleEt.setText("")
+    }
+
     private fun showSingleSiteSelectionDialog(siteList: List<Site>) {
         showSelectionDialog(
             items = siteList,
             title = getString(R.string.select_site),
-            layoutResId = R.layout.item_generic_adapter,
+            layoutResId = R.layout.item_site_choice,
             bind = { view, site ->
                 view.findViewById<TextView>(R.id.text1).text = site.siteName
+                // Address and project tell apart sites that share a name.
+                view.findViewById<TextView>(R.id.text2).text =
+                    listOfNotNull(site.siteAddress, site.projectName).filter { it.isNotBlank() }
+                        .joinToString(getString(R.string.work_detail_separator))
             },
             onItemSelected = {
                 binding.siteEt.error = null
@@ -608,9 +617,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
             },
             filterCondition = { site, query ->
-                site.siteName?.lowercase(Locale.getDefault())
-                    ?.contains(query.lowercase(Locale.getDefault()))
-                    ?: false
+                val needle = query.lowercase(Locale.getDefault())
+                listOfNotNull(site.siteName, site.siteAddress, site.projectName)
+                    .any { it.lowercase(Locale.getDefault()).contains(needle) }
             },
             emptyMessage = getString(R.string.no_data_available),
             retryAction = { },
