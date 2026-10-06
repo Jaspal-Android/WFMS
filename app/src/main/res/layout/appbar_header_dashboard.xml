@@ -166,6 +166,7 @@
                 app:area_margin="5dp"
                 app:border_radius="@dimen/card_radius"
                 app:bounce_on_start="true"
+                app:bounce_repeat="@integer/day_slider_hint_bounces"
                 app:inner_color="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -2,4 +2,7 @@
 <resources>
     <!-- Number of digits in a login / reset OTP -->
     <integer name="otp_length">6</integer>
+    <!-- Start/End Day slider: bounces to hint "swipe me", then rests. The library's default (-1)
+         bounces forever, which redrew the Dashboard ~23 times a second. -->
+    <integer name="day_slider_hint_bounces">2</integer>
 </resources>
