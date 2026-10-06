@@ -136,11 +136,13 @@
                         tools:text="Tracking your shift · since 1:03 PM" />
                 </LinearLayout>
 
+                <!-- wrap_content over the style's 48dp minHeight: the same size at normal text sizes,
+                     taller instead of clipped when the user's font size is large. -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTrackingPause"
                     style="@style/Widget.WFMS.TrackingButton.Filled"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/min_touch_target"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/tracking_button_margin_top"
                     android:text="@string/pause_15_min"
                     app:icon="@drawable/ic_tracking_pause" />
@@ -150,7 +152,7 @@
                     android:id="@+id/btnTrackingAction"
                     style="@style/Widget.WFMS.TrackingButton.Outlined"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/min_touch_target"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/tracking_button_margin_top"
                     android:visibility="gone"
                     tools:text="@string/resume" />
