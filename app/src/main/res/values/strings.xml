@@ -112,6 +112,7 @@
     <string name="no_po_numbers_available">No PO numbers available</string>
     <string name="no_circles_available">No circles available</string>
     <string name="no_sites_available">No sites available</string>
+    <string name="sites_not_loaded">Couldn\'t load the sites for this date. Check your connection and try again.</string>
     <string name="no_types_available">No types available</string>
     <string name="no_activities_available">No activities available</string>
     <string name="select_activities">Select Activities</string>

@@ -267,6 +267,13 @@ class CreateClaimVM @Inject constructor(
         getWorkSitesByDate(day)
     }
 
+    /**
+     * The chosen day's sites could not be loaded (offline, timeout, server error). The list is then
+     * empty because nothing arrived, not because no site was assigned, so Site offers a retry.
+     */
+    var sitesLoadFailed = false
+        private set
+
     /*Work Site By Date API Call*/
     var workSiteByDateResponse = MutableLiveData<ApiState<WorkSiteByDateResponse>>()
 
@@ -275,14 +282,18 @@ class CreateClaimVM @Inject constructor(
      * answer for a day that is no longer chosen is ignored, so a slow reply can't replace the list.
      */
     fun getWorkSitesByDate(day: String) {
+        sitesLoadFailed = false
         executeApiCall(
             apiCall = { claimRepo.workSiteByDate(day) },
             liveData = workSiteByDateResponse,
             onSuccess = { response ->
                 if (date.get() == day) {
-                    singleSites = if (response.code == ValConstants.SUCCESS_CODE) response.data?.sites.orEmpty() else emptyList()
+                    val loaded = response.code == ValConstants.SUCCESS_CODE
+                    sitesLoadFailed = !loaded
+                    singleSites = if (loaded) response.data?.sites.orEmpty() else emptyList()
                 }
             },
+            onError = { if (date.get() == day) sitesLoadFailed = true },
             cancelPrevious = true
         )
     }
