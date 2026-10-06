@@ -44,6 +44,7 @@ class ClaimApprovalActivity : BaseActivity<ActivityClaimApprovalBinding, ClaimAp
         setUpSearch()
         setUpList()
         binding.swipeRefreshLayout.setOnRefreshListener { viewModel.claims.refresh() }
+        binding.errorState.onRetry = View.OnClickListener { viewModel.claims.refresh() }
         viewModel.claims.open()
     }
 
@@ -88,6 +89,7 @@ class ClaimApprovalActivity : BaseActivity<ActivityClaimApprovalBinding, ClaimAp
         adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.emptyState.root.isVisible = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
     private fun showFirstPageProgress(show: Boolean) {

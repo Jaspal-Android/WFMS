@@ -133,6 +133,9 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         private val paging = PagedListState(pageSize)
         private val items = mutableListOf<T>()
 
+        // The last page 1 request failed; cleared when the next request starts.
+        private var firstPageFailed = false
+
         // Carries the page requests so a newer one cancels the one still running (cancelPrevious).
         private val pageResponse = MutableLiveData<ApiState<R>>()
 
@@ -170,26 +173,28 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         private fun request(page: Int) {
+            firstPageFailed = false
             publish()
             executeApiCall(
                 apiCall = { fetch(page, pageSize) },
                 liveData = pageResponse,
                 onSuccess = { response -> onPageArrived(response) },
-                onError = { error ->
-                    paging.onRequestFailed()
-                    publish()
-                    failure.value = ApiState.error(error)
-                },
+                onError = { error -> onRequestFailed(ApiState.error(error)) },
                 cancelPrevious = true
             )
+        }
+
+        private fun onRequestFailed(reason: ApiState<R>) {
+            firstPageFailed = paging.isLoadingFirstPage
+            paging.onRequestFailed()
+            publish()
+            failure.value = reason
         }
 
         private fun onPageArrived(response: R) {
             val pageList = pageItems(response)
             if (pageList == null) {
-                paging.onRequestFailed()
-                publish()
-                failure.value = ApiState.success(response)
+                onRequestFailed(ApiState.success(response))
                 return
             }
             val isFirstPage = paging.onPageReceived(pageList.size) ?: return
@@ -206,6 +211,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
                 isRefreshing = loadingFirst && items.isNotEmpty(),
                 isLoadingMore = paging.isLoading && !loadingFirst,
                 isEmpty = !paging.isLoading && paging.loadedPage > 0 && items.isEmpty(),
+                isFirstPageFailed = firstPageFailed && items.isEmpty(),
                 changedPosition = changedPosition
             )
         }

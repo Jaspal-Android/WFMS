@@ -43,6 +43,7 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
         binding.toolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setUpList()
         binding.swipeRefreshLayout.setOnRefreshListener { viewModel.records.refresh() }
+        binding.errorState.onRetry = View.OnClickListener { viewModel.records.refresh() }
         viewModel.records.open()
     }
 
@@ -79,6 +80,7 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
         adapter?.submitList(state.items, state.changedPosition)
         adapter?.showLoadingFooter(state.isLoadingMore)
         binding.emptyState.root.isVisible = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
     private fun showFirstPageProgress(show: Boolean) {

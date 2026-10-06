@@ -224,6 +224,83 @@ class PagedListTest {
     }
 
     @Test
+    fun `a first page that fails with nothing on screen shows the error state, not a blank page`() {
+        viewModel.list.open()
+
+        fail(IOException("offline"))
+
+        assertTrue(state.isFirstPageFailed)
+        assertFalse("not the empty state: nothing was loaded", state.isEmpty)
+        assertFalse(state.isLoadingFirstPage)
+    }
+
+    @Test
+    fun `offline before the first request shows the error state`() {
+        every { Utils.isInternet(application) } returns false
+
+        viewModel.list.open()
+
+        assertTrue(state.isFirstPageFailed)
+    }
+
+    @Test
+    fun `a first page the server rejects shows the error state`() {
+        viewModel.list.open()
+
+        answer(Page(false, emptyList()))
+
+        assertTrue(state.isFirstPageFailed)
+    }
+
+    @Test
+    fun `Retry clears the error state while it loads and after it succeeds`() {
+        viewModel.list.open()
+        fail(IOException("offline"))
+
+        viewModel.list.refresh()
+        assertFalse("the progress replaces the error while retrying", state.isFirstPageFailed)
+        assertTrue(state.isLoadingFirstPage)
+
+        answer(Page(true, items("a")))
+        assertFalse(state.isFirstPageFailed)
+        assertEquals(listOf("a"), names())
+    }
+
+    @Test
+    fun `a failed refresh keeps the items on screen without the error state`() {
+        viewModel.list.open()
+        answer(Page(true, items("a")))
+
+        viewModel.list.refresh()
+        fail(IOException("offline"))
+
+        assertEquals(listOf("a"), names())
+        assertFalse(state.isFirstPageFailed)
+    }
+
+    @Test
+    fun `a failed later page keeps the list without the error state`() {
+        viewModel.list.open()
+        answer(fullPage("p1-"))
+        viewModel.list.loadNextPage()
+
+        fail(IOException("offline"))
+
+        assertFalse(state.isFirstPageFailed)
+    }
+
+    @Test
+    fun `a failed search with no old items shows the error state`() {
+        viewModel.list.open()
+        answer(Page(true, items("old")))
+
+        viewModel.list.reload()
+        fail(IOException("offline"))
+
+        assertTrue(state.isFirstPageFailed)
+    }
+
+    @Test
     fun `an item changed elsewhere is redrawn`() {
         viewModel.list.open()
         answer(Page(true, items("a")))
