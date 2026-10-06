@@ -2,9 +2,10 @@ package com.atvantiq.wfms.ui.screens.attendance.applyLeave
 
 import android.app.Application
 import com.atvantiq.wfms.base.LiveEvent
-import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.base.savedField
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.network.ApiState
@@ -21,28 +22,19 @@ import javax.inject.Inject
 class ApplyLeaveVM @Inject constructor(
     application: Application,
     private val attendanceRepo: IAttendanceRepo,
+    state: SavedStateHandle
 ) : BaseViewModel(application) {
-
-    // variables and methods for Apply Leave functionality can be added here
 
     var clickEvents = LiveEvent<ApplyLeaveClickEvents>()
     var errorHandler = LiveEvent<ApplyLeaveErrorHandler>()
 
-    var leaveStartDate = ObservableField<String>().apply {
-        set("")
-    }
-    var leaveEndDate = ObservableField<String>().apply {
-        set("")
-    }
-    var leaveType = ObservableField<String>().apply {
-        set("")
-    }
-    var leaveReason = ObservableField<String>().apply {
-        set("")
-    }
-    var leaveAttachmentPath = ObservableField<String>().apply {
-        set("")
-    }
+    // Kept in the SavedStateHandle, so the form survives Android ending the process while the user
+    // is in the camera, the gallery or another app.
+    val leaveStartDate = state.savedField("leaveStartDate", "")
+    val leaveEndDate = state.savedField("leaveEndDate", "")
+    val leaveType = state.savedField("leaveType", "")
+    val leaveReason = state.savedField("leaveReason", "")
+    val leaveAttachmentPath = state.savedField("leaveAttachmentPath", "")
 
     fun onClickStartDate() {
         clickEvents.value = ApplyLeaveClickEvents.START_DATE_CLICK

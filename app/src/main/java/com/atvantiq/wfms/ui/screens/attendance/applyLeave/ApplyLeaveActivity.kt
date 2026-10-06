@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.ValConstants
@@ -51,14 +54,32 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         findViewById<View>(R.id.main).applySystemBarsAndImePadding()
-        setToolbar()
+        binding.applyLeaveToolbar.toolbarTitle.text = getString(R.string.apply_leave)
+        binding.applyLeaveToolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setImagePicker()
+        pickMediaHelper.restoreState(savedInstanceState)
+        // After rotation or Android ending the process, the form comes back from the ViewModel;
+        // the attachment's preview is redrawn here.
+        if (savedInstanceState != null) showRestoredAttachment()
     }
 
-    private fun setToolbar() {
-        binding.applyLeaveToolbar.toolbarTitle.text = getString(R.string.apply_leave)
-        binding.applyLeaveToolbar.toolbarBackButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        pickMediaHelper.saveState(outState)
+    }
+
+    private fun showRestoredAttachment() {
+        val attachment = viewModel.leaveAttachmentPath.get().orEmpty()
+        if (attachment.isEmpty()) return
+        lifecycleScope.launch {
+            val preview = withContext(Dispatchers.IO) { pickMediaHelper.decodeBitmap(attachment) }
+            if (preview == null) {
+                // The prepared file is gone; ask for it again rather than send the leave without it.
+                viewModel.leaveAttachmentPath.set("")
+                return@launch
+            }
+            binding.hasPreviewImage = true
+            binding.capturedImagePreview.setImageBitmap(preview)
         }
     }
 
@@ -198,14 +219,9 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
         }
     }
 
-    private fun leaveTypeList(): MutableList<String> {
-        val list = resources.getStringArray(R.array.leave_types).toMutableList()
-        return list
-    }
-
     private fun leaveApplyBottomSheet() {
         val simpleBottomSheetDialog = SimpleBottomSheetDialog(
-            leaveTypeList(),
+            resources.getStringArray(R.array.leave_types).toMutableList(),
             R.layout.item_generic_adapter,
             { view, item ->
                 view.findViewById<TextView>(R.id.text1).text = item

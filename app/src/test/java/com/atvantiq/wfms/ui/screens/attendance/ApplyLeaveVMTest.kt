@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.attendance
 
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
 import com.atvantiq.wfms.network.Status
@@ -43,7 +44,7 @@ class ApplyLeaveVMTest {
         Dispatchers.setMain(dispatcher)
         mockkObject(Utils)
         every { Utils.isInternet(application) } returns true
-        vm = ApplyLeaveVM(application, repo)
+        vm = ApplyLeaveVM(application, repo, SavedStateHandle())
     }
 
     @After
