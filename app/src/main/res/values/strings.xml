@@ -62,6 +62,8 @@
     <!-- Permission Messages -->
     <string name="location_permission_rationale">Location permission is required to track your attendance. Please grant the permission to continue.</string>
     <string name="permission_denied_permanently">Location permission is permanently denied. Please enable it from Settings to use attendance tracking.</string>
+    <string name="location_services_off_title">Location is off</string>
+    <string name="location_services_off_message">Turn on Location Services to start or end your day. Your attendance is marked with your current location.</string>
     <string name="retry">Retry</string>
     <string name="open_settings">Open Settings</string>
     <string name="start_day">Slide to Start Day</string>
