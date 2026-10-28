@@ -67,16 +67,16 @@ class AttendanceRepoTest {
     }
 
     @Test
-    fun `attendanceDetails calls apiService with month, and year`() = runTest {
+    fun `attendanceDetails calls apiService with month, year and is_self`() = runTest {
         val month = 6
         val year = 2024
         val flag = false
         val expectedResponse = mockk<AttendanceDetailListResponse>()
-        coEvery { apiService.attendanceDetails(month, year, flag) } returns expectedResponse
+        coEvery { apiService.attendanceDetails(month, year, flag, true) } returns expectedResponse
 
-        val result = repo.attendanceDetails(month, year, flag)
+        val result = repo.attendanceDetails(month, year, flag, isSelf = true)
 
-        coVerify { apiService.attendanceDetails(month, year, flag) }
+        coVerify { apiService.attendanceDetails(month, year, flag, true) }
         assertEquals(expectedResponse, result)
     }
 }

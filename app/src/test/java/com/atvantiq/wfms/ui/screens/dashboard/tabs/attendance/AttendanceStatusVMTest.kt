@@ -42,6 +42,14 @@ class AttendanceStatusVMTest {
         Dispatchers.resetMain()
         unmockkAll()
     }
+
+    @Test
+    fun `the calendar asks for the user's own attendance`() {
+        viewModel.getAttendanceDetails(10, 2026)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 1) { attendanceRepo.attendanceDetails(10, 2026, flag = true, isSelf = true) }
+    }
 /*
     @Test
     fun `getAttendanceDetails calls attendanceRepo and updates LiveData`() = runTest {

@@ -17,9 +17,13 @@ class AttendanceStatusVM @Inject constructor(
 
     var attendanceDetailsResponse = MutableLiveData<ApiState<AttendanceDetailListResponse>>()
 
+    /**
+     * The calendar is the user's own attendance: without `is_self` the server answers a PM / OPS /
+     * admin with their reports' records (those are reviewed on Attendance Approval).
+     */
     fun getAttendanceDetails(month: Int, year: Int) {
         executeApiCall(
-            apiCall = { attendanceRepo.attendanceDetails(month, year, true) },
+            apiCall = { attendanceRepo.attendanceDetails(month, year, flag = true, isSelf = true) },
             liveData = attendanceDetailsResponse,
             cancelPrevious = true // tapping through months: the last month picked must win
         )
