@@ -635,4 +635,26 @@
     <string name="work_approval">Work Approval</string>
     <string name="work_approval_subtitle">Review completed site work and work types.</string>
     <string name="approvals_intro">Select an approval category to review submitted employee activity.</string>
+
+    <!-- Project picker: a PM's Start Day, and Idle → Present in attendance review -->
+    <string name="project_picker_title">Select a project</string>
+    <string name="project_picker_start_day_subtitle">Choose the project you\'re working on to start your day.</string>
+    <string name="project_picker_mark_present_subtitle">Choose the project %1$s worked on to mark them present.</string>
+    <string name="project_picker_mark_present_subtitle_unnamed">Choose the project this employee worked on to mark them present.</string>
+    <string name="project_picker_no_projects_title">No project assigned</string>
+    <string name="project_picker_no_projects_message">You can start your day only on a project. Ask your Operations team or Onaqt support to assign you to one, then try again.</string>
+    <string name="project_picker_no_active_projects_title">No active projects</string>
+    <string name="project_picker_no_active_projects_message">Present can be marked only against a project, and there are no active projects. Ask your Operations team or Onaqt support to set one up.</string>
+    <string name="project_picker_load_failed_title">Couldn\'t load projects</string>
+    <string name="project_picker_load_failed_message">Attendance can only be marked against a project. Check your connection and try again.</string>
+    <string name="project_picker_search_hint">Search projects</string>
+    <string name="project_picker_no_matches">No projects match your search.</string>
+    <!-- A project row for screen readers: "{project}, {circle}" -->
+    <string name="project_option_with_circle">%1$s, %2$s</string>
+    <string name="start_your_day">Start your day</string>
+    <string name="mark_present">Mark Present</string>
+    <string name="try_again">Try again</string>
+    <string name="check_in_marked_successfully">Check-in marked successfully</string>
+    <string name="select_project_to_start_day">Select a project to start your day.</string>
+    <string name="select_project_to_mark_present">Select the project this day was worked on to mark it Present.</string>
 </resources>

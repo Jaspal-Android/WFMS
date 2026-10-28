@@ -420,7 +420,7 @@
     <ID>TooManyFunctions:CreateClaimVM.kt$CreateClaimVM : BaseViewModel</ID>
     <ID>TooManyFunctions:CreationRepo.kt$CreationRepo : ICreationRepo</ID>
     <ID>TooManyFunctions:DashboardActivity.kt$DashboardActivity : BaseActivity</ID>
-    <ID>TooManyFunctions:DashboardFragment.kt$DashboardFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:DashboardFragment.kt$DashboardFragment : BaseFragmentProjectPickerHost</ID>
     <ID>TooManyFunctions:DashboardViewModel.kt$DashboardViewModel : BaseViewModel</ID>
     <ID>TooManyFunctions:DateUtils.kt$DateUtils</ID>
     <ID>TooManyFunctions:FooterRecyclerView.kt$FooterRecyclerView : Adapter</ID>

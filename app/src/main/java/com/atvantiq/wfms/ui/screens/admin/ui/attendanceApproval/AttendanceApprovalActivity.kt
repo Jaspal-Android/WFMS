@@ -19,6 +19,11 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceApprovalAdapter
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerAction
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerHost
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerSheetPresenter
+import com.atvantiq.wfms.utils.isSessionLost
 import com.atvantiq.wfms.widgets.PaginationScrollListener
 import dagger.hilt.android.AndroidEntryPoint
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
@@ -28,10 +33,12 @@ import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
  * Details the review screen; a decision updates its row in place.
  */
 @AndroidEntryPoint
-class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBinding, AttendanceApprovalVM>() {
+class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBinding, AttendanceApprovalVM>(), ProjectPickerHost {
 
     private var adapter: AttendanceApprovalAdapter? = null
     private var isProgressShown = false
+    // Idle → Present: the picker opens over the decision once the active projects are in.
+    private val projectPickerSheet = ProjectPickerSheetPresenter({ supportFragmentManager }, ::showProgress, ::dismissProgress)
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(R.layout.activity_attendance_approval, AttendanceApprovalVM::class.java)
@@ -61,6 +68,12 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
         vm.approveResponse.observe(this) { response ->
             if (!response.consumeOnce()) return@observe
             handleDecisionResult(response)
+        }
+        vm.projectPicker.state.observe(this, projectPickerSheet::render)
+        // A failed list is shown in the picker; only a lost session is handled here.
+        vm.activeProjectsResponse.observe(this) { response ->
+            if (!response.consumeOnce()) return@observe
+            if (response.isSessionLost { it.code }) tokenExpiresAlert()
         }
     }
 
@@ -99,7 +112,8 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
 
     private fun handleDecisionResult(response: ApiState<AttendanceApproveResponse>) {
         when (response.status) {
-            Status.LOADING -> showProgress()
+            // The project picker shows its own spinner on Mark Present.
+            Status.LOADING -> if (!viewModel.projectPicker.isOpen) showProgress()
             Status.SUCCESS -> {
                 dismissProgress()
                 val answer = response.response
@@ -127,6 +141,16 @@ class AttendanceApprovalActivity : BaseActivity<ActivityAttendanceApprovalBindin
         reviewLauncher.launch(Intent(this, AttendanceReviewActivity::class.java).apply {
             putExtra(SharingKeys.attendanceRecord, record)
         })
+    }
+
+    override val projectPicker: ProjectPicker
+        get() = viewModel.projectPicker
+
+    override fun onProjectPickerAction(action: ProjectPickerAction) = when (action) {
+        ProjectPickerAction.Retry -> viewModel.loadDecisionProjects()
+        is ProjectPickerAction.Confirm -> viewModel.submitDecisionOnProject(action.projectId)
+        // Back to the decision, with its choices kept.
+        ProjectPickerAction.Dismiss -> viewModel.projectPicker.close()
     }
 
     /** A decision made on the review screen updates its row here too. */

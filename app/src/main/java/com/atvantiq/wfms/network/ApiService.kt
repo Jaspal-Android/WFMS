@@ -21,6 +21,7 @@ import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
+import com.atvantiq.wfms.models.project.ManagedProjectsResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
 import com.atvantiq.wfms.models.reimbursement.review.ClaimApproveResponse
@@ -219,6 +220,10 @@ interface ApiService {
 
 	@GET(NetworkEndPoints.allProjects)
 	suspend fun allProjects(): AllProjectsResponse
+
+	/** The projects the signed-in PM manages today; a PM starts the day on one of them. */
+	@GET(NetworkEndPoints.managedProjects)
+	suspend fun managedProjects(): ManagedProjectsResponse
 
 	@GET(NetworkEndPoints.circleEmployees)
 	suspend fun employeeByCircle(@Query("code") circleId: String): EmployeeByCircleResponse

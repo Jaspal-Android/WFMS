@@ -20,6 +20,22 @@ fun AttendanceRecord.canBeMarkedBy(role: AppRole): Boolean {
     return ownLogApproved != true && !action.orEmpty().contains(BY_PREFIX + tag, ignoreCase = true)
 }
 
+/**
+ * The record's status now: the reviewers' decision when there is one (not Submitted), otherwise
+ * the employee's own status.
+ */
+val AttendanceRecord.currentStatus: AttendanceApprovalStatus
+    get() = approvalStatus?.takeIf { it != AttendanceApprovalStatus.SUBMITTED.code }
+        ?.let(AttendanceApprovalStatus::from)
+        ?: AttendanceApprovalStatus.from(status)
+
+/**
+ * Marking an Idle day Present must name the project it was worked on; no other change sends one
+ * (the server only keeps it for Idle → Present).
+ */
+fun AttendanceRecord.needsProjectFor(decision: AttendanceApprovalStatus?): Boolean =
+    decision == AttendanceApprovalStatus.PRESENT && currentStatus == AttendanceApprovalStatus.IDLE
+
 /** The status a decision starts from: the record's own, or Present when it has none yet. */
 val AttendanceRecord.initialDecision: AttendanceApprovalStatus
     get() = AttendanceApprovalStatus.from(status).takeIf { it != AttendanceApprovalStatus.SUBMITTED }

@@ -15,6 +15,11 @@ import com.atvantiq.wfms.databinding.ActivityAttendanceReviewBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceDecisionStatusAdapter
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerAction
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerHost
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerSheetPresenter
+import com.atvantiq.wfms.utils.isSessionLost
 import dagger.hilt.android.AndroidEntryPoint
 import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
@@ -23,9 +28,11 @@ import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
  * decision form as the sheet. A decision is handed back to the list, which updates the row.
  */
 @AndroidEntryPoint
-class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, AttendanceApprovalVM>() {
+class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, AttendanceApprovalVM>(), ProjectPickerHost {
 
     private var statusAdapter: AttendanceDecisionStatusAdapter? = null
+    // Idle → Present: the picker opens over the decision once the active projects are in.
+    private val projectPickerSheet = ProjectPickerSheetPresenter({ supportFragmentManager }, ::showProgress, ::dismissProgress)
 
     private val statusChanged = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
@@ -84,7 +91,8 @@ class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, A
             when (response.status) {
                 Status.LOADING -> {
                     binding.btnSubmit.isEnabled = false
-                    showProgress()
+                    // The project picker shows its own spinner on Mark Present.
+                    if (!vm.projectPicker.isOpen) showProgress()
                 }
                 Status.SUCCESS -> {
                     dismissProgress()
@@ -104,6 +112,22 @@ class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, A
                 }
             }
         }
+        vm.projectPicker.state.observe(this, projectPickerSheet::render)
+        // A failed list is shown in the picker; only a lost session is handled here.
+        vm.activeProjectsResponse.observe(this) { response ->
+            if (!response.consumeOnce()) return@observe
+            if (response.isSessionLost { it.code }) tokenExpiresAlert()
+        }
+    }
+
+    override val projectPicker: ProjectPicker
+        get() = viewModel.projectPicker
+
+    override fun onProjectPickerAction(action: ProjectPickerAction) = when (action) {
+        ProjectPickerAction.Retry -> viewModel.loadDecisionProjects()
+        is ProjectPickerAction.Confirm -> viewModel.submitDecisionOnProject(action.projectId)
+        // Back to the decision, with its choices kept.
+        ProjectPickerAction.Dismiss -> viewModel.projectPicker.close()
     }
 
     private fun returnDecision() {
