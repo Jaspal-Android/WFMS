@@ -11,7 +11,7 @@ data class AttendanceRecord(
     @SerializedName("action")
     var action: String?,
     @SerializedName("approval_status")
-    val approvalStatus: Int?,
+    var approvalStatus: Int?,
     @SerializedName("can_hr_mark_attendance")
     val canHrMarkAttendance: Boolean?,
     @SerializedName("checkin")

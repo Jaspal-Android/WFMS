@@ -17,6 +17,7 @@ import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerUiState
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceApprovalStatus
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.models.attendance.attendanceDetails.Logs
+import com.atvantiq.wfms.models.attendance.attendanceDetails.currentStatus
 import com.atvantiq.wfms.ui.screens.admin.ui.attendanceApproval.AttendanceApprovalVM
 import com.atvantiq.wfms.utils.Utils
 import com.google.gson.JsonObject
@@ -116,7 +117,8 @@ class AttendanceApprovalVMTest {
 
         assertEquals(4, body.captured.get("status").asInt)
         assertEquals("Attendance reviewed by PM", body.captured.get("remarks").asString)
-        assertEquals(4, record.status)
+        assertEquals(4, record.approvalStatus)
+        assertEquals(0, record.status)
         assertEquals("Approved by PM", record.action)
     }
 
@@ -187,6 +189,26 @@ class AttendanceApprovalVMTest {
         assertEquals(1, body.captured.get("status").asInt)
         assertEquals(493287548012, body.captured.get("project_id").asLong)
         assertNull(vm.projectPicker.state.value)
+    }
+
+    @Test
+    fun `an Idle day marked Present shows Present`() {
+        coEvery { creationRepo.allProjects() } returns activeProjects(1L)
+        coEvery { attendanceRepo.attendanceApprove(any(), any()) } returns mockk(relaxed = true) {
+            every { success } returns true
+        }
+        val vm = viewModel(AppRole.PM)
+        val record = record(status = 4)
+        vm.startDecision(record)
+        vm.selectStatus(AttendanceApprovalStatus.PRESENT)
+        vm.submitDecision()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        vm.submitDecisionOnProject(1L)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(AttendanceApprovalStatus.PRESENT, record.currentStatus)
+        assertEquals(4, record.status)
     }
 
     @Test
