@@ -55,9 +55,15 @@ import android.graphics.Color
 import androidx.core.location.LocationManagerCompat
 import com.atvantiq.wfms.data.tracking.ShiftState
 import com.atvantiq.wfms.utils.DateUtils
+import com.atvantiq.wfms.utils.isSessionLost
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerAction
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerHost
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerSheetPresenter
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerUiState
 
 @AndroidEntryPoint
-class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
+class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>(), ProjectPickerHost {
 
     private var isDayStarted = false
     // The status error is shown once per run of failures (onResume asks again on every return to
@@ -67,6 +73,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     // Location permission is asked automatically on resume while checked in; ask once per screen.
     private var trackingPermissionPrompted = false
     private var backgroundLocationPrompted = false
+    // The PM's Start Day project picker is up (or its list is loading).
+    private var isProjectPickerOpen = false
+    private val projectPickerSheet = ProjectPickerSheetPresenter({ childFragmentManager }, ::showProgress, ::dismissProgress)
 
     // Every location request goes through a delegate, which shows the disclosure before the
     // system prompt and explains a denial the same way on every screen.
@@ -170,8 +179,17 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             when (response.status) {
                 Status.SUCCESS -> handleCheckInResponse(response.response)
                 Status.ERROR -> handleError(response.throwable, response.response?.message)
-                Status.LOADING -> showProgress()
+                // The picker shows its own spinner on the confirm button.
+                Status.LOADING -> if (!vm.projectPicker.isOpen) showProgress()
             }
+        }
+
+        vm.projectPicker.state.observe(viewLifecycleOwner, ::renderProjectPicker)
+
+        // A failed list is shown in the picker; only a lost session is handled here.
+        vm.managedProjectsResponse.observe(viewLifecycleOwner) { response ->
+            if (!response.consumeOnce()) return@observe
+            if (response.isSessionLost { it.code }) tokenExpiresAlert()
         }
 
         vm.attendanceCheckOutResponse.observe(viewLifecycleOwner) { response ->
@@ -229,14 +247,19 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun handleCheckInResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
         dismissProgress()
         resetAttendanceAction()
-        when (response?.code) {
-            ValConstants.SUCCESS_CODE -> {
-                isDayStarted = true
-                updateSlideButton(true)
-                communicationViewModel.triggerCalendarRefresh()
-                checkPermissionForLiveLocation()
+        if (response?.isAccepted == true) {
+            // A PM started the day on the project they chose; the picker's work is done.
+            if (viewModel.projectPicker.isOpen) {
+                viewModel.projectPicker.close()
+                showToast(requireContext(), getString(R.string.check_in_marked_successfully))
             }
-            else -> handleRejectedResponse(response?.code, response?.message)
+            isDayStarted = true
+            updateSlideButton(true)
+            communicationViewModel.triggerCalendarRefresh()
+            checkPermissionForLiveLocation()
+        } else {
+            // A refused PM check-in keeps the picker open on the chosen project, to retry.
+            handleRejectedResponse(response?.code, response?.message)
         }
     }
 
@@ -460,10 +483,50 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun resetAttendanceAction() {
         attendanceActionInFlight = false
         binding.appDashHeader.slideStartDay.setCompleted(false, true)
+        viewModel.projectPicker.setSubmitting(false)
     }
 
-    @SuppressLint("MissingPermission")
+    /** Start Day or End Day; a PM's first Start Day of the day asks for the project first. */
     private fun manageDayStartEnd() {
+        if (!isDayStarted && viewModel.needsProjectToStartDay) {
+            attendanceActionInFlight = true
+            viewModel.loadStartDayProjects()
+        } else {
+            sendAttendanceAction(startDay = !isDayStarted)
+        }
+    }
+
+    /**
+     * While the PM's projects load, the slider stays locked behind the progress dialog; then the
+     * picker opens on the list, the empty message or the load error.
+     */
+    private fun renderProjectPicker(state: ProjectPickerUiState?) {
+        projectPickerSheet.render(state)
+        if (state != null) {
+            isProjectPickerOpen = true
+            attendanceActionInFlight = true
+        } else if (isProjectPickerOpen) {
+            isProjectPickerOpen = false
+            resetAttendanceAction()
+        }
+    }
+
+    override val projectPicker: ProjectPicker
+        get() = viewModel.projectPicker
+
+    override fun onProjectPickerAction(action: ProjectPickerAction) = when (action) {
+        ProjectPickerAction.Retry -> viewModel.loadStartDayProjects()
+        ProjectPickerAction.Dismiss -> viewModel.projectPicker.close()
+        // The location is fetched now, then the check-in is sent with the chosen project.
+        is ProjectPickerAction.Confirm -> if (!viewModel.projectPicker.isSubmitting) {
+            viewModel.projectPicker.setSubmitting(true)
+            sendAttendanceAction(startDay = true)
+        } else Unit
+    }
+
+    /** Fetches the location, then checks in ([startDay]) or out. */
+    @SuppressLint("MissingPermission")
+    private fun sendAttendanceAction(startDay: Boolean) {
         if (!isDeviceLocationEnabled()) {
             resetAttendanceAction()
             showLocationDisabledDialog()
@@ -484,12 +547,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 val lon = location.longitude
 
                 attendanceActionInFlight = true
-                if (isDayStarted) {
-                    pendingCheckoutLocation = lat to lon
-                    viewModel.checkOutAttendance(lat, lon, true)
-                } else {
+                if (startDay) {
                     pendingCheckoutLocation = null
                     viewModel.checkInAttendance(lat, lon)
+                } else {
+                    pendingCheckoutLocation = lat to lon
+                    viewModel.checkOutAttendance(lat, lon, true)
                 }
         }
     }

@@ -1,6 +1,9 @@
 package com.atvantiq.wfms.constants
 
-/** The app role worked out from `role` on `GET /employee/me`, trimmed and compared case-insensitively. */
+/**
+ * The app role worked out from `role` on `GET /employee/me`, compared case-insensitively and
+ * ignoring spaces, `_` and `-` (as the web app does).
+ */
 enum class AppRole {
     EMPLOYEE,
     PM,
@@ -31,15 +34,20 @@ enum class AppRole {
         private const val OPS_TAG = "OPS"
         private const val ADMIN_TAG = "ADMIN"
 
+        private val IGNORED_ROLE_CHARACTERS = setOf('_', '-')
+
         fun from(role: String?): AppRole {
-            val value = role?.trim().orEmpty()
+            val value = normalize(role)
             return when {
-                value.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true) -> EMPLOYEE
-                value.equals(ValConstants.ROLE_PM, ignoreCase = true) -> PM
-                value.equals(ValConstants.ROLE_OPS, ignoreCase = true) -> OPS
-                value.equals(ValConstants.ROLE_Admin, ignoreCase = true) -> ADMIN
+                value.equals(normalize(ValConstants.ROLE_EMPLOYEE), ignoreCase = true) -> EMPLOYEE
+                value.equals(normalize(ValConstants.ROLE_PM), ignoreCase = true) -> PM
+                value.equals(normalize(ValConstants.ROLE_OPS), ignoreCase = true) -> OPS
+                value.equals(normalize(ValConstants.ROLE_Admin), ignoreCase = true) -> ADMIN
                 else -> OTHER
             }
         }
+
+        private fun normalize(role: String?): String =
+            role.orEmpty().filterNot { it.isWhitespace() || it in IGNORED_ROLE_CHARACTERS }
     }
 }

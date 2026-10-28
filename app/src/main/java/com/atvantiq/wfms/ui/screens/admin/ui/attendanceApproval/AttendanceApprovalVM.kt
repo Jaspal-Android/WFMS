@@ -8,13 +8,19 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.AppRole
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
+import com.atvantiq.wfms.data.repository.creation.ICreationRepo
+import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.attendance.approve.AttendanceApproveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceApprovalStatus
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
 import com.atvantiq.wfms.models.attendance.attendanceDetails.canBeMarkedBy
 import com.atvantiq.wfms.models.attendance.attendanceDetails.initialDecision
+import com.atvantiq.wfms.models.attendance.attendanceDetails.needsProjectFor
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.ui.screens.admin.ui.approvals.MonthlyAttendanceListVM
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerPurpose
+import com.atvantiq.wfms.ui.screens.projectPicker.toProjectOption
 import com.google.gson.JsonObject
 import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +34,8 @@ import javax.inject.Inject
 class AttendanceApprovalVM @Inject constructor(
     application: Application,
     attendanceRepo: IAttendanceRepo,
-    prefMain: SecurePrefMain
+    prefMain: SecurePrefMain,
+    private val creationRepo: ICreationRepo
 ) : MonthlyAttendanceListVM(application, attendanceRepo) {
 
     val role: AppRole = PrefMethods.getAppRole(prefMain)
@@ -48,10 +55,15 @@ class AttendanceApprovalVM @Inject constructor(
     var isSubmitting = false
         private set
 
+    /** The project an Idle → Present decision is booked to. */
+    val projectPicker = ProjectPicker()
+    val activeProjectsResponse = MutableLiveData<ApiState<AllProjectsResponse>>()
+
     fun canMark(record: AttendanceRecord): Boolean = record.canBeMarkedBy(role)
 
     /** Starts a decision: the record's status (or Present) and "Attendance reviewed by {role}". */
     fun startDecision(record: AttendanceRecord) {
+        projectPicker.close()
         decisionRecord = record
         decisionStatus.set(record.initialDecision)
         decisionRemarks.set(
@@ -61,9 +73,52 @@ class AttendanceApprovalVM @Inject constructor(
 
     fun selectStatus(status: AttendanceApprovalStatus) = decisionStatus.set(status)
 
-    /** `POST /attendance/approve/{id}` with `{status, remarks}`. */
+    /**
+     * `POST /attendance/approve/{id}` with `{status, remarks}`. Idle → Present first asks for the
+     * project the day was worked on, and is sent from the picker by [submitDecisionOnProject].
+     */
     fun submitDecision() {
         if (isSubmitting) return
+        val record = validDecisionRecord()
+        val status = decisionStatus.get()
+        when {
+            record == null || status == null -> Unit
+            record.needsProjectFor(status) -> loadDecisionProjects()
+            else -> sendDecision(record, status, projectId = null)
+        }
+    }
+
+    /** The picker's Mark Present: the Idle → Present decision, booked to [projectId]. */
+    fun submitDecisionOnProject(projectId: Long) {
+        if (isSubmitting) return
+        val record = validDecisionRecord()
+        val status = decisionStatus.get()
+        if (record != null && status != null && record.needsProjectFor(status)) {
+            projectPicker.setSubmitting(true)
+            sendDecision(record, status, projectId)
+        }
+    }
+
+    /** `GET /project/all` (active only): opens the picker on the projects a day can be booked to. */
+    fun loadDecisionProjects() {
+        val record = decisionRecord ?: return
+        projectPicker.startLoading(ProjectPickerPurpose.MarkPresent(record.employee?.name))
+        executeApiCall(
+            apiCall = { creationRepo.allProjects() },
+            liveData = activeProjectsResponse,
+            onSuccess = { response ->
+                projectPicker.onResponse(
+                    response.success, response.code, response.message,
+                    response.data?.projects?.mapNotNull { it.toProjectOption() }
+                )
+            },
+            onError = projectPicker::onError,
+            cancelPrevious = true
+        )
+    }
+
+    /** The record being decided, when this role can send a decision for it; otherwise reports why not. */
+    private fun validDecisionRecord(): AttendanceRecord? {
         val record = decisionRecord
         val status = decisionStatus.get()
         val error = when {
@@ -73,25 +128,38 @@ class AttendanceApprovalVM @Inject constructor(
             !record.canBeMarkedBy(role) -> R.string.attendance_not_waiting
             else -> null
         }
-        if (error != null) {
-            decisionError.value = error
+        if (error != null) decisionError.value = error
+        return record.takeIf { error == null }
+    }
+
+    private fun sendDecision(record: AttendanceRecord, status: AttendanceApprovalStatus, projectId: Long?) {
+        val attendanceId = record.id ?: return
+        // The server doesn't require a project for Idle → Present yet, so the app never sends one without.
+        if (projectId == null && record.needsProjectFor(status)) {
+            decisionError.value = R.string.select_project_to_mark_present
             return
         }
-        val attendanceId = record?.id ?: return
-        val code = status?.code ?: return
         isSubmitting = true
         val params = JsonObject().apply {
-            addProperty(STATUS_KEY, code)
+            addProperty(STATUS_KEY, status.code)
             addProperty(REMARKS_KEY, decisionRemarks.get().orEmpty().trim())
+            projectId?.let { addProperty(PROJECT_ID_KEY, it) }
         }
         executeApiCall(
             apiCall = { attendanceRepo.attendanceApprove(attendanceId, params) },
             liveData = approveResponse,
             onSuccess = { response ->
                 isSubmitting = false
-                if (response.success == true) applyDecision(attendanceId, code)
+                projectPicker.setSubmitting(false)
+                if (response.success == true) {
+                    applyDecision(attendanceId, status.code)
+                    projectPicker.close()
+                }
             },
-            onError = { isSubmitting = false }
+            onError = {
+                isSubmitting = false
+                projectPicker.setSubmitting(false)
+            }
         )
     }
 
@@ -115,5 +183,6 @@ class AttendanceApprovalVM @Inject constructor(
     private companion object {
         const val STATUS_KEY = "status"
         const val REMARKS_KEY = "remarks"
+        const val PROJECT_ID_KEY = "project_id"
     }
 }

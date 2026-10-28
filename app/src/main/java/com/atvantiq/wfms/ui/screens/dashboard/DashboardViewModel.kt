@@ -9,20 +9,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.AppRole
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
+import com.atvantiq.wfms.data.repository.creation.ICreationRepo
 import com.atvantiq.wfms.data.tracking.ShiftState
 import com.atvantiq.wfms.data.tracking.ShiftTracker
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
+import com.atvantiq.wfms.models.project.ManagedProjectsResponse
 import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.services.LocationTrackingService
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerPurpose
+import com.atvantiq.wfms.ui.screens.projectPicker.toProjectOption
 import com.atvantiq.wfms.utils.DateUtils
 import com.google.gson.JsonObject
+import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,7 +40,8 @@ class DashboardViewModel @Inject constructor(
     application: Application,
     private val attendanceRepo: IAttendanceRepo,
     private val prefMain: SecurePrefMain,
-    private val shiftTracker: ShiftTracker
+    private val shiftTracker: ShiftTracker,
+    private val creationRepo: ICreationRepo
 ) : BaseViewModel(application) {
 
     /** Pause state and totals of the current shift, shared with the service and its notification. */
@@ -97,20 +106,65 @@ class DashboardViewModel @Inject constructor(
         if (prefMain.get(PrefKeys.IS_TRACKING_ACTIVE, false)) stopTracking()
     }
 
+    /** The project a PM's Start Day is booked to. */
+    val projectPicker = ProjectPicker()
+    val managedProjectsResponse = MutableLiveData<ApiState<ManagedProjectsResponse>>()
+
+    /** Today's attendance, from the status or a check-in; it stays after a check-out. */
+    private var todayAttendanceId: Long? = null
+
+    /**
+     * A PM's first check-in of the day is booked to a project they choose. Later check-ins the
+     * same day keep that project (the server ignores a new one), so they don't ask again.
+     */
+    val needsProjectToStartDay: Boolean
+        get() = todayAttendanceId == null && PrefMethods.getAppRole(prefMain) == AppRole.PM
+
+    /** `GET /project/my-projects`: opens the picker on the PM's projects for today. */
+    fun loadStartDayProjects() {
+        projectPicker.startLoading(ProjectPickerPurpose.StartDay)
+        executeApiCall(
+            apiCall = { creationRepo.managedProjects() },
+            liveData = managedProjectsResponse,
+            onSuccess = { response ->
+                projectPicker.onResponse(
+                    response.success, response.code, response.message,
+                    response.data?.mapNotNull { it.toProjectOption() }
+                )
+            },
+            onError = projectPicker::onError,
+            cancelPrevious = true
+        )
+    }
+
     var attendanceCheckInResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
+
+    /** `POST /attendance/checkin`, with the project chosen in [projectPicker] when one is needed. */
     fun checkInAttendance(latitude: Double, longitude: Double) {
+        val projectId = projectPicker.selectedProjectId
+        // The server doesn't require a PM's project yet, so the app never starts that day without one.
+        if (projectId == null && needsProjectToStartDay) {
+            attendanceCheckInResponse.value = ApiState.error(
+                IllegalStateException(getApplication<Application>().getString(R.string.select_project_to_start_day))
+            )
+            return
+        }
         val params = JsonObject().apply {
             addProperty("latitude", latitude)
             addProperty("longitude", longitude)
+            projectId?.let { addProperty(PROJECT_ID_KEY, it) }
         }
-        viewModelScope.launch {
-            executeApiCall(
-                apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
-                liveData = attendanceCheckInResponse,
-                // The day starts now; tracking (started next) counts the shift from here.
-                onSuccess = { if (it.code == ValConstants.SUCCESS_CODE) checkInMillis = System.currentTimeMillis() }
-            )
-        }
+        executeApiCall(
+            apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
+            liveData = attendanceCheckInResponse,
+            onSuccess = {
+                if (it.isAccepted) {
+                    // The day starts now; tracking (started next) counts the shift from here.
+                    checkInMillis = System.currentTimeMillis()
+                    todayAttendanceId = it.data?.attendanceId?.takeIf { id -> id > 0 } ?: todayAttendanceId
+                }
+            }
+        )
     }
 
     var attendanceCheckOutResponse = MutableLiveData<ApiState<CheckInOutResponse>>()
@@ -136,6 +190,7 @@ class DashboardViewModel @Inject constructor(
                 apiCall = { attendanceRepo.attendanceCheckInStatus() },
                 liveData = attendanceCheckInStatusResponse,
                 onSuccess = {
+                    if (it.code == ValConstants.SUCCESS_CODE) todayAttendanceId = it.data?.attendanceId?.takeIf { id -> id > 0 }
                     if (it.hasNoActiveDay()) stopTrackingIfActive()
                     else checkInMillis = DateUtils.parseUtcIso(it.data?.checkinTime)
                 }
@@ -165,4 +220,12 @@ class DashboardViewModel @Inject constructor(
     fun onApplyLeaveClick(){
         clickEvents.value = DashboardClickEvents.APPLY_LEAVE_CLICK
     }
+
+    private companion object {
+        const val PROJECT_ID_KEY = "project_id"
+    }
 }
+
+/** The server marked the attendance: `success: false` is a refusal, even with code 200. */
+val CheckInOutResponse.isAccepted: Boolean
+    get() = success && code == ValConstants.SUCCESS_CODE

@@ -31,6 +31,16 @@ import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.empDetail.AccessLevel
 import com.atvantiq.wfms.models.empDetail.Permission
 import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.constants.AppRole
+import com.atvantiq.wfms.data.repository.creation.ICreationRepo
+import com.atvantiq.wfms.models.allProjects.Circle
+import com.atvantiq.wfms.models.project.ManagedProject
+import com.atvantiq.wfms.models.project.ManagedProjectsResponse
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerUiState
+import com.google.gson.JsonObject
+import com.ssas.jibli.data.prefs.PrefMethods
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 
 @ExperimentalCoroutinesApi
 class DashboardViewModelTest {
@@ -41,6 +51,7 @@ class DashboardViewModelTest {
     private lateinit var application: Application
     private lateinit var attendanceRepo: IAttendanceRepo
     private lateinit var prefMain: SecurePrefMain
+    private lateinit var creationRepo: ICreationRepo
     private lateinit var viewModel: DashboardViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -52,10 +63,13 @@ class DashboardViewModelTest {
         attendanceRepo = mockk(relaxed = true)
         prefMain = mockk(relaxed = true)
 
-        mockkObject(Utils)
-        every { Utils.isInternet(application) } returns true
+        creationRepo = mockk(relaxed = true)
 
-        viewModel = DashboardViewModel(application, attendanceRepo, prefMain, mockk(relaxed = true))
+        mockkObject(Utils, PrefMethods)
+        every { Utils.isInternet(application) } returns true
+        every { PrefMethods.getAppRole(prefMain) } returns AppRole.EMPLOYEE
+
+        viewModel = DashboardViewModel(application, attendanceRepo, prefMain, mockk(relaxed = true), creationRepo)
     }
 
     @After
@@ -243,4 +257,118 @@ class DashboardViewModelTest {
             assertEquals(Status.SUCCESS, viewModel.attendanceCheckOutResponse.value?.status)
             assertEquals(response, viewModel.attendanceCheckOutResponse.value?.response)
         }
+
+    // --- A PM's Start Day is booked to a project ---
+
+    private fun managedProjects(vararg ids: Long) = ManagedProjectsResponse(
+        code = 200, message = "Projects fetched successfully.", success = true,
+        data = ids.map { ManagedProject(id = it, name = "project $it", circle = Circle("CHD", 1L, "Chandigarh")) }
+    )
+
+    private fun checkInAccepted() = CheckInOutResponse(
+        code = 200, message = "Attendance marked successfully for today.", success = true,
+        data = CheckoutData(attendanceId = 365938081541, dayProgress = false)
+    )
+
+    private fun signInAs(role: AppRole) {
+        every { PrefMethods.getAppRole(prefMain) } returns role
+    }
+
+    @Test
+    fun `only a PM needs a project to start the day`() {
+        assertFalse(viewModel.needsProjectToStartDay)
+        signInAs(AppRole.PM)
+        assertTrue(viewModel.needsProjectToStartDay)
+    }
+
+    @Test
+    fun `a PM's check-in sends the chosen project`() = runTest {
+        signInAs(AppRole.PM)
+        val body = slot<JsonObject>()
+        coEvery { creationRepo.managedProjects() } returns managedProjects(508422622835)
+        coEvery { attendanceRepo.attendanceCheckInRequest(capture(body)) } returns checkInAccepted()
+
+        viewModel.loadStartDayProjects()
+        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.checkInAttendance(30.73, 76.77)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(508422622835, body.captured.get("project_id").asLong)
+        assertEquals(30.73, body.captured.get("latitude").asDouble, 0.0)
+    }
+
+    @Test
+    fun `a PM's check-in is never sent without a project`() = runTest {
+        signInAs(AppRole.PM)
+        coEvery { creationRepo.managedProjects() } returns managedProjects(1L, 2L)
+
+        viewModel.checkInAttendance(30.73, 76.77)
+        viewModel.loadStartDayProjects()
+        testDispatcher.scheduler.advanceUntilIdle()
+        // Two projects: nothing is chosen for the PM.
+        viewModel.checkInAttendance(30.73, 76.77)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 0) { attendanceRepo.attendanceCheckInRequest(any()) }
+        assertEquals(Status.ERROR, viewModel.attendanceCheckInResponse.value?.status)
+    }
+
+    @Test
+    fun `a PM with no projects gets the empty state and no check-in`() = runTest {
+        signInAs(AppRole.PM)
+        coEvery { creationRepo.managedProjects() } returns managedProjects()
+
+        viewModel.loadStartDayProjects()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(ProjectPickerUiState.Phase.EMPTY, viewModel.projectPicker.state.value?.phase)
+        coVerify(exactly = 0) { attendanceRepo.attendanceCheckInRequest(any()) }
+    }
+
+    @Test
+    fun `other roles check in without a project`() = runTest {
+        val body = slot<JsonObject>()
+        coEvery { attendanceRepo.attendanceCheckInRequest(capture(body)) } returns checkInAccepted()
+
+        viewModel.checkInAttendance(30.73, 76.77)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(body.captured.has("project_id"))
+        coVerify(exactly = 0) { creationRepo.managedProjects() }
+    }
+
+    @Test
+    fun `a day already started today doesn't ask for a project again`() = runTest {
+        signInAs(AppRole.PM)
+        coEvery { attendanceRepo.attendanceCheckInStatus() } returns CheckInStatusResponse(
+            code = 200, message = "", success = true,
+            data = Data(attendanceId = 365938081541, checkedIn = false, checkedOut = true, checkinTime = "", checkoutTime = "")
+        )
+
+        viewModel.checkInStatusAttendance()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.needsProjectToStartDay)
+    }
+
+    @Test
+    fun `a day not started yet still asks a PM for a project`() = runTest {
+        signInAs(AppRole.PM)
+        coEvery { attendanceRepo.attendanceCheckInStatus() } returns CheckInStatusResponse(
+            code = 200, message = "", success = true,
+            data = Data(attendanceId = null, checkedIn = false, checkedOut = false, checkinTime = "", checkoutTime = "")
+        )
+
+        viewModel.checkInStatusAttendance()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.needsProjectToStartDay)
+    }
+
+    @Test
+    fun `a refused check-in is not accepted even with code 200`() {
+        assertFalse(checkInAccepted().copy(success = false).isAccepted)
+        assertTrue(checkInAccepted().isAccepted)
+        assertNull(viewModel.projectPicker.state.value)
+    }
 }

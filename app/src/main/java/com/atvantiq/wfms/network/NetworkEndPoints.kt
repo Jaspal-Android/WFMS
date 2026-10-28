@@ -73,6 +73,8 @@ object NetworkEndPoints {
 
 	/*All Projects*/
 	const val allProjects = "project/all?is_all=true&is_active=1"
+	/*Projects the signed-in PM manages today*/
+	const val managedProjects = "project/my-projects"
 
 	/*Get circle employes*/
 	const val circleEmployees = "circle/employee"

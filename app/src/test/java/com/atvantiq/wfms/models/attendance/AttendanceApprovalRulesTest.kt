@@ -8,7 +8,9 @@ import com.atvantiq.wfms.models.attendance.attendanceDetails.Logs
 import com.atvantiq.wfms.models.attendance.attendanceDetails.OPS
 import com.atvantiq.wfms.models.attendance.attendanceDetails.PM
 import com.atvantiq.wfms.models.attendance.attendanceDetails.canBeMarkedBy
+import com.atvantiq.wfms.models.attendance.attendanceDetails.currentStatus
 import com.atvantiq.wfms.models.attendance.attendanceDetails.initialDecision
+import com.atvantiq.wfms.models.attendance.attendanceDetails.needsProjectFor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -74,5 +76,21 @@ class AttendanceApprovalRulesTest {
     fun `the grid offers the eight statuses in order, codes 1 to 8`() {
         assertEquals((1..8).toList(), AttendanceApprovalStatus.decisions.map { it.code })
         assertEquals(AttendanceApprovalStatus.SUBMITTED, AttendanceApprovalStatus.from(99))
+    }
+
+    @Test
+    fun `the current status is the reviewers' decision, else the employee's own`() {
+        assertEquals(AttendanceApprovalStatus.IDLE, record(status = 4).currentStatus)
+        assertEquals(AttendanceApprovalStatus.IDLE, record(status = 0).copy(approvalStatus = 4).currentStatus)
+        assertEquals(AttendanceApprovalStatus.IDLE, record(status = 4).copy(approvalStatus = 0).currentStatus)
+        assertEquals(AttendanceApprovalStatus.PRESENT, record(status = 4).copy(approvalStatus = 1).currentStatus)
+    }
+
+    @Test
+    fun `only Idle to Present needs a project`() {
+        assertTrue(record(status = 4).needsProjectFor(AttendanceApprovalStatus.PRESENT))
+        assertFalse(record(status = 4).needsProjectFor(AttendanceApprovalStatus.ABSENT))
+        assertFalse(record(status = 0).needsProjectFor(AttendanceApprovalStatus.PRESENT))
+        assertFalse(record(status = 2).needsProjectFor(AttendanceApprovalStatus.PRESENT))
     }
 }

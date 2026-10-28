@@ -4,6 +4,7 @@ import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
+import com.atvantiq.wfms.models.project.ManagedProjectsResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
@@ -56,6 +57,8 @@ class CreationRepo @Inject constructor(private val apiService: ApiService) : ICr
     )
 
     override suspend fun allProjects(): AllProjectsResponse = apiService.allProjects()
+
+    override suspend fun managedProjects(): ManagedProjectsResponse = apiService.managedProjects()
 
     override suspend fun siteById(siteId: Long): SiteDetailResponse = apiService.siteById(
         siteId = siteId
