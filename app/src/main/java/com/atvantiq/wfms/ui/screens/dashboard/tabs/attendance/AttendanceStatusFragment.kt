@@ -17,6 +17,7 @@ import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentAttendanceStatusBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
+import com.atvantiq.wfms.models.attendance.attendanceDetails.currentStatus
 import com.atvantiq.wfms.models.calendar.AttendanceDay
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail.AttendanceDetailActivity
@@ -148,7 +149,8 @@ class AttendanceStatusFragment :
                 }
                 AttendanceDay(
                     date = date,
-                    status = mapStatus(detail.status ?: -1),
+                    // The reviewers' decision when there is one: an Idle day marked Present reads Present.
+                    status = mapStatus(detail.currentStatus.code),
                     record = detail
                 )
             }

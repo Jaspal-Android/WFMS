@@ -38,11 +38,12 @@ class AttendanceRepo @Inject constructor(
     override suspend fun attendanceForApproval(page: Int, pageSize: Int, month: Int, year: Int): AttendanceDetailListResponse =
         apiService.attendanceForApproval(page, pageSize, month, year)
 
-    override suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean): AttendanceDetailListResponse {
+    override suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean, isSelf: Boolean): AttendanceDetailListResponse {
         return apiService.attendanceDetails(
             month,
             year,
-            flag
+            flag,
+            isSelf
         )
     }
 

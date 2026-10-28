@@ -78,8 +78,14 @@ interface ApiService {
 	@GET(NetworkEndPoints.attendanceCheckInStatus)
 	suspend fun attendanceCheckInStatus(): CheckInStatusResponse
 
+	/** A month of attendance; `is_self` limits it to the signed-in user's own (not their reports'). */
 	@GET(NetworkEndPoints.attendanceDetails)
-	suspend fun attendanceDetails(@Query("month") month: Int,@Query("year") year: Int,@Query("is_export") flag: Boolean ): AttendanceDetailListResponse
+	suspend fun attendanceDetails(
+		@Query("month") month: Int,
+		@Query("year") year: Int,
+		@Query("is_export") flag: Boolean,
+		@Query("is_self") isSelf: Boolean
+	): AttendanceDetailListResponse
 
 	/** The attendance records a PM / OPS / admin reviews for a month, page by page. */
 	@GET(NetworkEndPoints.attendanceDetails)
