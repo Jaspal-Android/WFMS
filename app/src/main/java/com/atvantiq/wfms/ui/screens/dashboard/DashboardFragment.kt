@@ -563,10 +563,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
+    /** Location Services are off (the permission itself is granted). */
     private fun showLocationDisabledDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_required)
-            .setMessage(R.string.location_permission_rationale)
+            .setTitle(R.string.location_services_off_title)
+            .setMessage(R.string.location_services_off_message)
             .setPositiveButton(R.string.open_settings) { _, _ ->
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
