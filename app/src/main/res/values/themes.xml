@@ -315,6 +315,10 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <!-- The light parent's text colors would replace the app's, leaving typed text dark on a
+             dark sheet in dark mode; keep the app's roles, as on every screen. -->
+        <item name="android:textColorPrimary">?attr/wfmsColorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
 
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
