@@ -486,7 +486,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         viewModel.projectPicker.setSubmitting(false)
     }
 
-    /** Start Day or End Day; a PM's first Start Day of the day asks for the project first. */
+    /** Start Day or End Day; a PM's Start Day asks for the project first. */
     private fun manageDayStartEnd() {
         if (!isDayStarted && viewModel.needsProjectToStartDay) {
             attendanceActionInFlight = true

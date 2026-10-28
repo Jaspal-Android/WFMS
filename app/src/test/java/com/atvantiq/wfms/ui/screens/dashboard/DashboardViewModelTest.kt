@@ -338,28 +338,37 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `a day already started today doesn't ask for a project again`() = runTest {
+    fun `a PM is asked for a project again after checking out`() = runTest {
         signInAs(AppRole.PM)
+        val body = slot<JsonObject>()
         coEvery { attendanceRepo.attendanceCheckInStatus() } returns CheckInStatusResponse(
             code = 200, message = "", success = true,
             data = Data(attendanceId = 365938081541, checkedIn = false, checkedOut = true, checkinTime = "", checkoutTime = "")
         )
+        coEvery { creationRepo.managedProjects() } returns managedProjects(508422622835)
+        coEvery { attendanceRepo.attendanceCheckInRequest(capture(body)) } returns checkInAccepted()
 
         viewModel.checkInStatusAttendance()
         testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.needsProjectToStartDay)
 
-        assertFalse(viewModel.needsProjectToStartDay)
+        viewModel.loadStartDayProjects()
+        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.checkInAttendance(30.73, 76.77)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(508422622835, body.captured.get("project_id").asLong)
     }
 
     @Test
-    fun `a day not started yet still asks a PM for a project`() = runTest {
+    fun `a PM is still asked after a check-in today`() = runTest {
         signInAs(AppRole.PM)
-        coEvery { attendanceRepo.attendanceCheckInStatus() } returns CheckInStatusResponse(
-            code = 200, message = "", success = true,
-            data = Data(attendanceId = null, checkedIn = false, checkedOut = false, checkinTime = "", checkoutTime = "")
-        )
+        coEvery { creationRepo.managedProjects() } returns managedProjects(508422622835)
+        coEvery { attendanceRepo.attendanceCheckInRequest(any()) } returns checkInAccepted()
+        viewModel.loadStartDayProjects()
+        testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.checkInStatusAttendance()
+        viewModel.checkInAttendance(30.73, 76.77)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(viewModel.needsProjectToStartDay)

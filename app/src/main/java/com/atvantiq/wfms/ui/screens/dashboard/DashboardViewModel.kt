@@ -110,15 +110,12 @@ class DashboardViewModel @Inject constructor(
     val projectPicker = ProjectPicker()
     val managedProjectsResponse = MutableLiveData<ApiState<ManagedProjectsResponse>>()
 
-    /** Today's attendance, from the status or a check-in; it stays after a check-out. */
-    private var todayAttendanceId: Long? = null
-
     /**
-     * A PM's first check-in of the day is booked to a project they choose. Later check-ins the
-     * same day keep that project (the server ignores a new one), so they don't ask again.
+     * Every check-in of a PM is booked to a project they choose, including a punch-in after a
+     * check-out, so each one records the project it was for.
      */
     val needsProjectToStartDay: Boolean
-        get() = todayAttendanceId == null && PrefMethods.getAppRole(prefMain) == AppRole.PM
+        get() = PrefMethods.getAppRole(prefMain) == AppRole.PM
 
     /** `GET /project/my-projects`: opens the picker on the PM's projects for today. */
     fun loadStartDayProjects() {
@@ -158,11 +155,8 @@ class DashboardViewModel @Inject constructor(
             apiCall = { attendanceRepo.attendanceCheckInRequest(params) },
             liveData = attendanceCheckInResponse,
             onSuccess = {
-                if (it.isAccepted) {
-                    // The day starts now; tracking (started next) counts the shift from here.
-                    checkInMillis = System.currentTimeMillis()
-                    todayAttendanceId = it.data?.attendanceId?.takeIf { id -> id > 0 } ?: todayAttendanceId
-                }
+                // The day starts now; tracking (started next) counts the shift from here.
+                if (it.isAccepted) checkInMillis = System.currentTimeMillis()
             }
         )
     }
@@ -190,7 +184,6 @@ class DashboardViewModel @Inject constructor(
                 apiCall = { attendanceRepo.attendanceCheckInStatus() },
                 liveData = attendanceCheckInStatusResponse,
                 onSuccess = {
-                    if (it.code == ValConstants.SUCCESS_CODE) todayAttendanceId = it.data?.attendanceId?.takeIf { id -> id > 0 }
                     if (it.hasNoActiveDay()) stopTrackingIfActive()
                     else checkInMillis = DateUtils.parseUtcIso(it.data?.checkinTime)
                 }
