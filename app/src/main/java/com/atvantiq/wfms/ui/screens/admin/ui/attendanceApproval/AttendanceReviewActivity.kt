@@ -13,6 +13,7 @@ import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.databinding.ActivityAttendanceReviewBinding
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
+import com.atvantiq.wfms.models.attendance.attendanceDetails.currentStatus
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AttendanceDecisionStatusAdapter
 import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
@@ -134,7 +135,7 @@ class AttendanceReviewActivity : BaseActivity<ActivityAttendanceReviewBinding, A
         val record = viewModel.decisionRecord ?: return finish()
         setResult(Activity.RESULT_OK, Intent().apply {
             putExtra(SharingKeys.ATTENDANCE_ID, record.id)
-            putExtra(SharingKeys.ATTENDANCE_STATUS, record.status)
+            putExtra(SharingKeys.ATTENDANCE_STATUS, record.currentStatus.code)
         })
         finish()
     }

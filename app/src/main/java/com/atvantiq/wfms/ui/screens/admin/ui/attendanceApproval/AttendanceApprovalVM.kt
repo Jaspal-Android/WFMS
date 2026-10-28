@@ -165,17 +165,18 @@ class AttendanceApprovalVM @Inject constructor(
 
     /**
      * The decided row updates in place, without a reload: the new status chip and "Approved by
-     * {role}", after which it is read-only for this role.
+     * {role}", after which it is read-only for this role. Like the server, the decision is the
+     * record's `approval_status`; the employee's own status is kept.
      */
     fun applyDecision(attendanceId: Long, statusCode: Int) {
         val approvedBy = role.approverTag?.let { getApplication<Application>().getString(R.string.approved_by_format, it) }
         val position = records.state.value?.items?.indexOfFirst { it.id == attendanceId } ?: -1
         records.updateItem(position) { record ->
-            record.status = statusCode
+            record.approvalStatus = statusCode
             if (approvedBy != null) record.action = approvedBy
         }
         decisionRecord?.takeIf { it.id == attendanceId }?.let { record ->
-            record.status = statusCode
+            record.approvalStatus = statusCode
             if (approvedBy != null) record.action = approvedBy
         }
     }

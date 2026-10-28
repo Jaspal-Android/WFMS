@@ -66,8 +66,9 @@ class AttendanceApprovalRulesTest {
     }
 
     @Test
-    fun `a decision starts from the record's status, or Present when there is none`() {
+    fun `a decision starts from the status the record shows, or Present when there is none`() {
         assertEquals(AttendanceApprovalStatus.IDLE, record(status = 4).initialDecision)
+        assertEquals(AttendanceApprovalStatus.PRESENT, record(status = 4).copy(approvalStatus = 1).initialDecision)
         assertEquals(AttendanceApprovalStatus.PRESENT, record(status = 0).initialDecision)
         assertEquals(AttendanceApprovalStatus.PRESENT, record(status = null).initialDecision)
     }

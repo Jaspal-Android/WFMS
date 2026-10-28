@@ -36,7 +36,10 @@ val AttendanceRecord.currentStatus: AttendanceApprovalStatus
 fun AttendanceRecord.needsProjectFor(decision: AttendanceApprovalStatus?): Boolean =
     decision == AttendanceApprovalStatus.PRESENT && currentStatus == AttendanceApprovalStatus.IDLE
 
-/** The status a decision starts from: the record's own, or Present when it has none yet. */
+/**
+ * The status a decision starts from: the one the record shows ([currentStatus]), or Present when
+ * it is still Submitted.
+ */
 val AttendanceRecord.initialDecision: AttendanceApprovalStatus
-    get() = AttendanceApprovalStatus.from(status).takeIf { it != AttendanceApprovalStatus.SUBMITTED }
+    get() = currentStatus.takeIf { it != AttendanceApprovalStatus.SUBMITTED }
         ?: AttendanceApprovalStatus.PRESENT

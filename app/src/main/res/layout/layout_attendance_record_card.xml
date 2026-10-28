@@ -95,7 +95,7 @@
                     android:paddingEnd="@dimen/padding_medium"
                     android:paddingBottom="@dimen/padding_x_small"
                     android:textStyle="bold"
-                    app:attendanceApprovalStatus="@{record.status}"
+                    app:attendanceApprovalStatus="@{record}"
                     tools:text="@string/submitted" />
 
                 <ImageView

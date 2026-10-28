@@ -9,6 +9,8 @@ import com.atvantiq.wfms.constants.ApprovalStatusCodes
 import com.atvantiq.wfms.constants.StatusCodes
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceApprovalStatus
+import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceRecord
+import com.atvantiq.wfms.models.attendance.attendanceDetails.currentStatus
 import com.atvantiq.wfms.constants.ApprovalTextStatus
 
 /**
@@ -256,12 +258,13 @@ object UtilStatusBindings {
     }
 
     // ──────────────────────────────────────────────────────
-    // Attendance Approval chip  (status 0-8, spec 6.1)
+    // Attendance Approval chip  (status 0-8, spec 6.1): the reviewers' decision when there is
+    // one (Idle marked Present reads Present), else the employee's own status.
     // ──────────────────────────────────────────────────────
     @JvmStatic
     @BindingAdapter(value = ["attendanceApprovalStatus"])
-    fun attendanceApprovalStatus(textView: TextView, code: Int?) {
-        val status = AttendanceApprovalStatus.from(code)
+    fun attendanceApprovalStatus(textView: TextView, record: AttendanceRecord?) {
+        val status = record?.currentStatus ?: AttendanceApprovalStatus.SUBMITTED
         textView.text = textView.context.getString(status.labelRes)
         textView.applyStatus(status.backgroundRes, status.textRes)
     }
