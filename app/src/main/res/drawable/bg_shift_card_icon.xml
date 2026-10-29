@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Circle behind the glyph on the shift notification card. Drawn by the system, so it uses a
+     fixed colour, not a theme attribute; the card behind it is the theme's dark brand colour. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/shift_card_icon_background" />
+</shape>

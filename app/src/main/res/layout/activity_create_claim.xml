@@ -83,7 +83,7 @@
                                 android:layout_marginTop="@dimen/margin_small"
                                 android:text="@string/date"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -102,7 +102,7 @@
                                 android:layout_marginTop="@dimen/margin_small"
                                 android:text="@string/sites"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -121,7 +121,7 @@
                                 android:layout_marginTop="@dimen/margin_small"
                                 android:text="@string/type"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -161,10 +161,10 @@
                                 android:layout_marginBottom="@dimen/margin_small"
                                 android:drawableStart="@drawable/ic_calender_small"
                                 android:drawablePadding="@dimen/padding_x_small"
-                                android:drawableTint="?attr/wfmsColorPrimary"
+                                android:drawableTint="?attr/wfmsColorAccent"
                                 android:text="@string/date"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <com.google.android.material.textfield.TextInputLayout
@@ -223,7 +223,7 @@
                                 android:layout_marginBottom="@dimen/margin_small"
                                 android:text="@string/select_site"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -367,7 +367,7 @@
                                     android:onClick="@{()->vm.onAddMultipleSiteClick()}"
                                     android:text="@string/add_site"
                                     android:textAllCaps="false"
-                                    android:textColor="?attr/wfmsColorPrimary"
+                                    android:textColor="?attr/wfmsColorAccent"
                                     android:textStyle="bold" />
 
                                 <androidx.recyclerview.widget.RecyclerView
@@ -408,7 +408,7 @@
                                 android:layout_marginBottom="@dimen/margin_small"
                                 android:text="@string/project"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <!-- Project (single site only) -->
@@ -498,7 +498,7 @@
                                 android:layout_marginBottom="@dimen/margin_small"
                                 android:text="@string/expesnse_type"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <RadioGroup
@@ -555,7 +555,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/traveling"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddTravel"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -629,7 +629,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/da"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddDA"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -703,7 +703,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/hotel"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddHotel"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -776,7 +776,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/others"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toStartOf="@id/btnAddOther"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -851,7 +851,7 @@
                                 android:layout_marginBottom="@dimen/margin_small"
                                 android:text="@string/remarks"
                                 android:textAllCaps="true"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textStyle="bold" />
 
                             <com.google.android.material.textfield.TextInputLayout

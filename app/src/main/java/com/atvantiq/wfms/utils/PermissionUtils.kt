@@ -1,17 +1,11 @@
 package com.atvantiq.wfms.utils
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import java.util.*
 
 object PermissionUtils {
@@ -65,5 +59,39 @@ object PermissionUtils {
 		)
 	}
 
-}
+	/**
+	 * Android 12+ lets the user grant only "Approximate" location. Attendance needs the precise
+	 * one, so this is not "granted", but it is not "denied" either: Android can still be asked to
+	 * upgrade it.
+	 */
+	fun hasApproximateLocationOnly(context: Context): Boolean =
+		checkPermissionGranted(context, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)) &&
+			!checkPermissionGranted(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
 
+	/** How a permission request ended, judged on the location permissions alone. */
+	enum class LocationOutcome { GRANTED, APPROXIMATE_ONLY, DENIED_PERMANENTLY, DENIED_CAN_RETRY }
+
+	/**
+	 * Reads the [results] of a location request: granted, approximate only (Android 12+), or denied
+	 * for good (the system will no longer show its prompt, only Settings can help), or denied but
+	 * the user may be asked again.
+	 * Other permissions in the same request (notifications) do not matter for the outcome.
+	 */
+	fun locationOutcome(results: Map<String, Boolean>, shouldShowRationale: (String) -> Boolean): LocationOutcome = when {
+		areGranted(results, LOCATION_PERMISSIONS) -> LocationOutcome.GRANTED
+		results[Manifest.permission.ACCESS_COARSE_LOCATION] == true -> LocationOutcome.APPROXIMATE_ONLY
+		LOCATION_PERMISSIONS.none { shouldShowRationale(it) } -> LocationOutcome.DENIED_PERMANENTLY
+		else -> LocationOutcome.DENIED_CAN_RETRY
+	}
+
+	/**
+	 * The same for "Allow all the time". Once the user has declined it twice (backing out of its
+	 * Settings page counts), Android answers "denied" at once without showing anything.
+	 */
+	fun backgroundLocationOutcome(granted: Boolean, shouldShowRationale: (String) -> Boolean): LocationOutcome = when {
+		granted -> LocationOutcome.GRANTED
+		shouldShowRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION) -> LocationOutcome.DENIED_CAN_RETRY
+		else -> LocationOutcome.DENIED_PERMANENTLY
+	}
+
+}

@@ -33,11 +33,12 @@
             -->
             <ImageView
                 android:id="@+id/btnPreviousMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/primary_bt_oval_bg"
-                android:padding="@dimen/padding_small"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
+                android:background="@drawable/primary_bt_oval_bg_touch"
+                android:padding="@dimen/calendar_nav_padding"
                 android:src="@drawable/arrow_back_ios_24"
+                android:contentDescription="@string/previous_month"
                 app:tint="?attr/wfmsColorPrimaryLight" />
 
             <!-- FIX: CustomRegularDarkTextView → theme-aware color -->
@@ -48,19 +49,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Month, Year"
+                tools:text="January 2026"
                 android:textColor="?attr/wfmsColorOnSurface"
                 android:textStyle="bold" />
 
             <!-- FIX: same as prev button, consistent padding -->
             <ImageView
                 android:id="@+id/btnNextMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/primary_bt_oval_bg"
-                android:padding="@dimen/padding_small"
+                android:layout_width="@dimen/min_touch_target"
+                android:layout_height="@dimen/min_touch_target"
+                android:background="@drawable/primary_bt_oval_bg_touch"
+                android:padding="@dimen/calendar_nav_padding"
                 android:src="@drawable/arrow_forward_ios_24"
                 android:visibility="@{hideNextBt ? View.INVISIBLE : View.VISIBLE}"
+                android:contentDescription="@string/next_month"
                 app:tint="?attr/wfmsColorPrimaryLight" />
 
         </LinearLayout>
@@ -84,8 +86,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="S"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_sun"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -94,8 +96,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="M"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_mon"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -104,8 +106,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="T"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_tue"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -114,8 +116,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="W"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_wed"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -124,8 +126,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="T"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_thu"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -134,8 +136,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="F"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_fri"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
             <TextView
@@ -144,8 +146,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="S"
-                android:textColor="?attr/wfmsColorPrimary"
+                android:text="@string/weekday_initial_sat"
+                android:textColor="?attr/wfmsColorAccent"
                 android:textStyle="bold" />
 
         </LinearLayout>

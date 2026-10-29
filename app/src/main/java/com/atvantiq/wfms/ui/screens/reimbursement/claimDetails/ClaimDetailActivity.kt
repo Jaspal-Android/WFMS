@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -24,6 +22,7 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.CreateClaimActivit
 import com.atvantiq.wfms.utils.serverMessage
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,ReimbursementViewModel>() {
@@ -35,12 +34,9 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
         get() = ActivityBinding(R.layout.activity_claim_detail, ReimbursementViewModel::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        blockScreenCapture()
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         handleToolbar()
         setupSitesRecycler()
         setupActions()
@@ -134,7 +130,7 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
                         okLister = DialogInterface.OnClickListener { _, _ -> finish() }
                     )
                 } else {
-                    handleErrorResponse(code ?: 0, response.response?.message)
+                    handleRejectedResponse(code ?: 0, response.response?.message)
                 }
             }
             Status.ERROR -> {
@@ -150,12 +146,12 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val claim = response.response?.data
                         setDataOnUI(claim)
                     }
                     else -> {
-                        handleErrorResponse(response.response?.code ?: 0, response.response?.message)
+                        handleRejectedResponse(response.response?.code ?: 0, response.response?.message)
                     }
                 }
             }
@@ -166,13 +162,9 @@ class ClaimDetailActivity : BaseActivity<ActivityClaimDetailBinding,Reimbursemen
         }
     }
 
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
-    }
-
     private fun handleError(throwable: Throwable?) {
         if (throwable is HttpException) {
-            if (throwable.code() == 401) {
+            if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                 tokenExpiresAlert()
             }else{
                 alertDialogShow(

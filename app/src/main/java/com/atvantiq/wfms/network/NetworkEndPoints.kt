@@ -27,6 +27,8 @@ object NetworkEndPoints {
 	const val workSiteDetails ="work/site/{work_site_id}/types"
 	const val workDetailByDate = "work/details"
 	const val attendanceEmpRemarks = "attendance/emp/remarks/{attendance_id}"
+	/*PM / OPS / admin records an attendance decision*/
+	const val attendanceApprove = "attendance/approve/{attendance_id}"
 	const val applyLeave  = "attendance/apply-leave"
 
 	/*Client*/
@@ -45,7 +47,7 @@ object NetworkEndPoints {
 	const val siteListByProject = "site/project/{project_id}"
 	const val siteById = "site/{id}"
 	const val createSite="site/create"
-	const val workSites = "work/sites/{employee_id}"
+	const val workAll = "work/all"
 	const val workSiteDetailsAdmin ="/work/site/progress/{work_site_id}"
 	const val approveWorkSite = "work/approve"
 
@@ -61,6 +63,7 @@ object NetworkEndPoints {
 
 	/*Send Geo Location*/
 	const val geoTrackingLocation="geo-tracking/location"
+	const val geoTrackingMyDay="geo-tracking/me/day"
 
 	/*Notification*/
 	const val notificationToken="notifications/notification-token"
@@ -70,6 +73,8 @@ object NetworkEndPoints {
 
 	/*All Projects*/
 	const val allProjects = "project/all?is_all=true&is_active=1"
+	/*Projects the signed-in PM manages today*/
+	const val managedProjects = "project/my-projects"
 
 	/*Get circle employes*/
 	const val circleEmployees = "circle/employee"
@@ -82,6 +87,9 @@ object NetworkEndPoints {
 
 	/*Claim by ID*/
 	const val claimById = "claim/{claim_id}"
+	/*PM / OPS / admin: claims to review, and the per-expense approval*/
+	const val claimsForReview = "claim/all"
+	const val approveClaim = "claim/approve"
 
 	/*Update / delete own claim (same path as claimById, different verb)*/
 	const val updateClaim = "claim/{claim_id}"

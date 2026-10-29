@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A site on Claim Approval: numbered circle, name, expense count and site amount; its expenses
+     are added into expensesContainer. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="number"
+            type="String" />
+
+        <variable
+            name="name"
+            type="String" />
+
+        <variable
+            name="expenseCount"
+            type="String" />
+
+        <variable
+            name="amount"
+            type="String" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/employee_avatar_size"
+                    android:layout_height="@dimen/employee_avatar_size"
+                    android:background="@drawable/bg_circle_primary_dark"
+                    android:gravity="center"
+                    android:importantForAccessibility="no"
+                    android:text="@{number}"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/default_text"
+                    android:textStyle="bold"
+                    tools:text="1" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_medium"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CustomLargeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{name}"
+                        android:textColor="?attr/wfmsColorOnSurface"
+                        android:textStyle="bold"
+                        tools:text="MOGA" />
+
+                    <TextView
+                        style="@style/CustomRegularTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{expenseCount}"
+                        android:textColor="?attr/wfmsColorOnSurfaceVariant"
+                        tools:text="1 expense(s)" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{amount}"
+                    android:textColor="?attr/wfmsColorOnSurface"
+                    android:textStyle="bold"
+                    tools:text="₹ 200.00" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/expensesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

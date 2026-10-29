@@ -1,42 +1,37 @@
 package com.atvantiq.wfms.ui.screens
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.core.view.GravityCompat
-import androidx.navigation.ui.NavigationUI
 import com.atvantiq.wfms.R
-import com.atvantiq.wfms.base.BaseBindingActivity
+import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityDashboardBinding
-import com.atvantiq.wfms.databinding.NavHeaderDashboardBinding
-import com.atvantiq.wfms.models.loginResponse.User
 import com.atvantiq.wfms.ui.dialogs.ThemePickerBottomSheet
-import com.atvantiq.wfms.ui.screens.login.LoginActivity
-import com.atvantiq.wfms.utils.SessionCleanup
-import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.ui.screens.more.ProfileVM
+import com.atvantiq.wfms.utils.isSessionLost
+import com.atvantiq.wfms.utils.navigateToTab
+import com.atvantiq.wfms.utils.permissions.openBatteryOptimizationSettings
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.firebase.messaging.FirebaseMessaging
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.play.core.appupdate.*
 import com.google.android.play.core.install.model.AppUpdateType
@@ -45,10 +40,15 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.InstallStatus
 
 
+/**
+ * The app shell for every role: one header, the role's bottom tabs (see [DashboardTabs]) and the
+ * signed-in profile, which is refreshed from `GET /employee/me` on every launch.
+ */
 @AndroidEntryPoint
-class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
+class DashboardActivity : BaseActivity<ActivityDashboardBinding, ProfileVM>(){
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private var shownTabs: List<DashboardTab> = emptyList()
     private val navController: androidx.navigation.NavController
         get() = findNavController(R.id.nav_host_fragment_content_dashboard)
 
@@ -61,17 +61,29 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
     private lateinit var appUpdateManager: AppUpdateManager
 
     override val bindingActivity: ActivityBinding
-        get() = ActivityBinding(R.layout.activity_dashboard)
+        get() = ActivityBinding(R.layout.activity_dashboard, ProfileVM::class.java)
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        // Light status-bar icons over the green header, which is drawn behind the status bar.
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT))
         setSupportActionBar(binding.appBarDashboard.toolbar)
-        setupNavigationDrawer()
-
-        var userData = PrefMethods.getUserData(prefMain)
-        setupDataDrawerHeader(userData)
-        batterOptimizationCheck()
+        setupBottomNavigation()
+        // Once per launch: not again when the screen is recreated (theme change, rotation,
+        // process restore), which made the prompt appear over and over.
+        if (savedInstanceState == null) batteryOptimizationCheck()
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdates()
+        // Once per launch; the ViewModel keeps the answer across rotation.
+        if (savedInstanceState == null) viewModel.refresh()
+    }
+
+    override fun subscribeToEvents(vm: ProfileVM) {
+        vm.tabs.observe(this, Observer { tabs -> renderTabs(tabs) })
+        vm.profileResponse.observe(this, Observer { response ->
+            if (!response.consumeOnce()) return@Observer
+            // A failed refresh keeps the cached profile and tabs; only a lost session matters.
+            if (response.isSessionLost { it.code }) tokenExpiresAlert()
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -90,26 +102,19 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
         }
     }
 
-    private fun batterOptimizationCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val packageName = packageName
-            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                alertDialogShow(this,
-                    getString(R.string.battery_optimization),
-                    getString(R.string.battery_optimization_msg),
-                    getString(R.string.ok),
-                    { dialog, which ->
-                        dialog.dismiss()
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.data = Uri.parse("package:$packageName")
-                        startActivity(intent)
-                    },
-                    { dialog, which ->
-                        dialog.dismiss()
-                    })
-            }
-        }
+    private fun batteryOptimizationCheck() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (pm.isIgnoringBatteryOptimizations(packageName)) return
+        alertDialogShow(this,
+            getString(R.string.battery_optimization),
+            getString(R.string.battery_optimization_msg),
+            getString(R.string.ok),
+            { dialog, _ ->
+                dialog.dismiss()
+                openBatteryOptimizationSettings()
+            },
+            { dialog, _ -> dialog.dismiss() })
     }
 
     private fun requestPostNotificationsPermissionIfNeeded() {
@@ -124,111 +129,39 @@ class DashboardActivity : BaseBindingActivity<ActivityDashboardBinding>(){
         }
     }
 
-    private fun setupDataDrawerHeader(userData: User?) {
-        if (userData == null)
-            return
-        val headerView = binding.navView.getHeaderView(0)
-        val navHeaderBinding = NavHeaderDashboardBinding.bind(headerView)
-        navHeaderBinding.textView.text = userData?.email
-        navHeaderBinding.appNameText.text = getString(R.string.app_name)
-    }
-
-    private fun setupNavigationDrawer() {
-        val navView: NavigationView = binding.navView
-        //val navController = findNavController(R.id.nav_host_fragment_content_dashboard)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_dashboard,
-                R.id.nav_attendance,
-                R.id.nav_reimbursement,
-                R.id.nav_vendor,
-                R.id.nav_cab,
-                R.id.nav_material_reco,
-                R.id.nav_about,
-                R.id.nav_feedback
-            ), binding.drawerLayout
-        )
+    /**
+     * Each tab keeps its own back stack; Back from another tab returns to Dashboard, and Back on
+     * Dashboard leaves the app. The items themselves come from [renderTabs].
+     */
+    private fun setupBottomNavigation() {
+        appBarConfiguration = AppBarConfiguration(DashboardTab.entries.map { it.destinationId }.toSet())
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.changeTheme -> {
-                    // Implement your change theme logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    ThemePickerBottomSheet().show(supportFragmentManager, "ThemePicker")
-                    true
-                }
-                R.id.logout -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,
-                        getString(R.string.logout),
-                        getString(R.string.logout_confirmation),
-                        getString(R.string.yes),
-                        { dialog, which ->
-                            dialog.dismiss()
-                            performLogout()
-                        },
-                        { dialog, which ->
-                           dialog.dismiss()
-                        })
-                    true
-                }
-                R.id.nav_feedback -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_about -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_material_reco -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_cab -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this,getString(R.string.under_development))
-                    true
-                }
-
-                R.id.nav_vendor -> {
-                    // Implement your logout logic here
-                    binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    alertDialogShow(this, getString(R.string.under_development))
-                    true
-                }
-
-                else -> {
-                    // Handle other menu items with the navController
-                    val handled = NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    if (handled) {
-                        binding.drawerLayout.closeDrawer(GravityCompat.START)
-                    }
-                    handled
-                }
-            }
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.appBarDashboard.toolbarTitle.text = destination.label
         }
+        binding.bottomNav.setupWithNavController(navController)
     }
 
-    private fun performLogout() {
-        FirebaseMessaging.getInstance().deleteToken()
-        SessionCleanup.clearForLogout(this, prefMain)
-        Utils.jumpActivityClearTask(this, LoginActivity::class.java)
-        finish()
+    /**
+     * Rebuilds the bottom bar when the role's tabs change, e.g. once the first profile arrives.
+     * A tab that is no longer allowed falls back to Dashboard.
+     */
+    private fun renderTabs(tabs: List<DashboardTab>) {
+        if (tabs == shownTabs) return
+        shownTabs = tabs
+        val menu = binding.bottomNav.menu
+        menu.clear()
+        tabs.forEachIndexed { order, tab ->
+            menu.add(Menu.NONE, tab.destinationId, order, tab.titleRes).setIcon(tab.iconRes)
+        }
+        val currentId = navController.currentDestination?.id
+        val current = menu.findItem(currentId ?: return)
+        if (current != null) {
+            current.isChecked = true
+        } else if (currentId in appBarConfiguration.topLevelDestinations) {
+            navController.navigateToTab(DashboardTab.DASHBOARD.destinationId)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -7,16 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetEnterDaBinding
 import com.atvantiq.wfms.databinding.BottomSheetEnterOthersBinding
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import com.atvantiq.wfms.widgets.BaseBottomSheet
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
-class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String, path:String)->Unit) : BaseBottomSheet() {
-	
+class EnterOthersBottomSheet : BaseBottomSheet() {
+
+	// The callback is wired by the host after construction. The no-arg constructor lets the
+	// FragmentManager re-instantiate this sheet on restore (e.g. the process is killed while the
+	// camera is open), and an unwired sheet dismisses itself.
+	var onDataSubmitted: ((category: String, amount: String, path: String) -> Unit)? = null
+
 	lateinit var binding: BottomSheetEnterOthersBinding
 	private var imagePath: String? = null
 
@@ -57,6 +63,7 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		if (dismissIfCallbacksMissing(onDataSubmitted)) return
 		setImagePicker()
 		initListeners()
 	}
@@ -65,15 +72,17 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 		pickMediaHelper = PickMediaHelper(requireContext(), cameraLauncher, galleryLauncher, permissionLauncher, object : PickMediaHelper.Callback {
 			override fun onImagePicked(path: String, request: Int) {
 				if(path.isNotBlank()){
-					imagePath = pickMediaHelper.compressImageTo1MB(path) ?: path
-					binding.hasPreviewImage = true
-					var bitmap = pickMediaHelper.decodeBitmap(path)
-					binding.capturedImagePreview.setImageBitmap(bitmap)
+					pickMediaHelper.prepareImage(path, viewLifecycleOwner.lifecycleScope) { prepared ->
+						imagePath = prepared.uploadPath
+						binding.hasPreviewImage = true
+						binding.capturedImagePreview.setImageBitmap(prepared.preview)
+					}
 				}
 			}
 
 			override fun onError(message: String) {
 				binding.hasPreviewImage = false
+				showToast(requireContext(), message)
 			}
 		})
 		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
@@ -115,7 +124,7 @@ class EnterOthersBottomSheet(var onDataSubmitted:(category:String,amount:String,
 				// Submit the raw validated string (amountRaw is smart-cast non-null here), not
 				// parsedAmount.toString(): the Double round-trip corrupted currency
 				// ("10.20"->"10.2", ">=10M"->scientific notation).
-				onDataSubmitted.invoke(categoryRaw, amountRaw, imagePath ?: "")
+				onDataSubmitted?.invoke(categoryRaw, amountRaw, imagePath ?: "")
 				dismiss()
 			}
 			binding.btnCancel.setOnClickListener {

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A "create" card that opens a form: brand circle with the icon, title in the brand colour,
+     subtitle and a chevron. Used by the Sites tab's Add Site card. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="icon"
+            type="android.graphics.drawable.Drawable" />
+        <variable
+            name="title"
+            type="String" />
+        <variable
+            name="subtitle"
+            type="String" />
+        <variable
+            name="onClick"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin"
+        android:onClick="@{onClick}"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeColor="?attr/wfmsColorOutline"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            style="@style/CustomMoreRow">
+
+            <ImageView
+                style="@style/CustomMoreRowIcon"
+                android:background="@drawable/bg_circle_primary"
+                android:importantForAccessibility="no"
+                android:src="@{icon}"
+                app:tint="@color/white"
+                tools:src="@drawable/ic_add_white_24" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/CustomLargeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{title}"
+                    android:textColor="?attr/wfmsColorAccent"
+                    android:textStyle="bold"
+                    tools:text="@string/add_site" />
+
+                <TextView
+                    style="@style/CustomMoreRowSubtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small_extra"
+                    android:text="@{subtitle}"
+                    tools:text="@string/add_site_subtitle" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/forward_arrow_right_24"
+                app:tint="?attr/wfmsColorOnSurfaceVariant" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

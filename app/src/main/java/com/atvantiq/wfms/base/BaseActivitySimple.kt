@@ -1,11 +1,13 @@
 package com.atvantiq.wfms.base
 
+import com.atvantiq.wfms.constants.ValConstants
 import GenericBottomSheetDialog
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
@@ -13,7 +15,7 @@ import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
+import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
@@ -21,8 +23,8 @@ import com.atvantiq.wfms.ui.dialogs.ProgressDialog
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.SessionCleanup
 import com.atvantiq.wfms.utils.ThemeManager
+import com.atvantiq.wfms.utils.isUnauthorized
 import com.atvantiq.wfms.utils.Utils
-import com.facebook.stetho.common.Util
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
@@ -48,6 +50,16 @@ abstract class BaseActivitySimple : AppCompatActivity() {
 
     open fun getBundle() {
 
+    }
+
+    /**
+     * Keeps this screen out of screenshots, screen recordings and the Recents thumbnail. For the
+     * screens that show a password or claim receipts. Debug builds stay capturable for QA.
+     */
+    protected fun blockScreenCapture() {
+        if (!BuildConfig.DEBUG) {
+            window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        }
     }
 
     fun hideSoftKeyboard(activity: Activity) {
@@ -99,11 +111,21 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         context: Context,
         title: String,
         message: String,
-        okLister: DialogInterface.OnClickListener,
+        okLister: DialogInterface.OnClickListener
+    ) = alertDialogShow(context, title, message, cancelable = true, okLister = okLister)
+
+    /** @param cancelable false when OK must be the only way out (e.g. the screen finishes on OK). */
+    fun alertDialogShow(
+        context: Context,
+        title: String,
+        message: String,
+        cancelable: Boolean,
+        okLister: DialogInterface.OnClickListener
     ) {
         val builder = AlertDialog.Builder(context)
         builder.setMessage(message)
         builder.setTitle(title)
+        builder.setCancelable(cancelable)
         builder.setPositiveButton(getString(R.string.ok), okLister)
         val alertDialog = builder.create()
         alertDialog.show()
@@ -167,31 +189,27 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
+    // Held until dismissed, so a second show cannot orphan the first dialog (see BaseFragmentSimple).
     fun showCircularProgress() {
-        progressCircularDialog = ProgressCircularDialog()
-        progressCircularDialog?.show(supportFragmentManager, progressCircularDialog?.tag)
+        if (progressCircularDialog != null) return
+        progressCircularDialog = ProgressCircularDialog().also { it.show(supportFragmentManager, null) }
     }
 
     fun dismissCircularProgress() {
-        if (progressCircularDialog != null) {
-            progressCircularDialog?.dismiss()
-            progressCircularDialog = null
-        }
+        progressCircularDialog?.dismissAllowingStateLoss()
+        progressCircularDialog = null
     }
 
     fun showProgress() {
-        progressDialog = ProgressDialog()
-        progressDialog?.show(supportFragmentManager, "")
+        if (progressDialog != null) return
+        progressDialog = ProgressDialog().also { it.show(supportFragmentManager, null) }
     }
 
+    // AllowingStateLoss: a response can arrive after onSaveInstanceState, and dismiss() then throws.
     fun dismissProgress() {
-        if (progressDialog != null) {
-            progressDialog?.dismiss()
-            progressDialog = null
-        }
+        progressDialog?.dismissAllowingStateLoss()
+        progressDialog = null
     }
-
-    fun isLifeCycleResumed(): Boolean = lifecycle.currentState == Lifecycle.State.RESUMED
 
     fun shakeEditText(context: Context, view: View) {
         var animation: Animation = AnimationUtils.loadAnimation(context, R.anim.shake)
@@ -210,16 +228,50 @@ abstract class BaseActivitySimple : AppCompatActivity() {
         finish()
     }
 
+    private var sessionExpiredDialog: AlertDialog? = null
+
+    /**
+     * Several requests can fail with 401 at once. Show one dialog, and make it the only way
+     * forward: dismissing it would leave the user on a screen whose every request now fails.
+     */
     fun tokenExpiresAlert() {
-        alertDialogShow(
-            this,
-            getString(R.string.alert),
-            getString(R.string.unauthorized_access),
-            getString(R.string.login),
-            DialogInterface.OnClickListener() { dialog, which ->
+        if (sessionExpiredDialog?.isShowing == true || isFinishing || isDestroyed) return
+        sessionExpiredDialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.alert)
+            .setMessage(R.string.session_expired_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.login) { dialog, _ ->
                 dialog.dismiss()
                 performGlobalLogout()
-            })
+            }
+            .show()
+    }
+
+    /**
+     * Reports a failed request: the session-expired dialog for a 401, otherwise the user-facing
+     * message that [com.atvantiq.wfms.base.BaseViewModel] put on the error.
+     */
+    fun handleApiFailure(throwable: Throwable?) {
+        if (throwable.isUnauthorized()) {
+            tokenExpiresAlert()
+        } else {
+            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    /** Reports a response the server answered with a non-success `code`. */
+    fun handleRejectedResponse(code: Int?, message: String?) {
+        if (code == ValConstants.UNAUTHORIZED_CODE) {
+            tokenExpiresAlert()
+        } else {
+            alertDialogShow(this, getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+        }
+    }
+
+    override fun onDestroy() {
+        sessionExpiredDialog?.dismiss()
+        sessionExpiredDialog = null
+        super.onDestroy()
     }
 
     fun <T> showSelectionDialog(
@@ -235,7 +287,6 @@ abstract class BaseActivitySimple : AppCompatActivity() {
     ) {
         if (items.isNotEmpty()) {
             val dialog = GenericBottomSheetDialog(
-                context = this,
                 items = items,
                 layoutResId = layoutResId,
                 bind = bind,

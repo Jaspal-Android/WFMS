@@ -2,12 +2,13 @@ package com.atvantiq.wfms.data.repository.atten
 
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.models.attendance.approve.AttendanceApproveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
-import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignmentsResponse
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -26,9 +27,13 @@ interface IAttendanceRepo {
 
     suspend fun attendanceCheckInStatus(): CheckInStatusResponse
 
-    suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean): AttendanceDetailListResponse
+    suspend fun attendanceDetails(month: Int, year: Int, flag: Boolean, isSelf: Boolean): AttendanceDetailListResponse
 
-    suspend fun workSites(employeeId: String,date: String): WorkSitesResponse
+    suspend fun attendanceForApproval(page: Int, pageSize: Int, month: Int, year: Int): AttendanceDetailListResponse
+
+    suspend fun attendanceApprove(attendanceId: Long, params: JsonObject): AttendanceApproveResponse
+
+    suspend fun workAssignments(page: Int, pageSize: Int, fromDate: String, toDate: String, search: String?): WorkAssignmentsResponse
 
     suspend fun workSiteDetailsAdmin(workSiteId: Long, employeeId: String, date: String): WorkSiteDetailResponse
 

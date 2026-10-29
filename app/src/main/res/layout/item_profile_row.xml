@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One label / value row in My Profile. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="label" type="String" />
+        <variable name="value" type="String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small">
+
+        <TextView
+            style="@style/CustomRegularTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@{label}"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant" />
+
+        <TextView
+            style="@style/CustomRegularTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_small"
+            android:layout_weight="1.4"
+            android:gravity="end"
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            app:valueOrMissing="@{value}" />
+    </LinearLayout>
+</layout>

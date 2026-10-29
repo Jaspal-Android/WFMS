@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The tinted bar at the top of an attendance record card. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/wfmsColorSurfaceVariant" />
+    <stroke
+        android:width="@dimen/border_width_1dp"
+        android:color="?attr/wfmsColorOutline" />
+    <corners android:radius="@dimen/card_radius" />
+</shape>

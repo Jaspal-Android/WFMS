@@ -7,5 +7,10 @@ enum class AssignTaskError {
     ON_CIRCLE_ERROR,
     ON_SITE_ERROR,
     ON_TYPE_ERROR,
+
+    /** The selected types' activities are still being fetched; they are sent with the work. */
+    ON_ACTIVITY_LOADING,
+
+    /** A selected type has no activities (none set up, or the fetch failed). */
     ON_ACTIVITY_ERROR,
 }

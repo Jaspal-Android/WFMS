@@ -1,9 +1,16 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
 import android.app.Application
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.base.savedField
+import com.atvantiq.wfms.base.savedList
+import com.atvantiq.wfms.base.savedListValue
+import com.atvantiq.wfms.base.savedObject
+import com.atvantiq.wfms.base.savedValue
 import com.atvantiq.wfms.constants.ReimbursementData
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
@@ -25,7 +32,6 @@ import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.workSiteByDate.Site
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.utils.NoInternetException
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType.Companion.toMediaType
@@ -42,11 +48,15 @@ import javax.inject.Inject
 class CreateClaimVM @Inject constructor(
     application: Application,
     private val claimRepo: IClaimRepo,
-    private val creationRepo: CreationRepo
+    private val creationRepo: CreationRepo,
+    state: SavedStateHandle
 ) : BaseViewModel(application) {
 
-    var isOutstationExpense = ObservableField<Boolean>().apply { set(false) }
-    var isMultiSite = ObservableField<Boolean>().apply { set(false) }
+    // What the user typed, picked and added is kept in the SavedStateHandle, so a long claim survives
+    // Android ending the process while the user is in the camera or another app. The lists the
+    // pickers offer are fetched again.
+    var isOutstationExpense = state.savedField("outstation", false)
+    var isMultiSite = state.savedField("multiSite", false)
     val isSubmitting = ObservableField<Boolean>().apply { set(false) }
 
     /* Edit mode: header (date, sites, project, circle, category) is locked; only expenses change. */
@@ -54,27 +64,28 @@ class CreateClaimVM @Inject constructor(
     val lockedSitesSummary = ObservableField<String>().apply { set("") }
     private var lockedHeader: LockedClaimHeader? = null
 
-    var remarks = MutableLiveData<String>().apply { value = "" }
-    var date = ObservableField<String>().apply { set("") }
-    var purpose = ObservableField<String>().apply { set("") }
-    var selectedSingleSite: Site? = null
-    var selectedProjectId: Long? = null
-    var selectedCircleId: Long? = null
-    var selectedCircleCode: String? = null
-    var travelingEntriesList = MutableLiveData<List<TravelExpense>>().apply { value = emptyList() }
-    var daEntriesList = MutableLiveData<List<DAExpense>>().apply { value = emptyList() }
-    var hotelEntriesList = MutableLiveData<List<HotelExpense>>().apply { value = emptyList() }
-    var othersEntriesList = MutableLiveData<List<OtherExpense>>().apply { value = emptyList() }
-    var selectedSitesIdList = MutableLiveData<List<SiteData>>().apply { value = emptyList() }
+    var remarks: MutableLiveData<String> = state.getLiveData("remarks", "")
+    var date = state.savedField("date", "")
+    var purpose = state.savedField("purpose", "")
+    var selectedSingleSite: Site? by state.savedObject("singleSite")
+    var selectedProjectId: Long? by state.savedValue("projectId", null)
+    var selectedCircleId: Long? by state.savedValue("circleId", null)
+    var selectedCircleCode: String? by state.savedValue("circleCode", null)
+    var travelingEntriesList = state.savedList<TravelExpense>("travelEntries")
+    var daEntriesList = state.savedList<DAExpense>("daEntries")
+    var hotelEntriesList = state.savedList<HotelExpense>("hotelEntries")
+    var othersEntriesList = state.savedList<OtherExpense>("otherEntries")
+    var selectedSitesIdList = state.savedList<SiteData>("pickedSites")
 
-    /*Listing data*/
-    var singleSites: List<Site> = ArrayList()
+    /*Listing data: the sites offered for the date and the circles of the picked project are small and kept;
+      the project list and the project's site list are fetched again when needed.*/
+    var singleSites: List<Site> by state.savedListValue("singleSites")
     var multiSites: List<SiteData> = ArrayList()
     var projects: List<Project> = ArrayList()
-    var circles: List<Circle> = ArrayList()
+    var circles: List<Circle> by state.savedListValue("circles")
 
-    var clickEvents = MutableLiveData<CreateClaimClickEvents>()
-    var errorEvents = MutableLiveData<CreateClaimErrorHandler>()
+    var clickEvents = LiveEvent<CreateClaimClickEvents>()
+    var errorEvents = LiveEvent<CreateClaimErrorHandler>()
 
     private fun postClickEvent(event: CreateClaimClickEvents) {
         clickEvents.value = event
@@ -245,12 +256,45 @@ class CreateClaimVM @Inject constructor(
         hotelEntriesList.value = emptyList()
     }
 
+    /**
+     * The claim's day changed: the site, project and circle picked for another day no longer apply,
+     * and the day's own sites are fetched.
+     */
+    fun onDateChosen(day: String) {
+        date.set(day)
+        clearSelectedSingleSite()
+        singleSites = emptyList()
+        getWorkSitesByDate(day)
+    }
+
+    /**
+     * The chosen day's sites could not be loaded (offline, timeout, server error). The list is then
+     * empty because nothing arrived, not because no site was assigned, so Site offers a retry.
+     */
+    var sitesLoadFailed = false
+        private set
+
     /*Work Site By Date API Call*/
     var workSiteByDateResponse = MutableLiveData<ApiState<WorkSiteByDateResponse>>()
-    fun getWorkSitesByDate(date: String) {
+
+    /**
+     * The sites assigned on [day] become [singleSites]. A newer day cancels the older request, and an
+     * answer for a day that is no longer chosen is ignored, so a slow reply can't replace the list.
+     */
+    fun getWorkSitesByDate(day: String) {
+        sitesLoadFailed = false
         executeApiCall(
-            apiCall = { claimRepo.workSiteByDate(date) },
+            apiCall = { claimRepo.workSiteByDate(day) },
             liveData = workSiteByDateResponse,
+            onSuccess = { response ->
+                if (date.get() == day) {
+                    val loaded = response.code == ValConstants.SUCCESS_CODE
+                    sitesLoadFailed = !loaded
+                    singleSites = if (loaded) response.data?.sites.orEmpty() else emptyList()
+                }
+            },
+            onError = { if (date.get() == day) sitesLoadFailed = true },
+            cancelPrevious = true
         )
     }
 
@@ -270,6 +314,11 @@ class CreateClaimVM @Inject constructor(
             apiCall = { creationRepo.siteListByProject(projectId) },
             liveData = siteListByProjectResponse,
         )
+    }
+
+    // After the process was recreated the picked project's site list (multi-site claims) is not back.
+    init {
+        if (isMultiSite.get() == true) selectedProjectId?.let { getSiteListByProject(it) }
     }
 
     /** The claim being edited plus one of its sites, which supplies the claim's project and circle. */
@@ -378,7 +427,7 @@ class CreateClaimVM @Inject constructor(
         if (isEditMode.get() == true && lockedHeader == null) return
         if (!validateCreateClaim()) return
         if (!Utils.isInternet(getApplication())) {
-            createClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            createClaimResponse.value = ApiState.error(noInternetError())
             return
         }
         isSubmitting.set(true)
@@ -391,9 +440,20 @@ class CreateClaimVM @Inject constructor(
                 else claimRepo.createClaim(dataPart, files = fileParts)
             },
             liveData = createClaimResponse,
-            onSuccess = { isSubmitting.set(false) },
+            onSuccess = { onSubmitResponse(it.code) },
             onError = { isSubmitting.set(false) }
         )
+    }
+
+    /** True when the server accepted the claim: created (201), or updated (200) in edit mode. */
+    fun isClaimSaved(code: Int?): Boolean =
+        code == ValConstants.SUCCESS_CREATION_CODE ||
+            (isEditMode.get() == true && code == ValConstants.SUCCESS_CODE)
+
+    // Once the claim is saved Submit stays locked. Releasing it on every response would let a
+    // dismissed success dialog re-send the same claim and create a duplicate.
+    fun onSubmitResponse(code: Int?) {
+        if (!isClaimSaved(code)) isSubmitting.set(false)
     }
 
     /**

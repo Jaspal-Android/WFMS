@@ -12,6 +12,7 @@
         <item name="wfmsColorPrimary">@color/forest_primary</item>
         <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorAccent">@color/forest_primary</item>
         <item name="wfmsColorCta">@color/forest_cta</item>
         <item name="wfmsColorBackground">@color/forest_bg</item>
         <item name="wfmsColorSurface">@color/forest_surface</item>
@@ -35,6 +36,12 @@
         <item name="colorPrimary">?attr/wfmsColorPrimary</item>
         <item name="colorPrimaryVariant">?attr/wfmsColorPrimaryDark</item>
         <item name="colorSecondary">?attr/wfmsColorCta</item>
+        <!-- Foreground accent for dialog buttons, cursors and controls (light mode: the brand color) -->
+        <item name="colorAccent">?attr/wfmsColorAccent</item>
+        <item name="android:colorAccent">?attr/wfmsColorAccent</item>
+        <item name="colorControlActivated">?attr/wfmsColorAccent</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.WFMS.MaterialAlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.WFMS.AlertDialog</item>
         <item name="colorSurface">?attr/wfmsColorSurface</item>
         <item name="colorError">?attr/wfmsColorError</item>
         <item name="android:colorBackground">?attr/wfmsColorBackground</item>
@@ -42,9 +49,32 @@
         <item name="android:textColorSecondary">?attr/wfmsColorOnSurfaceVariant</item>
         <item name="android:statusBarColor">@color/forest_primary_dark</item>
 
+        <!-- One corner radius for every Material component (cards, text fields, dialogs, menus,
+             sheets). Fully rounded components (chips, FABs) keep shapeAppearanceCornerFull. -->
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.WFMS.Standard</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.WFMS.Standard</item>
+
+    </style>
+
+    <style name="ShapeAppearance.WFMS.Standard" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_radius</item>
     </style>
 
     <style name="Theme.WFMS" parent="Base.Theme.WFMS" />
+
+    <!-- Dialog buttons read colorPrimary; point them at the accent so they stay readable in dark
+         mode. One overlay per dialog family: MaterialAlertDialogBuilder and AlertDialog.Builder. -->
+    <style name="ThemeOverlay.WFMS.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">?attr/wfmsColorAccent</item>
+    </style>
+
+    <style name="ThemeOverlay.WFMS.AlertDialog" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <item name="colorPrimary">?attr/wfmsColorAccent</item>
+    </style>
 
     <style name="Theme.WFMS.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -63,6 +93,7 @@
         <item name="wfmsColorPrimary">@color/forest_primary</item>
         <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorAccent">@color/forest_primary</item>
         <item name="wfmsColorCta">@color/forest_cta</item>
         <item name="wfmsColorBackground">@color/forest_bg</item>
         <item name="wfmsColorSurface">@color/forest_surface</item>
@@ -100,6 +131,7 @@
         <item name="wfmsColorPrimary">@color/ocean_primary</item>
         <item name="wfmsColorPrimaryDark">@color/ocean_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/ocean_primary_light</item>
+        <item name="wfmsColorAccent">@color/ocean_primary</item>
         <item name="wfmsColorCta">@color/ocean_cta</item>
         <item name="wfmsColorBackground">@color/ocean_bg</item>
         <item name="wfmsColorSurface">@color/ocean_surface</item>
@@ -135,6 +167,7 @@
         <item name="wfmsColorPrimary">@color/rose_primary</item>
         <item name="wfmsColorPrimaryDark">@color/rose_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/rose_primary_light</item>
+        <item name="wfmsColorAccent">@color/rose_primary</item>
         <item name="wfmsColorCta">@color/rose_cta</item>
         <item name="wfmsColorBackground">@color/rose_bg</item>
         <item name="wfmsColorSurface">@color/rose_surface</item>
@@ -170,6 +203,7 @@
         <item name="wfmsColorPrimary">@color/indigo_primary</item>
         <item name="wfmsColorPrimaryDark">@color/indigo_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/indigo_primary_light</item>
+        <item name="wfmsColorAccent">@color/indigo_primary</item>
         <item name="wfmsColorCta">@color/indigo_cta</item>
         <item name="wfmsColorBackground">@color/indigo_bg</item>
         <item name="wfmsColorSurface">@color/indigo_surface</item>
@@ -205,6 +239,7 @@
         <item name="wfmsColorPrimary">@color/amber_primary</item>
         <item name="wfmsColorPrimaryDark">@color/amber_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/amber_primary_light</item>
+        <item name="wfmsColorAccent">@color/amber_primary</item>
         <item name="wfmsColorCta">@color/amber_cta</item>
         <item name="wfmsColorBackground">@color/amber_bg</item>
         <item name="wfmsColorSurface">@color/amber_surface</item>
@@ -241,6 +276,7 @@
         <item name="wfmsColorPrimary">@color/slate_primary</item>
         <item name="wfmsColorPrimaryDark">@color/slate_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/slate_primary_light</item>
+        <item name="wfmsColorAccent">@color/slate_primary</item>
         <item name="wfmsColorCta">@color/slate_cta</item>
         <item name="wfmsColorBackground">@color/slate_bg</item>
         <item name="wfmsColorSurface">@color/slate_surface</item>
@@ -279,10 +315,254 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <!-- The light parent's text colors would replace the app's, leaving typed text dark on a
+             dark sheet in dark mode; keep the app's roles, as on every screen. -->
+        <item name="android:textColorPrimary">?attr/wfmsColorOnSurface</item>
+        <item name="android:textColorSecondary">?attr/wfmsColorOnSurfaceVariant</item>
     </style>
 
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/top_corner_white_bg</item>
+    </style>
+
+    <!-- Icon-only button with a 48dp touch target and a borderless ripple; set src, tint and
+         contentDescription per use. -->
+    <!-- A filter chip (Work list): 48dp to touch, drawn 36dp tall by bg_filter_chip_*. -->
+    <style name="CustomFilterChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:layout_marginEnd">@dimen/margin_small</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/padding</item>
+        <item name="android:paddingEnd">@dimen/padding</item>
+        <item name="android:textSize">@dimen/default_medium_small_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomIconButton">
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">@dimen/icon_touch_inset</item>
+    </style>
+
+    <!-- Same, for 20dp icons -->
+    <style name="CustomIconButton.Small">
+        <item name="android:padding">@dimen/icon_touch_inset_small</item>
+    </style>
+
+    <!-- Circular "x" that removes an entry from a list; set contentDescription per use -->
+    <style name="CustomRemoveButton">
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:background">@drawable/bg_circle_touch_target</item>
+        <item name="android:src">@drawable/ic_close_16</item>
+        <item name="android:scaleType">center</item>
+        <item name="tint">?attr/wfmsColorPrimaryLight</item>
+    </style>
+
+    <!-- Native full-width bottom bar: card surface, labels always shown, the selected tab's icon
+         and label in the brand colour (label bold) with a pill behind the icon. -->
+    <style name="Widget.WFMS.BottomNavigation" parent="Widget.Material3.BottomNavigationView">
+        <item name="backgroundTint">?attr/wfmsColorSurface</item>
+        <item name="elevation">@dimen/elevation</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemIconTint">@color/bottom_nav_item</item>
+        <item name="itemTextColor">@color/bottom_nav_item</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.WFMS.BottomNavigation.Active</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.WFMS.BottomNavigation</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.WFMS.BottomNavigation.Indicator</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.WFMS.BottomNavigation</item>
+    </style>
+
+    <!-- Keep the bar the plain card colour: no Material3 tonal (brand-tinted) elevation. -->
+    <style name="ThemeOverlay.WFMS.BottomNavigation" parent="">
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+
+    <style name="TextAppearance.WFMS.BottomNavigation" parent="TextAppearance.Material3.LabelMedium" />
+
+    <style name="TextAppearance.WFMS.BottomNavigation.Active">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.WFMS.BottomNavigation.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/primary_soft</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.WFMS.Pill</item>
+    </style>
+
+    <style name="ShapeAppearance.WFMS.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- More tab settings rows: icon, title + subtitle, chevron -->
+    <style name="CustomMoreRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding</item>
+    </style>
+
+    <style name="CustomMoreRowIcon">
+        <item name="android:layout_width">@dimen/min_touch_target</item>
+        <item name="android:layout_height">@dimen/min_touch_target</item>
+        <item name="android:padding">@dimen/icon_touch_inset</item>
+    </style>
+
+    <style name="CustomMoreRowTitle" parent="CustomRegularTextView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
+    </style>
+
+    <style name="CustomMoreRowSubtitle" parent="CustomRegularTextView">
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Uppercase section caption above a card (SETTINGS, PERSONAL INFORMATION) -->
+    <style name="CustomSectionCaption" parent="CustomRegularTextView">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+        <item name="android:layout_marginTop">@dimen/margin</item>
+        <item name="android:layout_marginBottom">@dimen/margin_small</item>
+    </style>
+
+    <!-- Outlined form field (TextInputLayout) as used across the app's forms. -->
+    <style name="CustomOutlinedField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_small</item>
+        <item name="android:minHeight">@dimen/text_input_edit_text_min_height</item>
+        <item name="boxStrokeColor">?attr/wfmsColorOutline</item>
+        <item name="boxStrokeWidthFocused">@dimen/border_width_2dp</item>
+        <item name="hintTextColor">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <!-- A field that opens a searchable list (client, project, circle). -->
+    <style name="CustomOutlinedField.Picker">
+        <item name="endIconDrawable">@drawable/ic_arrow_down_24</item>
+        <item name="endIconMode">custom</item>
+        <item name="endIconTint">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Label / value pair on a detail card: grey label on the left, value on the right. -->
+    <style name="CustomFactLabel" parent="CustomRegularTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+    </style>
+
+    <style name="CustomFactValue" parent="CustomRegularTextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">@dimen/margin</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- One column of a three-column fact row (Site ID | Project | Circle): small label, value
+         truncated to one line. -->
+    <style name="CustomFactColumnLabel" parent="CustomSmallTextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurfaceVariant</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomFactColumnValue" parent="CustomRegularTextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_small_extra</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">?attr/wfmsColorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- A small fact tile (claim amount, approval total, date) inside a card. -->
+    <style name="CustomFactTile">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/info_chip_bg</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_small</item>
+    </style>
+
+    <style name="CustomFactTileLabel" parent="CustomFactColumnLabel">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- A small pill chip whose colours come from a status binding (step and status tags). -->
+    <style name="CustomStatusChip" parent="CustomSmallTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_small</item>
+        <item name="android:layout_marginEnd">@dimen/margin_small</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">@dimen/padding_medium</item>
+        <item name="android:paddingEnd">@dimen/padding_medium</item>
+        <item name="android:paddingTop">@dimen/padding_x_small</item>
+        <item name="android:paddingBottom">@dimen/padding_x_small</item>
+        <item name="android:textSize">@dimen/default_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Small pill tag on a card (a site's circle and added-by). Grey by default. -->
+    <style name="CustomTagChip" parent="CustomStatusChip">
+        <item name="android:background">@drawable/bg_tag_chip</item>
+        <item name="android:backgroundTint">@color/status_unmarked_bg</item>
+        <item name="android:textColor">@color/status_unmarked_text</item>
+    </style>
+
+    <!-- The tag that leads, in blue (a site's project). -->
+    <style name="CustomTagChip.Info">
+        <item name="android:backgroundTint">@color/status_leave_bg</item>
+        <item name="android:textColor">@color/status_leave_text</item>
+    </style>
+
+    <!-- A positive state, in green (an approval category's "Available"). -->
+    <style name="CustomTagChip.Success">
+        <item name="android:backgroundTint">@color/status_present_bg</item>
+        <item name="android:textColor">@color/status_present_text</item>
+    </style>
+
+    <!-- Tracking card buttons: full-width capsule, 13sp bold label with a 16dp icon -->
+    <style name="Widget.WFMS.TrackingButton" parent="Widget.Material3.Button">
+        <item name="android:insetTop">@dimen/tracking_button_inset</item>
+        <item name="android:insetBottom">@dimen/tracking_button_inset</item>
+        <item name="android:minHeight">@dimen/min_touch_target</item>
+        <item name="android:textSize">@dimen/default_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="iconSize">@dimen/padding</item>
+        <item name="iconGravity">textStart</item>
+        <item name="cornerRadius">@dimen/radius_pill</item>
+    </style>
+
+    <!-- Pause 15 min: brand colour on a soft brand fill -->
+    <style name="Widget.WFMS.TrackingButton.Filled">
+        <item name="backgroundTint">@color/primary_soft</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
+        <item name="iconTint">?attr/wfmsColorAccent</item>
+    </style>
+
+    <!-- Resume / Fix / Open Settings: brand outline -->
+    <style name="Widget.WFMS.TrackingButton.Outlined">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="strokeColor">?attr/wfmsColorAccent</item>
+        <item name="strokeWidth">@dimen/tracking_button_stroke</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
+        <item name="iconTint">?attr/wfmsColorAccent</item>
     </style>
 
     <!--Text View Styles-->
@@ -290,78 +570,41 @@
         <item name="android:textSize">@dimen/default_text</item>
     </style>
     <style name="CustomRegularDarkTextView" parent="CustomRegularTextView">
-        <item name="android:textColor">@color/black</item>
-    </style>
-    <style name="CustomRegularLightTextView" parent="CustomRegularTextView">
-        <item name="android:textColor">@color/white</item>
-    </style>
-    <style name="CustomRegularPrimaryTextView" parent="CustomRegularTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
 
     <style name="CustomSmallTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_small_text</item>
     </style>
-    <style name="CustomSmallDarkTextView" parent="CustomSmallTextView">
-        <item name="android:textColor">@color/black</item>
-    </style>
     <style name="CustomSmallLightTextView" parent="CustomSmallTextView">
         <item name="android:textColor">@color/white</item>
-    </style>
-    <style name="CustomSmallDarkPrimaryTextView" parent="CustomSmallTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimaryDark</item>
     </style>
 
     <style name="CustomMediumTextView" parent="android:Widget.TextView">
         <item name="android:textColor">?attr/wfmsColorOnSurface</item>
         <item name="android:textSize">@dimen/default_medium_small_text</item>
     </style>
-    <style name="CustomMediumLightTextView" parent="CustomMediumTextView">
-        <item name="android:textColor">@color/white</item>
-    </style>
     <style name="CustomMediumDarkTextView" parent="CustomMediumTextView">
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
     <style name="CustomMediumPrimaryTextView" parent="CustomMediumTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
-    </style>
-    <style name="CustomMediumBoldTextView" parent="CustomMediumTextView">
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
     </style>
 
     <style name="CustomLargeTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_large_text</item>
     </style>
     <style name="CustomLargeDarkTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">@color/black</item>
-    </style>
-    <style name="CustomLargePrimaryTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
-    </style>
-    <style name="CustomLargeLightTextView" parent="CustomLargeTextView">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/text_strong</item>
     </style>
     <style name="CustomBigTextView" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/default_extra_big_text</item>
-    </style>
-    <style name="CustomBigLightTextView" parent="CustomBigTextView">
-        <item name="android:textColor">@color/white</item>
     </style>
 
     <!--Edittext view styles-->
     <style name="CustomEditRegularStyle" parent="Widget.AppCompat.EditText">
         <item name="android:textSize">14sp</item>
         <item name="android:background">@drawable/et_bg</item>
-        <item name="android:paddingStart">@dimen/padding</item>
-        <item name="android:paddingEnd">@dimen/padding</item>
-        <item name="android:paddingTop">@dimen/padding_medium</item>
-        <item name="android:paddingBottom">@dimen/padding_medium</item>
-        <item name="android:minHeight">48dp</item>
-    </style>
-    <style name="CustomEditWireStyle" parent="@android:style/Widget.EditText">
-        <item name="android:textSize">14sp</item>
-        <item name="android:background">@drawable/et_trans_bg</item>
         <item name="android:paddingStart">@dimen/padding</item>
         <item name="android:paddingEnd">@dimen/padding</item>
         <item name="android:paddingTop">@dimen/padding_medium</item>
@@ -418,56 +661,15 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:gravity">center</item>
     </style>
-    <style name="CustomPrimaryButton" parent="CustomButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/primary_bt_bg</item>
-    </style>
-    <style name="CustomGreenButton" parent="CustomButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/day_background</item>
-    </style>
-    <style name="CustomSmallPrimaryButton" parent="CustomSmallButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/primary_bt_bg</item>
-    </style>
-    <style name="CustomSmallBlueButton" parent="CustomSmallButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/blue_bt_bg</item>
-    </style>
-    <style name="CustomSmallGreenButton" parent="CustomSmallButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/day_background</item>
-    </style>
     <style name="CustomRedButton" parent="CustomButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/cancel_bt_bg</item>
     </style>
-    <style name="CustomSmallRedButton" parent="CustomSmallButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/cancel_bt_bg</item>
-    </style>
     <style name="CustomPrimaryWireButton" parent="CustomButtonStyle">
-        <item name="android:textColor">?attr/wfmsColorPrimary</item>
+        <item name="android:textColor">?attr/wfmsColorAccent</item>
         <item name="android:background">@drawable/primary_wire_bg</item>
     </style>
-    <style name="ButtonStateSelector" parent="CustomButtonStyle">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:background">@drawable/button_state_selector</item>
-    </style>
-    <style name="CustomSelectableEditStyle" parent="CustomEditRegularStyle">
-        <item name="android:cursorVisible">false</item>
-        <item name="android:inputMethod">@null</item>
-        <item name="maxLines">1</item>
-        <item name="android:longClickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:drawableEnd">@drawable/ic_arrow_down_24</item>
-    </style>
 
-    <!--Dialog Animation-->
-    <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/from_left</item>
-        <item name="android:windowExitAnimation">@anim/to_right</item>
-    </style>
 
     <style name="AppTheme.DatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
         <!-- colorAccent drives selected day circle + OK/Cancel button text -->

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Attendance Review (spec 6.3): the record, read-only, then the decision form, or a note when the
+     record isn't waiting for this role. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="vm"
+            type="com.atvantiq.wfms.ui.screens.admin.ui.attendanceApproval.AttendanceApprovalVM" />
+
+        <variable
+            name="canMark"
+            type="Boolean" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/wfmsColorBackground"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        tools:context=".ui.screens.admin.ui.attendanceApproval.AttendanceReviewActivity">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/custom_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/margin"
+                android:paddingTop="@dimen/margin_small"
+                android:paddingBottom="@dimen/margin">
+
+                <include
+                    android:id="@+id/recordCard"
+                    layout="@layout/layout_attendance_record_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <include
+                    android:id="@+id/form"
+                    layout="@layout/layout_attendance_decision_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    app:vm="@{vm}" />
+
+                <com.atvantiq.wfms.widgets.GradientButton
+                    android:id="@+id/btnSubmit"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin"
+                    android:onClick="@{() -> vm.submitDecision()}"
+                    android:text="@string/submit_attendance_decision"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:visibility="@{safeUnbox(canMark) ? View.VISIBLE : View.GONE}" />
+
+                <include
+                    android:id="@+id/notWaiting"
+                    layout="@layout/layout_empty_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    app:icon="@{@drawable/ic_event_available}"
+                    app:message="@{@string/attendance_not_waiting}" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+</layout>

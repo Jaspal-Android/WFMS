@@ -8,17 +8,15 @@ import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.Bundle
 import android.provider.Settings
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.DisplayMetrics
 import android.view.View
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.atvantiq.wfms.R
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,6 +27,8 @@ import java.text.DecimalFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 
 object Utils {
@@ -114,36 +114,6 @@ object Utils {
     }
 
 
-    fun switchFragment(
-        clearStack: Boolean,
-        fm: FragmentManager,
-        frame: Int,
-        fragment: Fragment,
-        isStacked: Boolean
-    ) {
-        val tag = fragment.javaClass.simpleName
-
-        if (clearStack) {
-            fm.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        }
-        val transaction = fm.beginTransaction()
-        transaction.replace(frame, fragment, tag)
-        if (isStacked) {
-            transaction.addToBackStack(tag)
-        }
-        transaction.commit()
-    }
-
-    fun hideSoftKeyBoard(context: Activity) {
-        context.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-
-    }
-
-    fun hideKeyboardOnClick(context: Context, view: View) {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
-    }
-
     fun modelToString(`object`: Any): String {
         val gson = Gson()
         return gson.toJson(`object`)
@@ -154,56 +124,9 @@ object Utils {
         return gson.fromJson(json, clazz)!!
     }
 
-    fun dateToString(date: String): String {
-        var outDate: Date? = null
-        val formatIn = SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ss")
-        val formatOut = SimpleDateFormat("dd/mm/yyyy hh:mm:ss a")
-        try {
-            outDate = formatIn.parse(date)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-        }
-
-        return formatOut.format(outDate)
-    }
-
     fun isInternet(context: Context): Boolean {
         return ConnectivityReceiver.isNetworkAvailable(context)
     }
-
-    fun getSoftButtonsBarSizePort(activity: Activity): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            val metrics = DisplayMetrics()
-            activity.windowManager.defaultDisplay.getMetrics(metrics)
-            val usableHeight = metrics.heightPixels
-            activity.windowManager.defaultDisplay.getRealMetrics(metrics)
-            val realHeight = metrics.heightPixels
-            return if (realHeight > usableHeight)
-                realHeight - usableHeight
-            else
-                0
-        }
-        return 0
-    }
-
-    /*fun errorHandlingWithStatus(context: Context, e: Throwable): ErrorResponse {
-        var errorResponse = ErrorResponse(context.getString(R.string.exception_msg), "")
-        if (e is HttpException) {
-            val response = e.response()
-            try {
-                val jObjError = JSONObject(response.errorBody()?.string())
-                errorResponse.message = jObjError.optString("message")
-                errorResponse.statusCode = jObjError.optString("status")
-            } catch (e1: JSONException) {
-                errorResponse.message = e1.localizedMessage
-                e1.printStackTrace()
-            } catch (e1: IOException) {
-                errorResponse.message = e1.localizedMessage
-                e1.printStackTrace()
-            }
-        }
-        return errorResponse
-    }*/
 
     fun pxToDp(px: Int, context: Context): Int {
         val displayMetrics: DisplayMetrics = context.resources.displayMetrics
@@ -223,38 +146,6 @@ object Utils {
     fun showPassword(et: EditText?) {
         et?.transformationMethod = PasswordTransformationMethod()
         et?.setSelection(et.text.length)
-    }
-
-    /*
-    * Rate Us Dialog
-    * */
-    fun rateUsDialog(context: Context) {
-        val uri: Uri = Uri.parse("market://details?id=" + context.packageName)
-        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-        goToMarket.addFlags(
-            Intent.FLAG_ACTIVITY_NO_HISTORY or
-                    Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
-                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        )
-        try {
-            context.startActivity(goToMarket)
-        } catch (e: ActivityNotFoundException) {
-            context.startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + context.packageName)
-                )
-            )
-        }
-    }
-
-    /*
-    * Call to telephone number
-    * */
-    fun callNumber(context: Context, tellPhone: String) {
-        var callIntent = Intent(Intent.ACTION_DIAL)
-        callIntent.data = Uri.parse("tel:$tellPhone")
-        context.startActivity(callIntent)
     }
 
     fun openAppSettings(context: Context) {
@@ -285,17 +176,6 @@ object Utils {
         )
     }
 
-    fun shareApp(context: Context) {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Check out this awesome app!")
-            val appPackageName = context.packageName
-            val playStoreLink = "https://play.google.com/store/apps/details?id=$appPackageName"
-            putExtra(Intent.EXTRA_TEXT, "Download this app from the Play Store: $playStoreLink")
-        }
-        context.startActivity(Intent.createChooser(shareIntent, "Share app via"))
-    }
-
     fun roundOffDecimal(number: Double): Double? {
         return try {
             val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
@@ -310,16 +190,6 @@ object Utils {
         return String.format(Locale.ENGLISH, format, value)
     }
 
-    fun getBitmapFromView(view: View): Bitmap {
-        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        val bitmap =
-            Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-        return bitmap
-    }
-
     fun getGreeting(context: Context): String {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         val resources = context.resources
@@ -332,9 +202,18 @@ object Utils {
         }
     }
 
-    /*
-    * Write function with code and logic to convert lat and long to address
-    * */
+    private val geocodeExecutor: Executor =
+        Executors.newSingleThreadExecutor { runnable -> Thread(runnable, "geocoder").apply { isDaemon = true } }
+
+    private val mainThreadExecutor: Executor by lazy {
+        val handler = Handler(Looper.getMainLooper())
+        Executor { handler.post(it) }
+    }
+
+    /**
+     * Looks up the address for a location. Never blocks the caller, and always calls [onResult] on
+     * the main thread with either the address or the "address not found" text.
+     */
     @Suppress("DEPRECATION")
     fun getAddressFromLatLong(
         context: Context,
@@ -342,33 +221,28 @@ object Utils {
         longitude: Double,
         onResult: (String) -> Unit
     ) {
-        val geocoder = Geocoder(context, Locale.getDefault())
+        val appContext = context.applicationContext
+        val notFound = appContext.getString(R.string.address_not_found)
+        val geocoder = Geocoder(appContext, Locale.getDefault())
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(latitude, longitude, 1, object : Geocoder.GeocodeListener {
                 override fun onGeocode(addresses: MutableList<Address>) {
-                    if (addresses.isNotEmpty()) {
-                        onResult(formatAddress(addresses[0]))
-                    } else {
-                        onResult(context.getString(R.string.address_not_found))
-                    }
+                    val address = addresses.firstOrNull()?.let { formatAddress(it) } ?: notFound
+                    mainThreadExecutor.execute { onResult(address) }
                 }
 
                 override fun onError(errorMessage: String?) {
-                    onResult(context.getString(R.string.address_not_found))
+                    mainThreadExecutor.execute { onResult(notFound) }
                 }
             })
         } else {
-            try {
-                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-                if (!addresses.isNullOrEmpty()) {
-                    onResult(formatAddress(addresses[0]))
-                } else {
-                    onResult(context.getString(R.string.address_not_found))
-                }
-            } catch (e: Exception) {
-                onResult(context.getString(R.string.address_not_found))
-            }
+            AddressResolver(
+                geocode = { lat, lon -> geocoder.getFromLocation(lat, lon, 1)?.firstOrNull()?.let { formatAddress(it) } },
+                background = geocodeExecutor,
+                mainThread = mainThreadExecutor,
+                notFound = notFound
+            ).resolve(latitude, longitude, onResult)
         }
     }
 
@@ -388,27 +262,24 @@ object Utils {
     }
 
     /**
-     * Play's Prominent Disclosure: shown immediately before every location permission request.
-     * Not cancelable by tapping outside; the user must choose. [onCancel] runs when they decline.
+     * The prominent disclosure shown immediately before every location permission request (Google
+     * Play's prominent-disclosure policy). One button, Continue, which always goes straight to
+     * the system request: Apple rejected a Cancel button here (Guideline 5.1.1(iv)), and the system
+     * prompt is where the user allows or declines. Not cancelable by tapping outside or Back.
      */
-    fun showBackgroundLocationDisclosureDialog(
+    fun showLocationDisclosureDialog(
         context: Context,
         title: String,
         message: String,
-        onCancel: () -> Unit = {},
-        onAllowAndContinue: () -> Unit
+        onContinue: () -> Unit
     ) {
         MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
             .setCancelable(false)
-            .setPositiveButton(context.getString(R.string.allow_and_continue)) { dialog, _ ->
+            .setPositiveButton(context.getString(R.string.continue_label)) { dialog, _ ->
                 dialog.dismiss()
-                onAllowAndContinue()
-            }
-            .setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
-                onCancel()
+                onContinue()
             }
             .show()
     }
@@ -438,5 +309,15 @@ object Utils {
         view.background = gd
     }
 
+    /** Two initials for an avatar, as on iOS: "kamal sharma" → "KS", a single name "Jaspal" → "JA". */
+    fun nameInitials(name: String?): String {
+        val words = name.orEmpty().trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        return when (words.size) {
+            0 -> ""
+            1 -> words.first().take(INITIALS_LENGTH).uppercase()
+            else -> "${words.first().first()}${words.last().first()}".uppercase()
+        }
+    }
 
+    private const val INITIALS_LENGTH = 2
 }

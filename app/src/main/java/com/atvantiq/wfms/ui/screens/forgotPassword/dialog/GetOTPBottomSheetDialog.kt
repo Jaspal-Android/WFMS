@@ -6,15 +6,18 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseBindingBottomSheetFragment
 import com.atvantiq.wfms.databinding.BottomSheetDialogGetOtpBinding
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
-class GetOTPBottomSheetDialog(
-    var onSubmitOTP: (otp: String) -> Unit,
+class GetOTPBottomSheetDialog : BaseBindingBottomSheetFragment<BottomSheetDialogGetOtpBinding>() {
+
+    // Callbacks are wired by the host after construction. The no-arg constructor lets the
+    // FragmentManager re-instantiate this sheet on restore (process death, recreate() on a theme
+    // change) without an InstantiationException; an unwired sheet dismisses itself.
+    var onSubmitOTP: ((otp: String) -> Unit)? = null
     var onResendOTP: (() -> Unit)? = null
-) : BaseBindingBottomSheetFragment<BottomSheetDialogGetOtpBinding>() {
 
     private var otpCode: String = ""
 
@@ -26,6 +29,7 @@ class GetOTPBottomSheetDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (dismissIfCallbacksMissing(onSubmitOTP)) return
         if (savedInstanceState == null) {
             clearOtpInputs()
         }
@@ -135,8 +139,7 @@ class GetOTPBottomSheetDialog(
                 // Hide keyboard
                 val imm = context?.getSystemService(InputMethodManager::class.java)
                 imm?.hideSoftInputFromWindow(binding.btnSubmit.windowToken, 0)
-                onSubmitOTP.invoke(otpCode)
-                Toast.makeText(context, otpCode, Toast.LENGTH_SHORT).show()
+                onSubmitOTP?.invoke(otpCode)
             }
         }
         binding.resendOtpText.setOnClickListener { onResendOTP?.invoke() }

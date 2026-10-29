@@ -6,5 +6,5 @@
         android:startColor="?attr/wfmsColorPrimary"
         android:endColor="?attr/wfmsColorSuccess"
         android:type="linear" />
-    <corners android:radius="@dimen/card_radius_max" />
+    <corners android:radius="@dimen/card_radius" />
 </shape>

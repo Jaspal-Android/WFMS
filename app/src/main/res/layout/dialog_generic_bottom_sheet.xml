@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin"
+            android:importantForAccessibility="no"
             android:background="@drawable/ic_pull" />
 
         <!-- ── Title — FIX: CustomRegularDarkTextView → theme color ── -->
@@ -59,6 +60,18 @@
                 android:inputType="text"
                 android:padding="@dimen/padding_medium" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ── Shown when the search matches nothing ── -->
+        <TextView
+            android:id="@+id/emptyView"
+            style="@style/CustomRegularTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/no_options_found"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            android:visibility="gone" />
 
         <!-- ── RecyclerView — wrapped with maxHeight to prevent overflow ── -->
         <androidx.recyclerview.widget.RecyclerView

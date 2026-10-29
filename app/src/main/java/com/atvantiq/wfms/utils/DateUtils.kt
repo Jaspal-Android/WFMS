@@ -24,6 +24,11 @@ object DateUtils {
     private const val TIME_12_FORMAT = "hh:mm a"
     private const val API_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     private const val API_DISPLAY_FORMAT = "hh:mm a  dd-MM-yyyy"
+    private const val DAY_LABEL_FORMAT = "EEEE, d MMM"
+    private const val SHORT_TIME_FORMAT = "h:mm a"
+    private const val ISO_BASE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+    private const val DAY_MONTH_YEAR_FORMAT = "d MMM yyyy"
+    private val ISO_TIMESTAMP = Regex("""^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})?$""")
 
 
     fun showMonthYearPickerDialog(context: Context, month: Int?, year: Int?, param: (Int, Int) -> Unit
@@ -72,8 +77,8 @@ object DateUtils {
                 val calendar = Calendar.getInstance().apply {
                     set(year, monthOfYear, dayOfMonth)
                 }
-                val format = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault())
+                val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
+                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.US)
                 val strDate = format.format(calendar.time)
                 val formatDate = formatapi.format(calendar.time)
                 callBack.onDateSelected(strDate, formatDate)
@@ -82,26 +87,6 @@ object DateUtils {
             c.get(Calendar.MONTH),
             c.get(Calendar.DAY_OF_MONTH)
         )
-        datePickerDialog.show()
-    }
-
-    fun onDOBPickerClick(context: Context, callBack: DateCallBack) {
-        val calendar = Calendar.getInstance().apply { set(1990, 1, 1) }
-        val datePickerDialog = DatePickerDialog(
-            context, R.style.AppTheme_DatePickerDialog,
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                val selectedCalendar = Calendar.getInstance().apply {
-                    set(year, monthOfYear, dayOfMonth)
-                }
-                val format = SimpleDateFormat(DOB_FORMAT, Locale.getDefault())
-                val strDate = format.format(selectedCalendar.time)
-                callBack.onDateSelected(strDate, strDate)
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePickerDialog.datePicker.maxDate = Date().time
         datePickerDialog.show()
     }
 
@@ -117,8 +102,8 @@ object DateUtils {
                 val selectedCalendar = Calendar.getInstance().apply {
                     set(year, monthOfYear, dayOfMonth)
                 }
-                val format = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault())
+                val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
+                val formatapi = SimpleDateFormat(API_DATE_FORMAT, Locale.US)
                 val strDate = format.format(selectedCalendar.time)
                 val formatDate = formatapi.format(selectedCalendar.time)
                 callBack.onDateSelected(strDate, formatDate)
@@ -148,8 +133,8 @@ object DateUtils {
                     selectedHour > 12 -> selectedHour - 12
                     else -> selectedHour
                 }
-                val time = String.format("%d:%02d %s", hourIn12Format, selectedMinute, format)
-                val formatTime = String.format("%d:%02d", hourIn12Format, selectedMinute)
+                val time = String.format(Locale.getDefault(), "%d:%02d %s", hourIn12Format, selectedMinute, format)
+                val formatTime = String.format(Locale.US, "%d:%02d", hourIn12Format, selectedMinute)
                 callBack.onTimeSelected(time, formatTime)
             }, hour, minute, false
         )
@@ -175,7 +160,7 @@ object DateUtils {
     fun formatDate(date: String?): String {
         if (date.isNullOrEmpty()) return ""
         return try {
-            val df = SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS", Locale.getDefault())
+            val df = SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS", Locale.US)
             val c = df.parse(date)
             val df1 = SimpleDateFormat(DISPLAY_DATE_FORMAT, Locale.getDefault())
             df1.format(c)
@@ -193,7 +178,7 @@ object DateUtils {
 
     fun convertFrom24(inTime: String): String {
         return try {
-            val timeFormat24 = SimpleDateFormat(TIME_24_FORMAT, Locale.getDefault())
+            val timeFormat24 = SimpleDateFormat(TIME_24_FORMAT, Locale.US)
             val timeFormat12 = SimpleDateFormat(TIME_12_FORMAT, Locale.getDefault())
             val inTimeParsed = timeFormat24.parse(inTime)
             val formatted = timeFormat12.format(inTimeParsed)
@@ -211,6 +196,61 @@ object DateUtils {
         fun onTimeSelected(time: String, formatTime: String)
     }
 
+    /** [millis] as a local yyyy-MM-dd date, the API's date parameter format. */
+    fun formatYmd(millis: Long): String =
+        SimpleDateFormat(DATE_FORMAT, Locale.US).format(Date(millis))
+
+    /** A day heading such as "Friday, 25 Sep". */
+    fun formatDayLabel(millis: Long): String =
+        SimpleDateFormat(DAY_LABEL_FORMAT, Locale.getDefault()).format(Date(millis))
+
+    /** A local clock time such as "1:03 PM". */
+    fun formatShortTime(millis: Long): String =
+        SimpleDateFormat(SHORT_TIME_FORMAT, Locale.getDefault()).format(Date(millis))
+            .replace(Regex("am|pm", RegexOption.IGNORE_CASE)) { it.value.uppercase() }
+
+    /**
+     * Millis for an ISO 8601 timestamp, or null when [value] is missing or not in that form.
+     * Accepts any fractional precision and a `Z` or `±HH:MM` offset, as the API sends both
+     * ("2026-09-18T04:32:10Z", "2026-10-01T11:14:38.896602+00:00").
+     */
+    fun parseUtcIso(value: String?): Long? {
+        val match = ISO_TIMESTAMP.matchEntire(value?.trim().orEmpty()) ?: return null
+        val (base, fraction, offset) = match.destructured
+        val baseMillis = runCatching {
+            SimpleDateFormat(ISO_BASE_FORMAT, Locale.US).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+                isLenient = false
+            }.parse(base)?.time
+        }.getOrNull() ?: return null
+        val fractionMillis = fraction.padEnd(3, '0').take(3).toLongOrNull() ?: 0L
+        return baseMillis + fractionMillis - offsetMillis(offset)
+    }
+
+    private fun offsetMillis(offset: String): Long {
+        if (offset.isEmpty() || offset == "Z") return 0L
+        val sign = if (offset.startsWith("-")) -1 else 1
+        val digits = offset.drop(1).replace(":", "")
+        val hours = digits.take(2).toLongOrNull() ?: return 0L
+        val minutes = digits.drop(2).toLongOrNull() ?: 0L
+        return sign * (hours * 60 + minutes) * 60_000L
+    }
+
+    /** An API timestamp as a local clock time such as "9:35 AM", or null when it is missing. */
+    fun formatIsoShortTime(value: String?): String? = parseUtcIso(value)?.let(::formatShortTime)
+
+    /** A yyyy-MM-dd day as "23 Sep 2026", or null when it isn't one. */
+    fun formatYmdLabel(ymd: String?): String? = runCatching {
+        SimpleDateFormat(DATE_FORMAT, Locale.US).apply { isLenient = false }.parse(ymd.orEmpty())
+            ?.let { SimpleDateFormat(DAY_MONTH_YEAR_FORMAT, Locale.getDefault()).format(it) }
+    }.getOrNull()
+
+    /** [millis] as an ISO 8601 UTC timestamp, e.g. 2026-09-18T04:32:10Z (the API's time format). */
+    fun formatUtcIso(millis: Long): String =
+        SimpleDateFormat(API_ISO_FORMAT, Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }.format(Date(millis))
+
     fun formatApiDateToYMD(apiDate: String?): String? {
         return try {
             val trimmed = apiDate?.substringBefore(".")?.plus("Z")
@@ -218,7 +258,7 @@ object DateUtils {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
             val parsedDate = isoFormat.parse(trimmed)
-            val outputFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+            val outputFormat = SimpleDateFormat(DATE_FORMAT, Locale.US)
             outputFormat.format(parsedDate)
         } catch (e: Exception) {
             null
@@ -288,7 +328,7 @@ object DateUtils {
     }
 
     fun isStartDateBeforeEndDate(startDate:String,endDate:String): Boolean {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
         return try {
             val startDate = format.parse(startDate)
             val endDate = format.parse(endDate)
@@ -299,7 +339,7 @@ object DateUtils {
     }
 
     fun isEndDateAfterStartDate(startDate:String,endDate:String): Boolean {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val format = SimpleDateFormat(DATE_FORMAT, Locale.US)
         return try {
             val startDate = format.parse(startDate)
             val endDate = format.parse(endDate)
@@ -308,4 +348,14 @@ object DateUtils {
             false
         }
     }
+
+    /**
+     * "2026-09-23" as a localized long date ("September 23, 2026") for screen readers.
+     * Returns [date] unchanged when it is not a yyyy-MM-dd date.
+     */
+    fun formatSpokenDate(date: String, locale: Locale = Locale.getDefault()): String =
+        runCatching {
+            val parsed = SimpleDateFormat(DATE_FORMAT, Locale.US).parse(date) ?: return date
+            java.text.DateFormat.getDateInstance(java.text.DateFormat.LONG, locale).format(parsed)
+        }.getOrDefault(date)
 }

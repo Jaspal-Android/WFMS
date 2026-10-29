@@ -64,7 +64,7 @@
             android:layout_marginStart="@dimen/margin"
             android:layout_marginEnd="@dimen/margin"
             app:cardBackgroundColor="?attr/wfmsColorSurface"
-            app:cardCornerRadius="@dimen/card_radius_max"
+            app:cardCornerRadius="@dimen/card_radius"
             app:cardElevation="@dimen/elevation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -181,7 +181,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     app:cardBackgroundColor="?attr/wfmsColorSurface"
-                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardCornerRadius="@dimen/card_radius"
                     app:cardElevation="@dimen/elevation_small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -201,7 +201,7 @@
                             android:src="@drawable/ic_marker_on_24"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="?attr/wfmsColorPrimary" />
+                            app:tint="?attr/wfmsColorAccent" />
 
                         <!-- Sites & Expenses title -->
                         <TextView
@@ -228,8 +228,8 @@
                             android:gravity="center"
                             android:paddingHorizontal="@dimen/padding_small"
                             android:paddingVertical="@dimen/padding_x_small"
-                            android:text="@{@string/sites_count_calculation(claim.sites.size())}"
-                            android:textColor="?attr/wfmsColorPrimary"
+                            android:text="@{@plurals/sites_count_calculation(claim.sites.size(), claim.sites.size())}"
+                            android:textColor="?attr/wfmsColorAccent"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@id/tvSitesTitle"
                             app:layout_constraintEnd_toEndOf="parent"

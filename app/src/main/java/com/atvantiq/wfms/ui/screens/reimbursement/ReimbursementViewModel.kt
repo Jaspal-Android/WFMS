@@ -1,18 +1,17 @@
 package com.atvantiq.wfms.ui.screens.reimbursement
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.atvantiq.wfms.base.BaseViewModel
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.claims.IClaimRepo
-import com.atvantiq.wfms.data.repository.creation.CreationRepo
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.allClaims.Record
 import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.ui.screens.attendance.AttendanceClickEvents
-import com.atvantiq.wfms.utils.NoInternetException
+import com.atvantiq.wfms.utils.MonthYear
 import com.atvantiq.wfms.utils.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -23,7 +22,7 @@ class ReimbursementViewModel @Inject constructor(
     private val claimRepo: IClaimRepo
 ) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<ReimbursementClickEvents>()
+    var clickEvents = LiveEvent<ReimbursementClickEvents>()
 
     private fun postClickEvent(event: ReimbursementClickEvents) {
         clickEvents.value = event
@@ -32,13 +31,36 @@ class ReimbursementViewModel @Inject constructor(
     fun onCreateClaimClick() = postClickEvent(ReimbursementClickEvents.ON_CLICK_CREATE_CLAIM)
 
 
-    /*Get all claims*/
-    var allClaimsResponse = MutableLiveData<ApiState<AllClaimsResponse>>()
-    fun getAllClaims(page: Int, pageSize: Int) {
-        executeApiCall(
-            apiCall = { claimRepo.allClaims(page, pageSize) },
-            liveData = allClaimsResponse
-        )
+    /** The month on screen; opens on the current one. */
+    val month = MutableLiveData(MonthYear.current())
+
+    /** Claims in [month] (`total_records`). */
+    val claimCount = MutableLiveData<Int?>()
+
+    /** The employee's claims in [month], paged. ◀ ▶ step the month and reload from page 1. */
+    val claims = PagedList<AllClaimsResponse, Record>(
+        fetch = { page, pageSize ->
+            val shown = month.value ?: MonthYear.current()
+            claimRepo.allClaims(page, pageSize, shown.firstDay, shown.lastDay)
+        },
+        pageItems = { response ->
+            if (response.code == ValConstants.SUCCESS_CODE) {
+                claimCount.value = response.data?.totalRecords
+                response.data?.records.orEmpty()
+            } else {
+                null
+            }
+        }
+    )
+
+    fun showPreviousMonth() = showMonth(month.value?.previous())
+
+    fun showNextMonth() = showMonth(month.value?.next())
+
+    private fun showMonth(target: MonthYear?) {
+        month.value = target ?: return
+        claimCount.value = null
+        claims.reload()
     }
 
     /*Get Claim by ID */
@@ -55,10 +77,9 @@ class ReimbursementViewModel @Inject constructor(
     private var isDeleting = false
     fun deleteClaim(claimId: Long) {
         if (isDeleting) return
-        // executeApiCall does not invoke onError when offline, so check first; otherwise
-        // isDeleting would stay set and block every later delete on this screen.
+        // Fail before taking the lock, so an offline attempt cannot leave isDeleting set.
         if (!Utils.isInternet(getApplication())) {
-            deleteClaimResponse.value = ApiState.error(NoInternetException("No Internet Connection"))
+            deleteClaimResponse.value = ApiState.error(noInternetError())
             return
         }
         isDeleting = true

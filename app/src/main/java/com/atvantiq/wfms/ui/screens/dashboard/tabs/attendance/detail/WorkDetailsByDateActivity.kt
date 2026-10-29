@@ -1,9 +1,9 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
+import com.atvantiq.wfms.constants.ValConstants
+import android.view.View
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.SharingKeys
@@ -13,7 +13,7 @@ import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
 import com.atvantiq.wfms.utils.Utils
-import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding, AttendanceViewModel>() {
 
@@ -28,11 +28,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         setWorkList()
         fetchWorkDetailsByDate()
@@ -80,7 +76,7 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
             when (response.status) {
                 Status.SUCCESS -> {
                     dismissProgress()
-                    if (response.response?.code == 200) {
+                    if (response.response?.code == ValConstants.SUCCESS_CODE) {
                         if (response.response.data.isEmpty()) {
                             binding.isNoDataAvailable = true
                             showToast(
@@ -91,34 +87,16 @@ class WorkDetailsByDateActivity : BaseActivity<ActivityWorkDetailsByDateBinding,
                             binding.isNoDataAvailable = false
                             //adapter?.submitList(response.response.data)
                         }
-                    } else if (response.response?.code == 401) {
-                        tokenExpiresAlert()
-                        binding.isNoDataAvailable = true
                     } else {
                         binding.isNoDataAvailable = true
-                        alertDialogShow(
-                            this,
-                            getString(R.string.alert),
-                            response.response?.message
-                                ?: getString(R.string.something_went_wrong)
-                        )
+                        handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     dismissProgress()
                     binding.isNoDataAvailable = true
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {

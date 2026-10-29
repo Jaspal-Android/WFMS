@@ -27,14 +27,6 @@ class UtilsTest {
     }
 
     @Test
-    fun testDateToString() {
-        // Input: "2023-01-02T08:09:10"
-        val result = Utils.dateToString("2023-01-02T08:09:10")
-        // Output format: "dd/mm/yyyy hh:mm:ss a"
-        assertTrue(result.contains("2023"))
-    }
-
-    @Test
     fun testPxToDpAndDpToPx() {
         val mockDisplayMetrics = android.util.DisplayMetrics().apply { xdpi = 160f }
         val mockContext = org.mockito.Mockito.mock(android.content.Context::class.java)
@@ -66,5 +58,15 @@ class UtilsTest {
         val method = Utils::class.java.getDeclaredMethod("formatAddress", android.location.Address::class.java)
         method.isAccessible = true
         return method.invoke(Utils, address) as String
+    }
+
+    @Test
+    fun `name initials take the first and last word`() {
+        assertEquals("KS", Utils.nameInitials("kamal sharma"))
+        assertEquals("KS", Utils.nameInitials("  Kamal  Kumar   Sharma "))
+        assertEquals("KA", Utils.nameInitials("kamal"))
+        assertEquals("J", Utils.nameInitials("J"))
+        assertEquals("", Utils.nameInitials(null))
+        assertEquals("", Utils.nameInitials("   "))
     }
 }

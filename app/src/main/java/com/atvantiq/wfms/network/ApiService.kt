@@ -3,6 +3,8 @@ import com.atvantiq.wfms.models.activity.ActivityListByProjectTypeResponse
 import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.applyLeave.ApplyLeaveResponse
+import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.models.attendance.approve.AttendanceApproveResponse
 import com.atvantiq.wfms.models.attendance.attendanceDetails.AttendanceDetailListResponse
 import com.atvantiq.wfms.models.attendance.attendanceRemarks.AttendanceRemarksResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
@@ -19,8 +21,11 @@ import com.atvantiq.wfms.models.loginResponse.LoginResponse
 import com.atvantiq.wfms.models.loginWithOTP.RequestOtpResponse
 import com.atvantiq.wfms.models.notification.UpdateNotificationTokenResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
+import com.atvantiq.wfms.models.project.ManagedProjectsResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.reimbursement.allClaims.AllClaimsResponse
+import com.atvantiq.wfms.models.reimbursement.review.ClaimApproveResponse
+import com.atvantiq.wfms.models.reimbursement.review.ClaimReviewListResponse
 import com.atvantiq.wfms.models.reimbursement.create.CreateClaimResponse
 import com.atvantiq.wfms.models.reimbursement.delete.DeleteClaimResponse
 import com.atvantiq.wfms.models.reimbursement.detail.ClaimDetailResponse
@@ -36,7 +41,7 @@ import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.models.workSiteByDate.WorkSiteByDateResponse
 import com.atvantiq.wfms.models.workSites.approve.ApproveWorkSiteTypeResponse
 import com.atvantiq.wfms.models.workSites.workSiteDetails.WorkSiteDetailResponse
-import com.atvantiq.wfms.models.workSites.workSites.WorkSitesResponse
+import com.atvantiq.wfms.models.workSites.workAssignments.WorkAssignmentsResponse
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -44,39 +49,57 @@ import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import com.atvantiq.wfms.models.myDay.MyDayResponse
 
 interface ApiService {
 	/***
 	 * Network calls
 	 */
+	@Headers(AuthInterceptor.NO_AUTH_HEADER_LINE)
 	@POST(NetworkEndPoints.loginRequest)
 	suspend fun loginRequest(@Body params: JsonObject): LoginResponse
 
 	@GET(NetworkEndPoints.empDetails)
-	suspend fun empDetails(@Header("Authorization") token: String): EmpDetailResponse
+	suspend fun empDetails(): EmpDetailResponse
 
 	@POST(NetworkEndPoints.attendanceCheckIn)
-	suspend fun attendanceCheckIn(@Header("Authorization") token: String, @Body params: JsonObject): CheckInOutResponse
+	suspend fun attendanceCheckIn(@Body params: JsonObject): CheckInOutResponse
 
 	@POST(NetworkEndPoints.attendanceCheckOut)
-	suspend fun attendanceCheckOut(@Header("Authorization") token: String,@Body params: JsonObject): CheckInOutResponse
+	suspend fun attendanceCheckOut(@Body params: JsonObject): CheckInOutResponse
 
 	@GET(NetworkEndPoints.attendanceCheckInStatus)
-	suspend fun attendanceCheckInStatus(@Header("Authorization") token: String): CheckInStatusResponse
+	suspend fun attendanceCheckInStatus(): CheckInStatusResponse
 
+	/** A month of attendance; `is_self` limits it to the signed-in user's own (not their reports'). */
 	@GET(NetworkEndPoints.attendanceDetails)
-	suspend fun attendanceDetails(@Header("Authorization") token: String, @Query("month") month: Int,@Query("year") year: Int,@Query("is_export") flag: Boolean ): AttendanceDetailListResponse
+	suspend fun attendanceDetails(
+		@Query("month") month: Int,
+		@Query("year") year: Int,
+		@Query("is_export") flag: Boolean,
+		@Query("is_self") isSelf: Boolean
+	): AttendanceDetailListResponse
+
+	/** The attendance records a PM / OPS / admin reviews for a month, page by page. */
+	@GET(NetworkEndPoints.attendanceDetails)
+	suspend fun attendanceForApproval(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("month") month: Int,
+		@Query("year") year: Int,
+		@Query("is_all") isAll: Boolean = false,
+		@Query("is_export") isExport: Boolean = false
+	): AttendanceDetailListResponse
 
 	@GET(NetworkEndPoints.workAssignedAll)
 	suspend fun workAssignedAll(
-		@Header("Authorization") token: String,
 		@Query("page") page: Int,
 		@Query("page_size") page_size: Int,
 		@Query("search") search: String? = null,
@@ -84,18 +107,17 @@ interface ApiService {
 	): WorkAssignedResponse
 
 	@GET(NetworkEndPoints.workSiteDetails)
-	suspend fun workById(@Header("Authorization") token: String, @Path("work_site_id") workSiteId:Long): WorkDetailResponse
+	suspend fun workById(@Path("work_site_id") workSiteId:Long): WorkDetailResponse
 
 	@GET(NetworkEndPoints.workDetailByDate)
-	suspend fun workDetailByDate(@Header("Authorization") token: String, @Query("date") date: String): WorkDetailsByDateResponse
+	suspend fun workDetailByDate(@Query("date") date: String): WorkDetailsByDateResponse
 
 	@PUT(NetworkEndPoints.workAccept)
-	suspend fun workAccept(@Header("Authorization") token: String,@Path("work_site_id") workSiteId:Long): WorkDetailResponse
+	suspend fun workAccept(@Path("work_site_id") workSiteId:Long): WorkDetailResponse
 
 	@Multipart
 	@POST(NetworkEndPoints.workStart)
 	suspend fun workStart(
-		@Header("Authorization") token: String,
 		@Part("work_site_id") workSiteId: RequestBody,
 		@Part("latitude") latitude: RequestBody,
 		@Part("longitude") longitude: RequestBody,
@@ -103,67 +125,87 @@ interface ApiService {
 	): WorkDetailResponse
 
 	@POST(NetworkEndPoints.workEnd)
-	suspend fun workEnd(@Header("Authorization") token: String, @Body params: JsonObject): WorkDetailResponse
+	suspend fun workEnd(@Body params: JsonObject): WorkDetailResponse
 
 	@POST(NetworkEndPoints.workSelfAssign)
-	suspend fun workSelfAssign(@Header("Authorization") token: String, @Body params: JsonObject): SelfAssignResponse
+	suspend fun workSelfAssign(@Body params: JsonObject): SelfAssignResponse
 
+	/** Clients for the pickers; one large page, as the default page of 10 would drop clients. */
 	@GET(NetworkEndPoints.clientList)
-	suspend fun clientList(@Header("Authorization") token: String): ClientListResponse
+	suspend fun clientList(
+		@Query("page") page: Int = 1,
+		@Query("page_size") pageSize: Int = ValConstants.CLIENT_PICKER_PAGE_SIZE
+	): ClientListResponse
 
 	@GET(NetworkEndPoints.projectListByClientId)
-	suspend fun projectListByClientId(@Header("Authorization") token: String, @Path("client_id") clientId: Long, ): ProjectListByClientResponse
+	suspend fun projectListByClientId(@Path("client_id") clientId: Long, ): ProjectListByClientResponse
 
 	@GET(NetworkEndPoints.poNumberListByProject)
-	suspend fun poNumberListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): PoListByProjectResponse
+	suspend fun poNumberListByProject(@Path("project_id") projectId: Long): PoListByProjectResponse
 
 	@GET(NetworkEndPoints.circleByProject)
-	suspend fun circleByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): CircleListByProjectResponse
+	suspend fun circleByProject(@Path("project_id") projectId: Long): CircleListByProjectResponse
 
 	@GET(NetworkEndPoints.siteListByProject)
-	suspend fun siteListByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): SiteListByProjectResponse
+	suspend fun siteListByProject(@Path("project_id") projectId: Long): SiteListByProjectResponse
 
 	@GET(NetworkEndPoints.typeListByPo)
-	suspend fun typeListByPo(@Header("Authorization") token: String, @Path("po_id") poId: Long): TypeListByProjectResponse
+	suspend fun typeListByPo(@Path("po_id") poId: Long): TypeListByProjectResponse
 
 	@GET(NetworkEndPoints.activityListByPoType)
 	suspend fun activityListByPoType(
-		@Header("Authorization") token: String,
 		@Query("po_id") poId: Long,
 		@Query("type_id") typeId: Long
 	): ActivityListByProjectTypeResponse
 
 	@POST(NetworkEndPoints.geoTrackingLocation)
-	suspend fun sendLocation(@Header("Authorization") token: String, @Body params: JsonObject) : SendLocationResponse
+	suspend fun sendLocation(@Body params: JsonObject) : SendLocationResponse
+
+	/** The signed-in employee's own day; [date] is yyyy-MM-dd, or null for today. */
+	@GET(NetworkEndPoints.geoTrackingMyDay)
+	suspend fun myDay(@Query("date") date: String?): MyDayResponse
 
 	@POST(NetworkEndPoints.notificationToken)
-	suspend fun sendNotificationToken(@Header("Authorization") token: String, @Body params: JsonObject) : UpdateNotificationTokenResponse
+	suspend fun sendNotificationToken(@Body params: JsonObject) : UpdateNotificationTokenResponse
 
 	@GET(NetworkEndPoints.siteListAll)
-	suspend fun siteListAll(@Header("Authorization") token: String, @Query("page") page:Int,@Query("limit") limit:Int,@Query("is_active") is_active:Int): SitesListAllResponse
+	suspend fun siteListAll(@Query("page") page:Int,@Query("limit") limit:Int,@Query("is_active") is_active:Int): SitesListAllResponse
 
 	@POST(NetworkEndPoints.createSite)
-	suspend fun createSite(@Header("Authorization") token: String, @Body params: JsonObject): CreateSiteResponse
+	suspend fun createSite(@Body params: JsonObject): CreateSiteResponse
 
-	@GET(NetworkEndPoints.workSites)
-	suspend fun workSites(@Header("Authorization") token: String, @Path("employee_id") employeeId: String, @Query("date") date: String): WorkSitesResponse
+	/**
+	 * The work assignments Work Approval lists. The API also filters by employee, project, site, type,
+	 * activity, status, PO, visit, circle and assigner, and sorts; only the date range and the search
+	 * are used (it takes yyyy-MM-dd dates, and sorts newest first by default).
+	 */
+	@GET(NetworkEndPoints.workAll)
+	suspend fun workAssignments(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("from_date") fromDate: String,
+		@Query("to_date") toDate: String,
+		@Query("search") search: String? = null
+	): WorkAssignmentsResponse
 
 	@GET(NetworkEndPoints.workSiteDetailsAdmin)
-	suspend fun workSiteDetailsAdmin(@Header("Authorization") token: String, @Path("work_site_id") workSiteId: Long, @Query("employee_id") employeeId: String, @Query("date") date: String): WorkSiteDetailResponse
+	suspend fun workSiteDetailsAdmin(@Path("work_site_id") workSiteId: Long, @Query("employee_id") employeeId: String, @Query("date") date: String): WorkSiteDetailResponse
 
 	@POST(NetworkEndPoints.approveWorkSite)
-	suspend fun approveWorkSite(@Header("Authorization") token: String, @Body params: JsonArray): ApproveWorkSiteTypeResponse
+	suspend fun approveWorkSite(@Body params: JsonArray): ApproveWorkSiteTypeResponse
+
+	@POST(NetworkEndPoints.attendanceApprove)
+	suspend fun attendanceApprove(@Path("attendance_id") attendanceId: Long, @Body params: JsonObject): AttendanceApproveResponse
 
 	@POST(NetworkEndPoints.attendanceEmpRemarks)
-	suspend fun attendanceEmpRemarks(@Header("Authorization") token: String, @Path("attendance_id") attendanceId: Long,@Body params: JsonObject) : AttendanceRemarksResponse
+	suspend fun attendanceEmpRemarks(@Path("attendance_id") attendanceId: Long,@Body params: JsonObject) : AttendanceRemarksResponse
 
 	@POST(NetworkEndPoints.forgotPassword)
-	suspend fun forgotPassword(@Header("Authorization") token: String, @Body params: JsonObject): ForgotPasswordResponse
+	suspend fun forgotPassword(@Body params: JsonObject): ForgotPasswordResponse
 
 	@Multipart
 	@POST(NetworkEndPoints.applyLeave)
 	suspend fun applyLeave(
-		@Header("Authorization") token: String,
 		@Part("leave_type") leaveType: RequestBody,
 		@Part("from_date") fromDate: RequestBody,
 		@Part("to_date") toDate: RequestBody,
@@ -171,57 +213,80 @@ interface ApiService {
 		@Part attachment: MultipartBody.Part?
 	): ApplyLeaveResponse
 
+	@Headers(AuthInterceptor.NO_AUTH_HEADER_LINE)
 	@POST(NetworkEndPoints.requestOTP)
 	suspend fun requestOTP(@Body params: JsonObject): RequestOtpResponse
 
+	@Headers(AuthInterceptor.NO_AUTH_HEADER_LINE)
 	@POST(NetworkEndPoints.verifyOTP)
 	suspend fun verifyOTP(@Body params: JsonObject): LoginResponse
 
 	@GET(NetworkEndPoints.workSiteByDate)
-	suspend fun workSiteByDate(@Header("Authorization") token: String, @Query("date") date: String): WorkSiteByDateResponse
+	suspend fun workSiteByDate(@Query("date") date: String): WorkSiteByDateResponse
 
 	@GET(NetworkEndPoints.allProjects)
-	suspend fun allProjects(@Header("Authorization") token: String): AllProjectsResponse
+	suspend fun allProjects(): AllProjectsResponse
+
+	/** The projects the signed-in PM manages today; a PM starts the day on one of them. */
+	@GET(NetworkEndPoints.managedProjects)
+	suspend fun managedProjects(): ManagedProjectsResponse
 
 	@GET(NetworkEndPoints.circleEmployees)
-	suspend fun employeeByCircle(@Header("Authorization") token: String, @Query("code") circleId: String): EmployeeByCircleResponse
+	suspend fun employeeByCircle(@Query("code") circleId: String): EmployeeByCircleResponse
 
 	@Multipart
 	@POST(NetworkEndPoints.createClaim)
 	suspend fun createClaim(
-		@Header("Authorization") token: String,
 		@Part("data") data: RequestBody,
 		@Part files: List<MultipartBody.Part>
 	): CreateClaimResponse
 
+	/**
+	 * The employee's own claims, page by page, between two yyyy-MM-dd dates. The API filters
+	 * this list by date only (`date`, `date_filter`, `from_date`, `to_date`): no search or status.
+	 */
 	@GET(NetworkEndPoints.allClaims)
-	suspend fun allClaims(@Header("Authorization") token: String, @Query("page") page:Int,@Query("page_size") pageSize:Int ): AllClaimsResponse
+	suspend fun allClaims(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("from_date") fromDate: String,
+		@Query("to_date") toDate: String
+	): AllClaimsResponse
 
 	@GET(NetworkEndPoints.siteById)
-	suspend fun siteById(@Header("Authorization") token: String, @Path("id") siteId: Long): SiteDetailResponse
+	suspend fun siteById(@Path("id") siteId: Long): SiteDetailResponse
+
+	@GET(NetworkEndPoints.claimsForReview)
+	suspend fun claimsForReview(
+		@Query("page") page: Int,
+		@Query("page_size") pageSize: Int,
+		@Query("search") search: String?
+	): ClaimReviewListResponse
+
+	@POST(NetworkEndPoints.approveClaim)
+	suspend fun approveClaim(@Body params: JsonObject): ClaimApproveResponse
 
 	@GET(NetworkEndPoints.claimById)
-	suspend fun claimById(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): ClaimDetailResponse
+	suspend fun claimById(@Path("claim_id") claimId: Long): ClaimDetailResponse
 
 	@Multipart
 	@PUT(NetworkEndPoints.updateClaim)
 	suspend fun updateClaim(
-		@Header("Authorization") token: String,
 		@Path("claim_id") claimId: Long,
 		@Part("data") data: RequestBody,
 		@Part files: List<MultipartBody.Part>
 	): CreateClaimResponse
 
 	@DELETE(NetworkEndPoints.deleteClaim)
-	suspend fun deleteClaim(@Header("Authorization") token: String, @Path("claim_id") claimId: Long): DeleteClaimResponse
+	suspend fun deleteClaim(@Path("claim_id") claimId: Long): DeleteClaimResponse
 
     @GET(NetworkEndPoints.inventoryByProject)
-    suspend fun inventoryByProject(@Header("Authorization") token: String, @Path("project_id") projectId: Long): InventoryByProjectResponse
+    suspend fun inventoryByProject(@Path("project_id") projectId: Long): InventoryByProjectResponse
 
     @GET(NetworkEndPoints.myTargets)
-    suspend fun myTargets(@Header("Authorization") token: String, @Query("month") month: String?): MyTargetsResponse
+    suspend fun myTargets(@Query("month") month: String?): MyTargetsResponse
 
     @GET(NetworkEndPoints.myProjects)
-    suspend fun myProjects(@Header("Authorization") token: String, @Query("month") month: String?): MyProjectsResponse
+    suspend fun myProjects(@Query("month") month: String?): MyProjectsResponse
 
 }

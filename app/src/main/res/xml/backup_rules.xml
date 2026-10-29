@@ -3,4 +3,6 @@
     <exclude domain="sharedpref" path="wfms_secure_pref.xml"/>
     <exclude domain="sharedpref" path="wfms_secure_prefs.xml"/>
     <exclude domain="sharedpref" path="__androidx_security_crypto_encrypted_prefs_keyset__.xml"/>
+    <!-- Receipt and work photos waiting to be uploaded: useless on another device. -->
+    <exclude domain="file" path="WFMS/"/>
 </full-backup-content>
