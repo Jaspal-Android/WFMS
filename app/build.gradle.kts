@@ -55,7 +55,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = ciVersionCode ?: 21
-        versionName = ciVersionName ?: "1.1.5"
+        versionName = ciVersionName ?: "1.2.0"
 
         // Only the manifest needs the key (the Maps SDK reads it from there); it is deliberately
         // not exposed as a BuildConfig constant.

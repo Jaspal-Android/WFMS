@@ -509,5 +509,8 @@ jobs:
           packageName: com.atvantiq.wfms
           releaseFiles: release/*.aab
           track: production
-          status: completed
+          # Staged rollout: 20% of users first. Raise it (or halt) in Play Console once the
+          # release's crash and ANR rates look healthy.
+          status: inProgress
+          userFraction: 0.2
           mappingFile: release/mapping.txt
