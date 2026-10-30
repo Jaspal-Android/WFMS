@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Project picker: title and message, then a searchable list of projects (Choose), or only the
+     message (No project / Couldn't load), and the buttons for that state. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_pull" />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/CustomLargeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:accessibilityHeading="true"
+            android:accessibilityLiveRegion="polite"
+            android:textColor="?attr/wfmsColorOnSurface"
+            android:textStyle="bold"
+            tools:text="@string/project_picker_title" />
+
+        <TextView
+            android:id="@+id/message"
+            style="@style/CustomRegularTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:accessibilityLiveRegion="polite"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            tools:text="@string/project_picker_start_day_subtitle" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchLayout"
+            style="@style/CustomOutlinedField"
+            android:layout_marginTop="@dimen/margin"
+            android:hint="@string/project_picker_search_hint"
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="?attr/wfmsColorOnSurfaceVariant">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchField"
+                style="@style/CustomEditInputTextRegularStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Caps the list's height, so the buttons below stay on screen with many projects. -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/listContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/projectList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="@dimen/project_picker_list_max_height"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_project_option" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/noMatches"
+            style="@style/CustomRegularTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="@dimen/padding"
+            android:text="@string/project_picker_no_matches"
+            android:textColor="?attr/wfmsColorOnSurfaceVariant"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="@dimen/project_picker_progress_size"
+            android:layout_height="@dimen/project_picker_progress_size"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin"
+            android:contentDescription="@string/please_wait"
+            android:indeterminateTint="?attr/wfmsColorAccent"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSecondary"
+                style="@style/CustomPrimaryWireButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minHeight="@dimen/min_touch_target"
+                android:textStyle="bold"
+                tools:text="@string/cancel" />
+
+            <!-- The confirm button, or a spinner in its place while the request is sent. -->
+            <FrameLayout
+                android:id="@+id/primaryContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_weight="1">
+
+                <com.atvantiq.wfms.widgets.GradientButton
+                    android:id="@+id/btnPrimary"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/min_touch_target"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    tools:text="@string/start_your_day" />
+
+                <ProgressBar
+                    android:id="@+id/primaryProgress"
+                    android:layout_width="@dimen/project_picker_progress_size"
+                    android:layout_height="@dimen/project_picker_progress_size"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/please_wait"
+                    android:indeterminateTint="?attr/wfmsColorAccent"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

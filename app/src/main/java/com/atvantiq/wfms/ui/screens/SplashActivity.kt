@@ -2,56 +2,58 @@ package com.atvantiq.wfms.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.atvantiq.wfms.BuildConfig
 import com.atvantiq.wfms.R
-import com.atvantiq.wfms.base.BaseActivitySimple
-import com.atvantiq.wfms.constants.SharingKeys
-import com.atvantiq.wfms.constants.ValConstants
-import com.atvantiq.wfms.ui.screens.admin.SharedDashboardActivity
+import com.atvantiq.wfms.base.BaseActivity
+import com.atvantiq.wfms.databinding.ActivitySplashBinding
 import com.atvantiq.wfms.ui.screens.login.LoginActivity
 import com.atvantiq.wfms.utils.Utils
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
-class SplashActivity : BaseActivitySimple() {
+class SplashActivity : BaseActivity<ActivitySplashBinding, SplashVM>() {
 
     companion object {
         const val ACTION_LOCATION_NOTIFICATION = "com.atvantiq.wfms.action.LOCATION_NOTIFICATION"
         const val ACTION_PUSH_NOTIFICATION = "com.atvantiq.wfms.action.PUSH_NOTIFICATION"
-        private const val SPLASH_DELAY_MS = 2000L
+
+        // The splash stays up only as long as reading the session takes, but never flashes past
+        // faster than this. 0 routes as soon as the session is read.
+        private const val MIN_SPLASH_VISIBLE_MS = 600L
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var routed = false
+
+    override val bindingActivity: ActivityBinding
+        get() = ActivityBinding(R.layout.activity_splash, SplashVM::class.java)
+
+    override fun onCreateActivity(savedInstanceState: Bundle?) {
+        val overOpenTask = SplashRouting.isRelaunchOverOpenTask(
+            isTaskRoot, intent?.action, intent?.categories, isNotificationLaunch()
+        )
+        if (overOpenTask) {
+            finish()
+            return
+        }
         enableEdgeToEdge()
-        setContentView(R.layout.activity_splash)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        checkAppVersion()
-        if (isNotificationLaunch()) {
-            routeNext()
-        } else {
-            splashTimer()
-        }
+        binding.main.applySystemBarsAndImePadding()
+        binding.versionText.text = getString(R.string.version_label, BuildConfig.VERSION_NAME)
+        // A tapped notification goes straight through; a normal launch keeps the brand visible
+        // for a moment.
+        viewModel.resolve(minVisibleMs = if (isNotificationLaunch()) 0L else MIN_SPLASH_VISIBLE_MS)
+    }
+
+    override fun subscribeToEvents(vm: SplashVM) {
+        vm.destination.observe(this) { destination -> open(destination) }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         if (isNotificationLaunch()) {
-            routeNext()
+            viewModel.resolve(minVisibleMs = 0L)
         }
     }
 
@@ -59,57 +61,14 @@ class SplashActivity : BaseActivitySimple() {
         return intent?.action in setOf(ACTION_LOCATION_NOTIFICATION, ACTION_PUSH_NOTIFICATION)
     }
 
-    private fun checkAppVersion() {
-        findViewById<TextView>(R.id.versionText).text = "V${BuildConfig.VERSION_NAME}"
-    }
-
-    private fun splashTimer() {
-        // lifecycleScope cancels automatically on destroy, so routeNext() can never
-        // fire on a finished activity (avoids the leak + double-launch of the old Handler).
-        lifecycleScope.launch {
-            delay(SPLASH_DELAY_MS)
-            routeNext()
+    private fun open(destination: SplashTarget) {
+        if (routed) return
+        routed = true
+        val screen = when (destination) {
+            SplashTarget.LOGIN -> LoginActivity::class.java
+            SplashTarget.DASHBOARD -> DashboardActivity::class.java
         }
-    }
-
-    private fun routeNext() {
-        val token: String? = try {
-            PrefMethods.getUserToken(prefMain)
-        } catch (e: Exception) {
-            Log.e("SplashActivity", "Failed to read secure prefs even after recovery", e)
-            null
-        }
-
-        if (token.isNullOrBlank()) {
-            Utils.jumpActivity(this, LoginActivity::class.java)
-            finish()
-            return
-        }
-
-        val user = try {
-            PrefMethods.getUserData(prefMain)
-        } catch (e: Exception) {
-            Log.e("SplashActivity", "Failed to read user data", e)
-            null
-        }
-
-        if (user == null) {
-            Utils.jumpActivity(this, LoginActivity::class.java)
-            finish()
-            return
-        }
-
-        val role = user.role ?: ""
-        val permissions = user.permissions
-        val target = if (role.equals(ValConstants.ROLE_EMPLOYEE, ignoreCase = true)) {
-            DashboardActivity::class.java
-        } else {
-            SharedDashboardActivity::class.java
-        }
-
-        Utils.jumpActivityWithData(this, target, Bundle().apply {
-            putParcelableArrayList(SharingKeys.ROLE_PERMISSIONS, ArrayList(permissions.orEmpty()))
-        })
+        Utils.jumpActivity(this, screen)
         finish()
     }
 }

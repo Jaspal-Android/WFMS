@@ -1,24 +1,22 @@
 package com.atvantiq.wfms.ui.screens.attendance
 
 import android.app.Application
-import android.content.Intent
-import android.os.Build
+import com.atvantiq.wfms.base.LiveEvent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.atvantiq.wfms.base.BaseViewModel
-import com.atvantiq.wfms.data.prefs.PrefKeys
-import com.atvantiq.wfms.data.prefs.SecurePrefMain
+import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.data.repository.atten.IAttendanceRepo
 import com.atvantiq.wfms.data.repository.work.IWorkRepo
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.ui.screens.attendance.WorkFilter
 import com.atvantiq.wfms.models.inventory.UsedMaterial
+import com.atvantiq.wfms.models.work.workAssigned.Site
 import com.atvantiq.wfms.models.work.workAssigned.WorkAssignedResponse
 import com.atvantiq.wfms.models.work.workDetail.Type
 import com.atvantiq.wfms.models.work.workDetail.WorkDetailResponse
 import com.atvantiq.wfms.models.work.workDetailByDate.WorkDetailsByDateResponse
 import com.atvantiq.wfms.network.ApiState
-import com.atvantiq.wfms.services.LocationTrackingService
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,11 +32,10 @@ import javax.inject.Inject
 class AttendanceViewModel @Inject constructor(
     application: Application,
     private val workRepo: IWorkRepo,
-    private val attendanceRepo: IAttendanceRepo,
-    private val prefMain: SecurePrefMain
+    private val attendanceRepo: IAttendanceRepo
 ) : BaseViewModel(application) {
 
-    var clickEvents = MutableLiveData<AttendanceClickEvents>()
+    var clickEvents = LiveEvent<AttendanceClickEvents>()
     var itemPosition = MutableLiveData<Int>().apply { value = -1 }
     var currentWorkId: Long? = null
 
@@ -46,11 +43,13 @@ class AttendanceViewModel @Inject constructor(
     var searchQuery: String = ""
     var activeFilter: WorkFilter = WorkFilter.ALL
 
-    private val _isTracking = MutableLiveData<Boolean>(false)
-    val isTracking: LiveData<Boolean> get() = _isTracking
+    /** Work Management list: filtered by [searchQuery] and [activeFilter]. */
+    val workList = PagedList<WorkAssignedResponse, Site>(
+        fetch = { page, pageSize -> workRepo.workAssignedAll(page, pageSize, searchQuery, activeFilter.statusParam) },
+        pageItems = { if (it.code == ValConstants.SUCCESS_CODE) it.data.results else null }
+    )
 
     // Common LiveData for API responses
-    val workAssignedAllResponse = MutableLiveData<ApiState<WorkAssignedResponse>>()
     val workByIdResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
     val workDetailsByDateResponse = MutableLiveData<ApiState<WorkDetailsByDateResponse>>()
     val workAcceptResponse = MutableLiveData<ApiState<WorkDetailResponse>>()
@@ -60,45 +59,9 @@ class AttendanceViewModel @Inject constructor(
 
     // Click event handlers
     fun onSignInClick() = postClickEvent(AttendanceClickEvents.ON_SIGN_IN_CLICK)
-    fun onMyProgressClick() = postClickEvent(AttendanceClickEvents.ON_MY_PROGRESS_CLICK)
-    fun onSignInDetailsClick() = postClickEvent(AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK)
 
     private fun postClickEvent(event: AttendanceClickEvents) {
         clickEvents.value = event
-    }
-
-    // Location tracking methods
-    fun startTracking() {
-        _isTracking.value = true
-        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, true)
-        startService(LocationTrackingService::class.java)
-    }
-
-    fun stopTracking() {
-        _isTracking.value = false
-        prefMain.put(PrefKeys.IS_TRACKING_ACTIVE, false)
-        stopService(LocationTrackingService::class.java)
-    }
-
-    private fun startService(serviceClass: Class<*>) {
-        val serviceIntent = Intent(getApplication(), serviceClass)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getApplication<Application>().startForegroundService(serviceIntent)
-        } else {
-            getApplication<Application>().startService(serviceIntent)
-        }
-    }
-
-    private fun stopService(serviceClass: Class<*>) {
-        val serviceIntent = Intent(getApplication(), serviceClass)
-        getApplication<Application>().stopService(serviceIntent)
-    }
-
-    fun getWorkAssignedAll(page: Int, pageSize: Int) {
-        executeApiCall(
-            apiCall = { workRepo.workAssignedAll(page, pageSize, searchQuery, activeFilter.statusParam) },
-            liveData = workAssignedAllResponse
-        )
     }
 
     fun workById(workId: Long) {
@@ -121,7 +84,7 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workAccept(workSiteId) },
             liveData = workAcceptResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                if (response.code == ValConstants.SUCCESS_CODE) itemPosition.postValue(position) else itemPosition.postValue(
                     -1
                 )
             },
@@ -149,7 +112,7 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workStart(workIdBody, latitudeBody, longitudeBody, photoPart) },
             liveData = workStartResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                if (response.code == ValConstants.SUCCESS_CODE) itemPosition.postValue(position) else itemPosition.postValue(
                     -1
                 )
             },
@@ -200,7 +163,7 @@ class AttendanceViewModel @Inject constructor(
             apiCall = { workRepo.workEnd(params) },
             liveData = workEndResponse,
             onSuccess = { response ->
-                if (response.code == 200) itemPosition.postValue(position) else itemPosition.postValue(
+                if (response.code == ValConstants.SUCCESS_CODE) itemPosition.postValue(position) else itemPosition.postValue(
                     -1
                 )
             },

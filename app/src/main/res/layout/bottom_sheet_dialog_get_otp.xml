@@ -17,6 +17,7 @@
             android:layout_height="@dimen/margin_small_extra"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="@dimen/margin"
+            android:importantForAccessibility="no"
             android:src="@drawable/ic_pull" />
 
         <!-- ── Title ── -->
@@ -52,6 +53,7 @@
 
             <EditText
                 android:id="@+id/otp_box_1"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
@@ -59,6 +61,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
                 android:maxLength="1"
+                android:contentDescription="@{@string/otp_digit_description(1, @integer/otp_length)}"
+                android:importantForAutofill="no"
                 tools:text="1" />
 
             <Space
@@ -67,12 +71,15 @@
 
             <EditText
                 android:id="@+id/otp_box_2"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
+                android:contentDescription="@{@string/otp_digit_description(2, @integer/otp_length)}"
+                android:importantForAutofill="no"
                 android:maxLength="1" />
 
             <Space
@@ -81,12 +88,15 @@
 
             <EditText
                 android:id="@+id/otp_box_3"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
+                android:contentDescription="@{@string/otp_digit_description(3, @integer/otp_length)}"
+                android:importantForAutofill="no"
                 android:maxLength="1" />
 
             <Space
@@ -95,12 +105,15 @@
 
             <EditText
                 android:id="@+id/otp_box_4"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
+                android:contentDescription="@{@string/otp_digit_description(4, @integer/otp_length)}"
+                android:importantForAutofill="no"
                 android:maxLength="1" />
 
             <Space
@@ -109,12 +122,15 @@
 
             <EditText
                 android:id="@+id/otp_box_5"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
+                android:contentDescription="@{@string/otp_digit_description(5, @integer/otp_length)}"
+                android:importantForAutofill="no"
                 android:maxLength="1" />
 
             <Space
@@ -123,12 +139,15 @@
 
             <EditText
                 android:id="@+id/otp_box_6"
+                tools:ignore="LabelFor"
                 style="@style/EditOTPStyle"
                 android:background="@drawable/otp_box_background"
                 android:digits="0123456789"
                 android:gravity="center"
                 android:imeOptions="actionDone"
                 android:inputType="numberPassword"
+                android:contentDescription="@{@string/otp_digit_description(6, @integer/otp_length)}"
+                android:importantForAutofill="no"
                 android:maxLength="1" />
 
         </LinearLayout>
@@ -144,7 +163,7 @@
             android:paddingTop="@dimen/margin"
             android:paddingBottom="@dimen/margin"
             android:text="@string/resend_otp"
-            android:textColor="?attr/wfmsColorPrimary"
+            android:textColor="?attr/wfmsColorAccent"
             android:textStyle="bold"
             android:visibility="gone"
             tools:visibility="visible" />

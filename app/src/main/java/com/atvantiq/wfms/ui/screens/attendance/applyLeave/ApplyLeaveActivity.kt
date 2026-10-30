@@ -1,12 +1,15 @@
 package com.atvantiq.wfms.ui.screens.attendance.applyLeave
 
+import android.view.View
 import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.ValConstants
@@ -17,6 +20,7 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.dialogs.SimpleBottomSheetDialog
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.files.PickMediaHelper
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>() {
 
@@ -49,19 +53,33 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        setToolbar()
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
+        binding.applyLeaveToolbar.toolbarTitle.text = getString(R.string.apply_leave)
+        binding.applyLeaveToolbar.toolbarBackButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
         setImagePicker()
+        pickMediaHelper.restoreState(savedInstanceState)
+        // After rotation or Android ending the process, the form comes back from the ViewModel;
+        // the attachment's preview is redrawn here.
+        if (savedInstanceState != null) showRestoredAttachment()
     }
 
-    private fun setToolbar() {
-        binding.applyLeaveToolbar.toolbarTitle.text = getString(R.string.apply_leave)
-        binding.applyLeaveToolbar.toolbarBackButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        pickMediaHelper.saveState(outState)
+    }
+
+    private fun showRestoredAttachment() {
+        val attachment = viewModel.leaveAttachmentPath.get().orEmpty()
+        if (attachment.isEmpty()) return
+        lifecycleScope.launch {
+            val preview = withContext(Dispatchers.IO) { pickMediaHelper.decodeBitmap(attachment) }
+            if (preview == null) {
+                // The prepared file is gone; ask for it again rather than send the leave without it.
+                viewModel.leaveAttachmentPath.set("")
+                return@launch
+            }
+            binding.hasPreviewImage = true
+            binding.capturedImagePreview.setImageBitmap(preview)
         }
     }
 
@@ -74,15 +92,19 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
             object : PickMediaHelper.Callback {
                 override fun onImagePicked(path: String, request: Int) {
                     if (!path.isNullOrBlank()) {
-                        viewModel.leaveAttachmentPath.set(pickMediaHelper.compressImageTo1MB(path))
-                        binding.hasPreviewImage = true
-                        var bitmap = pickMediaHelper.decodeBitmap(path)
-                        binding.capturedImagePreview.setImageBitmap(bitmap)
+                        // The attachment is always the processed file. It used to be set to null
+                        // when compression failed, so the leave went in without its certificate.
+                        pickMediaHelper.prepareImage(path, lifecycleScope) { prepared ->
+                            viewModel.leaveAttachmentPath.set(prepared.uploadPath)
+                            binding.hasPreviewImage = true
+                            binding.capturedImagePreview.setImageBitmap(prepared.preview)
+                        }
                     }
                 }
 
                 override fun onError(message: String) {
                     binding.hasPreviewImage = false
+                    showToast(this@ApplyLeaveActivity, message)
                 }
             })
         pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)
@@ -123,12 +145,10 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
             showToast(this,response.response.message)
             viewModel.clearData()
             binding.hasPreviewImage = false
-        } else if (response.response?.code == ValConstants.UNAUTHORIZED_CODE) {
-            // The API reports auth failures in the body (HTTP 200 + code 401), so an expired
-            // session lands here and must route to login like every other screen.
-            tokenExpiresAlert()
-        } else{
-            alertDialogShow(this,response?.response?.message?:getString(R.string.something_went_wrong))
+        } else {
+            // The API reports auth failures in the body (HTTP 200 + code 401), which
+            // handleRejectedResponse routes to the login dialog.
+            handleRejectedResponse(response.response?.code, response.response?.message)
         }
     }
 
@@ -199,15 +219,9 @@ class ApplyLeaveActivity : BaseActivity<ActivityApplyLeaveBinding, ApplyLeaveVM>
         }
     }
 
-    private fun leaveTypeList(): MutableList<String> {
-        val list = resources.getStringArray(R.array.leave_types).toMutableList()
-        return list
-    }
-
     private fun leaveApplyBottomSheet() {
-        var simpleBottomSheetDialog = SimpleBottomSheetDialog(
-            this,
-            leaveTypeList(),
+        val simpleBottomSheetDialog = SimpleBottomSheetDialog(
+            resources.getStringArray(R.array.leave_types).toMutableList(),
             R.layout.item_generic_adapter,
             { view, item ->
                 view.findViewById<TextView>(R.id.text1).text = item

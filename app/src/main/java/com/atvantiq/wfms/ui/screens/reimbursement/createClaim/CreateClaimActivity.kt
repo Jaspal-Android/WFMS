@@ -1,5 +1,6 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim
 
+import android.view.View
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
@@ -8,8 +9,6 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -42,9 +41,11 @@ import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterDaBot
 import com.atvantiq.wfms.ui.screens.reimbursement.createClaim.dialogs.EnterOthersBottomSheet
 import com.atvantiq.wfms.utils.DateUtils
 import com.atvantiq.wfms.utils.serverMessage
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
 import java.util.Locale
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaimVM>() {
@@ -59,12 +60,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     private lateinit var selectedOthersEntriesAdapter: SelectedOtherEntriesAdapter
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
+        blockScreenCapture()
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setUpToolbar()
         setUpSelectedSitesRecycler()
         setUpSelectedTravelingEntriesRecycler()
@@ -133,8 +131,8 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         DateUtils.onDateClickWithLimit(this, object : DateUtils.DateCallBack {
             override fun onDateSelected(date: String, formatDate: String) {
                 binding.dateEt.error = null
-                viewModel.date.set(date)
-                viewModel.getWorkSitesByDate(date)
+                viewModel.onDateChosen(date)
+                if (viewModel.isMultiSite.get() != true) clearSingleSiteFields()
             }
         }, false)
     }
@@ -235,13 +233,14 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
-                        val sites = response.response?.data?.sites ?: emptyList()
-                        viewModel.singleSites = sites
+                    // The ViewModel keeps the day's sites (see getWorkSitesByDate).
+                    ValConstants.SUCCESS_CODE -> if (openSitesWhenLoaded) {
+                        openSitesWhenLoaded = false
+                        showSingleSitesOrNone()
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -251,9 +250,35 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
             Status.ERROR -> {
                 dismissProgress()
+                openSitesWhenLoaded = false
                 handleError(response.throwable)
             }
         }
+    }
+
+    /** Set by Retry on the Site field, so the list opens as soon as the day's sites arrive. */
+    private var openSitesWhenLoaded = false
+
+    private fun showSingleSitesOrNone() {
+        if (viewModel.singleSites.isEmpty()) {
+            alertDialogShow(this, getString(R.string.alert), getString(R.string.no_sites_available))
+        } else {
+            showSingleSiteSelectionDialog(viewModel.singleSites)
+        }
+    }
+
+    /** The day's sites didn't load: say so (they may exist) and fetch them again. */
+    private fun offerSitesRetry() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.alert)
+            .setMessage(R.string.sites_not_loaded)
+            .setPositiveButton(R.string.retry) { _, _ ->
+                val day = viewModel.date.get() ?: return@setPositiveButton
+                openSitesWhenLoaded = true
+                viewModel.getWorkSitesByDate(day)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
 
@@ -263,14 +288,14 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val projects = response.response?.data?.projects ?: emptyList()
                         viewModel.projects = projects
                         showAllProjectsSelectionDialog(projects)
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -291,13 +316,13 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val sites = response.response?.data ?: emptyList()
                         viewModel.multiSites = sites
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -319,15 +344,13 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                 showProgress()
             }
             Status.SUCCESS -> {
-                viewModel.onSubmitCompleted()
-                setSubmitEnabled(true)
                 dismissProgress()
                 val isEdit = viewModel.isEditMode.get() == true
                 val code = response.response?.code
-                val isSuccess = code == ValConstants.SUCCESS_CREATION_CODE ||
-                    (isEdit && code == ValConstants.SUCCESS_CODE)
                 when {
-                    isSuccess -> {
+                    viewModel.isClaimSaved(code) -> {
+                        // The claim now exists on the server, so Submit stays locked and the
+                        // dialog cannot be dismissed without leaving the screen.
                         setResult(RESULT_OK)
                         alertDialogShow(
                             this,
@@ -336,15 +359,14 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
                                 if (isEdit) R.string.claim_updated_successfully
                                 else R.string.claim_submitted_successfully
                             ),
-                            okLister = DialogInterface.OnClickListener { _, _ ->
-                                finish()
-                            }
-                        )
-
+                            cancelable = false
+                        ) { _, _ -> finish() }
                     }
 
                     else -> {
-                        handleErrorResponse(code ?: 0, response.response?.message)
+                        viewModel.onSubmitCompleted()
+                        setSubmitEnabled(true)
+                        handleRejectedResponse(code ?: 0, response.response?.message)
                     }
                 }
             }
@@ -413,9 +435,7 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             CreateClaimClickEvents.ON_MULTI_SITE_CLICK -> {
                 viewModel.isMultiSite.set(true)
                 viewModel.clearSelectedSingleSite()
-                binding.siteEt.setText("")
-                binding.projectEt.setText("")
-                binding.circleEt.setText("")
+                clearSingleSiteFields()
             }
 
             CreateClaimClickEvents.ON_LOCAL_CLAIM_CLICK -> {
@@ -434,14 +454,13 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
             }
 
             CreateClaimClickEvents.ON_SINGLE_SITE_DROPDOWN_CLICK -> {
-                if (viewModel.singleSites.isEmpty()) {
-                    alertDialogShow(
-                        this,
-                        getString(R.string.alert),
-                        getString(R.string.no_sites_available),
-                    )
+                if (viewModel.date.get().isNullOrEmpty()) {
+                    binding.dateEt.error = getString(R.string.please_select_date)
+                    showToast(this, getString(R.string.please_select_date))
+                } else if (viewModel.sitesLoadFailed) {
+                    offerSitesRetry()
                 } else {
-                    showSingleSiteSelectionDialog(viewModel.singleSites)
+                    showSingleSitesOrNone()
                 }
             }
 
@@ -496,17 +515,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         }
     }
 
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
-    }
-
     private fun handleError(throwable: Throwable?) {
         if (throwable is HttpException) {
-            if (throwable.code() == 401) {
+            if (throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                 tokenExpiresAlert()
             } else {
                 alertDialogShow(
@@ -541,38 +552,44 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
     }
 
     private fun showEnterDaBottomSheet() {
-        var dialog = EnterDaBottomSheet(getString(R.string.add_da_entery)) { amount, path ->
-            var daExpense = DAExpense(
-                selectedDaEntriesAdapter?.itemCount?.plus(1).toString(),
-                amount = amount,
-                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
-            )
-            viewModel.addDAExpense(daExpense)
+        val dialog = EnterDaBottomSheet.newInstance(getString(R.string.add_da_entery)).apply {
+            onDataSubmitted = { amount, path ->
+                val daExpense = DAExpense(
+                    selectedDaEntriesAdapter?.itemCount?.plus(1).toString(),
+                    amount = amount,
+                    receiptAttachments = if (path.isEmpty()) emptyList() else listOf(path)
+                )
+                viewModel.addDAExpense(daExpense)
+            }
         }
         dialog.show(supportFragmentManager, "EnterDaBottomSheet")
     }
 
     private fun showEnterHotelBottomSheet() {
-        var dialog = EnterDaBottomSheet(getString(R.string.add_hotel_entry)) { amount, path ->
-            var hotelExpense = HotelExpense(
-                selectedHotelEntriesAdapter?.itemCount?.plus(1).toString(),
-                amount = amount,
-                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
-            )
-            viewModel.addHotelExpense(hotelExpense)
+        val dialog = EnterDaBottomSheet.newInstance(getString(R.string.add_hotel_entry)).apply {
+            onDataSubmitted = { amount, path ->
+                val hotelExpense = HotelExpense(
+                    selectedHotelEntriesAdapter?.itemCount?.plus(1).toString(),
+                    amount = amount,
+                    receiptAttachments = if (path.isEmpty()) emptyList() else listOf(path)
+                )
+                viewModel.addHotelExpense(hotelExpense)
+            }
         }
         dialog.show(supportFragmentManager, "EnterHotelBottomSheet")
     }
 
     private fun showEnterOthersBottomSheet() {
-        var dialog = EnterOthersBottomSheet { category, amount, path ->
-            var othersExpense = OtherExpense(
-                selectedOthersEntriesAdapter?.itemCount?.plus(1).toString(),
-                category = category,
-                amount = amount,
-                receiptAttachments = if (path.isNullOrEmpty()) emptyList() else listOf(path)
-            )
-            viewModel.addOtherExpense(othersExpense)
+        val dialog = EnterOthersBottomSheet().apply {
+            onDataSubmitted = { category, amount, path ->
+                val othersExpense = OtherExpense(
+                    selectedOthersEntriesAdapter?.itemCount?.plus(1).toString(),
+                    category = category,
+                    amount = amount,
+                    receiptAttachments = if (path.isEmpty()) emptyList() else listOf(path)
+                )
+                viewModel.addOtherExpense(othersExpense)
+            }
         }
         dialog.show(supportFragmentManager, "EnterOtherBottomSheet")
     }
@@ -599,13 +616,23 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
         )
     }
 
+    private fun clearSingleSiteFields() {
+        binding.siteEt.setText("")
+        binding.projectEt.setText("")
+        binding.circleEt.setText("")
+    }
+
     private fun showSingleSiteSelectionDialog(siteList: List<Site>) {
         showSelectionDialog(
             items = siteList,
             title = getString(R.string.select_site),
-            layoutResId = R.layout.item_generic_adapter,
+            layoutResId = R.layout.item_site_choice,
             bind = { view, site ->
                 view.findViewById<TextView>(R.id.text1).text = site.siteName
+                // Address and project tell apart sites that share a name.
+                view.findViewById<TextView>(R.id.text2).text =
+                    listOfNotNull(site.siteAddress, site.projectName).filter { it.isNotBlank() }
+                        .joinToString(getString(R.string.work_detail_separator))
             },
             onItemSelected = {
                 binding.siteEt.error = null
@@ -616,9 +643,9 @@ class CreateClaimActivity : BaseActivity<ActivityCreateClaimBinding, CreateClaim
 
             },
             filterCondition = { site, query ->
-                site.siteName?.lowercase(Locale.getDefault())
-                    ?.contains(query.lowercase(Locale.getDefault()))
-                    ?: false
+                val needle = query.lowercase(Locale.getDefault())
+                listOfNotNull(site.siteName, site.siteAddress, site.projectName)
+                    .any { it.lowercase(Locale.getDefault()).contains(needle) }
             },
             emptyMessage = getString(R.string.no_data_available),
             retryAction = { },

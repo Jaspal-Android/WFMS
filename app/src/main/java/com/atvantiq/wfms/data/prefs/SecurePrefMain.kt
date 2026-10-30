@@ -1,8 +1,8 @@
 package com.atvantiq.wfms.data.prefs
 
 import android.content.Context
+import timber.log.Timber
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.ssas.jibli.data.prefs.SharedPrefPrint
@@ -28,15 +28,15 @@ class SecurePrefMain @Inject constructor(
             // A transient error (e.g. keystore briefly unavailable) must NOT destroy the
             // session — rethrow so the data survives and the next launch can recover.
             if (!isCorruptionError(firstError)) {
-                Log.e(TAG, "EncryptedSharedPreferences init failed (non-corruption). Preserving state.", firstError)
+                Timber.e(firstError, "EncryptedSharedPreferences init failed (non-corruption). Preserving state.")
                 throw firstError
             }
-            Log.w(TAG, "EncryptedSharedPreferences corrupted. Resetting secure state.", firstError)
+            Timber.w(firstError, "EncryptedSharedPreferences corrupted. Resetting secure state.")
             resetCorruptedState()
             try {
                 buildPrefs()
             } catch (secondError: Exception) {
-                Log.e(TAG, "EncryptedSharedPreferences re-init failed after reset.", secondError)
+                Timber.e(secondError, "EncryptedSharedPreferences re-init failed after reset.")
                 throw secondError
             }
         }
@@ -82,7 +82,7 @@ class SecurePrefMain @Inject constructor(
             File(spDir, "__androidx_security_crypto_encrypted_prefs_keyset__.xml")
                 .takeIf { it.exists() }?.delete()
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to delete encrypted shared preferences files", e)
+            Timber.e(e, "Failed to delete encrypted shared preferences files")
         }
         try {
             val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
@@ -91,7 +91,7 @@ class SecurePrefMain @Inject constructor(
                 keyStore.deleteEntry(alias)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to delete master key alias", e)
+            Timber.e(e, "Failed to delete master key alias")
         }
     }
 
@@ -109,7 +109,6 @@ class SecurePrefMain @Inject constructor(
     override fun deleteAll() { sharedPreferences.edit().clear().apply() }
 
     companion object {
-        private const val TAG = "SecurePrefMain"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     }
 }

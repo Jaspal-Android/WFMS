@@ -1,15 +1,13 @@
 package com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.detail
 
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,7 +28,7 @@ import com.atvantiq.wfms.utils.ThemeManager
 import com.atvantiq.wfms.utils.Utils
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 
 @AndroidEntryPoint
@@ -47,11 +45,7 @@ class AttendanceDetailActivity :
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         setWorkList()
         fetchAttendanceDetailFromBundle()
@@ -129,7 +123,7 @@ class AttendanceDetailActivity :
                     dismissProgress()
                     val resp = response.response
                     when (resp?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             if (resp.data.isEmpty()) {
                                 binding.isNoDataAvailable = true
                                 showToast(this, getString(R.string.no_work_details_found))
@@ -139,18 +133,9 @@ class AttendanceDetailActivity :
                             }
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                            binding.isNoDataAvailable = true
-                        }
-
                         else -> {
                             binding.isNoDataAvailable = true
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                resp?.message ?: getString(R.string.something_went_wrong)
-                            )
+                            handleRejectedResponse(resp?.code, resp?.message)
                         }
                     }
                 }
@@ -158,12 +143,7 @@ class AttendanceDetailActivity :
                 Status.ERROR -> {
                     dismissProgress()
                     binding.isNoDataAvailable = true
-                    (response.throwable as? HttpException)?.let {
-                        if (it.code() == 401) tokenExpiresAlert()
-                    } ?: showToast(
-                        this,
-                        response.throwable?.message ?: getString(R.string.something_went_wrong)
-                    )
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> showProgress()

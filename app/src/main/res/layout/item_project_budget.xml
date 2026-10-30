@@ -94,7 +94,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" sites  ·  "
+                    android:text="@string/budget_sites_separator"
                     android:textColor="?attr/wfmsColorOnSurfaceVariant"
                     android:textSize="@dimen/default_medium_small_text" />
 

@@ -25,7 +25,7 @@
             android:id="@+id/attendanceDetailToolbar"
             layout="@layout/custom_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            android:layout_height="wrap_content" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
@@ -58,7 +58,7 @@
                         android:layout_marginEnd="@dimen/margin"
                         android:layout_marginBottom="@dimen/margin_small"
                         app:cardBackgroundColor="?attr/wfmsColorSurface"
-                        app:cardCornerRadius="@dimen/card_radius_max"
+                        app:cardCornerRadius="@dimen/card_radius"
                         app:cardElevation="@dimen/elevation_small"
                         app:layout_collapseMode="parallax">
 
@@ -90,7 +90,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/margin_small_extra"
                                 android:contentDescription="@string/working_hours"
-                                android:textColor="?attr/wfmsColorPrimary"
+                                android:textColor="?attr/wfmsColorAccent"
                                 android:textSize="36sp"
                                 android:textStyle="bold"
                                 app:layout_constraintEnd_toEndOf="parent"

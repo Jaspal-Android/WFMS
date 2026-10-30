@@ -2,7 +2,6 @@ package com.atvantiq.wfms.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.DataBindingUtil
@@ -183,7 +182,7 @@ class CalendarView : LinearLayoutCompat {
             val dayCalendar = tempCalendar.clone() as Calendar
             dayCalendar.set(Calendar.DAY_OF_MONTH, i)
 
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
             val dateString = dateFormat.format(dayCalendar.time)
 
             // Check if the date exists in the API data

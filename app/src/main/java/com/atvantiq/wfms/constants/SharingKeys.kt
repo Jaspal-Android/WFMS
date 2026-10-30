@@ -8,15 +8,19 @@ object SharingKeys {
     const val DATE = "DATE"
     const val WORK_DATE = "workDate"
     const val attendanceRecord = "attendanceRecord"
+    /** The attendance decision a review screen hands back to its list. */
+    const val ATTENDANCE_ID = "ATTENDANCE_ID"
+    const val ATTENDANCE_STATUS = "ATTENDANCE_STATUS"
     const val WORK_POSITION = "WORK_POSITION"
     const val WORK_ID = "WORK_ID"
     const val REFRESH_ASSIGN_TASK = "2001"
-    const val ROLE_PERMISSIONS = "ROLE_PERMISSIONS"
     const val UPDATED_STATUS = "UPDATED_STATUS"
     const val SITE_ID = "SITE_ID"
     const val SITE_PURPOSE = "SITE_PURPOSE"
     const val TRAVELING_DETAILS = "TRAVELING_DETAILS"
     const val CLAIM_ID = "CLAIM_ID"
     const val EDIT_CLAIM_ID = "EDIT_CLAIM_ID"
+    /** The approval total a claim review hands back to its list. */
+    const val APPROVED_TOTAL = "APPROVED_TOTAL"
     const val USED_MATERIALS="used_materials"
 }

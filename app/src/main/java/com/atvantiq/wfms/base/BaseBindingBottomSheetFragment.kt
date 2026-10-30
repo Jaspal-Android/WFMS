@@ -11,7 +11,6 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.ui.dialogs.ProgressCircularDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -25,7 +24,7 @@ abstract class BaseBindingBottomSheetFragment<T : ViewDataBinding> :
 	lateinit var binding: T
 	var mContext: Context? = null
 	var mActivity: Activity? = null
-	private lateinit var progressCirluarDialog: ProgressCircularDialog
+	private var progressCircularDialog: ProgressCircularDialog? = null
 	abstract val fragmentBinding: FragmentBinding
 	abstract fun onCreateViewFragment(savedInstanceState: Bundle?)
 	
@@ -45,11 +44,6 @@ abstract class BaseBindingBottomSheetFragment<T : ViewDataBinding> :
 		binding = DataBindingUtil.inflate(inflater, fragmentBinding.layoutResId, container, false)
 		onCreateViewFragment(savedInstanceState)
 		return binding.root
-	}
-	
-	private fun initProgress() {
-		progressCirluarDialog = ProgressCircularDialog()
-
 	}
 	
 	inner class FragmentBinding(
@@ -143,15 +137,15 @@ abstract class BaseBindingBottomSheetFragment<T : ViewDataBinding> :
 		}
 	}
 	
+	// Held until dismissed, so a second show cannot orphan the first dialog (see BaseFragmentSimple).
 	fun showCircularProgress() {
-		progressCirluarDialog = ProgressCircularDialog()
-		progressCirluarDialog.show(requireFragmentManager(), "")
+		if (progressCircularDialog != null) return
+		progressCircularDialog = ProgressCircularDialog().also { it.show(parentFragmentManager, null) }
 	}
 	
 	fun dismissCircularProgress() {
-		if (progressCirluarDialog != null) {
-			progressCirluarDialog.dismiss()
-		}
+		progressCircularDialog?.dismissAllowingStateLoss()
+		progressCircularDialog = null
 	}
 	
 	override fun onDestroyView() {
@@ -160,7 +154,4 @@ abstract class BaseBindingBottomSheetFragment<T : ViewDataBinding> :
 			binding.unbind()
 		}
 	}
-	
-	fun isLifeCycleResumed() =
-		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
 }

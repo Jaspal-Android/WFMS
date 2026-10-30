@@ -7,14 +7,30 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-parcelize")
+    alias(libs.plugins.detekt)
 }
 
-// Load the secrets.properties file
+// Local builds read the git-ignored secrets.properties; CI supplies the same names as
+// environment variables. See secrets.properties.example.
 val secrets = Properties()
 file("../secrets.properties").takeIf { it.exists() }?.apply {
     secrets.load(inputStream())
+}
+
+val mapsApiKey: String? = System.getenv("GOOGLE_MAPS_API_KEY")?.takeIf { it.isNotBlank() }
+    ?: secrets.getProperty("GOOGLE_MAPS_API_KEY")?.takeIf { it.isNotBlank() }
+
+// Debug, test and lint builds work without the key (maps just do not render). A release must
+// never ship with a blank one, so fail it here instead of at runtime.
+val requestsRelease = gradle.startParameter.taskNames.any {
+    it.substringAfterLast(':').matches(Regex("(assemble|bundle)([A-Za-z]*Release)?"))
+}
+if (requestsRelease && mapsApiKey == null) {
+    throw GradleException(
+        "GOOGLE_MAPS_API_KEY is not set. Add it to secrets.properties (see " +
+            "secrets.properties.example) or export it as an environment variable."
+    )
 }
 
 val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
@@ -39,11 +55,11 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = ciVersionCode ?: 21
-        versionName = ciVersionName ?: "1.1.5"
+        versionName = ciVersionName ?: "1.2.0"
 
-        manifestPlaceholders["googleMapsApiKey"] = secrets.getProperty("GOOGLE_MAPS_API_KEY")
-        buildConfigField("String","GOOGLE_MAPS_API_KEY","\"" + secrets.getProperty("GOOGLE_MAPS_API_KEY") + "\"")
-        buildConfigField("String","PAYMENT_KEY","\"" + secrets.getProperty("PAYMENT_KEY") + "\"")
+        // Only the manifest needs the key (the Maps SDK reads it from there); it is deliberately
+        // not exposed as a BuildConfig constant.
+        manifestPlaceholders["googleMapsApiKey"] = mapsApiKey.orEmpty()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,6 +72,7 @@ android {
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -104,19 +121,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         dataBinding = true
         buildConfig = true
         viewBinding = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
 }
 
@@ -131,9 +145,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.security.crypto.ktx)
+    implementation(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -146,10 +160,6 @@ dependencies {
     // Coroutines Testing
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
-    // Hilt Testing
-    testImplementation("com.google.dagger:hilt-android-testing:2.56.2")
-    kaptTest("com.google.dagger:hilt-android-compiler:2.56.2")
-
     // Hilt
     kapt("com.google.dagger:hilt-android-compiler:2.56.2")
     implementation("com.google.dagger:hilt-android:2.56.2")
@@ -158,34 +168,18 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("com.facebook.stetho:stetho:1.5.1")
-    implementation("com.facebook.stetho:stetho-okhttp3:1.5.1")
+    debugImplementation("com.facebook.stetho:stetho:1.5.1")
+    debugImplementation("com.facebook.stetho:stetho-okhttp3:1.5.1")
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.0")
 
-    //Navigation Controller
-
-    // Views/Fragments integration
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
-    // Feature module support for Fragments
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.7.7")
-    // Chart Drawings
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    // Places API
+    // Location
     implementation(libs.play.services.location)
     //Circular Image View
     implementation("de.hdodenhof:circleimageview:3.1.0")
     //Google Maps
     implementation("com.google.android.gms:play-services-maps:19.0.0")
-    //Services Location
-    implementation("com.google.android.gms:play-services-location:21.0.1")
-    //Maps Utils
-    implementation("com.google.maps.android:android-maps-utils:2.4.0")
-    //Secure Pref
-    implementation(libs.androidx.security.crypto.ktx)
     //Lottie Files
     implementation("com.airbnb.android:lottie:6.6.6")
     //Slider
@@ -205,4 +199,12 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(rootProject.file("config/detekt/detekt.yml"))
+    baseline = file("detekt-baseline.xml")
+    source.setFrom("src/main/java", "src/test/java")
+    parallel = true
 }

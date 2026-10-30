@@ -1,14 +1,17 @@
 package com.atvantiq.wfms.di.modules
 
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.network.ApiService
+import com.atvantiq.wfms.network.AuthInterceptor
+import com.atvantiq.wfms.network.LogRedactor
 import com.atvantiq.wfms.network.NetworkEndPoints
 import com.atvantiq.wfms.BuildConfig
-import com.facebook.stetho.okhttp3.StethoInterceptor
+import com.atvantiq.wfms.debug.DebugTools
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.Strictness
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,33 +44,30 @@ class NetModule() {
     
     @Provides
     @Singleton
-    fun provideOkhttpClient(): OkHttpClient {
+    fun provideOkhttpClient(prefMain: SecurePrefMain): OkHttpClient {
         val client = OkHttpClient.Builder()
-        client.readTimeout(TIME_OUT, TimeUnit.MINUTES)
-        client.connectTimeout(TIME_OUT, TimeUnit.MINUTES)
-        val logging = HttpLoggingInterceptor().apply {
+        client.connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        client.readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        client.writeTimeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        val logging = HttpLoggingInterceptor { message ->
+            HttpLoggingInterceptor.Logger.DEFAULT.log(LogRedactor.redact(message))
+        }.apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
             } else {
                 HttpLoggingInterceptor.Level.NONE
             }
-            redactHeader("Authorization")
+            redactHeader(AuthInterceptor.AUTHORIZATION)
         }
-        client.addInterceptor { chain ->
-            val request = chain.request()
-                .newBuilder()
-                //  .addHeader("language", MApplication.language)
-                
-                .build()
-            chain.proceed(request)
-        }
+        // Registered before logging so the logged request shows the header (value is redacted).
+        client.addInterceptor(AuthInterceptor { prefMain.get(PrefKeys.LOGIN_TOKEN, "") })
         val protocols: MutableList<Protocol> = ArrayList()
         protocols.add(Protocol.HTTP_1_1)
         //protocols.add(Protocol.HTTP_2)
         client.protocols(protocols)
         client.addInterceptor(logging)
         if (BuildConfig.DEBUG) {
-            client.addNetworkInterceptor(StethoInterceptor())
+            DebugTools.networkInterceptor()?.let(client::addNetworkInterceptor)
         }
         return client.build()
     }
@@ -78,7 +78,6 @@ class NetModule() {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
             .baseUrl(baseUrl)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(okHttpClient)
             .build()
     }
@@ -88,6 +87,10 @@ class NetModule() {
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
 
     companion object {
-        const val TIME_OUT: Long = 2
+        // Connecting fails fast so a dead connection does not leave a spinner up for minutes.
+        // Read/write stay generous because claims and work photos are uploaded as multipart bodies.
+        const val CONNECT_TIMEOUT_SECONDS: Long = 15
+        const val READ_TIMEOUT_SECONDS: Long = 60
+        const val WRITE_TIMEOUT_SECONDS: Long = 60
     }
 }

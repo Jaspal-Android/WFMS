@@ -18,6 +18,7 @@
         <item name="wfmsColorPrimary">@color/forest_primary</item>
         <item name="wfmsColorPrimaryDark">@color/forest_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/forest_primary_light</item>
+        <item name="wfmsColorAccent">@color/forest_accent_dark</item>
         <item name="wfmsColorGradientEnd">@color/forest_gradient_end</item>
         <item name="wfmsColorCta">@color/forest_cta</item>
         <!-- Dark surfaces -->
@@ -52,6 +53,7 @@
         <item name="wfmsColorPrimary">@color/ocean_primary</item>
         <item name="wfmsColorPrimaryDark">@color/ocean_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/ocean_primary_light</item>
+        <item name="wfmsColorAccent">@color/ocean_accent_dark</item>
         <item name="wfmsColorGradientEnd">@color/ocean_gradient_end</item>
         <item name="wfmsColorCta">@color/ocean_cta</item>
         <item name="wfmsColorBackground">@color/dark_bg</item>
@@ -84,6 +86,7 @@
         <item name="wfmsColorPrimary">@color/rose_primary</item>
         <item name="wfmsColorPrimaryDark">@color/rose_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/rose_primary_light</item>
+        <item name="wfmsColorAccent">@color/rose_accent_dark</item>
         <item name="wfmsColorGradientEnd">@color/rose_gradient_end</item>
         <item name="wfmsColorCta">@color/rose_cta</item>
         <item name="wfmsColorBackground">@color/dark_bg</item>
@@ -116,6 +119,7 @@
         <item name="wfmsColorPrimary">@color/indigo_primary</item>
         <item name="wfmsColorPrimaryDark">@color/indigo_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/indigo_primary_light</item>
+        <item name="wfmsColorAccent">@color/indigo_accent_dark</item>
         <item name="wfmsColorGradientEnd">@color/indigo_gradient_end</item>
         <item name="wfmsColorCta">@color/indigo_cta</item>
         <item name="wfmsColorBackground">@color/dark_bg</item>
@@ -148,6 +152,7 @@
         <item name="wfmsColorPrimary">@color/amber_primary</item>
         <item name="wfmsColorPrimaryDark">@color/amber_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/amber_primary_light</item>
+        <item name="wfmsColorAccent">@color/amber_accent_dark</item>
         <item name="wfmsColorGradientEnd">@color/amber_gradient_end</item>
         <item name="wfmsColorCta">@color/amber_cta</item>
         <item name="wfmsColorBackground">@color/dark_bg</item>
@@ -180,6 +185,7 @@
         <item name="wfmsColorPrimary">@color/slate_primary</item>
         <item name="wfmsColorPrimaryDark">@color/slate_primary_dark</item>
         <item name="wfmsColorPrimaryLight">@color/slate_primary_light</item>
+        <item name="wfmsColorAccent">@color/slate_accent_dark</item>
         <item name="wfmsColorGradientEnd">@color/slate_gradient_end</item>
         <item name="wfmsColorCta">@color/slate_cta</item>
         <item name="wfmsColorBackground">@color/dark_bg</item>
