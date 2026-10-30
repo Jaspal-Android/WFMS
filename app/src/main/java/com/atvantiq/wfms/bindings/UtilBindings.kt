@@ -14,7 +14,7 @@ object UtilBindings {
     @BindingAdapter(value = ["wishText"])
     fun wishText(textView: TextView, text: String?) {
         val greetingText = Utils.getGreeting(textView.context)
-        textView.text = "$greetingText, $text"
+        textView.text = textView.context.getString(R.string.greeting_with_name_format, greetingText, text)
     }
 
     @JvmStatic
@@ -56,4 +56,17 @@ object UtilBindings {
         textView.text = if (workHours.isNullOrEmpty()) "--:--" else workHours
     }
 
+    /** Avatar initials for a name, see [Utils.nameInitials]. */
+    @JvmStatic
+    @BindingAdapter(value = ["initials"])
+    fun initials(textView: TextView, name: String?) {
+        textView.text = Utils.nameInitials(name)
+    }
+
+    /** A profile value, or a dash when the server did not send it. */
+    @JvmStatic
+    @BindingAdapter(value = ["valueOrMissing"])
+    fun valueOrMissing(textView: TextView, value: String?) {
+        textView.text = value?.takeIf { it.isNotBlank() } ?: textView.context.getString(R.string.value_missing)
+    }
 }

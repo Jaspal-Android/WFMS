@@ -6,12 +6,9 @@ import android.os.Bundle
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.databinding.ActivityAddSignInBinding
-import com.atvantiq.wfms.models.activity.ActivityData
 import com.atvantiq.wfms.models.circle.CircleData
 import com.atvantiq.wfms.models.client.Client
 import com.atvantiq.wfms.models.po.PoData
@@ -22,8 +19,9 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.dialogs.MultiSelectBottomSheetDialog
 import com.atvantiq.wfms.utils.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import java.util.Locale
+import com.atvantiq.wfms.constants.ValConstants
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 
 @AndroidEntryPoint
@@ -34,11 +32,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding.main.applySystemBarsAndImePadding()
         setUpToolbar()
         setDateTimeAttendance()
         getClientList()
@@ -87,7 +81,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 binding.activitiesEt.error = getString(R.string.select_type)
                 showToast(this, getString(R.string.select_type))
             } else {
-                showActivitySelectionDialog(viewModel.activities)
+                showActivitySelectionDialog(viewModel.activitySelection.options(viewModel.selectedTypeKeys()))
             }
         }
 
@@ -106,8 +100,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         viewModel.selectedPoNumberId = null
         viewModel.selectedCircleId = null
         viewModel.selectedSiteId = null
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
+        viewModel.clearTypes()
         getProjectListByClientId(selectedClient.id)
     }
 
@@ -122,8 +115,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         viewModel.selectedPoNumberId = null
         viewModel.selectedCircleId = null
         viewModel.selectedSiteId = null
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
+        viewModel.clearTypes()
         getPoNumberListByProject(selectedProject.id)
         getCircleListByProject(selectedProject.id)
         getSiteListByProject(selectedProject.id)
@@ -134,8 +126,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         binding.poEt.setText(selectedPo.poNumber)
         binding.typeEt.setText("")
         binding.activitiesEt.setText("")
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedActivityIdList?.clear()
+        viewModel.clearTypes()
         getTypeListByPo(selectedPo.id)
     }
 
@@ -186,9 +177,14 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     showToast(this, getString(R.string.select_type))
                 }
 
+                AssignTaskError.ON_ACTIVITY_LOADING -> showToast(this, getString(R.string.activities_still_loading))
+
+                // Activities are not shown here: say what is wrong with the type, and fetch again
+                // in case the first fetch failed.
                 AssignTaskError.ON_ACTIVITY_ERROR -> {
-                    binding.activitiesEt.error = getString(R.string.select_activity)
-                    showToast(this, getString(R.string.select_activity))
+                    binding.typeEt.error = getString(R.string.no_activities_for_type)
+                    showToast(this, getString(R.string.no_activities_for_type))
+                    viewModel.loadMissingActivities()
                 }
             }
         }
@@ -199,40 +195,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     vm.onSubmitCompleted()
                     dismissProgress()
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             val clients = response.response?.data?.clients ?: emptyList()
                             viewModel.clients = clients
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     vm.onSubmitCompleted()
                     dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -246,40 +221,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isProjectLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val projects = response.response?.data ?: emptyList()
                             viewModel.projects = projects
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     vm.isProjectLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -293,40 +247,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isPoLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val poNumbers = response.response?.data ?: emptyList()
                             viewModel.poNumbers = poNumbers
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     vm.isPoLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -340,39 +273,18 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isCircleLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             val circles = response.response?.data ?: emptyList()
                             viewModel.circles = circles
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     vm.isCircleLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -386,40 +298,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isSiteLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val sites = response.response?.data ?: emptyList()
                             viewModel.sites = sites
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     vm.isSiteLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -433,40 +324,19 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     vm.isTypeLoading.set(false)
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             // Handle success
                             val types = response.response?.data ?: emptyList()
                             viewModel.types = types
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     vm.isTypeLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -475,45 +345,23 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             }
         }
 
-        vm.activityListByProjectTypeResponse.observe(this) { response ->
+        vm.typeActivitiesResponse.observe(this) { response ->
             when (response.status) {
                 Status.SUCCESS -> {
                     vm.isActivityLoading.set(false)
-                    when (response.response?.code) {
-                        200 -> {
-                            // Handle success
-                            val activities = response.response?.data ?: emptyList()
-                            viewModel.activities = activities
-                        }
-
-                        401 -> {
+                    val failed = response.response.orEmpty().firstOrNull { it.response.code != ValConstants.SUCCESS_CODE }
+                    if (failed != null) {
+                        if (failed.response.code == ValConstants.UNAUTHORIZED_CODE) {
                             tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
+                        } else {
+                            alertDialogShow(this, getString(R.string.alert), failed.response.message)
                         }
                     }
                 }
 
                 Status.ERROR -> {
                     vm.isActivityLoading.set(false)
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -528,7 +376,7 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 Status.SUCCESS -> {
                     dismissProgress()
                     when (response.response?.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             showToast(
                                 this,
                                 response.response?.message
@@ -538,34 +386,13 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                             finish()
                         }
 
-                        401 -> {
-                            tokenExpiresAlert()
-                        }
-
-                        else -> {
-                            alertDialogShow(
-                                this,
-                                getString(R.string.alert),
-                                response.response?.message
-                                    ?: getString(R.string.something_went_wrong)
-                            )
-                        }
+                        else -> handleRejectedResponse(response.response?.code, response.response?.message)
                     }
                 }
 
                 Status.ERROR -> {
                     dismissProgress()
-                    val throwable = response.throwable
-                    if (throwable is HttpException) {
-                        if (throwable.code() == 401) {
-                            tokenExpiresAlert()
-                        }
-                    } else {
-                        showToast(
-                            this,
-                            response.throwable?.message ?: getString(R.string.something_went_wrong)
-                        )
-                    }
+                    handleApiFailure(response.throwable)
                 }
 
                 Status.LOADING -> {
@@ -707,17 +534,15 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
             }?.toSet() ?: emptySet()
 
             val dialog = MultiSelectBottomSheetDialog(
-                context = this,
                 items = types,
                 preSelectedItems = preSelectedTypes,
                 bind = { view, type, isSelected ->
                     view.findViewById<TextView>(R.id.textView).text = type.name
                     view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
-                onSelectionChanged = { selectedTypes ->
-                    binding.typeEt.error = null
-                    updateSelectedTypes(selectedTypes)
-                },
+                // Applying the selection clears the chosen activities and reloads them from the
+                // server, so it happens once on submit rather than for every checkbox tick.
+                onSelectionChanged = { binding.typeEt.error = null },
                 onSubmit = { selectedTypes ->
                     binding.typeEt.error = null
                     updateSelectedTypes(selectedTypes)
@@ -732,18 +557,14 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
         }
     }
 
-    private fun showActivitySelectionDialog(activities: List<ActivityData>) {
-        if (activities.isNotEmpty()) {
-            val preSelectedActivities = viewModel.selectedActivityIdList?.mapNotNull { id ->
-                activities.find { it.id == id }
-            }?.toSet() ?: emptySet()
-
+    private fun showActivitySelectionDialog(options: List<TypeActivityOption>) {
+        if (options.isNotEmpty()) {
+            val showType = viewModel.selectedTypeKeys().size > 1
             val dialog = MultiSelectBottomSheetDialog(
-                context = this,
-                items = activities,
-                preSelectedItems = preSelectedActivities,
-                bind = { view, activity, isSelected ->
-                    view.findViewById<TextView>(R.id.textView).text = activity.name
+                items = options,
+                preSelectedItems = viewModel.activitySelection.selectedOptions(viewModel.selectedTypeKeys()),
+                bind = { view, option, isSelected ->
+                    view.findViewById<TextView>(R.id.textView).text = activityLabel(option, showType)
                     view.findViewById<CheckBox>(R.id.checkBox).isChecked = isSelected
                 },
                 onSelectionChanged = { selectedActivities ->
@@ -754,8 +575,8 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                     binding.activitiesEt.error = null
                     updateSelectedActivities(selectedActivities)
                 },
-                filterCondition = { activity, query ->
-                    activity.name.lowercase(Locale.getDefault())
+                filterCondition = { option, query ->
+                    activityLabel(option, showType).lowercase(Locale.getDefault())
                         .contains(query.lowercase(Locale.getDefault()))
                 },
                 title = getString(R.string.select_activities)
@@ -768,34 +589,37 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
                 getString(R.string.no_activities_available),
                 getString(R.string.retry),
                 okLister = DialogInterface.OnClickListener { _, _ ->
-                    getActivityListByPoType(
-                        viewModel.selectedPoNumberId ?: 0L,
-                        viewModel.selectedTypeIdList?.firstOrNull()?.id ?: 0L
-                    )
+                    viewModel.loadMissingActivities()
                 },
             )
         }
     }
 
     private fun updateSelectedTypes(selectedTypes: Set<TypeData>) {
-        viewModel.selectedTypeIdList?.clear()
-        viewModel.selectedTypeIdList?.addAll(selectedTypes)
-        viewModel.selectedActivityIdList?.clear()
-        binding.activitiesEt.setText("")
+        viewModel.onTypesSelected(selectedTypes)
         binding.typeEt.setText(selectedTypes.joinToString(", ") { it.name.toString() })
-        val firstTypeId = selectedTypes.firstOrNull()?.id
-        if (firstTypeId != null) {
-            getActivityListByPoType(viewModel.selectedPoNumberId ?: 0L, firstTypeId)
-        } else {
-            viewModel.activities = emptyList()
-        }
+        showSelectedActivities()
     }
 
+    private fun updateSelectedActivities(selectedActivities: Set<TypeActivityOption>) {
+        viewModel.activitySelection.select(selectedActivities)
+        showSelectedActivities()
+    }
 
-    private fun updateSelectedActivities(selectedActivities: Set<ActivityData>) {
-        viewModel.selectedActivityIdList?.clear()
-        viewModel.selectedActivityIdList?.addAll(selectedActivities.map { it.id })
-        binding.activitiesEt.setText(selectedActivities.joinToString(", ") { it.name })
+    /** Names the type only when several types are selected, so same-named activities can be told apart. */
+    private fun activityLabel(option: TypeActivityOption, showType: Boolean): String =
+        if (showType && option.typeName.isNotBlank()) {
+            getString(R.string.activity_with_type, option.activity.name, option.typeName)
+        } else {
+            option.activity.name
+        }
+
+    private fun showSelectedActivities() {
+        val typeKeys = viewModel.selectedTypeKeys()
+        val showType = typeKeys.size > 1
+        binding.activitiesEt.setText(
+            viewModel.activitySelection.selectedOptions(typeKeys).joinToString(", ") { activityLabel(it, showType) }
+        )
     }
 
     private fun getClientList() {
@@ -836,12 +660,5 @@ class AddSignInActivity : BaseActivity<ActivityAddSignInBinding, AddSignInVM>() 
     * */
     private fun getTypeListByPo(poId: Long) {
         viewModel.getTypeListByPo(poId)
-    }
-
-    /*
-    * Get Activity list by project id and type id
-    * */
-    private fun getActivityListByPoType(poId: Long, typeId: Long) {
-        viewModel.getActivityListByPoType(poId, typeId)
     }
 }

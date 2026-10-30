@@ -5,6 +5,7 @@ import com.atvantiq.wfms.models.allProjects.AllProjectsResponse
 import com.atvantiq.wfms.models.circle.CircleListByProjectResponse
 import com.atvantiq.wfms.models.client.ClientListResponse
 import com.atvantiq.wfms.models.po.PoListByProjectResponse
+import com.atvantiq.wfms.models.project.ManagedProjectsResponse
 import com.atvantiq.wfms.models.project.ProjectListByClientResponse
 import com.atvantiq.wfms.models.site.SiteListByProjectResponse
 import com.atvantiq.wfms.models.site.allSites.SitesListAllResponse
@@ -27,5 +28,6 @@ interface ICreationRepo {
     suspend fun siteListAll(page:Int,limit:Int,is_active:Int): SitesListAllResponse
     suspend fun createSite(params: JsonObject): CreateSiteResponse
     suspend fun allProjects(): AllProjectsResponse
+    suspend fun managedProjects(): ManagedProjectsResponse
     suspend fun siteById(siteId: Long): SiteDetailResponse
 }

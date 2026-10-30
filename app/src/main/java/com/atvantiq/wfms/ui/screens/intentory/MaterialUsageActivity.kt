@@ -9,8 +9,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -28,6 +26,7 @@ import java.util.Locale
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, MaterialUsageViewModel>() {
@@ -64,11 +63,7 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         setupList()
         setupSearch()
@@ -139,7 +134,7 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
             Toast.makeText(this, R.string.material_fix_errors, Toast.LENGTH_SHORT).show()
             return
         }
-        val msg = getString(R.string.material_confirm_submit_msg, s.addedCount, formatQty(s.totalQuantity))
+        val msg = resources.getQuantityString(R.plurals.material_confirm_submit_msg, s.addedCount, s.addedCount, formatQty(s.totalQuantity))
         AlertDialog.Builder(this)
             .setTitle(R.string.material_confirm_submit_title)
             .setMessage(msg)
@@ -180,9 +175,9 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
         val total = state.allRows.size
         val visible = state.visibleRows.size
         binding.tvMaterialCount.text = if (state.searchQuery.isBlank()) {
-            getString(R.string.material_count_total, total)
+            resources.getQuantityString(R.plurals.material_count_total, total, total)
         } else {
-            getString(R.string.material_count_matched, visible, total)
+            resources.getQuantityString(R.plurals.material_count_matched, visible, visible, total)
         }
 
         binding.tvClearAll.visibility = if (state.addedCount > 0) View.VISIBLE else View.GONE
@@ -195,7 +190,7 @@ class MaterialUsageActivity : BaseActivity<ActivityMaterialUsageBinding, Materia
         }
 
         // Sticky footer
-        binding.tvAddedCount.text = getString(R.string.material_added_count, state.addedCount)
+        binding.tvAddedCount.text = resources.getQuantityString(R.plurals.material_added_count, state.addedCount, state.addedCount)
         binding.tvTotalQty.text = getString(R.string.material_total_qty, formatQty(state.totalQuantity))
         binding.btnSubmit.apply {
             isEnabled = !state.submitting && !state.hasAnyError

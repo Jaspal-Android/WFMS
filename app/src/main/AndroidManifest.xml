@@ -16,7 +16,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Permission for Android 14+ -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".app.MApplication"
@@ -54,46 +53,42 @@
             android:name=".ui.screens.reimbursement.createClaim.addTravelDetail.AddTravelingDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.screens.reimbursement.createClaim.addSiteDetail.AddMutilSiteDetailsActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.screens.admin.ui.siteApproval.workSiteDetail.SiteWorkDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.screens.attendance.applyLeave.ApplyLeaveActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan|adjustResize" />
-        <activity
-            android:name=".ui.screens.admin.ui.siteApproval.workSites.WorkSitesActivity"
-            android:exported="false" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.screens.admin.ui.siteApproval.WorkSitesApprovalActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.screens.admin.ui.site.addSite.AddSiteActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan|adjustResize" />
-        <activity
-            android:name=".ui.screens.admin.ui.site.SitesActivity"
+            android:name=".ui.screens.admin.ui.attendanceApproval.AttendanceApprovalActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.screens.admin.SharedDashboardActivity"
+            android:name=".ui.screens.admin.ui.attendanceApproval.AttendanceReviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.admin.ui.claimApproval.ClaimApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.screens.admin.ui.claimApproval.ClaimApprovalDetailActivity"
             android:exported="false"
-            android:theme="@style/Theme.WFMS" />
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.screens.admin.ui.site.addSite.AddSiteActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.screens.more.ProfileActivity"
+            android:exported="false"
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".ui.screens.dashboard.tabs.attendance.detail.AttendanceDetailActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity
             android:name=".ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.cab.add.AddCabFareActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.forgotPassword.newPassword.NewPasswordActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity
@@ -104,57 +99,9 @@
             android:name=".ui.screens.login.LoginActivity"
             android:exported="false"
             android:screenOrientation="userPortrait"
-            android:windowSoftInputMode="adjustPan|adjustResize" />
-        <activity
-            android:name=".ui.screens.vendor.loginDetails.VendorLoginDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.vendor.viewAllActivities.VendorDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.myClaims.MyClaimDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.myProgress.progressDetails.ProgressDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.signInDetails.SignInDetailActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.vendor.viewAllActivities.ViewAllVendorActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.vendor.startActivity.VendorStartActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.claimApprovals.ClaimApprovalsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.reimbursement.myClaims.MyClaimsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.screens.reimbursement.createClaim.CreateClaimActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.approvals.ApprovalsActivity"
-            android:exported="false"
-            android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".ui.screens.attendance.myProgress.MyProgressActivity"
             android:exported="false"
             android:screenOrientation="userPortrait" />
         <activity

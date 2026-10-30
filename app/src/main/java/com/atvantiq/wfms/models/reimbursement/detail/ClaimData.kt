@@ -1,6 +1,8 @@
 package com.atvantiq.wfms.models.reimbursement.detail
 
 
+import com.atvantiq.wfms.models.reimbursement.review.ClaimStatusDeserializer
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 
 data class ClaimData(
@@ -21,6 +23,7 @@ data class ClaimData(
     @SerializedName("sites")
     val sites: List<Site>?,
     @SerializedName("status")
+    @JsonAdapter(ClaimStatusDeserializer::class)
     val status: String?,
     @SerializedName("total_amount")
     val totalAmount: Double?,

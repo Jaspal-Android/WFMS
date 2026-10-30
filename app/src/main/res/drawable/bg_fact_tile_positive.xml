@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The green fact tile (a claim's live Approval Total). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/status_present_bg" />
+    <corners android:radius="@dimen/card_radius" />
+</shape>

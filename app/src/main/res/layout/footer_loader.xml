@@ -10,6 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:indeterminate="true"
-        android:indeterminateTint="?attr/wfmsColorPrimary" />
+        android:indeterminateTint="?attr/wfmsColorAccent" />
 
 </RelativeLayout>

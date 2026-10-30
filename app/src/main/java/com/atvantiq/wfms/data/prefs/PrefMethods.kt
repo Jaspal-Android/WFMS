@@ -1,5 +1,6 @@
 package com.ssas.jibli.data.prefs
 
+import com.atvantiq.wfms.constants.AppRole
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.models.empDetail.EmpData
@@ -61,4 +62,8 @@ object PrefMethods {
 			.getOrNull()
 	}
 
+
+	/** The signed-in role: from the cached `GET /employee/me` profile, else the role saved at login. */
+	fun getAppRole(prefMain: SecurePrefMain): AppRole =
+		AppRole.from(getEmpDetailResponse(prefMain)?.role ?: getUserData(prefMain)?.role)
 }

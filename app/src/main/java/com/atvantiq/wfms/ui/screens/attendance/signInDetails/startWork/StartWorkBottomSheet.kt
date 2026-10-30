@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.databinding.BottomSheetStartWorkBinding
 import com.atvantiq.wfms.utils.files.PickMediaHelper
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.atvantiq.wfms.widgets.BaseBottomSheet
+import com.atvantiq.wfms.utils.dismissIfCallbacksMissing
 
-class StartWorkBottomSheet : BottomSheetDialogFragment() {
+class StartWorkBottomSheet : BaseBottomSheet() {
 
 	// latitude/longitude survive recreation via arguments; the image callback is
 	// re-wired by the host. A no-arg constructor prevents the FragmentManager from
@@ -65,6 +67,8 @@ class StartWorkBottomSheet : BottomSheetDialogFragment() {
 
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
+		// After a restore the host callback is gone; Done would silently do nothing.
+		if (dismissIfCallbacksMissing(onImageSelected)) return
 		setImagePicker()
 		setLocationLatLon()
 		initListeners()
@@ -79,15 +83,17 @@ class StartWorkBottomSheet : BottomSheetDialogFragment() {
 		pickMediaHelper = PickMediaHelper(requireContext(), cameraLauncher, galleryLauncher, permissionLauncher, object : PickMediaHelper.Callback {
 			override fun onImagePicked(path: String, request: Int) {
 				if(path.isNotBlank()){
-					imagePath = pickMediaHelper.compressImageTo1MB(path) ?: path
-					binding.hasPreviewImage = true
-					var bitmap = pickMediaHelper.decodeBitmap(path)
-					binding.capturedImagePreview.setImageBitmap(bitmap)
+					pickMediaHelper.prepareImage(path, viewLifecycleOwner.lifecycleScope) { prepared ->
+						imagePath = prepared.uploadPath
+						binding.hasPreviewImage = true
+						binding.capturedImagePreview.setImageBitmap(prepared.preview)
+					}
 				}
 			}
 
 			override fun onError(message: String) {
 				binding.hasPreviewImage = false
+				showToast(requireContext(), message)
 			}
 		})
 		pickMediaHelper.setPhotoPickerLauncher( photoPickerLauncher)

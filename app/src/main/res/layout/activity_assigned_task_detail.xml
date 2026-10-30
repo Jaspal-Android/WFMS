@@ -20,9 +20,7 @@
         android:background="?attr/wfmsColorBackground">
 
         <!-- ══════════════════════════════════════
-             GRADIENT HEADER
-             Gradient applied in code via applyToolbarGradient()
-             same pattern as DashboardActivity
+             HEADER: the shared screen header, then the site name and code
         ══════════════════════════════════════ -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutHeader"
@@ -30,29 +28,14 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Back button -->
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/custom_toolbar"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="@dimen/padding"
-                android:src="@drawable/arrow_back_ios_24"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                 />
-
-            <!-- Back label -->
-            <TextView
-                android:id="@+id/tvBack"
-                style="@style/CustomRegularTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/back"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/btnBack"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintTop_toTopOf="@id/btnBack" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Site name -->
             <TextView
@@ -64,11 +47,11 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginEnd="@dimen/margin"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="Chandigarh site"
+                tools:text="Chandigarh site"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnBack" />
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
             <!-- Site code subtitle -->
             <TextView
@@ -79,7 +62,7 @@
                 android:layout_marginStart="@dimen/margin"
                 android:layout_marginBottom="@dimen/margin"
                 android:alpha="0.75"
-                android:text="CHD-345-POWN-234"
+                tools:text="CHD-345-POWN-234"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvSiteName" />
 
@@ -109,7 +92,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="?attr/wfmsColorSurface"
-                    app:cardCornerRadius="@dimen/card_radius_max"
+                    app:cardCornerRadius="@dimen/card_radius"
                     app:cardElevation="@dimen/elevation_small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -128,7 +111,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/margin_small"
                             android:text="@string/site_information"
-                            android:textColor="?attr/wfmsColorPrimary"
+                            android:textColor="?attr/wfmsColorAccent"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toStartOf="@+id/tvStatus"
                             app:layout_constraintStart_toStartOf="parent"
@@ -203,7 +186,7 @@
                                     style="@style/CustomSmallTextView"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="ERRICSON-TOWER-110"
+                                    tools:text="ERRICSON-TOWER-110"
                                     android:textColor="?attr/wfmsColorOnSurface"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -239,7 +222,7 @@
                                     style="@style/CustomSmallTextView"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Haryana (HR)"
+                                    tools:text="Haryana (HR)"
                                     android:textColor="?attr/wfmsColorOnSurface"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -268,7 +251,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
-                    app:buttonTint="?attr/wfmsColorPrimary"
+                    app:buttonTint="?attr/wfmsColorAccent"
                     android:visibility="@{showSelectAll ? View.VISIBLE : View.GONE}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvWorkTitle" />

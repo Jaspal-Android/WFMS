@@ -1,0 +1,26 @@
+# Layered on top of detekt's default rule set (buildUponDefaultConfig = true), so only the
+# project's deliberate differences from the defaults live here.
+# Existing findings are recorded in app/detekt-baseline.xml; the build fails on new ones only.
+
+style:
+  ForbiddenImport:
+    active: true
+    # Timber is the only logging API (see CrashReportingTree for what reaches production).
+    imports:
+      - value: 'android.util.Log'
+        reason: 'Use Timber instead of android.util.Log.'
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+  MagicNumber:
+    active: true
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: true
+    ignoreNamedArgument: true
+    ignoreEnums: true
+    ignoreExtensionFunctions: true
+
+exceptions:
+  PrintStackTrace:
+    active: true

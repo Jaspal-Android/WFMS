@@ -2,6 +2,7 @@ package com.atvantiq.wfms.ui.screens.adapters
 
 import android.content.Context
 import android.graphics.Color
+import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -11,6 +12,7 @@ import com.atvantiq.wfms.R
 import com.atvantiq.wfms.constants.AttendanceStatus
 import com.atvantiq.wfms.databinding.ItemCalendarDayBinding
 import com.atvantiq.wfms.models.calendar.AttendanceDay
+import com.atvantiq.wfms.utils.DateUtils
 
 class CalendarAdapter(
     private val context: Context,
@@ -44,12 +46,21 @@ class CalendarAdapter(
                 tvDay.setBackgroundColor(Color.TRANSPARENT)
                 tvDay.setTextColor(Color.TRANSPARENT)
                 root.setOnClickListener(null)
+                root.contentDescription = null
+                root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             } else {
                 tvDay.text = day.date.substringAfterLast("-")
                 val (bgColor, textColor) = getStatusColor(day.status)
                 tvDay.setBackgroundColor(ContextCompat.getColor(context, bgColor))
                 tvDay.setTextColor(ContextCompat.getColor(context, textColor))
                 root.setOnClickListener { onDateSelected(position, day) }
+                // The status is only shown as a color; say it too.
+                root.contentDescription = context.getString(
+                    R.string.calendar_day_description,
+                    DateUtils.formatSpokenDate(day.date),
+                    context.getString(AttendanceStatus.labelRes(day.status))
+                )
+                root.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
             }
         }
     }

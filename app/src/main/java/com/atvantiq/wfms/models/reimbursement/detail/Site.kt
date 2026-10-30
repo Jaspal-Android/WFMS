@@ -12,6 +12,8 @@ data class Site(
     val siteId: Long?,
     @SerializedName("site_name")
     val siteName: String?,
+    @SerializedName("site_code")
+    val siteCode: String? = null,
     @SerializedName("work_site_id")
     val workSiteId: Long? = null,
     @SerializedName("purchase_order_ids")

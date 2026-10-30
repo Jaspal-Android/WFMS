@@ -7,6 +7,8 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.atvantiq.wfms.data.prefs.PrefKeys
+import com.atvantiq.wfms.data.prefs.SecurePrefMain
 import com.atvantiq.wfms.data.repository.auth.IAuthRepo
 import com.atvantiq.wfms.models.loginResponse.AccessLevel
 import com.atvantiq.wfms.models.loginResponse.Data
@@ -33,6 +35,7 @@ class LoginVMTest {
 
     private lateinit var application: Application
     private lateinit var authRepo: IAuthRepo
+    private lateinit var prefMain: SecurePrefMain
     private lateinit var viewModel: LoginVM
     private val testDispatcher = StandardTestDispatcher()
 
@@ -45,9 +48,14 @@ class LoginVMTest {
 
         // Use NetworkConnectivityHelper for mocking
         mockkObject(Utils)
+        mockkStatic(android.util.Log::class)
+        every { android.util.Log.w(any(), any<String>(), any()) } returns 0
+        every { android.util.Log.e(any(), any<String>(), any()) } returns 0
         every { Utils.isInternet(application) } returns true
 
-        viewModel = LoginVM(application, authRepo)
+        prefMain = mockk(relaxed = true)
+        viewModel = LoginVM(application, authRepo, prefMain)
+        viewModel.fetchPushToken = { "push-token" }
     }
 
     @After
@@ -85,38 +93,63 @@ class LoginVMTest {
     }
 
     @Test
+    fun `login request keeps the password exactly as typed but trims the email`() = runTest {
+        val params = slot<JsonObject>()
+        coEvery { authRepo.loginRequest(capture(params)) } returns mockk(relaxed = true)
+
+        viewModel.userName.value = "  user@domain.com  "
+        viewModel.password.value = "  pass word  "
+        viewModel.onSubmitLoginClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("user@domain.com", params.captured.get("email").asString)
+        assertEquals("  pass word  ", params.captured.get("password").asString)
+    }
+
+    @Test
+    fun `a whitespace-only password is still rejected`() {
+        viewModel.userName.value = "user@domain.com"
+        viewModel.password.value = "   "
+
+        viewModel.onSubmitLoginClick()
+
+        assertEquals(LoginErrorHandler.EMPTY_PASSWORD, viewModel.errorHandler.value)
+        coVerify(exactly = 0) { authRepo.loginRequest(any()) }
+    }
+
+    @Test
     fun `onSubmitLoginClick with valid details calls loginRequest and updates LiveData`() = runTest {
         val response = LoginResponse(
             code = 200,
             message = "Login successful",
             data = Data(
-                accessToken = "eyJhbGciOiJIUzI1NiIsImtpZCI6InZ2SWRHZHkxanpUQVZEUm8iLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2VtY2tmZmJncnh3aWZ3eW1oaWt2LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJhNWY3M2MwNC01YTQwLTQ3N2YtOGY0My1mYWFiMzRiNjNlN2QiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY0MDY4ODIwLCJpYXQiOjE3NjM0NjQwMjAsImVtYWlsIjoiamFzcGFsMDA2QHlvcG1haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZX0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjM0NjQwMjB9XSwic2Vzc2lvbl9pZCI6IjBlOTljMDNiLTYxMDItNGM4My1iYTc3LTczZmUwZjU5YWM4ZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.G2658-GyjlBNiRGkVsejNp2QQlX3N-BpvelPY-RjeAg",
-                refreshToken = "iptpjd5rgnpv",
+                accessToken = "test-access-token",
+                refreshToken = "test-refresh-token",
                 user = User(
-                    userId = 324475492436,
-                    email = "jaspal006@yopmail.com",
-                    firstName = "Jaspal",
-                    lastName = "Kumar",
-                    shortName = "Jaspal Kumar",
+                    userId = 1L,
+                    email = "employee@example.com",
+                    firstName = "Test",
+                    lastName = "Employee",
+                    shortName = "Test Employee",
                     role = "Employee",
-                    roleId = 199427269040,
+                    roleId = 2L,
                     officialLocation = OfficialLocation(
-                        latitude = 30.7149239,
-                        longitude = 76.7033976
+                        latitude = 10.0,
+                        longitude = 20.0
                     ),
                     permissions = listOf(
                         Permission(
-                            featureId = 976896675679,
+                            featureId = 3L,
                             featureName = "Employee Deck",
                             accessLevels = listOf(
-                                AccessLevel( "Full Access",851659960058),
+                                AccessLevel("Full Access", 5L),
                             )
                         ),
                         Permission(
-                            featureId = 751345906091,
+                            featureId = 4L,
                             featureName = "Type Activity",
                             accessLevels = listOf(
-                                AccessLevel( "Full Access",851659960058),
+                                AccessLevel("Full Access", 5L),
                             )
                         )
                     )
@@ -137,5 +170,108 @@ class LoginVMTest {
         assertEquals(Status.SUCCESS, viewModel.loginResponse.value?.status)
         assertEquals(response, viewModel.loginResponse.value?.response)
         assertTrue(viewModel.isButtonEnabled.value == true)
+    }
+
+    private fun loginAnswer(accepted: Boolean): LoginResponse = mockk(relaxed = true) {
+        every { code } returns if (accepted) 200 else 401
+        every { success } returns accepted
+        every { message } returns "msg"
+        every { data?.accessToken } returns "access-token"
+        every { data?.user } returns mockk(relaxed = true) {
+            every { userId } returns 42L
+        }
+    }
+
+    private fun submitLogin(answer: LoginResponse) {
+        coEvery { authRepo.loginRequest(any()) } returns answer
+        viewModel.userName.value = "user@example.com"
+        viewModel.password.value = "secret"
+        viewModel.onSubmitLoginClick()
+    }
+
+    @Test
+    fun `an accepted login saves the session, registers the push token, then completes`() = runTest {
+        val params = slot<JsonObject>()
+        coEvery { authRepo.sendNotificationToken(capture(params)) } returns mockk(relaxed = true)
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify { prefMain.put(PrefKeys.LOGIN_TOKEN, "access-token") }
+        assertEquals("42", params.captured.get("employee_id").asString)
+        assertEquals("push-token", params.captured.get("token").asString)
+        assertEquals(true, viewModel.loginCompleted.value)
+        assertEquals(42L, viewModel.user?.userId)
+    }
+
+    @Test
+    fun `an accepted login caches the profile before completing, so the dashboard opens with the right tabs`() = runTest {
+        mockkObject(com.ssas.jibli.data.prefs.PrefMethods)
+        val profile = mockk<com.atvantiq.wfms.models.empDetail.EmpData>(relaxed = true)
+        coEvery { authRepo.empDetails() } returns mockk(relaxed = true) {
+            every { code } returns 200
+            every { data } returns profile
+        }
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify { com.ssas.jibli.data.prefs.PrefMethods.saveEmpDetailResponse(prefMain, profile) }
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login still completes when the profile cannot be fetched`() = runTest {
+        coEvery { authRepo.empDetails() } throws java.io.IOException("offline")
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login still completes when the push token cannot be fetched`() = runTest {
+        viewModel.fetchPushToken = { throw IllegalStateException("no token") }
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 0) { authRepo.sendNotificationToken(any()) }
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login still completes when uploading the push token fails`() = runTest {
+        coEvery { authRepo.sendNotificationToken(any()) } throws java.io.IOException("offline")
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `login completes after the timeout when the push token never arrives`() = runTest {
+        viewModel.fetchPushToken = { kotlinx.coroutines.awaitCancellation() }
+
+        submitLogin(loginAnswer(accepted = true))
+        testDispatcher.scheduler.advanceTimeBy(9_999)
+        testDispatcher.scheduler.runCurrent()
+        assertNull("still waiting before the timeout", viewModel.loginCompleted.value)
+
+        testDispatcher.scheduler.advanceTimeBy(2)
+        testDispatcher.scheduler.runCurrent()
+        assertEquals(true, viewModel.loginCompleted.value)
+    }
+
+    @Test
+    fun `a rejected login saves nothing and does not complete`() = runTest {
+        submitLogin(loginAnswer(accepted = false))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verify(exactly = 0) { prefMain.put(PrefKeys.LOGIN_TOKEN, any<String>()) }
+        assertNull(viewModel.loginCompleted.value)
+        assertFalse(viewModel.isAccepted(viewModel.loginResponse.value?.response))
     }
 }

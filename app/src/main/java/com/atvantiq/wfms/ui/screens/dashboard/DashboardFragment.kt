@@ -1,19 +1,19 @@
 package com.atvantiq.wfms.ui.screens.dashboard
 
-import android.Manifest
+import androidx.annotation.StringRes
+import com.atvantiq.wfms.utils.permissions.openAppSettings
+import com.atvantiq.wfms.utils.permissions.LocationPermissionDelegate
+import com.atvantiq.wfms.utils.permissions.BackgroundLocationRequest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.location.Location
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -24,8 +24,8 @@ import com.atvantiq.wfms.databinding.FragmentDashboardBinding
 import com.atvantiq.wfms.models.attendance.CheckInOutResponse
 import com.atvantiq.wfms.models.attendance.checkInStatus.CheckInStatusResponse
 import com.atvantiq.wfms.models.empDetail.EmpData
-import com.atvantiq.wfms.models.empDetail.EmpDetailResponse
 import com.atvantiq.wfms.network.Status
+import com.atvantiq.wfms.ui.screens.DashboardTabs
 import com.atvantiq.wfms.ui.screens.adapters.DashboardPagerAdapter
 import com.atvantiq.wfms.ui.screens.announcements.AnnouncementsActivity
 import com.atvantiq.wfms.ui.screens.attendance.applyLeave.ApplyLeaveActivity
@@ -33,7 +33,10 @@ import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceCommunic
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.attendance.AttendanceStatusFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.myTargets.MyTargetsFragment
 import com.atvantiq.wfms.ui.screens.dashboard.tabs.projectDashboard.ProjectDashboardFragment
+import com.atvantiq.wfms.ui.screens.more.ProfileVM
+import com.atvantiq.wfms.utils.PermissionUtils
 import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.utils.setAccessibleAction
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -41,21 +44,83 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ncorti.slidetoact.SlideToActView
-import com.ssas.jibli.data.prefs.PrefMethods
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.navigateToTab
+import com.atvantiq.wfms.utils.isUnauthorized
+import com.atvantiq.wfms.ui.screens.dashboard.tabs.myDay.MyDayFragment
+import android.content.res.ColorStateList
+import android.graphics.Color
+import androidx.core.location.LocationManagerCompat
+import com.atvantiq.wfms.data.tracking.ShiftState
+import com.atvantiq.wfms.utils.DateUtils
+import com.atvantiq.wfms.utils.isSessionLost
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPicker
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerAction
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerHost
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerSheetPresenter
+import com.atvantiq.wfms.ui.screens.projectPicker.ProjectPickerUiState
 
 @AndroidEntryPoint
-class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>() {
+class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewModel>(), ProjectPickerHost {
 
     private var isDayStarted = false
+    // The status error is shown once per run of failures (onResume asks again on every return to
+    // the tab); a successful status re-arms it.
+    private var statusErrorShown = false
     private var attendanceActionInFlight = false
+    // Location permission is asked automatically on resume while checked in; ask once per screen.
+    private var trackingPermissionPrompted = false
+    private var backgroundLocationPrompted = false
+    // The PM's Start Day project picker is up (or its list is loading).
+    private var isProjectPickerOpen = false
+    private val projectPickerSheet = ProjectPickerSheetPresenter({ childFragmentManager }, ::showProgress, ::dismissProgress)
+
+    // Every location request goes through a delegate, which shows the disclosure before the
+    // system prompt and explains a denial the same way on every screen.
+    private val dayLocationPermission = locationPermission(
+        R.string.attendance_location_disclosure_title, R.string.attendance_location_disclosure_msg,
+        includeNotifications = true, onGranted = ::manageDayStartEnd
+    )
+    private val trackingLocationPermission = locationPermission(
+        R.string.attendance_location_disclosure_title, R.string.attendance_location_disclosure_msg,
+        includeNotifications = true, onGranted = ::startTrackingAndAskForBackground
+    )
+    private val currentLocationPermission = locationPermission(
+        R.string.share_current_location, R.string.share_location_msg,
+        rationaleFirst = true, onGranted = ::getCurrentLatitudeLongitude
+    )
+
+    // Tracking runs as a location foreground service, so declining background access must not
+    // undo it; the card is only refreshed.
+    private val backgroundLocation = BackgroundLocationRequest(
+        this, { requireContext() }, ::shouldShowRequestPermissionRationale,
+        R.string.background_location_usage, R.string.background_location_usage_msg
+    ) { renderTrackingCard() }
+
+    private fun locationPermission(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        includeNotifications: Boolean = false,
+        rationaleFirst: Boolean = false,
+        onGranted: () -> Unit
+    ) = LocationPermissionDelegate(
+        this, { requireContext() }, ::shouldShowRequestPermissionRationale,
+        LocationPermissionDelegate.Config(
+            LocationPermissionDelegate.Disclosure(title, message),
+            includeNotifications = includeNotifications,
+            rationaleFirst = rationaleFirst,
+            onGranted = onGranted
+        )
+    )
     private var pendingCheckoutLocation: Pair<Double, Double>? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val communicationViewModel: AttendanceCommunicationViewModel by activityViewModels()
+
+    /** The shell's profile and tabs, refreshed from `GET /employee/me` by the activity. */
+    private val profileViewModel: ProfileVM by activityViewModels()
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_dashboard, DashboardViewModel::class.java)
@@ -77,31 +142,28 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         setupTabBar()
         setupSwipeButton()
-
-        PrefMethods.getEmpDetailResponse(prefMain)?.let {
-            setupUserData(it)
-        } ?: viewModel.getEmpDetails()
+        // Until the server's status arrives (or when it cannot, e.g. offline), show what this
+        // device knows: a shift it is tracking is an active day, so End Day and the tracking card
+        // stay available instead of an offer to start the day again.
+        isDayStarted = isDayStarted || viewModel.isTrackingStarted
+        updateSlideButton(isDayStarted)
     }
 
     override fun subscribeToEvents(vm: DashboardViewModel) {
         binding.vm = vm
 
+        profileViewModel.profile.observe(viewLifecycleOwner) { profile -> setupUserData(profile) }
+
+        // Pause / Resume from the card or the notification, and the end of a pause.
+        vm.shiftState.observe(viewLifecycleOwner) { renderTrackingCard() }
+
         vm.clickEvents.observe(viewLifecycleOwner) {
-            if (!isLifeCycleResumed()) return@observe
             when (it) {
                 DashboardClickEvents.onAnnouncementsClicks -> Utils.jumpActivity(requireContext(), AnnouncementsActivity::class.java)
 
                 DashboardClickEvents.onFetchCurrentLatitudeLongitudeClicks -> {
-                    startCurrentLocationPermissionFlow()
+                    currentLocationPermission.request()
                 }
-                DashboardClickEvents.OPEN_SITES_CLICK,
-                DashboardClickEvents.OPEN_SITES_APPROVALS_CLICK,
-                DashboardClickEvents.OPEN_CLAIM_APPROVALS_CLICK,
-                DashboardClickEvents.OPEN_PROFILE_CLICK,
-                DashboardClickEvents.CHANGE_THEME_CLICK -> {
-                    showToast(requireContext(), getString(R.string.under_development))
-                }
-                DashboardClickEvents.LOGOUT_CLICK -> logoutUser()
                 DashboardClickEvents.APPLY_LEAVE_CLICK -> {
                     Utils.jumpActivity(requireContext(), ApplyLeaveActivity::class.java)
                 }
@@ -109,67 +171,63 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             }
         }
 
-        vm.empDetailsResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> handleEmpDetailsResponse(response.response)
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> { /* showProgress() if needed */ }
-                }
+        // Attendance results are consumed once instead of being gated on RESUMED: a result that
+        // lands while the screen is only STARTED (e.g. behind a permission dialog) must still be
+        // handled, otherwise tracking keeps running after checkout and the slider stays locked.
+        vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckInResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                // The picker shows its own spinner on the confirm button.
+                Status.LOADING -> if (!vm.projectPicker.isOpen) showProgress()
             }
         }
 
-        vm.attendanceCheckInResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> handleCheckInResponse(response.response)
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> showProgress()
-                }
-            }
+        vm.projectPicker.state.observe(viewLifecycleOwner, ::renderProjectPicker)
+
+        // A failed list is shown in the picker; only a lost session is handled here.
+        vm.managedProjectsResponse.observe(viewLifecycleOwner) { response ->
+            if (!response.consumeOnce()) return@observe
+            if (response.isSessionLost { it.code }) tokenExpiresAlert()
         }
 
         vm.attendanceCheckOutResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> handleCheckOutResponse(response.response)
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> showProgress()
-                }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckOutResponse(response.response)
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()){
-                when (response.status) {
-                    Status.SUCCESS -> handleCheckInStatusResponse(response.response)
-                    Status.ERROR -> handleCheckInStatusError(response.response?.message,response.throwable)
-                    Status.LOADING -> {
-                        showProgress()
-                    }
-                }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> handleCheckInStatusResponse(response.response)
+                Status.ERROR -> handleCheckInStatusError(response.response?.message,response.throwable)
+                Status.LOADING -> showProgress()
             }
         }
 
         vm.attendanceRemarksResponse.observe(viewLifecycleOwner) { response ->
-            if (isLifeCycleResumed()) {
-                when (response.status) {
-                    Status.SUCCESS -> {
-                        dismissProgress()
-                        if (response.response?.code == ValConstants.SUCCESS_CODE) {
-                            val location = pendingCheckoutLocation
-                            if (location != null) {
-                                attendanceActionInFlight = true
-                                viewModel.checkOutAttendance(location.first, location.second, true)
-                            } else {
-                                checkInAttendanceStatus()
-                            }
+            if (!response.consumeOnce()) return@observe
+            when (response.status) {
+                Status.SUCCESS -> {
+                    dismissProgress()
+                    if (response.response?.code == ValConstants.SUCCESS_CODE) {
+                        val location = pendingCheckoutLocation
+                        if (location != null) {
+                            attendanceActionInFlight = true
+                            viewModel.checkOutAttendance(location.first, location.second, true)
+                        } else {
+                            checkInAttendanceStatus()
                         }
-                        showToast(requireContext(), response.response?.message ?: getString(R.string.something_went_wrong))
                     }
-                    Status.ERROR -> handleError(response.throwable, response.response?.message)
-                    Status.LOADING -> showProgress()
+                    showToast(requireContext(), response.response?.message ?: getString(R.string.something_went_wrong))
                 }
+                Status.ERROR -> handleError(response.throwable, response.response?.message)
+                Status.LOADING -> showProgress()
             }
         }
     }
@@ -177,46 +235,31 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     override fun onResume() {
         super.onResume()
         checkInAttendanceStatus()
+        // Permissions or Location Services may have changed in Settings.
+        renderTrackingCard()
     }
 
-    private fun logoutUser() {
-        alertDialogShow(
-            requireContext(),
-            getString(R.string.logout),
-            getString(R.string.logout_confirmation),
-            getString(R.string.yes),
-            { dialog, _ ->
-                dialog.dismiss()
-                performLogout()
-            },
-            { dialog, _ -> dialog.dismiss() }
-        )
-    }
-
-    private fun handleEmpDetailsResponse(empDetailResponse: EmpDetailResponse?) {
-        dismissProgress() // Ensure progress is dismissed before showing any message
-        when (empDetailResponse?.code) {
-            ValConstants.SUCCESS_CODE -> {
-                PrefMethods.saveEmpDetailResponse(prefMain, empDetailResponse.data)
-                setupUserData(empDetailResponse.data)
-            }
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(requireContext(), getString(R.string.alert), empDetailResponse?.message ?: getString(R.string.something_went_wrong))
-        }
+    override fun onDestroyView() {
+        view?.removeCallbacks(trackingCardRefresh)
+        super.onDestroyView()
     }
 
     private fun handleCheckInResponse(response: CheckInOutResponse?) = with(binding.appDashHeader) {
         dismissProgress()
         resetAttendanceAction()
-        when (response?.code) {
-            ValConstants.SUCCESS_CODE -> {
-                isDayStarted = true
-                updateSlideButton(true)
-                communicationViewModel.triggerCalendarRefresh()
-                checkPermissionForLiveLocation()
+        if (response?.isAccepted == true) {
+            // A PM started the day on the project they chose; the picker's work is done.
+            if (viewModel.projectPicker.isOpen) {
+                viewModel.projectPicker.close()
+                showToast(requireContext(), getString(R.string.check_in_marked_successfully))
             }
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
+            isDayStarted = true
+            updateSlideButton(true)
+            communicationViewModel.triggerCalendarRefresh()
+            checkPermissionForLiveLocation()
+        } else {
+            // A refused PM check-in keeps the picker open on the chosen project, to retry.
+            handleRejectedResponse(response?.code, response?.message)
         }
     }
 
@@ -232,8 +275,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             3001 ->{
                 handleNoWorkForDay(response.data?.attendanceId)
             }
-            ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-            else -> alertDialogShow(requireContext(), getString(R.string.alert), response?.message ?: getString(R.string.something_went_wrong))
+            else -> handleRejectedResponse(response?.code, response?.message)
         }
     }
 
@@ -247,6 +289,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         dismissProgress()
         when (response?.code) {
             ValConstants.SUCCESS_CODE -> {
+                statusErrorShown = false
                 isDayStarted = response.data?.checkedIn == true
                 updateSlideButton(isDayStarted)
                 if(isDayStarted) checkPermissionForLiveLocation()
@@ -267,34 +310,29 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         }
     }
 
+    /**
+     * The day's status could not be read. The slider and tracking card keep showing what the
+     * device knows (see onViewCreated), so this only explains why and offers Retry; it can be
+     * dismissed, because offline a Retry-only dialog would trap the user on this screen.
+     */
     private fun handleCheckInStatusError(message: String?, throwable: Throwable?) {
-        dismissProgress() // Ensure progress is dismissed before showing error dialog
-        if (throwable is HttpException) {
-            when (throwable.code()) {
-                ValConstants.UNAUTHORIZED_CODE -> tokenExpiresAlert()
-                ValConstants.SERVER_ERROR_CODE -> alertDialogShow(
-                    requireContext(),
-                    throwable.message ?: getString(R.string.something_went_wrong)
-                )
-                else -> alertDialogShow(
-                    requireContext(),
-                    getString(R.string.alert),
-                    message ?: getString(R.string.something_went_wrong),
-                    getString(R.string.retry),
-                    DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
-                    false
-                )
-            }
-        } else {
-            alertDialogShow(
-                requireContext(),
-                getString(R.string.alert),
-                message ?: getString(R.string.something_went_wrong),
-                getString(R.string.retry),
-                DialogInterface.OnClickListener { _, _ -> checkInAttendanceStatus() },
-                false
-            )
+        dismissProgress()
+        if (throwable.isUnauthorized()) {
+            tokenExpiresAlert()
+            return
         }
+        if (statusErrorShown) return
+        statusErrorShown = true
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.alert)
+            .setMessage(message ?: throwable?.message ?: getString(R.string.something_went_wrong))
+            // A Retry the user asked for reports its own failure again.
+            .setPositiveButton(R.string.retry) { _, _ ->
+                statusErrorShown = false
+                checkInAttendanceStatus()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun handleNoWorkForDay(attendanceId: Long?) {
@@ -304,7 +342,9 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             getString(R.string.enter_work_details),
             DialogInterface.OnClickListener { dialog, _ ->
                 dialog.dismiss()
-                findNavController().navigate(R.id.nav_attendance)
+                // Work for employees; Approvals, or Sites, for admins.
+                DashboardTabs.workEntryTab(profileViewModel.tabs.value.orEmpty())
+                    ?.let { findNavController().navigateToTab(it.destinationId) }
             },
             getString(R.string.mark_idle),
             DialogInterface.OnClickListener { _, _ ->
@@ -332,7 +372,108 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             slideStartDay.outerColor = MaterialColors.getColor(slideStartDay, R.attr.wfmsColorPrimary)
             slideStartDay.isReversed = false
         }
+        slideStartDay.setAccessibleAction(slideStartDay.text)
+        renderTrackingCard()
     }
+
+    /** Re-renders the card when a pause runs out while the dashboard is open. */
+    private val trackingCardRefresh = Runnable { renderTrackingCard() }
+
+    /**
+     * The tracking card under the name row: whether the shift is being tracked, with one action.
+     * Shown only while a day is active; End Day always works, whatever the card shows.
+     */
+    private fun renderTrackingCard() {
+        val root = view ?: return
+        val shift = viewModel.shiftState.value ?: ShiftState()
+        val now = System.currentTimeMillis()
+        val state = TrackingCardState.resolve(
+            isDayActive = isDayStarted,
+            isTrackingStarted = viewModel.isTrackingStarted,
+            location = LocationAccess(
+                servicesOn = isLocationServiceOn(),
+                foreground = PermissionUtils.hasLocationPermissions(requireContext()) ||
+                    PermissionUtils.hasApproximateLocationOnly(requireContext()),
+                precise = PermissionUtils.hasLocationPermissions(requireContext()),
+                background = PermissionUtils.hasBackgroundLocationPermission(requireContext())
+            ),
+            shift = shift,
+            nowMillis = now
+        )
+        root.removeCallbacks(trackingCardRefresh)
+        shift.pausedUntilMillis?.takeIf { state == TrackingCardState.PAUSED }?.let { until ->
+            root.postDelayed(trackingCardRefresh, (until - now).coerceAtLeast(0L))
+        }
+        with(binding.appDashHeader) {
+            trackingCard.visibility = if (state == null) View.GONE else View.VISIBLE
+            if (state == null) return
+            val context = requireContext()
+            val accent = MaterialColors.getColor(trackingCard, R.attr.wfmsColorAccent)
+            val error = MaterialColors.getColor(trackingCard, R.attr.wfmsColorError)
+            val white = ContextCompat.getColor(context, R.color.white)
+            when (state) {
+                TrackingCardState.ACTIVE -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_card_outlined)
+                    setTrackingIcon(R.drawable.ic_tracking_navigation, MaterialColors.getColor(trackingCard, R.attr.wfmsColorPrimary), white)
+                    tvTrackingMessage.text = getString(R.string.tracking_active_since, shortTime(shift.checkInMillis))
+                }
+                TrackingCardState.PAUSED -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_tracking_card_paused)
+                    setTrackingIcon(R.drawable.ic_tracking_pause, MaterialColors.getColor(trackingCard, R.attr.wfmsColorWarning), white)
+                    tvTrackingMessage.text = getString(R.string.tracking_paused_until, shortTime(shift.pausedUntilMillis))
+                }
+                TrackingCardState.STARTING -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_card_outlined)
+                    setTrackingIcon(R.drawable.rounded_location_on_24, Color.TRANSPARENT, accent)
+                    tvTrackingMessage.setText(R.string.tracking_starting)
+                }
+                TrackingCardState.NEEDS_ALWAYS, TrackingCardState.NEEDS_PRECISE,
+                TrackingCardState.PERMISSION_DENIED, TrackingCardState.GPS_OFF -> {
+                    trackingCard.setBackgroundResource(R.drawable.bg_tracking_card_alert)
+                    setTrackingIcon(R.drawable.ic_tracking_warning, ContextCompat.getColor(context, R.color.error_soft), error)
+                    tvTrackingMessage.setText(
+                        when (state) {
+                            TrackingCardState.NEEDS_ALWAYS -> R.string.tracking_needs_always
+                            TrackingCardState.NEEDS_PRECISE -> R.string.tracking_needs_precise
+                            TrackingCardState.PERMISSION_DENIED -> R.string.tracking_permission_denied
+                            else -> R.string.tracking_gps_off
+                        }
+                    )
+                }
+            }
+            btnTrackingPause.visibility = if (state == TrackingCardState.ACTIVE) View.VISIBLE else View.GONE
+            btnTrackingPause.setOnClickListener { viewModel.pauseTracking() }
+            val action: Pair<Int, () -> Unit>? = when (state) {
+                TrackingCardState.PAUSED -> R.string.resume to { viewModel.resumeTracking() }
+                TrackingCardState.NEEDS_ALWAYS -> R.string.fix to { requestBackgroundLocation() }
+                TrackingCardState.NEEDS_PRECISE -> R.string.fix to { trackingLocationPermission.request() }
+                TrackingCardState.PERMISSION_DENIED -> R.string.open_settings to { requireContext().openAppSettings() }
+                TrackingCardState.GPS_OFF -> R.string.open_settings to {
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+                else -> null
+            }
+            btnTrackingAction.visibility = if (action == null) View.GONE else View.VISIBLE
+            action?.let { (label, onClick) ->
+                btnTrackingAction.setText(label)
+                btnTrackingAction.setIconResource(if (state == TrackingCardState.PAUSED) R.drawable.ic_tracking_play else 0)
+                btnTrackingAction.setOnClickListener { onClick() }
+            }
+        }
+    }
+
+    private fun setTrackingIcon(icon: Int, circleColor: Int, iconColor: Int) = with(binding.appDashHeader.ivTrackingIcon) {
+        setImageResource(icon)
+        backgroundTintList = ColorStateList.valueOf(circleColor)
+        imageTintList = ColorStateList.valueOf(iconColor)
+    }
+
+    private fun shortTime(millis: Long?): String =
+        millis?.let { DateUtils.formatShortTime(it) } ?: getString(R.string.not_available)
+
+    private fun isLocationServiceOn(): Boolean =
+        ContextCompat.getSystemService(requireContext(), LocationManager::class.java)
+            ?.let { LocationManagerCompat.isLocationEnabled(it) } ?: true
 
 
     private fun checkInAttendanceStatus() {
@@ -342,10 +483,50 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun resetAttendanceAction() {
         attendanceActionInFlight = false
         binding.appDashHeader.slideStartDay.setCompleted(false, true)
+        viewModel.projectPicker.setSubmitting(false)
     }
 
-    @SuppressLint("MissingPermission")
+    /** Start Day or End Day; a PM's Start Day asks for the project first. */
     private fun manageDayStartEnd() {
+        if (!isDayStarted && viewModel.needsProjectToStartDay) {
+            attendanceActionInFlight = true
+            viewModel.loadStartDayProjects()
+        } else {
+            sendAttendanceAction(startDay = !isDayStarted)
+        }
+    }
+
+    /**
+     * While the PM's projects load, the slider stays locked behind the progress dialog; then the
+     * picker opens on the list, the empty message or the load error.
+     */
+    private fun renderProjectPicker(state: ProjectPickerUiState?) {
+        projectPickerSheet.render(state)
+        if (state != null) {
+            isProjectPickerOpen = true
+            attendanceActionInFlight = true
+        } else if (isProjectPickerOpen) {
+            isProjectPickerOpen = false
+            resetAttendanceAction()
+        }
+    }
+
+    override val projectPicker: ProjectPicker
+        get() = viewModel.projectPicker
+
+    override fun onProjectPickerAction(action: ProjectPickerAction) = when (action) {
+        ProjectPickerAction.Retry -> viewModel.loadStartDayProjects()
+        ProjectPickerAction.Dismiss -> viewModel.projectPicker.close()
+        // The location is fetched now, then the check-in is sent with the chosen project.
+        is ProjectPickerAction.Confirm -> if (!viewModel.projectPicker.isSubmitting) {
+            viewModel.projectPicker.setSubmitting(true)
+            sendAttendanceAction(startDay = true)
+        } else Unit
+    }
+
+    /** Fetches the location, then checks in ([startDay]) or out. */
+    @SuppressLint("MissingPermission")
+    private fun sendAttendanceAction(startDay: Boolean) {
         if (!isDeviceLocationEnabled()) {
             resetAttendanceAction()
             showLocationDisabledDialog()
@@ -366,12 +547,12 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                 val lon = location.longitude
 
                 attendanceActionInFlight = true
-                if (isDayStarted) {
-                    pendingCheckoutLocation = lat to lon
-                    viewModel.checkOutAttendance(lat, lon, true)
-                } else {
+                if (startDay) {
                     pendingCheckoutLocation = null
                     viewModel.checkInAttendance(lat, lon)
+                } else {
+                    pendingCheckoutLocation = lat to lon
+                    viewModel.checkOutAttendance(lat, lon, true)
                 }
         }
     }
@@ -382,10 +563,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
             locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
+    /** Location Services are off (the permission itself is granted). */
     private fun showLocationDisabledDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_required)
-            .setMessage(R.string.location_permission_rationale)
+            .setTitle(R.string.location_services_off_title)
+            .setMessage(R.string.location_services_off_message)
             .setPositiveButton(R.string.open_settings) { _, _ ->
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
@@ -398,7 +580,7 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
         fusedLocationClient.lastLocation
             .addOnSuccessListener { cachedLocation ->
                 if (Utils.isUsableAttendanceLocation(cachedLocation)) {
-                    onResult(cachedLocation)
+                    whenAttached { onResult(cachedLocation) }
                     return@addOnSuccessListener
                 }
 
@@ -407,13 +589,15 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                     Priority.PRIORITY_HIGH_ACCURACY,
                     cancellationTokenSource.token
                 ).addOnSuccessListener { freshLocation ->
-                    onResult(freshLocation)
+                    whenAttached { onResult(freshLocation) }
                 }.addOnFailureListener {
-                    onResult(null)
+                    whenAttached { onResult(null) }
                 }
             }.addOnFailureListener {
-                resetAttendanceAction()
-                onResult(null)
+                whenAttached {
+                    resetAttendanceAction()
+                    onResult(null)
+                }
             }
     }
 
@@ -437,21 +621,11 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
                         binding.appDashHeader.slideStartDay.setCompleted(false, true)
                         return
                     }
-                    val permissions = getRequiredPermissions()
-                    when {
-                        hasAllPermissions(permissions) -> manageDayStartEnd()
-                        permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                            binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
-                                permissionLauncher.launch(permissions)
-                            }
-                        }
-                        else -> {
-                            binding.appDashHeader.slideStartDay.setCompleted(false, true)
-                            Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.background_location_usage),getString(R.string.background_location_usage_msg)) {
-                                permissionLauncher.launch(permissions)
-                            }
-                        }
+                    if (PermissionUtils.hasLocationPermissions(requireContext())) {
+                        manageDayStartEnd()
+                    } else {
+                        binding.appDashHeader.slideStartDay.setCompleted(false, true)
+                        dayLocationPermission.request()
                     }
                 }
             }
@@ -460,156 +634,72 @@ class DashboardFragment : BaseFragment<FragmentDashboardBinding, DashboardViewMo
     private fun setupTabBar() {
         val pages = listOf(
             DashboardPagerAdapter.Page(key = "attendance") { AttendanceStatusFragment() },
+            DashboardPagerAdapter.Page(key = "myDay") { MyDayFragment() },
             DashboardPagerAdapter.Page(key = "targets") { MyTargetsFragment() },
             DashboardPagerAdapter.Page(key = "projects") { ProjectDashboardFragment() }
         )
+        val titles = listOf(R.string.attendance, R.string.my_day, R.string.my_targets, R.string.projects)
         binding.viewPager.adapter = DashboardPagerAdapter(requireActivity(), pages)
+        binding.tabLayout.tabMode = PagerTabMode.forFontScale(resources.configuration.fontScale)
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> getString(R.string.attendance)
-                1 -> getString(R.string.my_targets)
-                2 -> getString(R.string.projects)
-                else -> getString(R.string.attendance)
-            }
+            tab.text = getString(titles[position])
         }.attach()
     }
 
 
-    private val permissionLauncherCurrentLocation = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> {
-                getCurrentLatitudeLongitude()
-            }
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
-            else -> showPermissionRationale()
-        }
-    }
-
-    private val permissionLauncherLocationTracking = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> viewModel.startTracking()
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
-            else -> showPermissionRationale()
-        }
-    }
-
-
-    private fun openApplicationSettings() {
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = android.net.Uri.fromParts("package", requireContext().packageName, null)
-        startActivity(intent)
-    }
-
+                    // Play's Prominent Disclosure policy: the system prompt is only ever shown right after the
+    // in-app disclosure, never on its own.
     private fun checkPermissionForLiveLocation() {
-        val permissions = getRequiredPermissions()
         when {
-            hasAllPermissions(permissions) -> viewModel.startTracking()
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
-            else -> permissionLauncherLocationTracking.launch(permissions)
-        }
-    }
-
-    private fun getForegroundRequiredPermissions(): Array<String> {
-        val list = mutableListOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        return list.toTypedArray()
-    }
-
-    private fun getRequiredPermissions(): Array<String> {
-        val list = getForegroundRequiredPermissions().toMutableList()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            list.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            list.add(Manifest.permission.POST_NOTIFICATIONS)
-        }
-        return list.toTypedArray()
-    }
-
-    private fun hasAllPermissions(permissions: Array<String>): Boolean =
-        permissions.all {
-            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
-        }
-
-    private fun showPermissionRationale() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_required)
-            .setMessage(R.string.location_permission_rationale)
-            .setPositiveButton(R.string.retry) { _, _ ->
-                //permissionLauncherLocationTracking.launch(getRequiredPermissions())
-                openApplicationSettings()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
-    private fun showPermissionDeniedPermanently() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_denied)
-            .setMessage(R.string.permission_denied_permanently)
-            .setPositiveButton(R.string.open_settings) { _, _ -> openApplicationSettings() }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> manageDayStartEnd()
-            permissions.any { shouldShowRequestPermissionRationale(it.key) } -> showPermissionDeniedPermanently()
-            else -> showPermissionDeniedPermanently()
-        }
-    }
-
-    private fun startCurrentLocationPermissionFlow() {
-        val foreground = getForegroundRequiredPermissions()
-        when {
-            hasAllPermissions(foreground) -> {
-                getCurrentLatitudeLongitude()
-            }
-            foreground.any { shouldShowRequestPermissionRationale(it) } -> showPermissionRationale()
+            PermissionUtils.hasLocationPermissions(requireContext()) -> startTrackingAndAskForBackground()
+            trackingPermissionPrompted -> Unit
             else -> {
-                Utils.showBackgroundLocationDisclosureDialog(requireContext(),getString(R.string.share_current_location),getString(R.string.share_location_msg)) {
-                    permissionLauncherCurrentLocation.launch(foreground)
-                }
+                trackingPermissionPrompted = true
+                trackingLocationPermission.request()
             }
         }
     }
+
+    private fun startTrackingAndAskForBackground() {
+        viewModel.startTracking()
+        renderTrackingCard()
+        requestBackgroundLocationIfNeeded()
+    }
+
+    // Android 11+ ignores background location when it is requested together with foreground
+    // location, so it is asked for separately, once per screen, after its own disclosure.
+    private fun requestBackgroundLocationIfNeeded() {
+        if (backgroundLocationPrompted || PermissionUtils.hasBackgroundLocationPermission(requireContext())) return
+        backgroundLocationPrompted = true
+        backgroundLocation.request()
+    }
+
+    /** The card's Fix button: disclosure, then the request, or Settings once Android won't ask. */
+    private fun requestBackgroundLocation() = backgroundLocation.request(offerSettingsIfBlocked = true)
 
     @SuppressLint("MissingPermission")
     private fun getCurrentLatitudeLongitude() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            val latitude = location?.latitude
-            val longitude = location?.longitude
-            val lat = latitude ?: 0.0
-            val lon = longitude ?: 0.0
-            if (latitude != null && longitude != null) {
-                Utils.getAddressFromLatLong(requireContext(), lat, lon) { addressFromLatLon ->
-                    requireActivity().runOnUiThread {
-                        alertDialogShow(
-                            requireContext(),
-                            getString(R.string.current_location),
-                            "${getString(R.string.Latitude)}: $lat\n${getString(R.string.Longitude)}: $lon\n\n${getString(R.string.Address)}: $addressFromLatLon"
-                        )
+            whenAttached { context ->
+                val latitude = location?.latitude
+                val longitude = location?.longitude
+                if (latitude != null && longitude != null) {
+                    // The address arrives on the main thread, possibly after the screen is gone.
+                    Utils.getAddressFromLatLong(context, latitude, longitude) { addressFromLatLon ->
+                        whenAttached {
+                            alertDialogShow(
+                                it,
+                                getString(R.string.current_location),
+                                getString(R.string.current_location_details, latitude.toString(), longitude.toString(), addressFromLatLon)
+                            )
+                        }
                     }
+                } else {
+                    alertDialogShow(context, getString(R.string.alert), getString(R.string.unable_to_fetch_location))
                 }
-            } else {
-                alertDialogShow(
-                    requireContext(),
-                    getString(R.string.alert),
-                    getString(R.string.unable_to_fetch_location)
-                )
             }
         }.addOnFailureListener {
-            alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.unable_to_fetch_location))
+            whenAttached { alertDialogShow(it, getString(R.string.alert), getString(R.string.unable_to_fetch_location)) }
         }
     }
 }

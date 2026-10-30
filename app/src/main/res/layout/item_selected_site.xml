@@ -58,14 +58,11 @@
 
             <ImageButton
                 android:id="@+id/btnRemove"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="@drawable/ic_circular_bg"
-                android:src="@drawable/ic_close_16"
+                style="@style/CustomRemoveButton"
+                android:contentDescription="@string/remove_entry"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/wfmsColorPrimaryLight" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

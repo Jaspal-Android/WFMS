@@ -188,7 +188,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:tint="?attr/wfmsColorPrimary" />
+                        app:tint="?attr/wfmsColorAccent" />
 
                     <!-- FIX: CustomRegularDarkTextView → theme color -->
                     <TextView
@@ -249,19 +249,17 @@
                                 android:id="@+id/capturedImagePreview"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:contentDescription="@string/photo_preview"
                                 android:scaleType="centerCrop" />
 
                             <!-- FIX: @color/red → ?attr/wfmsColorError -->
                             <ImageView
                                 android:id="@+id/cancelImageBt"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                style="@style/CustomIconButton"
                                 android:layout_alignParentEnd="true"
-                                android:layout_margin="@dimen/margin_small_extra"
                                 android:onClick="@{()->vm.onClickCancelUploadImage()}"
-                                android:paddingStart="@dimen/padding_small"
-                                android:paddingBottom="@dimen/padding_small"
                                 android:src="@drawable/baseline_cancel_24"
+                                android:contentDescription="@string/remove_attachment"
                                 app:tint="?attr/wfmsColorError" />
                         </RelativeLayout>
                     </androidx.cardview.widget.CardView>

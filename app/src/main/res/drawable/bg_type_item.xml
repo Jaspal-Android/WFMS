@@ -5,5 +5,5 @@
     <stroke
         android:width="@dimen/border_width_1dp"
         android:color="?attr/wfmsColorOutline" />
-    <corners android:radius="@dimen/card_radius_max" />
+    <corners android:radius="@dimen/radius_pill" />
 </shape>

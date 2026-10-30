@@ -6,14 +6,49 @@
     <!--TextInputEditText min height-->
     <dimen name="text_input_edit_text_min_height">40dp</dimen>
 
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="small_button_height">40dp</dimen>
-    <dimen name="switch_button_height">45dp</dimen>
+    <!-- Minimum recommended tap target (Material / WCAG 2.5.8). -->
+    <dimen name="min_touch_target">48dp</dimen>
+    <!-- A 36dp filter chip drawn inside its 48dp touch target -->
+    <dimen name="chip_touch_inset">6dp</dimen>
+    <!-- Profile initials avatar: More card and My Profile header -->
+    <dimen name="avatar_size">64dp</dimen>
+    <!-- Shift tracking card -->
+    <dimen name="tracking_icon_size">32dp</dimen>
+    <!-- Glyph circle on the shift notification card -->
+    <dimen name="shift_card_icon_size">44dp</dimen>
+    <dimen name="tracking_button_height">34dp</dimen>
+    <!-- The tracking buttons are drawn 34dp tall inside a 48dp touch target: (48 - 34) / 2 -->
+    <dimen name="tracking_button_inset">7dp</dimen>
+    <dimen name="tracking_button_margin_top">1dp</dimen>
+    <!-- Apply Leave is drawn 30dp tall inside a 48dp touch target: (48 - 30) / 2 -->
+    <dimen name="apply_leave_inset">9dp</dimen>
+    <!-- Calendar arrows are drawn 40dp wide inside a 48dp touch target -->
+    <dimen name="calendar_nav_inset">4dp</dimen>
+    <!-- The month chip is drawn 29dp tall inside a 48dp touch target: (48 - 29) / 2 -->
+    <dimen name="month_chip_inset">9.5dp</dimen>
+    <dimen name="calendar_nav_padding">12dp</dimen>
+    <dimen name="tracking_button_stroke">1.5dp</dimen>
+    <!-- My Day -->
+    <dimen name="my_day_map_height">240dp</dimen>
+    <dimen name="my_day_pill_height">30dp</dimen>
+    <dimen name="timeline_icon_size">24dp</dimen>
+    <dimen name="timeline_icon_padding">5dp</dimen>
+    <dimen name="timeline_connector_width">2dp</dimen>
+    <dimen name="map_pin_size">26dp</dimen>
+    <dimen name="map_pin_ring">2dp</dimen>
+    <dimen name="map_route_width">4dp</dimen>
+    <dimen name="text_caption_tiny">9sp</dimen>
+    <dimen name="text_distance">22sp</dimen>
+    <dimen name="text_timeline_title">14sp</dimen>
+    <dimen name="avatar_size_large">80dp</dimen>
+    <!-- Padding that centres a 24dp icon in a 48dp touch target -->
+    <dimen name="icon_touch_inset">12dp</dimen>
+    <!-- Small (20dp) icons, and the padding that centres one in a 48dp touch target -->
+    <dimen name="icon_size_small">20dp</dimen>
+    <dimen name="icon_touch_inset_small">14dp</dimen>
+    <dimen name="switch_button_height">@dimen/min_touch_target</dimen>
 
     <!--padding-->
     <dimen name="button_padding_lr">16dp</dimen>
@@ -31,14 +66,15 @@
     <dimen name="default_text">13sp</dimen>
     <dimen name="default_large_text">18sp</dimen>
     <dimen name="default_extra_big_text">24sp</dimen>
-    <dimen name="default_extra_small_text">6sp</dimen>
 
 
     <!--redius-->
-    <dimen name="card_radius">8dp</dimen>
-    <dimen name="card_radius_small">4dp</dimen>
-    <dimen name="card_radius_max">16dp</dimen>
-    <dimen name="card_radius_large">28dp</dimen>
+    <!-- The one corner radius for cards, buttons, inputs, search fields, dialogs and sheets. -->
+    <dimen name="card_radius">12dp</dimen>
+    <!-- Fully rounded ends for chips, status badges and progress tracks (clamped to half the height). -->
+    <dimen name="radius_pill">999dp</dimen>
+    <!-- Splash logo tile keeps the launcher-icon shape. -->
+    <dimen name="splash_logo_radius">28dp</dimen>
 
     <!--elevation-->
     <dimen name="elevation">4dp</dimen>
@@ -52,44 +88,37 @@
     <dimen name="margin_large">18dp</dimen>
     <dimen name="margin_big">24dp</dimen>
     <dimen name="margin_x_large">32dp</dimen>
-    <dimen name="margin_12dp">12dp</dimen>
-    <dimen name="margin_8dp">8dp</dimen>
-    <dimen name="margin_16dp">16dp</dimen>
-    <dimen name="margin_20dp">20dp</dimen>
     <dimen name="margin_huge">42dp</dimen>
     <dimen name="margin_2dp">2dp</dimen>
-    <dimen name="margin_minus">-16</dimen>
-
-    <!--flag dialog-->
-    <dimen name="flag_icon_width">32dp</dimen>
-    <dimen name="flag_icon_height">20dp</dimen>
-    <dimen name="padding_16dp">16dp</dimen>
-    <dimen name="text_size_12sp">12sp</dimen>
-    <dimen name="text_size_13sp">13sp</dimen>
-    <dimen name="text_size_8sp">8sp</dimen>
-    <dimen name="padding_4dp">4dp</dimen>
-    <dimen name="width_180dp">180dp</dimen>
 
 
-    <dimen name="padding_8dp">8dp</dimen>
 
-    <!--Stories progress view-->
-    <dimen name="progress_bar_height">3dp</dimen>
 
-    <dimen name="viewpager_next_item_visible">12dp</dimen>
-    <dimen name="viewpager_current_item_horizontal_margin">18dp</dimen>
 
-    <dimen name="tab_indicator_selected_height">6dp</dimen>
-    <dimen name="tab_indicator_height">4dp</dimen>
+
 
     <!--Extra-->
     <dimen name="item_category_small">75dp</dimen>
-    <dimen name="chat_image_size">25dp</dimen>
-    <dimen name="card_dashboard_height">48dp</dimen>
     <dimen name="border_width_1dp">1dp</dimen>
+    <dimen name="border_width_2dp">2dp</dimen>
 
-    <!--Shimmer-->
-    <dimen name="shimmer_thik_text">16dp</dimen>
-    <dimen name="shimmer_text">12dp</dimen>
 
+    <!-- Lottie "no data" animation shown by empty lists -->
+    <dimen name="empty_state_animation_size">150dp</dimen>
+    <!-- Header of a screen opened from a tab: round back button, centred title -->
+    <dimen name="screen_header_height">64dp</dimen>
+    <dimen name="screen_header_back_size">@dimen/min_touch_target</dimen>
+    <dimen name="screen_header_title_inset">72dp</dimen>
+    <!-- Opacity of a row that can't be acted on (Material's disabled emphasis) -->
+    <item name="alpha_enabled" format="float" type="dimen">1.0</item>
+    <item name="alpha_disabled" format="float" type="dimen">0.38</item>
+    <!-- A work type this role can't act on, on Site Work Detail (spec 7.3) -->
+    <item name="alpha_ineligible" format="float" type="dimen">0.7</item>
+    <!-- Initials avatar on an employee-day row (approvals) -->
+    <dimen name="employee_avatar_size">40dp</dimen>
+    <!-- Icon over an approval list's empty-state text -->
+    <dimen name="empty_state_icon_size">36dp</dimen>
+    <!-- Project picker: the list scrolls past this height, so the buttons stay on screen -->
+    <dimen name="project_picker_list_max_height">320dp</dimen>
+    <dimen name="project_picker_progress_size">32dp</dimen>
 </resources>
