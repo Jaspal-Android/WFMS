@@ -2,11 +2,14 @@ package com.atvantiq.wfms.data.tracking
 
 import com.atvantiq.wfms.data.prefs.PrefKeys
 import com.atvantiq.wfms.data.prefs.SecurePrefMain
+import com.google.gson.annotations.SerializedName
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -82,5 +85,54 @@ class LocationEventQueueTest {
 
         assertEquals(emptyList<QueuedLocationEvent>(), queue.peekAll())
         verify { prefMain.delete(PrefKeys.LOCATION_EVENT_QUEUE) }
+    }
+
+    // R8 renames fields in release builds. The queue is persisted, so a field without an explicit
+    // name would be written under a name that changes between releases.
+    @Test
+    fun `every persisted field pins its JSON name`() {
+        QueuedLocationEvent::class.java.declaredFields
+            .filterNot { it.isSynthetic }
+            .forEach { field ->
+                val annotation = field.getAnnotation(SerializedName::class.java)
+                assertNotNull("${field.name} needs @SerializedName", annotation)
+                assertEquals(field.name, annotation!!.value)
+            }
+    }
+
+    @Test
+    fun `stored queue uses the stable field names`() {
+        queue.enqueue(QueuedLocationEvent(12.5, 34.5, 1000L, 8f))
+
+        val json = storedQueue.orEmpty()
+        listOf("latitude", "longitude", "recordedAtMillis", "accuracyMeters").forEach {
+            assertTrue("missing $it in $json", json.contains("\"$it\""))
+        }
+    }
+
+    @Test
+    fun `entries written under obfuscated keys are dropped instead of replaying as 0,0`() {
+        storedQueue = """[{"a":12.5,"b":34.5,"c":1000}]"""
+
+        assertTrue(queue.peekAll().isEmpty())
+    }
+
+    @Test
+    fun `valid entries survive next to legacy ones`() {
+        storedQueue = """[{"a":1.0,"b":2.0,"c":3},
+            {"latitude":12.5,"longitude":34.5,"recordedAtMillis":1000}]"""
+
+        val events = queue.peekAll()
+
+        assertEquals(1, events.size)
+        assertEquals(12.5, events.first().latitude, 0.0)
+        assertEquals(1000L, events.first().recordedAtMillis)
+    }
+
+    @Test
+    fun `an unreadable queue is treated as empty`() {
+        storedQueue = "not json"
+
+        assertTrue(queue.peekAll().isEmpty())
     }
 }

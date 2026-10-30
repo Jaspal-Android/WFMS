@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.view.Window
 import android.view.WindowManager
+import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,49 +18,49 @@ import com.google.android.material.color.MaterialColors
 object ThemeManager {
     enum class WfmsTheme(
         val key: String,
-        val displayName: String,
+        @StringRes val nameRes: Int,
         val primaryHex: String,   // for swatch preview in UI
         val bgHex: String,
         @StyleRes val styleRes: Int
     ) {
         FOREST(
             key         = "forest",
-            displayName = "Forest Green",
+            nameRes     = R.string.theme_forest,
             primaryHex  = "#2D4A35",
             bgHex       = "#EDE9E2",
             styleRes    = R.style.ThemeOverlay_WFMS_Forest
         ),
         OCEAN(
             key         = "ocean",
-            displayName = "Ocean Blue",
+            nameRes     = R.string.theme_ocean,
             primaryHex  = "#1E4A72",
             bgHex       = "#E8EFF5",
             styleRes    = R.style.ThemeOverlay_WFMS_Ocean
         ),
         ROSE(
             key         = "rose",
-            displayName = "Dusty Rose",
+            nameRes     = R.string.theme_rose,
             primaryHex  = "#8B3A52",
             bgHex       = "#F0E8E6",
             styleRes    = R.style.ThemeOverlay_WFMS_Rose
         ),
         INDIGO(
             key         = "indigo",
-            displayName = "Slate Indigo",
+            nameRes     = R.string.theme_indigo,
             primaryHex  = "#3B3F8C",
             bgHex       = "#EAEBF2",
             styleRes    = R.style.ThemeOverlay_WFMS_Indigo
         ),
         AMBER(
             key         = "amber",
-            displayName = "Warm Amber",
+            nameRes     = R.string.theme_amber,
             primaryHex  = "#7A4F1A",
             bgHex       = "#F0EAE0",
             styleRes    = R.style.ThemeOverlay_WFMS_Amber
         ),
         SLATE(
             key         = "slate",
-            displayName = "Cool Slate",
+            nameRes     = R.string.theme_slate,
             primaryHex  = "#2C4A5A",
             bgHex       = "#E6EBF0",
             styleRes    = R.style.ThemeOverlay_WFMS_Slate

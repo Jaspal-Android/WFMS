@@ -12,6 +12,10 @@ import com.atvantiq.wfms.R
 class ProgressDialog : DialogFragment() {
 	val ARG_TITLE: String = "ARG_TITLE"
 	
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		dropIfRestored(savedInstanceState)
+	}
 	
 	override fun onCreateView(
 		inflater: LayoutInflater,

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shift notification, collapsed (one row under the system header): elapsed time, status, km.
+     RemoteViews: plain framework views and fixed colours only (no data binding, no ?attr). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <Chronometer
+        android:id="@+id/shiftElapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/shift_card_text"
+        android:textSize="@dimen/default_large_text"
+        android:textStyle="bold"
+        tools:text="2:11:42" />
+
+    <TextView
+        android:id="@+id/shiftStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/shift_card_text_secondary"
+        android:textSize="@dimen/default_medium_small_text"
+        tools:text="Shift active" />
+
+    <TextView
+        android:id="@+id/shiftDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_small"
+        android:textSize="@dimen/default_large_text"
+        android:textStyle="bold"
+        tools:text="0.0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_2dp"
+        android:text="@string/km_unit"
+        android:textColor="@color/shift_card_text_secondary"
+        android:textSize="@dimen/default_medium_small_text" />
+</LinearLayout>

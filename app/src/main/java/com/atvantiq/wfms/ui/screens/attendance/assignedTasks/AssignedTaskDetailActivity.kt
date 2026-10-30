@@ -1,16 +1,12 @@
 package com.atvantiq.wfms.ui.screens.attendance.assignedTasks
 
-import android.Manifest
+import com.atvantiq.wfms.utils.permissions.LocationPermissionDelegate
+import android.view.View
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
@@ -28,12 +24,11 @@ import com.atvantiq.wfms.ui.screens.adapters.WorkTypeAdapter
 import com.atvantiq.wfms.ui.screens.attendance.AttendanceViewModel
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
-import com.atvantiq.wfms.utils.Utils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.HttpException
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class AssignedTaskDetailActivity :
@@ -45,7 +40,16 @@ class AssignedTaskDetailActivity :
     private var itemTypeAdapter: WorkTypeAdapter? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var workActionInFlight = false
-    private var pendingLocationPermissionAction: (() -> Unit)? = null
+
+    /** Start/End Work need location: asked for (with the disclosure) and run once it is granted. */
+    private val locationPermission = LocationPermissionDelegate(
+        this, { this }, ::shouldShowRequestPermissionRationale,
+        LocationPermissionDelegate.Config(
+            LocationPermissionDelegate.Disclosure(R.string.location_permission_needed, R.string.start_end_work_location_permission_msg),
+            retry = LocationPermissionDelegate.Retry.REQUEST_AGAIN,
+            onAbandoned = ::finishWorkAction
+        )
+    )
 
     override val bindingActivity: ActivityBinding
         get() = ActivityBinding(
@@ -55,11 +59,7 @@ class AssignedTaskDetailActivity :
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         setToolbar()
         initListeners()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -69,10 +69,10 @@ class AssignedTaskDetailActivity :
     }
 
     private fun setToolbar() {
-        binding.btnBack.setOnClickListener {
+        binding.toolbar.toolbarBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        binding.tvBack.text = getString(R.string.details)
+        binding.toolbar.toolbarTitle.text = getString(R.string.details)
     }
 
     private fun initListeners() {
@@ -208,9 +208,9 @@ class AssignedTaskDetailActivity :
             when (response.status) {
                 Status.SUCCESS -> {
                     dismissProgress()
-                    if (response.response?.code == 200) {
+                    if (response.response?.code == ValConstants.SUCCESS_CODE) {
                         setupUI(response.response.data)
-                    } else if (response.response?.code == 401) {
+                    } else if (response.response?.code == ValConstants.UNAUTHORIZED_CODE) {
                         tokenExpiresAlert()
                     } else {
                         alertDialogShow(
@@ -224,7 +224,7 @@ class AssignedTaskDetailActivity :
                 Status.ERROR -> {
                     dismissProgress()
                     val throwable = response.throwable
-                    if (throwable is HttpException && throwable.code() == 401) {
+                    if (throwable is HttpException && throwable.code() == ValConstants.UNAUTHORIZED_CODE) {
                         tokenExpiresAlert()
                     } else {
                         showToast(
@@ -268,11 +268,11 @@ class AssignedTaskDetailActivity :
                 dismissProgress()
                 finishWorkAction()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(this, it.message ?: getString(successMessage))
                         handleStatusUpdateResponse(it.data, true)
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -294,12 +294,12 @@ class AssignedTaskDetailActivity :
                 dismissProgress()
                 finishWorkAction()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(this, it.message ?: getString(successMessage))
                         it.data?.canRestart = false
                         handleStatusUpdateResponse(it.data)
                     } else {
-                        handleErrorResponse(it.code, it.message)
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -319,7 +319,7 @@ class AssignedTaskDetailActivity :
                 finishWorkAction()
                 response.response?.let {
                     when (it.code) {
-                        200 -> {
+                        ValConstants.SUCCESS_CODE -> {
                             showToast(this, it.message ?: getString(R.string.work_ended))
                             handleStatusUpdateResponse(it.data, isEndWorkCase = true)
                         }
@@ -328,7 +328,7 @@ class AssignedTaskDetailActivity :
                             handleStatusUpdateResponse(it.data, isEndWorkCase = true)
                         }
                         else -> {
-                            handleErrorResponse(it.code, it.message)
+                            handleRejectedResponse(it.code, it.message)
                         }
                     }
                 }
@@ -371,7 +371,7 @@ class AssignedTaskDetailActivity :
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200 && it.data?.checkedIn == true) {
+                    if (it.code == ValConstants.SUCCESS_CODE && it.data?.checkedIn == true) {
                         finishWorkAction()
                         startWorkWithLocationPermissions(
                             viewModel.currentWorkId ?: -1,
@@ -400,120 +400,16 @@ class AssignedTaskDetailActivity :
         }
     }
 
-    private fun handleErrorResponse(code: Int?, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
-    }
-
     private fun handleError(throwable: Throwable?) {
         dismissProgress()
         finishWorkAction()
-        if (throwable is HttpException && throwable.code() == 401) {
-            tokenExpiresAlert()
-        } else {
-            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
-        }
+        handleApiFailure(throwable)
     }
-
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> {
-                val pendingAction = pendingLocationPermissionAction
-                pendingLocationPermissionAction = null
-                pendingAction?.invoke()
-            }
-
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
-                pendingLocationPermissionAction = null
-                finishWorkAction()
-                showPermissionDeniedPermanently()
-            }
-
-            else -> {
-                pendingLocationPermissionAction = null
-                finishWorkAction()
-                showPermissionRationale()
-            }
-        }
-    }
-
-    private fun openApplicationSettings() {
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = android.net.Uri.fromParts("package", this.packageName, null)
-        startActivity(intent)
-    }
-
-    private fun handleLocationPermissions(
-        onPermissionsGranted: () -> Unit,
-        onPermissionsDenied: () -> Unit = { showPermissionRationale() }
-    ) {
-        val permissions = getRequiredPermissions()
-        when {
-            hasAllPermissions(permissions) -> onPermissionsGranted()
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> {
-                pendingLocationPermissionAction = onPermissionsGranted
-                onPermissionsDenied()
-            }
-            else ->{
-                pendingLocationPermissionAction = onPermissionsGranted
-                Utils.showBackgroundLocationDisclosureDialog(this,getString(R.string.location_permission_needed),getString(R.string.start_end_work_location_permission_msg)){
-                    permissionLauncher.launch(permissions)
-                }
-            }
-        }
-    }
-
-    private fun getRequiredPermissions(): Array<String> {
-        return buildList {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }.toTypedArray()
-    }
-
-    private fun hasAllPermissions(permissions: Array<String>): Boolean =
-        permissions.all {
-            ContextCompat.checkSelfPermission(
-                this,
-                it
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-
-    private fun showPermissionRationale() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.permission_required)
-            .setMessage(R.string.location_permission_rationale)
-            .setPositiveButton(R.string.retry) { _, _ ->
-                // Launch permission request after showing rationale
-                permissionLauncher.launch(getRequiredPermissions())
-            }
-            .setNegativeButton(R.string.cancel) { _, _ ->
-                pendingLocationPermissionAction = null
-                finishWorkAction()
-            }
-            .show()
-    }
-
-    private fun showPermissionDeniedPermanently() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.permission_denied)
-            .setMessage(R.string.permission_denied_permanently)
-            .setPositiveButton(R.string.open_settings) { _, _ ->
-                openApplicationSettings()
-            }
-            .setNegativeButton(R.string.cancel) { _, _ -> finishWorkAction() }
-            .show()
-    }
-
 
     @SuppressLint("MissingPermission")
     private fun startWorkWithLocationPermissions(workSiteId: Long, position: Int) {
-        handleLocationPermissions(
-            onPermissionsGranted = {
+        locationPermission.request(
+            action = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     finishWorkAction()
                     if (location != null) {
@@ -548,8 +444,8 @@ class AssignedTaskDetailActivity :
         types: List<Type>,
         position: Int
     ) {
-        handleLocationPermissions(
-            onPermissionsGranted = {
+        locationPermission.request(
+            action = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     finishWorkAction()
                     if (location != null) {

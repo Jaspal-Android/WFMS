@@ -1,11 +1,10 @@
 package com.atvantiq.wfms.ui.screens.attendance
 
-import android.Manifest
+import com.atvantiq.wfms.utils.permissions.LocationPermissionDelegate
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,11 +14,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseFragment
+import com.atvantiq.wfms.base.PagedListUiState
 import com.atvantiq.wfms.constants.SharingKeys
 import com.atvantiq.wfms.constants.ValConstants
 import com.atvantiq.wfms.databinding.FragmentAttendanceBinding
@@ -32,30 +31,23 @@ import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.ui.screens.adapters.AssignedTasksListAdapter
 import com.atvantiq.wfms.ui.screens.attendance.addSignInActivity.AddSignInActivity
 import com.atvantiq.wfms.ui.screens.attendance.assignedTasks.AssignedTaskDetailActivity
-import com.atvantiq.wfms.ui.screens.attendance.myProgress.MyProgressActivity
-import com.atvantiq.wfms.ui.screens.attendance.signInDetails.SignInDetailActivity
-import com.atvantiq.wfms.ui.screens.attendance.signInDetails.endWork.EndWorkBottomSheet
 import com.atvantiq.wfms.ui.screens.attendance.signInDetails.startWork.StartWorkBottomSheet
-import com.atvantiq.wfms.utils.Utils
+import com.atvantiq.wfms.utils.navigateToTab
 import com.atvantiq.wfms.widgets.DividerItemDecoration
+import com.atvantiq.wfms.widgets.PaginationScrollListener
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 
 @AndroidEntryPoint
 class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceViewModel>() {
 
     private var adapter: AssignedTasksListAdapter? = null
-    private var page: Int = 1
-    private var pageSize: Int = 10
-    private var isLoading = false
-    private var isLastPage = false
+    private var isProgressShown = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val searchHandler = Handler(Looper.getMainLooper())
-    private val searchDebounce = Runnable { resetAndFetch() }
+    private val searchDebounce = Runnable { viewModel.workList.reload() }
 
     override val fragmentBinding: FragmentBinding
         get() = FragmentBinding(R.layout.fragment_attendance, AttendanceViewModel::class.java)
@@ -70,10 +62,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         setupSearch()
         setupFilterChips()
         swipeRefresh()
-        page = 1
-        isLastPage = false
-        adapter?.submitList(emptyList())
-        getWorkAssignedAll()
+        // Shows the work already loaded (if any) and refreshes it in the background.
+        viewModel.workList.open()
     }
 
     override fun onDestroyView() {
@@ -86,32 +76,32 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         binding.vm = vm
 
         vm.clickEvents.observe(viewLifecycleOwner) { event ->
-            if (!isLifeCycleResumed()) return@observe
             handleClickEvents(event)
-
         }
-        vm.workAssignedAllResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleStarted()) return@observe
-            handleWorkAssignedResponse(response)
+        vm.workList.state.observe(viewLifecycleOwner) { state -> renderWorkList(state) }
+
+        vm.workList.failure.observe(viewLifecycleOwner) { failure ->
+            if (!failure.consumeOnce()) return@observe
+            handleWorkListFailure(failure)
         }
 
         vm.workAcceptResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleAcceptWorkResponse(response, R.string.work_accepted, ValConstants.ACCEPTED)
         }
 
         vm.workStartResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleStartWorkResponse(response, R.string.work_started, ValConstants.WIP)
         }
 
         vm.workEndResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleWorkEndResponse(response)
         }
 
         vm.attendanceCheckInStatusResponse.observe(viewLifecycleOwner) { response ->
-            if (!isLifeCycleResumed()) return@observe
+            if (!response.consumeOnce()) return@observe
             handleAttendanceCheckInResponse(response)
         }
     }
@@ -122,51 +112,30 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 val intent = Intent(requireContext(), AddSignInActivity::class.java)
                 assignTaskLauncher.launch(intent)
             }
-            AttendanceClickEvents.ON_MY_PROGRESS_CLICK -> {
-                Utils.jumpActivity(requireContext(), MyProgressActivity::class.java)
-            }
-            AttendanceClickEvents.ON_SIGN_IN_DETAILS_CLICK -> {
-                Utils.jumpActivity(requireContext(), SignInDetailActivity::class.java)
-            }
         }
     }
 
-    private fun handleWorkAssignedResponse(response: ApiState<WorkAssignedResponse>) {
-        when (response.status) {
-            Status.SUCCESS -> {
-                dismissProgress()
-                stopRefreshingData()
-                response.response?.let {
-                    if (it.code == 200) {
-                        handleWorkAssignedSuccess(it.data.results)
-                    } else {
-                        handleErrorResponse(it.code, it.message)
-                    }
-                }
-            }
-            Status.ERROR -> handleError(response.throwable)
-            Status.LOADING -> showLoadingIndicator()
-        }
+    private fun renderWorkList(state: PagedListUiState<Site>) {
+        showFirstPageProgress(state.isLoadingFirstPage)
+        if (!state.isLoadingFirstPage && !state.isRefreshing) stopRefreshingData()
+        adapter?.submitList(state.items, state.changedPosition)
+        adapter?.showLoadingFooter(state.isLoadingMore)
+        binding.isEmptyAssignedTasks = state.isEmpty
+        binding.errorState.root.isVisible = state.isFirstPageFailed
     }
 
-    private fun handleWorkAssignedSuccess(records: List<Site>) {
-        adapter?.removeLoadingFooter() // Always remove loading footer before updating list
-        if (page == 1) {
-            adapter?.submitList(emptyList()) // Clear adapter data on refresh
-        }
-        if (records.isEmpty()) {
-            isLastPage = true
-            if (page == 1) emptyDataLayout() else adapter?.removeLoadingFooter()
+    private fun showFirstPageProgress(show: Boolean) {
+        if (show == isProgressShown) return
+        isProgressShown = show
+        if (show) showProgress() else dismissProgress()
+    }
+
+    private fun handleWorkListFailure(failure: ApiState<WorkAssignedResponse>) {
+        if (failure.status == Status.SUCCESS) {
+            // The server rejected the page.
+            failure.response?.let { handleRejectedResponse(it.code, it.message) }
         } else {
-            mainLayout()
-            if (page == 1) {
-                adapter?.submitList(records)
-            } else {
-                adapter?.addData(records)
-            }
-            if (records.size < pageSize) {
-                isLastPage = true
-            }
+            handleApiFailure(failure.throwable)
         }
     }
 
@@ -179,12 +148,12 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(requireContext(), it.message ?: getString(successMessage))
                         //adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
                         viewModel.itemPosition.value = -1
                     } else {
-                        //handleErrorResponse(it.code, it.message)
+                        //handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -202,12 +171,12 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(requireContext(), it.message ?: getString(successMessage))
                         //adapter?.setUpdateStatus(viewModel.itemPosition.value ?: -1, status)
                         viewModel.itemPosition.value = -1
                     } else {
-                        it.code?.let { it1 -> handleErrorResponse(it1, it.message) }
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -221,7 +190,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200) {
+                    if (it.code == ValConstants.SUCCESS_CODE) {
                         showToast(requireContext(), it.message ?: getString(R.string.work_ended))
                         /*adapter?.setUpdateStatus(
                             viewModel.itemPosition.value ?: -1,
@@ -229,7 +198,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                         )*/
                         viewModel.itemPosition.value = -1
                     } else {
-                        it.code?.let { it1 -> handleErrorResponse(it1, it.message) }
+                        handleRejectedResponse(it.code, it.message)
                     }
                 }
             }
@@ -243,7 +212,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             Status.SUCCESS -> {
                 dismissProgress()
                 response.response?.let {
-                    if (it.code == 200 && it.data?.checkedIn == true) {
+                    if (it.code == ValConstants.SUCCESS_CODE && it.data?.checkedIn == true) {
                         startWorkWithLocationPermissions(viewModel.currentWorkId ?: -1, viewModel.itemPosition.value ?: -1)
                     } else {
                         alertDialogShow(requireContext(), getString(R.string.alert), getString(R.string.please_check_in_first), okLister = DialogInterface.OnClickListener { dialog, _ ->
@@ -258,32 +227,13 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
     private fun navigateToDashboard() {
-        val navController = requireActivity().findNavController(R.id.nav_host_fragment_content_dashboard)
-        navController.navigate(R.id.nav_dashboard)
+        findNavController().navigateToTab(R.id.nav_dashboard)
     }
 
-
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(requireContext(), getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
-    }
 
     private fun handleError(throwable: Throwable?) {
         dismissProgress()
-        stopRefreshingData()
-        adapter?.removeLoadingFooter()
-        isLoading = false
-        if (throwable is HttpException && throwable.code() == 401) {
-            tokenExpiresAlert()
-        } else {
-            showToast(requireContext(), throwable?.message ?: getString(R.string.something_went_wrong))
-        }
-    }
-
-    private fun showLoadingIndicator() {
-        if (page == 1) showProgress() else {
-            adapter?.removeLoadingFooter() // Remove any existing loading footer before adding
-            adapter?.addLoadingFooter()
-        }
+        handleApiFailure(throwable)
     }
 
     private fun checkAttendanceStatus(id: Long, position: Int) {
@@ -292,36 +242,26 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         viewModel.checkInStatusAttendance()
     }
 
-    private fun getWorkAssignedAll() {
-        if (isLoading || isLastPage) return
-        isLoading = true
-        if (page != 1) adapter?.addLoadingFooter()
-        viewModel.getWorkAssignedAll(page, pageSize)
-    }
-
-    private fun resetAndFetch() {
-        page = 1
-        isLastPage = false
-        isLoading = false
-        adapter?.removeLoadingFooter()
-        adapter?.submitList(emptyList())
-        getWorkAssignedAll()
-    }
-
     private fun setupSearch() {
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
+        // A recreated view shows the kept list, so show the query it was filtered by.
+        binding.searchBar.etSearch.setText(viewModel.searchQuery)
+        binding.searchBar.ivClearSearch.visibility = if (viewModel.searchQuery.isNotBlank()) View.VISIBLE else View.GONE
+        binding.searchBar.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val query = s?.toString() ?: ""
+                binding.searchBar.ivClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
+                // The text the view restores after recreation is the query already applied; only a
+                // real change reloads (a reload clears the kept list).
+                if (query == viewModel.searchQuery) return
                 viewModel.searchQuery = query
-                binding.ivClearSearch.visibility = if (query.isNotBlank()) View.VISIBLE else View.GONE
                 searchHandler.removeCallbacks(searchDebounce)
-                searchHandler.postDelayed(searchDebounce, 500L)
+                searchHandler.postDelayed(searchDebounce, SEARCH_DEBOUNCE_MS)
             }
         })
-        binding.ivClearSearch.setOnClickListener {
-            binding.etSearch.setText("")
+        binding.searchBar.ivClearSearch.setOnClickListener {
+            binding.searchBar.etSearch.setText("")
         }
     }
 
@@ -337,9 +277,10 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
                 if (viewModel.activeFilter == filter) return@setOnClickListener
                 viewModel.activeFilter = filter
                 updateChipStyles(chips, filter)
-                resetAndFetch()
+                viewModel.workList.reload()
             }
         }
+        updateChipStyles(chips, viewModel.activeFilter)
     }
 
     private fun updateChipStyles(chips: Map<TextView, WorkFilter>, selected: WorkFilter) {
@@ -361,25 +302,7 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
     }
 
     private fun setUpWorkAssignmentList() {
-        binding.rvAssignedTasks.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-                if (dy > 0) {
-                    if (!isLoading && !isLastPage) {
-                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                            && firstVisibleItemPosition >= 0
-                        ) {
-                            page += 1
-                            getWorkAssignedAll()
-                        }
-                    }
-                }
-            }
-        })
+        binding.rvAssignedTasks.addOnScrollListener(PaginationScrollListener { viewModel.workList.loadNextPage() })
 
         adapter = AssignedTasksListAdapter(false,
             onViewAssignedTask = { assignedTask, position ->
@@ -408,28 +331,11 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         binding.rvAssignedTasks.adapter = adapter
     }
 
-    private fun mainLayout() {
-        isLoading = false
-        adapter?.removeLoadingFooter() // Hide loading footer
-        binding.isEmptyAssignedTasks = false
-    }
-
-    private fun emptyDataLayout() {
-        isLoading = false
-        adapter?.removeLoadingFooter() // Hide loading footer
-        if (adapter?.count() ?: 0 <= 0) {
-            binding.isEmptyAssignedTasks = true
-        }
-    }
-
     private fun swipeRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            startRefreshingData()
+            viewModel.workList.refresh()
         }
-    }
-
-    private fun startRefreshingData() {
-        resetAndFetch()
+        binding.errorState.onRetry = View.OnClickListener { viewModel.workList.refresh() }
     }
 
     private fun stopRefreshingData() {
@@ -438,108 +344,44 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         }
     }
 
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.all { it.value } -> {
-
-            }
-
-            !permissions.any { shouldShowRequestPermissionRationale(it.key) } -> {
-                showPermissionDeniedPermanently()
-            }
-
-            else -> {
-                showPermissionRationale()
-            }
-        }
-    }
-
-    private fun openApplicationSettings() {
-        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = android.net.Uri.fromParts("package", requireContext().packageName, null)
-        startActivity(intent)
-    }
-
-    private fun handleLocationPermissions(
-        onPermissionsGranted: () -> Unit,
-        onPermissionsDenied: () -> Unit = { showPermissionRationale() },
-        onPermissionsDeniedPermanently: () -> Unit = { showPermissionDeniedPermanently() }
-    ) {
-        val permissions = getRequiredPermissions()
-        when {
-            hasAllPermissions(permissions) -> onPermissionsGranted()
-            permissions.any { shouldShowRequestPermissionRationale(it) } -> onPermissionsDenied()
-            else -> permissionLauncher.launch(permissions)
-        }
-    }
+    /** Start Work needs location: asked for (with the disclosure) and run once it is granted. */
+    private val locationPermission = LocationPermissionDelegate(
+        this, { requireContext() }, ::shouldShowRequestPermissionRationale,
+        LocationPermissionDelegate.Config(
+            LocationPermissionDelegate.Disclosure(R.string.location_permission_needed, R.string.start_end_work_location_permission_msg),
+            retry = LocationPermissionDelegate.Retry.REQUEST_AGAIN
+        )
+    )
 
     @SuppressLint("MissingPermission")
     private fun startWorkWithLocationPermissions(workId: Long, position: Int) {
-        handleLocationPermissions(
-            onPermissionsGranted = {
+        locationPermission.request(
+            action = {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val latitude = location.latitude.toString()
-                        val longitude = location.longitude.toString()
-                        StartWorkBottomSheet.newInstance(latitude, longitude).apply {
-                            onImageSelected = { imagePath ->
-                                viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
-                            }
-                        }.show(requireActivity().supportFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
-                    } else {
-                        showToast(requireContext(), getString(R.string.location_not_found))
+                    whenAttached { context ->
+                        if (location != null) {
+                            val latitude = location.latitude.toString()
+                            val longitude = location.longitude.toString()
+                            StartWorkBottomSheet.newInstance(latitude, longitude).apply {
+                                onImageSelected = { imagePath ->
+                                    viewModel.workStart(workId.toString(), latitude, longitude, imagePath, position)
+                                }
+                            }.show(parentFragmentManager, "START_WORK_BOTTOM_SHEET_TAG")
+                        } else {
+                            showToast(context, getString(R.string.location_not_found))
+                        }
                     }
                 }.addOnFailureListener {
-                    showToast(requireContext(), getString(R.string.location_error))
+                    whenAttached { showToast(it, getString(R.string.location_error)) }
                 }
             }
         )
     }
 
-    private fun getRequiredPermissions(): Array<String> {
-        return buildList {
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }.toTypedArray()
-    }
-
-    private fun hasAllPermissions(permissions: Array<String>): Boolean =
-        permissions.all {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                it
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-
-    private fun showPermissionRationale() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_required)
-            .setMessage(R.string.location_permission_rationale)
-            .setPositiveButton(R.string.retry) { _, _ ->
-                // Launch permission request after showing rationale
-                permissionLauncher.launch(getRequiredPermissions())
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
-    private fun showPermissionDeniedPermanently() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.permission_denied)
-            .setMessage(R.string.permission_denied_permanently)
-            .setPositiveButton(R.string.open_settings) { _, _ ->
-                openApplicationSettings()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
-
     private val assignTaskLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                startRefreshingData()
+                viewModel.workList.refresh()
             }
         }
 
@@ -548,8 +390,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
             if (result.resultCode == Activity.RESULT_OK) {
                 val position = result.data?.getIntExtra(SharingKeys.WORK_POSITION, -1) ?: -1
                 val updatedStatus = result.data?.getIntExtra(SharingKeys.UPDATED_STATUS,-1) ?: -1
-                if (position != -1 && updatedStatus != null) {
-                    adapter?.setUpdateStatus(position, updatedStatus)
+                if (position != -1 && updatedStatus != -1) {
+                    viewModel.workList.updateItem(position) { it.status?.code = updatedStatus }
                 }
             }
 
@@ -566,4 +408,8 @@ class AttendanceFragment : BaseFragment<FragmentAttendanceBinding, AttendanceVie
         assignedTaskDetailLauncher.launch(intent)
     }
 
+    private companion object {
+        /** Wait for typing to pause before searching. */
+        const val SEARCH_DEBOUNCE_MS = 500L
+    }
 }

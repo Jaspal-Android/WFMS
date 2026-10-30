@@ -15,6 +15,14 @@ object ValConstants {
     const val BAD_REQUEST_CODE = 400
     const val SERVER_ERROR_CODE = 500
     const val FORBIDDEN_CODE = 403
+    const val REQUEST_TIMEOUT_CODE = 408
+    const val LAST_HTTP_STATUS_CODE = 599
+    /** Items requested per page by the paged lists (Work Management, Claims, Sites). */
+    const val DEFAULT_PAGE_SIZE = 10
+    /** Items per page on the approval lists (attendance, work, claims), as on iOS. */
+    const val APPROVAL_PAGE_SIZE = 25
+    /** Clients loaded for a picker in one request (`GET /client/all` pages 10 by default). */
+    const val CLIENT_PICKER_PAGE_SIZE = 100
     const val ROLE_EMPLOYEE = "Employee"
     const val ROLE_PM = "pm"
     const val ROLE_OPS = "ops"

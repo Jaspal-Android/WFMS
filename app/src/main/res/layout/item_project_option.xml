@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One project in the project picker: a radio, the name and its circle tag. The adapter marks
+     the chosen one with a check and an accent outline. -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/margin_small_extra"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="?attr/wfmsColorSurface"
+        app:cardCornerRadius="@dimen/card_radius"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/border_width_1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/min_touch_target"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/padding_medium"
+            android:paddingVertical="@dimen/padding_x_small">
+
+            <ImageView
+                android:id="@+id/radio"
+                android:layout_width="@dimen/icon_size_small"
+                android:layout_height="@dimen/icon_size_small"
+                android:importantForAccessibility="no"
+                tools:src="@drawable/ic_check_circle" />
+
+            <TextView
+                android:id="@+id/name"
+                style="@style/CustomRegularTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_weight="1"
+                android:importantForAccessibility="no"
+                android:textColor="?attr/wfmsColorOnSurface"
+                android:textStyle="bold"
+                tools:text="Goa darshan" />
+
+            <TextView
+                android:id="@+id/circle"
+                style="@style/CustomTagChip"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginStart="@dimen/margin_small"
+                android:importantForAccessibility="no"
+                tools:text="Chandigarh" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

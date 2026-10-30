@@ -13,39 +13,26 @@
     <fragment
         android:id="@+id/nav_attendance"
         android:name="com.atvantiq.wfms.ui.screens.attendance.AttendanceFragment"
-        android:label="@string/menu_work_management"
+        android:label="@string/tab_work"
         tools:layout="@layout/fragment_attendance" />
     <fragment
         android:id="@+id/nav_reimbursement"
         android:name="com.atvantiq.wfms.ui.screens.reimbursement.ReimbursementFragment"
-        android:label="@string/menu_reimbursement"
+        android:label="@string/tab_claims"
         tools:layout="@layout/fragment_reimbursement" />
     <fragment
-        android:id="@+id/nav_vendor"
-        android:name="com.atvantiq.wfms.ui.screens.vendor.VendorFragment"
-        android:label="@string/menu_vendor"
-        tools:layout="@layout/fragment_vendor" />
+        android:id="@+id/nav_sites"
+        android:name="com.atvantiq.wfms.ui.screens.admin.ui.site.SitesFragment"
+        android:label="@string/sites"
+        tools:layout="@layout/fragment_sites" />
     <fragment
-        android:id="@+id/nav_about"
-        android:name="com.atvantiq.wfms.ui.screens.about.AboutFragment"
-        android:label="@string/menu_about"
-        tools:layout="@layout/fragment_about" />
+        android:id="@+id/nav_approvals"
+        android:name="com.atvantiq.wfms.ui.screens.admin.ui.approvals.ApprovalsFragment"
+        android:label="@string/approvals"
+        tools:layout="@layout/fragment_approvals" />
     <fragment
-        android:id="@+id/nav_feedback"
-        android:name="com.atvantiq.wfms.ui.screens.feedback.FeedbackFragment"
-        android:label="@string/menu_feedback"
-        tools:layout="@layout/fragment_feedback" />
-    <fragment
-        android:id="@+id/nav_cab"
-        android:name="com.atvantiq.wfms.ui.screens.cab.CabFragment"
-        android:label="@string/menu_cab"
-        tools:layout="@layout/fragment_cab"
-        />
-    <fragment
-        android:id="@+id/nav_material_reco"
-        android:name="com.atvantiq.wfms.ui.screens.materialReco.PurchaseFragment"
-        android:label="@string/material_reco"
-        tools:layout="@layout/fragment_purchase" />
-
-
+        android:id="@+id/nav_more"
+        android:name="com.atvantiq.wfms.ui.screens.more.MoreFragment"
+        android:label="@string/tab_more"
+        tools:layout="@layout/fragment_more" />
 </navigation>

@@ -14,7 +14,7 @@
             layout="@layout/custom_toolbar"></include>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:background="@color/white"
+            android:background="?attr/wfmsColorSurface"
             android:id="@+id/announmentsList"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

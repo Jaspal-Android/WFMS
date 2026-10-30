@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material Icons "wb_twilight" (Apache 2.0). Tinted where used. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M16.95,8.66l2.12,-2.12 1.42,1.41 -2.13,2.12zM17.9,14c-0.5,-2.85 -2.95,-5 -5.9,-5s-5.45,2.15 -5.9,5h11.8zM2,16h20v4H2zM11,4h2v3h-2zM3.54,7.93l1.41,-1.42 2.12,2.12 -1.41,1.42z" />
+</vector>

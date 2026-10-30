@@ -1,13 +1,14 @@
 package com.atvantiq.wfms.ui.screens.reimbursement.createClaim.addTravelDetail
 
+import com.atvantiq.wfms.constants.ValConstants
+import android.view.View
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.atvantiq.wfms.R
 import com.atvantiq.wfms.base.BaseActivity
 import com.atvantiq.wfms.constants.AppListData
@@ -20,8 +21,11 @@ import com.atvantiq.wfms.network.ApiState
 import com.atvantiq.wfms.network.Status
 import com.atvantiq.wfms.utils.files.PickMediaHelper
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.HttpException
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.atvantiq.wfms.utils.applySystemBarsAndImePadding
 
 @AndroidEntryPoint
 class AddTravelingDetailActivity :
@@ -56,21 +60,46 @@ class AddTravelingDetailActivity :
 
     override fun onCreateActivity(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        findViewById<View>(R.id.main).applySystemBarsAndImePadding()
         handleToolbar()
 
         setImagePicker()
+        pickMediaHelper.restoreState(savedInstanceState)
 
         isOutstation = intent.getBooleanExtra(SharingKeys.IS_OUTSTATION_CLAIM, false)
         circleCode = intent.extras?.getString(SharingKeys.EXTRA_CIRCLE_CODE)
-        val defaultFrom = intent.getStringExtra(SharingKeys.EXTRA_DEFAULT_FROM)
-        if (!defaultFrom.isNullOrBlank()) {
-            viewModel.fromLocation.set(defaultFrom)
+        if (savedInstanceState == null) {
+            val defaultFrom = intent.getStringExtra(SharingKeys.EXTRA_DEFAULT_FROM)
+            if (!defaultFrom.isNullOrBlank()) viewModel.fromLocation.set(defaultFrom)
+        } else {
+            showRestoredEntry()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        pickMediaHelper.saveState(outState)
+    }
+
+    /** After Android ended the process: the companion and the receipt preview the form had. */
+    private fun showRestoredEntry() {
+        viewModel.selectedEmployee.get()?.let { showTravelingWith(it) }
+        val receipt = viewModel.attachmentPath.get().orEmpty()
+        if (receipt.isEmpty()) return
+        lifecycleScope.launch {
+            val preview = withContext(Dispatchers.IO) { pickMediaHelper.decodeBitmap(receipt) }
+            if (preview == null) {
+                // The prepared file is gone; ask for the receipt again rather than send a missing one.
+                viewModel.attachmentPath.set("")
+                return@launch
+            }
+            binding.hasPreviewImage = true
+            binding.capturedImagePreview.setImageBitmap(preview)
+        }
+    }
+
+    private fun showTravelingWith(employee: Data) {
+        binding.travelingWithEt.setText(getString(R.string.name_with_code_format, employee.name, employee.code))
     }
 
     private fun handleToolbar() {
@@ -149,14 +178,14 @@ class AddTravelingDetailActivity :
             Status.SUCCESS -> {
                 dismissProgress()
                 when (response.response?.code) {
-                    200 -> {
+                    ValConstants.SUCCESS_CODE -> {
                         val employees = response.response?.data ?: emptyList()
                         viewModel.employeesByCircle = employees
                         showTravelWithSelectionDialog(employees)
                     }
 
                     else -> {
-                        handleErrorResponse(
+                        handleRejectedResponse(
                             response.response?.code ?: 0,
                             response.response?.message
                         )
@@ -166,28 +195,8 @@ class AddTravelingDetailActivity :
 
             Status.ERROR -> {
                 dismissProgress()
-                handleError(response.throwable)
+                handleApiFailure(response.throwable)
             }
-        }
-    }
-
-    private fun handleErrorResponse(code: Int, message: String?) {
-        if (code == 401) tokenExpiresAlert() else alertDialogShow(
-            this,
-            getString(R.string.alert),
-            message ?: getString(R.string.something_went_wrong)
-        )
-    }
-
-    private fun handleError(throwable: Throwable?) {
-        if (throwable is HttpException) {
-            if (throwable.code() == 401) {
-                tokenExpiresAlert()
-            } else {
-                showToast(this, throwable.message())
-            }
-        } else {
-            showToast(this, throwable?.message ?: getString(R.string.something_went_wrong))
         }
     }
 
@@ -221,11 +230,11 @@ class AddTravelingDetailActivity :
             title = getString(R.string.travelingWith),
             layoutResId = R.layout.item_generic_adapter,
             bind = { view, item ->
-                view.findViewById<TextView>(R.id.text1).text = item.name + " - " + item.code
+                view.findViewById<TextView>(R.id.text1).text = getString(R.string.name_with_code_format, item.name, item.code)
             },
             onItemSelected = { selected ->
                 binding.travelingWithEt.error = null
-                binding.travelingWithEt.setText(selected.name + "  -  " + selected.code)
+                showTravelingWith(selected)
                 viewModel.selectedEmployee.set(selected)
             },
             filterCondition = { item, query ->
@@ -258,16 +267,17 @@ class AddTravelingDetailActivity :
             object : PickMediaHelper.Callback {
                 override fun onImagePicked(path: String, request: Int) {
                     if (path.isNotBlank()) {
-                        val compressedPath = pickMediaHelper.compressImageTo1MB(path) ?: path
-                        viewModel.attachmentPath.set(compressedPath)
-                        binding.hasPreviewImage = true
-                        var bitmap = pickMediaHelper.decodeBitmap(path)
-                        binding.capturedImagePreview.setImageBitmap(bitmap)
+                        pickMediaHelper.prepareImage(path, lifecycleScope) { prepared ->
+                            viewModel.attachmentPath.set(prepared.uploadPath)
+                            binding.hasPreviewImage = true
+                            binding.capturedImagePreview.setImageBitmap(prepared.preview)
+                        }
                     }
                 }
 
                 override fun onError(message: String) {
                     binding.hasPreviewImage = false
+                    showToast(this@AddTravelingDetailActivity, message)
                 }
             }
         )

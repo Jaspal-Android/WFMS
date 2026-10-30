@@ -1,19 +1,17 @@
 package com.atvantiq.wfms.base
 
+import com.atvantiq.wfms.utils.isUnauthorized
+import com.atvantiq.wfms.constants.ValConstants
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.atvantiq.wfms.R
@@ -71,10 +69,20 @@ open class BaseFragmentSimple : Fragment() {
 		title: String,
 		message: String,
 		okLister: DialogInterface.OnClickListener
+	) = alertDialogShow(context, title, message, cancelable = true, okLister = okLister)
+
+	/** @param cancelable false when OK must be the only way out (e.g. the screen finishes on OK). */
+	fun alertDialogShow(
+		context: Context,
+		title: String,
+		message: String,
+		cancelable: Boolean,
+		okLister: DialogInterface.OnClickListener
 	) {
 		val builder = AlertDialog.Builder(context)
 		builder.setTitle(title)
 		builder.setMessage(message)
+		builder.setCancelable(cancelable)
 		builder.setPositiveButton(getString(R.string.ok), okLister)
 		val alertDialog = builder.create()
 		alertDialog.show()
@@ -185,38 +193,39 @@ open class BaseFragmentSimple : Fragment() {
 		}
 	}
 
-	lateinit var progressCirluarDialog: ProgressCircularDialog
+	// Held until dismissed. A dialog is not visible until its show() transaction runs, so the
+	// reference, not isVisible, is what stops a second call from orphaning the first dialog.
+	private var progressCircularDialog: ProgressCircularDialog? = null
 	private var progressDialog: ProgressDialog? = null
 
 	fun showCircularProgress() {
-		// Prevent showing multiple dialogs
-		if (::progressCirluarDialog.isInitialized && progressCirluarDialog.isVisible) return
-		progressCirluarDialog = ProgressCircularDialog()
-		progressCirluarDialog.show(parentFragmentManager, progressCirluarDialog.tag)
+		if (progressCircularDialog != null) return
+		progressCircularDialog = ProgressCircularDialog().also { it.show(parentFragmentManager, null) }
 	}
 
 	fun dismissCircularProgress() {
-		if (::progressCirluarDialog.isInitialized && progressCirluarDialog.isVisible) {
-			progressCirluarDialog.dismissAllowingStateLoss()
-		}
+		progressCircularDialog?.dismissAllowingStateLoss()
+		progressCircularDialog = null
 	}
 
 	fun showProgress() {
-		// Prevent showing multiple dialogs
-		if (progressDialog?.isVisible == true) return
-		progressDialog = ProgressDialog()
-		progressDialog?.show(parentFragmentManager, "")
+		if (progressDialog != null) return
+		progressDialog = ProgressDialog().also { it.show(parentFragmentManager, null) }
 	}
 
 	fun dismissProgress() {
-		//if (progressDialog?.isVisible == true) {
-			progressDialog?.dismissAllowingStateLoss()
-			progressDialog = null
-		//}
+		progressDialog?.dismissAllowingStateLoss()
+		progressDialog = null
 	}
 
-	fun isLifeCycleResumed() =
-		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED
+	/**
+	 * Runs [block] with the context only while the fragment is still attached. Location and
+	 * geocoder callbacks can arrive after the screen is gone, and `requireContext()` then throws.
+	 */
+	protected fun whenAttached(block: (Context) -> Unit) {
+		val attached = context
+		if (isAdded && attached != null) block(attached)
+	}
 
 	fun isLifeCycleStarted() =
 		viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.CREATED||viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.STARTED||
@@ -229,14 +238,49 @@ open class BaseFragmentSimple : Fragment() {
 		requireActivity().finish()
 	}
 
+	private var sessionExpiredDialog: AlertDialog? = null
+
+	/**
+	 * Several requests can fail with 401 at once. Show one dialog, and make it the only way
+	 * forward: dismissing it would leave the user on a screen whose every request now fails.
+	 */
 	fun tokenExpiresAlert() {
-		alertDialogShow(
-			requireContext(),
-			getString(R.string.alert),
-			getString(R.string.unauthorized_access),
-			getString(R.string.login),
-			DialogInterface.OnClickListener() { dialog, which ->
+		if (!isAdded || sessionExpiredDialog?.isShowing == true) return
+		sessionExpiredDialog = MaterialAlertDialogBuilder(requireContext())
+			.setTitle(R.string.alert)
+			.setMessage(R.string.session_expired_message)
+			.setCancelable(false)
+			.setPositiveButton(R.string.login) { dialog, _ ->
+				dialog.dismiss()
 				performLogout()
-			})
+			}
+			.show()
+	}
+
+	/**
+	 * Reports a failed request: the session-expired dialog for a 401, otherwise the user-facing
+	 * message that [com.atvantiq.wfms.base.BaseViewModel] put on the error.
+	 */
+	fun handleApiFailure(throwable: Throwable?) {
+		if (throwable.isUnauthorized()) {
+			tokenExpiresAlert()
+		} else {
+			showToast(requireContext(), throwable?.message ?: getString(R.string.something_went_wrong))
+		}
+	}
+
+	/** Reports a response the server answered with a non-success `code`. */
+	fun handleRejectedResponse(code: Int?, message: String?) {
+		if (code == ValConstants.UNAUTHORIZED_CODE) {
+			tokenExpiresAlert()
+		} else {
+			alertDialogShow(requireContext(), getString(R.string.alert), message ?: getString(R.string.something_went_wrong))
+		}
+	}
+
+	override fun onDestroyView() {
+		sessionExpiredDialog?.dismiss()
+		sessionExpiredDialog = null
+		super.onDestroyView()
 	}
 }

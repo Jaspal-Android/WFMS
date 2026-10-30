@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lint's unused-resource check cannot see a layout that is only used through its generated
+     view/data binding class (e.g. ItemSignInBinding), and then also reports everything that layout
+     references as unused. Treating layouts as roots keeps that check from deleting live resources.
+     This file is not packaged: resource shrinking removes it from release builds. -->
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@layout/*" />
